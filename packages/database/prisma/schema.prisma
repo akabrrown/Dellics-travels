@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -45,6 +46,13 @@ enum PriceAlertStatus {
   CANCELLED
 }
 
+enum ESIMOrderStatus {
+  PENDING
+  PROVISIONED
+  ACTIVE
+  EXPIRED
+}
+
 model User {
   id              String         @id @default(uuid())
   name            String
@@ -59,6 +67,7 @@ model User {
   price_alerts  PriceAlert[]
   fare_freezes  FareFreeze[]
   reviews       Review[]
+  esim_orders   ESIMOrder[]
 
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
@@ -177,4 +186,50 @@ model Review {
 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model ESIMPlan {
+  id                String      @id @default(uuid())
+  country_or_region String
+  data_gb           Decimal     @db.Decimal(10, 2)
+  validity_days     Int
+  price             Decimal     @db.Decimal(10, 2)
+  airalo_package_id String      @unique
+
+  orders            ESIMOrder[]
+
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+}
+
+model ESIMOrder {
+  id                       String          @id @default(uuid())
+  user_id                  String
+  user                     User            @relation(fields: [user_id], references: [id])
+  esim_plan_id             String
+  esim_plan                ESIMPlan        @relation(fields: [esim_plan_id], references: [id])
+  stripe_payment_intent_id String          @unique
+  qr_code_url              String?
+  iccid                    String?
+  status                   ESIMOrderStatus @default(PENDING)
+
+  created_at               DateTime        @default(now())
+  updated_at               DateTime        @updatedAt
+}
+
+enum InquiryKind {
+  CONTACT
+  INQUIRY
+}
+
+model Inquiry {
+  id         String      @id @default(uuid())
+  kind       InquiryKind
+  name       String
+  email      String
+  phone      String?
+  message    String
+  payload    Json?
+
+  created_at DateTime    @default(now())
 }
