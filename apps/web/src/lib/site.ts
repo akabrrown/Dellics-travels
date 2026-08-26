@@ -4,7 +4,7 @@ export const SITE = {
   whatsappNumber: "233552054174",
   phoneDisplay: "+233 55 205 4174",
   email: "info@dellicstravels.com",
-  address: "Accra, Ghana",
+  address: "Tema Community 25, Devtraco Estate, Ghana",
   travelUrl: "https://mytravel.io/dellicstravels",
 };
 
