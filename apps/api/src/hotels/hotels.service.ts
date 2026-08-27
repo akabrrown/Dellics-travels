@@ -48,6 +48,12 @@ export class HotelsService {
   protected async fetchJson(path: string, payload: unknown): Promise<any> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const apiId = this.config.get<string>('RATEHAWK_API_ID') ?? '494';
+    const apiKey =
+      this.config.get<string>('RATEHAWK_API_KEY') ??
+      '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
+    const basicAuth = Buffer.from(`${apiId}:${apiKey}`).toString('base64');
+
     try {
       const res = await fetch(path, {
         method: 'POST',
@@ -55,8 +61,9 @@ export class HotelsService {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          'X-API-ID': this.config.get<string>('RATEHAWK_API_ID') ?? '',
-          'X-API-Key': this.config.get<string>('RATEHAWK_API_KEY') ?? '',
+          Authorization: `Basic ${basicAuth}`,
+          'X-API-ID': apiId,
+          'X-API-Key': apiKey,
         },
         body: JSON.stringify(payload), // credentials never in the body
       });

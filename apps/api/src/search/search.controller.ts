@@ -34,4 +34,23 @@ export class SearchController {
   async searchPlaces(@Query() query: any) {
     return this.searchService.searchPlaces(query);
   }
+
+  // ==========================================
+  // FX-PORT CURRENCY CONVERSION & LIVE RATES
+  // ==========================================
+
+  @Get('fx/rates')
+  async getFxRates() {
+    return this.searchService.getFxRates();
+  }
+
+  @Get('fx/convert')
+  async convertCurrency(
+    @Query('amount') amount: string,
+    @Query('from') from: string = 'USD',
+    @Query('to') to: string = 'GHS',
+  ) {
+    const numAmount = parseFloat(amount) || 1.0;
+    return this.searchService.convertCurrency(numAmount, from, to);
+  }
 }
