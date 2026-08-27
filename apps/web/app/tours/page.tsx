@@ -14,152 +14,13 @@ import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
 import { SITE } from "@/lib/site";
+import { getTours } from "@/lib/tours";
 
 export const metadata: Metadata = {
   title: "International Tour Packages & Safari Holidays",
   description:
     "Book luxury guided international tours with Dellics Travels. South Africa Cape Town, Dubai, Kenya, Zanzibar, Safari Valley Ghana and more.",
 };
-
-const TOURS = [
-  {
-    name: "5 Nights in Cape Town Luxury Experience",
-    destination: "Cape Town, South Africa",
-    price: "$1,899",
-    duration: "6 Days / 5 Nights",
-    badge: "Most Popular",
-    image: "/images/africa/cape-town-and-table-mountain.jpg",
-    copy: "Discover the Mother City where adventure meets luxury! From Table Mountain cableway and Cape Point penguin encounters to world-class shopping at V&A Waterfront.",
-    includes: [
-      "Table Mountain Cableway Ticket",
-      "Cape Point & Boulders Beach",
-      "Penguin Colony Sanctuary",
-      "V&A Waterfront Shopping Tour",
-      "4-Star Luxury Accommodation",
-      "Daily Gourmet Breakfast",
-      "Return Airport Transfers",
-    ],
-  },
-  {
-    name: "Safari Valley Eco Resort Full Day Escape",
-    destination: "Okere Hills, Ghana",
-    price: "$150",
-    duration: "Full Day Tour",
-    badge: "Ghana Luxury",
-    image: "/images/services/day-tip-to-safari-valley.jpg",
-    copy: "Ghana's premier luxury eco-retreat escape. Experience pure nature, exotic wildlife encounters, kayaking, and outdoor dining in the tranquil Okere Hills.",
-    includes: [
-      "Resort Entrance & Conservation Fee",
-      "Buffet Gourmet Lunch",
-      "Swimming Pool & Kayaking Access",
-      "Guided Wildlife Encounter",
-      "Professional Tour Host",
-      "Round-trip AC Transport from Accra",
-    ],
-  },
-  {
-    name: "Winter in Dubai Luxury Holiday",
-    destination: "Dubai, United Arab Emirates",
-    price: "$1,890",
-    duration: "7 Days / 6 Nights",
-    badge: "Bestseller",
-    image: "/images/services/winter-dubai.jpg",
-    copy: "Experience the ultimate Arabian luxury escape! Includes Emirates flights, Dubai Mall shopping, desert dune bashing safari with BBQ dinner, and Marina yacht cruise.",
-    includes: [
-      "Return Emirates Flights from Accra",
-      "Guided Luxury Shopping Tours",
-      "Desert Dune Safari with BBQ Dinner",
-      "4-Star Hotel Accommodation",
-      "Airport Transfers in Executive AC Van",
-      "Dubai Tourist Visa & Tourism Tax",
-    ],
-  },
-  {
-    name: "Feel South Africa & Kruger Safari",
-    destination: "Johannesburg & Kruger, South Africa",
-    price: "$1,450",
-    duration: "5 Days / 4 Nights",
-    badge: "Wildlife Adventure",
-    image: "/images/services/south-africa.jpg",
-    copy: "Explore the soul of South Africa! From the vibrant heartbeat of Johannesburg and Soweto heritage to thrilling Big 5 game drives in Kruger National Park.",
-    includes: [
-      "Return Flights to Johannesburg",
-      "Guided Daily Breakfast",
-      "Return Airport Transfers",
-      "4-Star Hotel Stay in Sandton",
-      "Full Day Big 5 Safari Game Drive",
-      "24/7 On-ground Travel Host",
-    ],
-  },
-  {
-    name: "Dubai & Nairobi Dual-City Mix",
-    destination: "Dubai (UAE) & Nairobi (Kenya)",
-    price: "$1,750",
-    duration: "10 Days / 9 Nights",
-    badge: "Dual City",
-    image: "/images/services/kenya-fun.jpg",
-    copy: "The ultimate dual-city vacation! Experience the futuristic glamor of Dubai skyscrapers followed by the wild beauty of Nairobi's national park and giraffe sanctuary.",
-    includes: [
-      "Multi-destination Flights (ACC-DXB-NBO-ACC)",
-      "All Airport & Intercity Transfers",
-      "Top-rated 4-Star Stays in Both Cities",
-      "Daily Breakfast Buffets",
-      "Nairobi Giraffe Centre & Safari Drive",
-      "Dubai City Tour & Desert Safari",
-    ],
-  },
-  {
-    name: "Summer in Dubai Family Special",
-    destination: "Dubai, United Arab Emirates",
-    price: "$1,790",
-    duration: "6 Days / 5 Nights",
-    badge: "Family Special",
-    image: "/images/services/dubai-fun.jpg",
-    copy: "Create lifelong memories with the whole family in Dubai! Waterparks, underwater aquariums, luxury desert camps, and tax-free shopping malls.",
-    includes: [
-      "Emirates Return Flights",
-      "Atlantis Aquaventure Waterpark",
-      "Dubai Miracle Garden & Global Village",
-      "Executive Hotel Accommodation",
-      "Private Family Airport Transfers",
-      "Desert Safari & Falcon Show",
-    ],
-  },
-  {
-    name: "Zanzibar Island & Stone Town Tropical Tour",
-    destination: "Zanzibar & Tanzania",
-    price: "$1,850",
-    duration: "5 Days / 4 Nights",
-    badge: "Tropical Paradise",
-    image: "/images/services/zanzibar-beach-fun.jpg",
-    copy: "Sink your toes into the powdery white sands of Nungwi Beach. Explore ancient Stone Town alleyways, fragrant spice farms, and crystal clear coral snorkeling reefs.",
-    includes: [
-      "Beachfront Luxury Resort Stay",
-      "Prison Island & Giant Tortoises Tour",
-      "Spice Farm Guided Expedition",
-      "Stone Town UNESCO Heritage Walk",
-      "Return Airport Transfers",
-      "Daily Breakfast & Seafood Dinner",
-    ],
-  },
-  {
-    name: "Kenya Wildlife & Amboseli Kilimanjaro Safari",
-    destination: "Kenya & Maasai Mara",
-    price: "$1,950",
-    duration: "6 Days / 5 Nights",
-    badge: "Big 5 Safari",
-    image: "/images/services/kenya-safari-adventure.jpg",
-    copy: "Witness majestic elephant herds against the snow-capped backdrop of Mount Kilimanjaro in Amboseli and the legendary predators of the Maasai Mara.",
-    includes: [
-      "Custom 4x4 Safari Land Cruiser with Pop-up Roof",
-      "Park Entry & Conservation Fees",
-      "Luxury Safari Tented Camp Stays",
-      "Full Board Gourmet Meals on Safari",
-      "Experienced Professional Naturalist Guide",
-      "Return Domestic Transfers",
-    ],
-  },
-];
 
 const TOUR_PROMISES = [
   {
@@ -179,23 +40,25 @@ const TOUR_PROMISES = [
   },
   {
     icon: Car,
-    title: "Private Airport & Tour Transport",
-    description: "Travel comfortably in modern air-conditioned private vehicles with dedicated drivers and English-speaking tour guides.",
+    title: "Private Executive Fleet & Local Hosts",
+    description: "Enjoy private air-conditioned transport and licensed local English-speaking guides who know the culture and hidden gems intimately.",
   },
 ];
 
-export default function ToursPage() {
+export default async function ToursPage() {
+  const tours = await getTours().catch(() => []);
+
   return (
     <>
       <PageHero
-        title="International Tour Packages & Safaris"
-        subtitle="Carefully crafted holiday experiences by local experts across Africa, Europe, the Middle East, and Asia with transparent pricing."
-        badge="Curated Travel Packages"
+        title="Curated International Tour Packages"
+        subtitle="Experience world-class safari expeditions, luxury city breaks, and tropical beach retreats with all flights, stays, and transfers included."
+        badge="Tailor-Made Itineraries"
         image="/images/africa/serengeti-national-park.jpg"
-        breadcrumbs={[{ label: "Tours & Packages" }]}
+        breadcrumbs={[{ label: "Tours & Holidays" }]}
       />
 
-      {/* Tour Packages Catalog */}
+      {/* Signature Tour Packages Grid */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
         <SectionHeading
           eyebrow="Curated Experiences"
@@ -204,7 +67,7 @@ export default function ToursPage() {
         />
 
         <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-          {TOURS.map((tour) => (
+          {tours.map((tour) => (
             <article
               key={tour.name}
               className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"

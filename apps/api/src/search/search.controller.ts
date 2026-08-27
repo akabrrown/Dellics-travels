@@ -35,6 +35,16 @@ export class SearchController {
     return this.searchService.searchPlaces(query);
   }
 
+  @Get('tours')
+  async searchTours(@Query() query: any) {
+    return this.searchService.searchTours(query);
+  }
+
+  @Get('reviews/featured')
+  async getFeaturedReviews() {
+    return this.searchService.getFeaturedReviews();
+  }
+
   // ==========================================
   // FX-PORT CURRENCY CONVERSION & LIVE RATES
   // ==========================================
@@ -54,3 +64,4 @@ export class SearchController {
     return this.searchService.convertCurrency(numAmount, from, to);
   }
 }
+

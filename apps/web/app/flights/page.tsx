@@ -15,6 +15,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { FlightSearchWidget } from "@/components/flights/flight-search-widget";
 import { CtaBanner } from "@/components/cta-banner";
 import { SITE } from "@/lib/site";
+import { getLiveHomeDeals } from "@/lib/flights";
 
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
@@ -22,10 +23,11 @@ export const metadata: Metadata = {
     "Book domestic and international flights with Dellics Travels — IATA Certified agency. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more with 24/7 WhatsApp ticketing.",
 };
 
-const POPULAR_ROUTES = [
+const DEFAULT_ROUTES = [
   {
     from: "Accra (ACC)",
     to: "London (LHR)",
+    iata: "LHR",
     airline: "British Airways / KLM / Virgin",
     price: "From $850",
     duration: "6h 40m Non-stop",
@@ -34,6 +36,7 @@ const POPULAR_ROUTES = [
   {
     from: "Accra (ACC)",
     to: "Dubai (DXB)",
+    iata: "DXB",
     airline: "Emirates / Ethiopian Airlines",
     price: "From $720",
     duration: "8h 15m",
@@ -42,6 +45,7 @@ const POPULAR_ROUTES = [
   {
     from: "Accra (ACC)",
     to: "New York (JFK)",
+    iata: "JFK",
     airline: "Delta Air Lines",
     price: "From $1,150",
     duration: "10h 30m Direct",
@@ -50,6 +54,7 @@ const POPULAR_ROUTES = [
   {
     from: "Accra (ACC)",
     to: "Johannesburg (JNB)",
+    iata: "JNB",
     airline: "South African Airways / ASKY",
     price: "From $620",
     duration: "5h 55m Direct",
@@ -58,6 +63,7 @@ const POPULAR_ROUTES = [
   {
     from: "Accra (ACC)",
     to: "Amsterdam (AMS)",
+    iata: "AMS",
     airline: "KLM Royal Dutch Airlines",
     price: "From $890",
     duration: "6h 50m Direct",
@@ -66,6 +72,7 @@ const POPULAR_ROUTES = [
   {
     from: "Accra (ACC)",
     to: "Lagos (LOS)",
+    iata: "LOS",
     airline: "Africa World Airlines / Air Peace",
     price: "From $240",
     duration: "1h 00m Direct",
@@ -111,7 +118,21 @@ const FAQS = [
   },
 ];
 
-export default function FlightsPage() {
+export default async function FlightsPage() {
+  const dealsData = await getLiveHomeDeals("ACC").catch(() => null);
+
+  const priceMap = new Map<string, string>();
+  dealsData?.deals?.forEach((d) => priceMap.set(d.iata.toUpperCase(), d.price));
+  dealsData?.trending?.forEach((t) => priceMap.set(t.iata.toUpperCase(), t.price));
+
+  const popularRoutes = DEFAULT_ROUTES.map((route) => {
+    const livePrice = priceMap.get(route.iata);
+    return {
+      ...route,
+      price: livePrice ? `From ${livePrice}` : route.price,
+    };
+  });
+
   return (
     <>
       <PageHero
@@ -136,7 +157,8 @@ export default function FlightsPage() {
         />
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {POPULAR_ROUTES.map((route) => (
+          {popularRoutes.map((route) => (
+
             <div
               key={`${route.from}-${route.to}`}
               className="group overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"

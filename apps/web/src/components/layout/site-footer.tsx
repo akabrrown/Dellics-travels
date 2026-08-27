@@ -74,29 +74,37 @@ export function SiteFooter() {
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-white/75 max-w-md">
-              Dellics Travels & Tours is an IATA Certified luxury travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
+              Dellics Travels LLC is an IATA Certified global luxury travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
             </p>
 
             <div className="flex flex-col gap-3 pt-2">
-              <div className="flex items-start gap-3 text-sm text-white/80">
-                <MapPin className="size-5 text-brand-orange shrink-0 mt-0.5" />
-                <span>Community 25, Devtraco Estate, Tema, Greater Accra, Ghana</span>
+              <div className="flex items-start gap-3 text-xs text-white/80">
+                <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-white">Ghana HQ:</span> Community 25, Devtraco Estate, Tema, Greater Accra
+                </div>
               </div>
-              <div className="flex items-center gap-3 text-sm text-white/80">
-                <Phone className="size-5 text-brand-orange shrink-0" />
+              <div className="flex items-start gap-3 text-xs text-white/80">
+                <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-white">USA Office:</span> 30 N Gould ST, STER, SHERIDAN, WY 82801
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-white/80">
+                <Phone className="size-4 text-brand-orange shrink-0" />
                 <a href={`tel:${SITE.whatsappNumber}`} className="hover:text-brand-orange transition-colors">
                   {SITE.phoneDisplay}
                 </a>
               </div>
-              <div className="flex items-center gap-3 text-sm text-white/80">
-                <Mail className="size-5 text-brand-orange shrink-0" />
+              <div className="flex items-center gap-3 text-xs text-white/80">
+                <Mail className="size-4 text-brand-orange shrink-0" />
                 <a href={`mailto:${SITE.email}`} className="hover:text-brand-orange transition-colors">
                   {SITE.email}
                 </a>
               </div>
-              <div className="flex items-center gap-3 text-sm text-white/80">
-                <Clock className="size-5 text-brand-orange shrink-0" />
-                <span>Mon – Sat: 8:00 AM – 6:00 PM GMT · 24/7 Ticketing Support</span>
+              <div className="flex items-center gap-3 text-xs text-white/80">
+                <Clock className="size-4 text-brand-orange shrink-0" />
+                <span>Mon – Sat: 8:00 AM – 6:00 PM GMT · 24/7 Concierge</span>
               </div>
             </div>
           </div>

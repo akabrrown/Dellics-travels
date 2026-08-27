@@ -234,3 +234,22 @@ model Inquiry {
 
   created_at DateTime    @default(now())
 }
+
+model TourPackage {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  destination String
+  price       Decimal  @db.Decimal(10, 2)
+  currency    String   @default("USD")
+  duration    String
+  badge       String?
+  image_url   String
+  overview    String
+  includes    String[]
+  highlights  String[]
+  is_featured Boolean  @default(false)
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}

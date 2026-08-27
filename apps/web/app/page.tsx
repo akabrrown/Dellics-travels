@@ -16,7 +16,10 @@ import { QuickBook } from "@/components/home/quick-book";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
 import { Button } from "@/components/ui/button";
-import { HERO_SLIDES, HOME_STATS, TESTIMONIALS, WHY_CHOOSE_US } from "@/data/home";
+import { HERO_SLIDES, HOME_STATS, WHY_CHOOSE_US } from "@/data/home";
+import { getLiveHomeDeals } from "@/lib/flights";
+import { getTours } from "@/lib/tours";
+import { getFeaturedReviews } from "@/lib/reviews";
 
 const CORE_SERVICES = [
   {
@@ -75,7 +78,7 @@ const CORE_SERVICES = [
   },
 ];
 
-const FEATURED_DESTINATIONS = [
+const DEFAULT_DESTINATIONS = [
   {
     name: "Dubai & Middle East",
     country: "United Arab Emirates",
@@ -83,6 +86,7 @@ const FEATURED_DESTINATIONS = [
     image: "/images/middle-east/burj-khalifa.jpg",
     href: "/destinations/middle-east",
     price: "From $1,650",
+    iata: "DXB",
     highlights: ["Burj Khalifa", "Desert Safari", "Marina Yacht Cruise"],
   },
   {
@@ -92,6 +96,7 @@ const FEATURED_DESTINATIONS = [
     image: "/images/africa/cape-town-and-table-mountain.jpg",
     href: "/destinations/africa",
     price: "From $1,450",
+    iata: "CPT",
     highlights: ["Table Mountain", "Cape Point", "Kruger Safari"],
   },
   {
@@ -101,6 +106,7 @@ const FEATURED_DESTINATIONS = [
     image: "/images/africa/serengeti-national-park.jpg",
     href: "/destinations/africa",
     price: "From $1,850",
+    iata: "ZNZ",
     highlights: ["Nungwi Beach", "Stone Town", "Spice Plantation"],
   },
   {
@@ -110,38 +116,31 @@ const FEATURED_DESTINATIONS = [
     image: "/images/europe/paris-and-eiffel-tower.jpg",
     href: "/destinations/europe",
     price: "From $2,200",
+    iata: "CDG",
     highlights: ["Eiffel Tower", "Amalfi Coast", "Louvre Museum"],
   },
 ];
 
-const POPULAR_TOURS = [
-  {
-    name: "5 Nights in Cape Town Luxury",
-    duration: "6 Days / 5 Nights",
-    badge: "Most Popular",
-    price: "$1,899",
-    image: "/images/africa/cape-town-and-table-mountain.jpg",
-    features: ["Table Mountain Cableway", "Cape Point Tour", "Luxury Hotel Accommodation", "Daily Breakfast"],
-  },
-  {
-    name: "Safari Valley Eco Resort Escape",
-    duration: "Full Day Trip",
-    badge: "Ghana Luxury",
-    price: "$150",
-    image: "/images/services/day-tip-to-safari-valley.jpg",
-    features: ["Resort Entrance & Guide", "Buffet Lunch", "Pool & Kayaking Access", "Round-trip Transport"],
-  },
-  {
-    name: "Dubai Winter Luxury Package",
-    duration: "7 Days / 6 Nights",
-    badge: "Best Seller",
-    price: "$1,890",
-    image: "/images/services/winter-dubai.jpg",
-    features: ["Emirates Flights", "Guided Shopping Tours", "Desert Safari BBQ", "Dubai Visa Included"],
-  },
-];
+export default async function HomePage() {
+  const [homeDealsData, popularTours, testimonials] = await Promise.all([
+    getLiveHomeDeals("ACC").catch(() => null),
+    getTours({ featured: true }).catch(() => []),
+    getFeaturedReviews().catch(() => []),
+  ]);
 
-export default function HomePage() {
+  // Enrich featured destinations with live lowest fares if available
+  const trendingMap = new Map(
+    homeDealsData?.trending?.map((t) => [t.iata?.toUpperCase(), t.price]) || [],
+  );
+
+  const featuredDestinations = DEFAULT_DESTINATIONS.map((dest) => {
+    const liveFare = trendingMap.get(dest.iata);
+    return {
+      ...dest,
+      price: liveFare ? `Fares ${liveFare}` : dest.price,
+    };
+  });
+
   return (
     <>
       {/* 1. Cinematic Hero Slider */}
@@ -260,7 +259,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURED_DESTINATIONS.map((dest) => (
+          {featuredDestinations.map((dest) => (
             <Link
               key={dest.name}
               href={dest.href}
@@ -312,52 +311,56 @@ export default function HomePage() {
           />
 
           <div className="mt-14 grid gap-8 md:grid-cols-3">
-            {POPULAR_TOURS.map((tour) => (
-              <div
-                key={tour.name}
-                className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-              >
-                <div className="relative h-56 w-full overflow-hidden">
-                  <Image
-                    src={tour.image}
-                    alt={tour.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3 py-1 text-xs font-bold text-white shadow-md">
-                    {tour.badge}
-                  </span>
-                  <span className="absolute right-4 top-4 rounded-full bg-navy-dark/80 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-                    {tour.duration}
-                  </span>
-                </div>
+            {popularTours.slice(0, 3).map((tour) => {
+              const features = tour.includes || (tour as any).features || [];
+              const inquireLink = `/inquire?service=tours&package=${encodeURIComponent(tour.name)}&price=${encodeURIComponent(tour.price)}`;
+              return (
+                <div
+                  key={tour.id || tour.name}
+                  className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                >
+                  <div className="relative h-56 w-full overflow-hidden">
+                    <Image
+                      src={tour.image}
+                      alt={tour.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3 py-1 text-xs font-bold text-white shadow-md">
+                      {tour.badge}
+                    </span>
+                    <span className="absolute right-4 top-4 rounded-full bg-navy-dark/80 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                      {tour.duration}
+                    </span>
+                  </div>
 
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-display text-lg font-bold text-navy">
-                    {tour.name}
-                  </h3>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-display text-lg font-bold text-navy">
+                      {tour.name}
+                    </h3>
 
-                  <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                    {tour.features.map((feat) => (
-                      <li key={feat} className="flex items-center gap-2">
-                        <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
+                    <ul className="mt-4 space-y-2 text-xs text-slate-600">
+                      {features.slice(0, 4).map((feat: string) => (
+                        <li key={feat} className="flex items-center gap-2">
+                          <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
-                    <div>
-                      <span className="block text-[11px] text-slate-500 uppercase tracking-wider">Per Person</span>
-                      <span className="font-display text-xl font-bold text-brand-orange">{tour.price}</span>
+                    <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+                      <div>
+                        <span className="block text-[11px] text-slate-500 uppercase tracking-wider">Per Person</span>
+                        <span className="font-display text-xl font-bold text-brand-orange">{tour.price}</span>
+                      </div>
+                      <Button asChild size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold">
+                        <Link href={inquireLink}>Book Tour</Link>
+                      </Button>
                     </div>
-                    <Button asChild size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold">
-                      <Link href="/inquire">Book Tour</Link>
-                    </Button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-12 text-center">
@@ -406,14 +409,14 @@ export default function HomePage() {
           />
 
           <div className="mt-14 grid gap-8 md:grid-cols-3">
-            {TESTIMONIALS.map((review) => (
+            {testimonials.map((review) => (
               <div
-                key={review.name}
+                key={review.id || review.name}
                 className="flex flex-col justify-between rounded-3xl bg-white p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-shadow"
               >
                 <div>
                   <div className="flex items-center gap-1 text-amber-400 mb-4">
-                    {Array.from({ length: review.rating }).map((_, i) => (
+                    {Array.from({ length: review.rating || 5 }).map((_, i) => (
                       <Star key={i} className="size-4 fill-current" />
                     ))}
                   </div>
@@ -438,6 +441,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
 
       {/* 9. Full Width CTA Banner */}
       <CtaBanner

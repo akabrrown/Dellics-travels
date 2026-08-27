@@ -14,9 +14,9 @@ import { ContactForm } from "@/components/forms/contact-form";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact Dellics Travels — Office, Phone & 24/7 WhatsApp",
+  title: "Contact Dellics Travels — US & Ghana Offices, Phone & 24/7 WhatsApp",
   description:
-    "Contact Dellics Travels in Tema Community 25 Devtraco Estate, Ghana. Reach us via 24/7 WhatsApp concierge, phone, email, or schedule an office consultation.",
+    "Contact Dellics Travels LLC in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via 24/7 WhatsApp concierge, phone, email, or schedule an office consultation.",
 };
 
 const CONTACT_CHANNELS = [
@@ -46,10 +46,18 @@ const CONTACT_CHANNELS = [
   },
   {
     icon: MapPin,
-    title: "Physical Agency Office",
-    value: SITE.address,
-    href: "#",
-    action: "P.O. Box CO 2686, Tema, Ghana",
+    title: "Ghana Office (HQ)",
+    value: "Community 25, Devtraco Estate Tema",
+    href: "#ghana-office",
+    action: "Greater Accra, Ghana",
+    primary: false,
+  },
+  {
+    icon: Building2,
+    title: "United States Office",
+    value: "30 N Gould ST, STER, SHERIDAN, WY 82801",
+    href: "#us-office",
+    action: "Dellics Travels LLC, USA",
     primary: false,
   },
 ];
@@ -58,8 +66,8 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        title="Get in Touch with Our Travel Team"
-        subtitle="Have a question about flights, tour packages, or visa consultation? Reach out via WhatsApp, phone, or visit our Tema office."
+        title="Get in Touch with Our Global Travel Team"
+        subtitle="Have a question about flights, luxury stays, tour packages, or visa consultation? Reach out via WhatsApp, phone, or connect with our USA and Ghana offices."
         badge="Live Support Available"
         image="/images/africa/accra-city-experience.jpg"
         breadcrumbs={[{ label: "Contact Us" }]}
@@ -67,7 +75,7 @@ export default function ContactPage() {
 
       {/* Direct Channel Cards */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {CONTACT_CHANNELS.map((ch) => {
             const Icon = ch.icon;
             return (
@@ -78,7 +86,7 @@ export default function ContactPage() {
                 rel={ch.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 className={`group flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
                   ch.primary
-                    ? "bg-navy-dark text-white border border-brand-orange/40 shadow-lg"
+                    ? "bg-navy-dark text-white border border-brand-orange/40 shadow-lg sm:col-span-2 lg:col-span-1"
                     : "bg-white text-navy border border-slate-200/80 shadow-sm"
                 }`}
               >
@@ -156,14 +164,32 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-4 space-y-2 text-xs text-white/70">
-                  <p className="flex items-center gap-2">
-                    <Building2 className="size-4 text-brand-orange shrink-0" />
-                    <span>Devtraco Estate, Community 25, Tema</span>
-                  </p>
-                  <p className="flex items-center gap-2">
+                {/* Dual Office Locations */}
+                <div className="border-t border-white/10 pt-5 space-y-4 text-xs text-white/90">
+                  <div id="ghana-office" className="rounded-2xl bg-white/5 p-4 border border-white/10 space-y-1">
+                    <div className="flex items-center gap-2 font-bold text-brand-orange">
+                      <Building2 className="size-4 shrink-0" />
+                      <span>Dellics Travels (Ghana HQ)</span>
+                    </div>
+                    <p className="text-white/80">Community 25, Devtraco Estate Tema</p>
+                    <p className="text-white/60">Greater Accra, Ghana</p>
+                    <p className="text-white/80 pt-1">Tel: +233 55 205 4174</p>
+                    <p className="text-white/60">Email: Info@dellicstravels.com</p>
+                  </div>
+
+                  <div id="us-office" className="rounded-2xl bg-white/5 p-4 border border-white/10 space-y-1">
+                    <div className="flex items-center gap-2 font-bold text-brand-orange">
+                      <Building2 className="size-4 shrink-0" />
+                      <span>Dellics Travels LLC (USA)</span>
+                    </div>
+                    <p className="text-white/80">30 N Gould ST, STER, SHERIDAN</p>
+                    <p className="text-white/60">WYOMING, 82801, United States</p>
+                    <p className="text-white/60 pt-1">Email: Info@dellicstravels.com</p>
+                  </div>
+
+                  <p className="flex items-center gap-2 pt-2">
                     <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
-                    <span>IATA Certified Agency</span>
+                    <span className="text-white/80">IATA Certified Global Travel Agency</span>
                   </p>
                 </div>
               </div>
@@ -178,6 +204,7 @@ export default function ContactPage() {
                   <h4 className="font-display text-sm font-bold text-emerald-950">
                     Fast WhatsApp Response
                   </h4>
+
                   <p className="text-xs text-emerald-800 mt-0.5">
                     Need instant flight quote? Message our ticketing desk directly for live pricing.
                   </p>

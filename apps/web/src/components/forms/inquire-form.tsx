@@ -51,11 +51,12 @@ export function InquireForm() {
       setDestination(`${hotel}${loc ? ` (${loc})` : ""}`);
       setMessage(`Hello Dellics Travels, I am interested in reserving accommodation at ${hotel}${loc ? ` in ${loc}` : ""}${price ? ` (${price})` : ""}. Please confirm availability and room options.`);
       setContextBanner(`Hotel Reservation: ${hotel}`);
-    } else if (service === "tours" && tour) {
+    } else if (service === "tours" && (tour || pkg)) {
+      const tourName = tour || pkg || "Tour Package";
       const dest = searchParams.get("destination") || "";
-      setDestination(`${tour}${dest ? ` (${dest})` : ""}`);
-      setMessage(`Hello Dellics Travels, I would like to book or inquire about the ${tour} package${dest ? ` (${dest})` : ""}${price ? ` (${price})` : ""}. Please send full itinerary details.`);
-      setContextBanner(`Tour Package: ${tour}`);
+      setDestination(`${tourName}${dest ? ` (${dest})` : ""}`);
+      setMessage(`Hello Dellics Travels, I would like to book or inquire about the ${tourName} package${dest ? ` (${dest})` : ""}${price ? ` (${price})` : ""}. Please send full itinerary details.`);
+      setContextBanner(`Tour Package: ${tourName}`);
     } else if (service === "transfers" && vehicle) {
       const cap = searchParams.get("capacity") || "";
       setDestination(`VIP Transfer (${vehicle})`);

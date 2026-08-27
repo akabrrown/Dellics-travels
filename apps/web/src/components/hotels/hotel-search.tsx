@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import Link from "next/link";
+import { Star, ArrowRight, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,11 +134,23 @@ export function HotelSearch() {
                 ) : (
                   <p className="mt-3 text-sm text-slate-body">Price on request</p>
                 )}
+
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-medium">Verified Property</span>
+                  <Link
+                    href={`/inquire?service=hotels&hotel=${encodeURIComponent(hotel.name)}&location=${encodeURIComponent([hotel.address, hotel.city, hotel.country].filter(Boolean).join(", "))}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&guests=${guests}&rooms=${rooms}`}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
+                  >
+                    <span>Reserve Stay</span>
+                    <ArrowRight className="size-3" />
+                  </Link>
+                </div>
               </div>
             </article>
           ))}
         </div>
       ) : null}
+
     </div>
   );
 }
