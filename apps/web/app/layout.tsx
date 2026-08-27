@@ -20,7 +20,14 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name}`,
   },
   description:
-    "Dellics Travels is a Ghana-based IATA-accredited travel agency offering flights, hotels, tours, airport transfers and visa assistance worldwide.",
+    "Dellics Travels is a Ghana-based IATA-certified travel agency offering flights, hotels, tours, airport transfers and visa assistance worldwide.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/Favicon.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
