@@ -163,7 +163,7 @@ export function SiteHeader() {
         {/* Mobile Navigation Trigger */}
         <div className="flex items-center gap-2 lg:hidden">
           <a
-            href={`https://wa.me/${SITE.whatsappNumber}`}
+            href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex size-9 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
@@ -251,7 +251,7 @@ export function SiteHeader() {
                   </Button>
 
                   <a
-                    href={`https://wa.me/${SITE.whatsappNumber}`}
+                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 rounded-pill bg-emerald-600 hover:bg-emerald-700 py-3 text-sm font-semibold text-white transition-colors"

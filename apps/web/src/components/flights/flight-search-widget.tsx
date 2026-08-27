@@ -53,7 +53,7 @@ export function FlightSearchWidget() {
     }
     setError(null);
     const link = buildWhatsAppLink(composeFlightMessage({ tripType, legs: visibleLegs, passengers, cabinClass }));
-    window.location.href = link; // same-tab handoff, identical to legacy behavior
+    window.open(link, "_blank", "noopener,noreferrer");
   }
 
   return (

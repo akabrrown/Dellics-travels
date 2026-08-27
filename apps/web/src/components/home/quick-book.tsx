@@ -78,7 +78,7 @@ export function QuickBook() {
 • Drop-off: ${transferDropoff || "Not specified"}
 • Date/Time: ${transferDate || "Flexible"}
 • Service Type: ${transferType}`;
-    window.location.href = buildWhatsAppLink(text);
+    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
   }
 
   function handleCarSubmit(e: React.FormEvent) {
@@ -89,7 +89,7 @@ export function QuickBook() {
 • Vehicle Category: ${carClass}
 • Start Date: ${carStartDate || "Not specified"}
 • Duration: ${carDuration}`;
-    window.location.href = buildWhatsAppLink(text);
+    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
   }
 
   function handleTourSubmit(e: React.FormEvent) {
@@ -102,7 +102,7 @@ export function QuickBook() {
     const text = `Hello Dellics Travels, I would like to inquire about your Diaspora & Heritage Tour packages:
 • Package of Interest: ${diasporaPackage}
 • Group Size: ${diasporaTravelers}`;
-    window.location.href = buildWhatsAppLink(text);
+    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
   }
 
   function handleEsimSubmit(e: React.FormEvent) {
@@ -110,7 +110,7 @@ export function QuickBook() {
     const text = `Hello Dellics Travels, I would like to order a travel eSIM for roaming:
 • Destination Country: ${esimCountry}
 • Data Package: ${esimDataPlan}`;
-    window.location.href = buildWhatsAppLink(text);
+    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
   }
 
   return (
