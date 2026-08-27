@@ -3,10 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PhoneCall, ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { SITE } from "@/lib/site";
 import type { HeroSlide } from "@/data/home";
 
 const INTERVAL_MS = 6000;
@@ -84,8 +83,8 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                 {slide.subtitle}
               </p>
 
-              {/* Action CTAs */}
-              <div className="mt-8 flex flex-wrap items-center gap-4 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+              {/* Action CTA */}
+              <div className="mt-8 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-5 duration-1000">
                 <Button
                   asChild
                   size="lg"
@@ -96,16 +95,6 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
-
-                <a
-                  href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am interested in: ${slide.caption}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white/15 hover:bg-white/25 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md border border-white/20 transition-all"
-                >
-                  <PhoneCall className="size-4 text-emerald-400" />
-                  <span>WhatsApp Concierge</span>
-                </a>
               </div>
             </div>
           </div>
