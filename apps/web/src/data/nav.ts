@@ -25,5 +25,4 @@ export const NAV_ITEMS: NavItem[] = [
       { label: "Diaspora Travel", href: "/diaspora" },
     ],
   },
-  { label: "Login", href: "/signin" },
 ];

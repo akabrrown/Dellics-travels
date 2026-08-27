@@ -6,7 +6,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Menu,
-  X,
   PhoneCall,
   ArrowRight,
   ChevronDown,
@@ -17,6 +16,7 @@ import {
   FileCheck2,
   Briefcase,
   HeartHandshake,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,8 +88,8 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-2 lg:flex" aria-label="Main Navigation">
+        {/* Desktop Navigation (Home, Flights, Hotels, Tours, Services) */}
+        <nav className="hidden items-center gap-1.5 lg:flex" aria-label="Main Navigation">
           {NAV_ITEMS.map((item) =>
             item.children ? (
               <Popover key={item.label}>
@@ -159,8 +159,19 @@ export function SiteHeader() {
           )}
         </nav>
 
-        {/* Action CTA Button */}
+        {/* Action Group: Separated Login & Inquire CTA */}
         <div className="hidden items-center gap-3 lg:flex">
+          <Link
+            href="/signin"
+            className={cn(
+              "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all border border-white/15",
+              pathname === "/signin" && "text-brand-orange bg-white/10 font-semibold border-brand-orange/40",
+            )}
+          >
+            <User className="size-4 text-brand-orange" />
+            <span>Login</span>
+          </Link>
+
           <Button
             asChild
             className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white shadow-md hover:shadow-lg font-semibold px-6"
@@ -250,14 +261,25 @@ export function SiteHeader() {
                 ))}
               </nav>
 
-              <div className="mt-8 space-y-3">
+              <div className="mt-8 space-y-3 pt-4 border-t border-white/10">
                 <Button
                   asChild
-                  className="w-full rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold py-3"
+                  variant="outline"
+                  className="w-full rounded-full border-white/20 text-white hover:bg-white/10 font-semibold py-3 justify-center gap-2"
+                >
+                  <Link href="/signin" onClick={() => setMobileOpen(false)}>
+                    <User className="size-4 text-brand-orange" />
+                    <span>Client Login</span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  className="w-full rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold py-3 justify-center gap-2"
                 >
                   <Link href="/inquire" onClick={() => setMobileOpen(false)}>
                     <span>Start Travel Inquiry</span>
-                    <ArrowRight className="size-4 ml-2" />
+                    <ArrowRight className="size-4" />
                   </Link>
                 </Button>
               </div>
