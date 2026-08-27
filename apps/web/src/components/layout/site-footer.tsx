@@ -18,7 +18,6 @@ import { AccreditationStrip } from "@/components/accreditation-strip";
 const LEGAL = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms & Conditions", href: "/terms" },
-  { label: "Admin Portal", href: "/admin" },
 ];
 
 const SERVICES_LINKS = [
