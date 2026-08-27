@@ -1,11 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Plus,
+  X,
+  Sparkles,
 } from "lucide-react";
 
 export default function PromotionsManager() {
+  const [promoModal, setPromoModal] = useState(false);
+  const [newCode, setNewCode] = useState("");
+  const [newDiscount, setNewDiscount] = useState("10% OFF");
+  const [newMinSpend, setNewMinSpend] = useState("GHS 1,000");
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
@@ -137,6 +143,81 @@ export default function PromotionsManager() {
           </div>
         </div>
       </div>
+
+      {/* New Promo Code Modal */}
+      {promoModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-orange-50 text-[#F4740D]">
+                  <Sparkles className="size-4" />
+                </div>
+                <h3 className="font-display text-base font-bold text-slate-900">New Promo Code</h3>
+              </div>
+              <button
+                onClick={() => setPromoModal(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Promo Code</label>
+                <input
+                  type="text"
+                  placeholder="e.g. SUMMER26"
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Discount Value</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 15% OFF or GHS 200"
+                  value={newDiscount}
+                  onChange={(e) => setNewDiscount(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Minimum Spend</label>
+                <input
+                  type="text"
+                  placeholder="e.g. GHS 1,500"
+                  value={newMinSpend}
+                  onChange={(e) => setNewMinSpend(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setPromoModal(false)}
+                className="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  alert(`Promo code ${newCode || "DELLICS"} created successfully!`);
+                  setPromoModal(false);
+                }}
+                className="px-5 py-2 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white text-xs font-bold shadow-xs"
+              >
+                Create Promo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
