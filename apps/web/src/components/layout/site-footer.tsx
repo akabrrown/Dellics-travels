@@ -6,6 +6,8 @@ import {
   Mail,
   Clock,
   ArrowRight,
+  PhoneCall,
+  MessageCircle,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { AccreditationStrip } from "@/components/accreditation-strip";
@@ -13,18 +15,17 @@ import { AccreditationStrip } from "@/components/accreditation-strip";
 const LEGAL = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms & Conditions", href: "/terms" },
-  { label: "Credentials & Verification", href: "/credentials" },
   { label: "Admin Portal", href: "/admin" },
 ];
 
 const SERVICES_LINKS = [
   { label: "Flight Ticketing", href: "/flights" },
-  { label: "Hotels & Airbnb Stays", href: "/hotels" },
-  { label: "International Tour Packages", href: "/tours" },
-  { label: "VIP Airport Transfers", href: "/transfers" },
-  { label: "Visa & Immigration Support", href: "/visa" },
-  { label: "Corporate Travel Services", href: "/corporate" },
-  { label: "Diaspora & Heritage Tours", href: "/diaspora" },
+  { label: "Hotels & Stays", href: "/hotels" },
+  { label: "Tour Packages", href: "/tours" },
+  { label: "Airport Transfers", href: "/transfers" },
+  { label: "Visa Assistance", href: "/visa" },
+  { label: "Corporate Travel", href: "/corporate" },
+  { label: "Diaspora & Heritage", href: "/diaspora" },
 ];
 
 const DESTINATIONS_LINKS = [
@@ -33,15 +34,15 @@ const DESTINATIONS_LINKS = [
   { label: "Asia & Exotic Stays", href: "/destinations/asia" },
   { label: "Middle East & Dubai", href: "/destinations/middle-east" },
   { label: "North America", href: "/destinations/north-america" },
-  { label: "All Destinations Catalog", href: "/destinations" },
+  { label: "All Destinations", href: "/destinations" },
 ];
 
 const COMPANY_LINKS = [
-  { label: "About Dellics Travels", href: "/about" },
-  { label: "Official Credentials", href: "/credentials" },
-  { label: "Traveler Photo Gallery", href: "/gallery" },
-  { label: "Contact Concierge", href: "/contact" },
-  { label: "Submit Custom Inquiry", href: "/inquire" },
+  { label: "About Us", href: "/about" },
+  { label: "Photo Gallery", href: "/gallery" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Start an Inquiry", href: "/inquire" },
+  { label: "Client Login", href: "/signin" },
 ];
 
 export function SiteFooter() {
@@ -88,7 +89,7 @@ export function SiteFooter() {
               </div>
               <div className="flex items-center gap-3 text-sm text-white/80">
                 <Clock className="size-5 text-brand-orange shrink-0" />
-                <span>Mon – Fri: 8:00 AM – 6:00 PM · 24/7 Emergency WhatsApp</span>
+                <span>Mon – Fri: 8:00 AM – 6:00 PM · 24/7 Emergency Support</span>
               </div>
             </div>
           </div>
@@ -96,7 +97,7 @@ export function SiteFooter() {
           {/* Column 2: Services */}
           <div>
             <h3 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange mb-4">
-              Our Services
+              Services
             </h3>
             <ul className="space-y-2.5 text-sm">
               {SERVICES_LINKS.map((link) => (
@@ -113,7 +114,7 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Column 3: Top Destinations */}
+          {/* Column 3: Destinations */}
           <div>
             <h3 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange mb-4">
               Destinations
@@ -133,10 +134,10 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Column 4: Company & Trust */}
+          {/* Column 4: About, Gallery, Contact & WhatsApp */}
           <div>
             <h3 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange mb-4">
-              Company & Trust
+              Explore & Contact
             </h3>
             <ul className="space-y-2.5 text-sm">
               {COMPANY_LINKS.map((link) => (
@@ -152,20 +153,23 @@ export function SiteFooter() {
               ))}
             </ul>
 
-            <div className="mt-6 rounded-2xl bg-white/5 p-4 border border-white/10">
-              <p className="text-xs font-semibold text-brand-orange uppercase tracking-wider mb-1">
-                Need Help Fast?
-              </p>
-              <p className="text-xs text-white/70 mb-3">
-                Talk with a certified travel consultant right now.
+            {/* WhatsApp Us Action Box */}
+            <div className="mt-6 rounded-2xl bg-emerald-950/60 p-4 border border-emerald-500/30">
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                <MessageCircle className="size-3.5" />
+                <span>WhatsApp Us (24/7)</span>
+              </div>
+              <p className="text-xs text-white/75 mb-3 leading-relaxed">
+                Connect directly with certified travel experts on WhatsApp.
               </p>
               <a
-                href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I need assistance with travel planning.")}`}
+                href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-emerald-600 hover:bg-emerald-700 py-2 text-xs font-semibold text-white shadow-md transition-colors"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-emerald-600 hover:bg-emerald-700 py-2.5 text-xs font-bold text-white shadow-lg transition-colors"
               >
-                Chat with an Expert
+                <PhoneCall className="size-3.5" />
+                <span>Chat on WhatsApp</span>
               </a>
             </div>
           </div>

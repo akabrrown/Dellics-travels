@@ -152,28 +152,9 @@ export function SiteHeader() {
 
         {/* Action Buttons */}
         <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-pill px-4 py-2 text-xs font-semibold text-white/90 bg-white/10 hover:bg-white/20 transition-colors"
-          >
-            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="hidden xl:inline">WhatsApp Us</span>
-            <PhoneCall className="size-3.5 xl:hidden" />
-          </a>
-
-          <Link
-            href="/signin"
-            className="flex items-center gap-1.5 rounded-pill px-4 py-2 text-xs font-semibold text-white/90 bg-white/10 hover:bg-white/20 transition-colors"
-          >
-            <User className="size-3.5" />
-            <span>Sign In</span>
-          </Link>
-
           <Button
             asChild
-            className="rounded-pill bg-brand-orange hover:bg-brand-orange-hover text-white shadow-md hover:shadow-lg font-semibold px-5"
+            className="rounded-pill bg-brand-orange hover:bg-brand-orange-hover text-white shadow-md hover:shadow-lg font-semibold px-6"
           >
             <Link href="/inquire">Inquire Now</Link>
           </Button>
