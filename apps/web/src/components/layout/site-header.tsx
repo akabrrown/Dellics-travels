@@ -16,6 +16,7 @@ import {
   Users2,
   Globe2,
   LayoutGrid,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -162,6 +163,14 @@ export function SiteHeader() {
             <PhoneCall className="size-3.5 xl:hidden" />
           </a>
 
+          <Link
+            href="/signin"
+            className="flex items-center gap-1.5 rounded-pill px-4 py-2 text-xs font-semibold text-white/90 bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <User className="size-3.5" />
+            <span>Sign In</span>
+          </Link>
+
           <Button
             asChild
             className="rounded-pill bg-brand-orange hover:bg-brand-orange-hover text-white shadow-md hover:shadow-lg font-semibold px-5"
@@ -231,6 +240,26 @@ export function SiteHeader() {
                 ))}
 
                 <div className="mt-8 flex flex-col gap-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="rounded-pill border-white/20 text-white hover:bg-white/10 text-xs font-semibold py-2.5"
+                    >
+                      <Link href="/signin" onClick={() => setMobileOpen(false)}>
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      className="rounded-pill bg-white text-[#0A0060] hover:bg-white/90 text-xs font-bold py-2.5 shadow-sm"
+                    >
+                      <Link href="/signup" onClick={() => setMobileOpen(false)}>
+                        Sign Up
+                      </Link>
+                    </Button>
+                  </div>
+
                   <Button
                     asChild
                     className="w-full rounded-pill bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold py-3 shadow-lg"
