@@ -163,7 +163,7 @@ export default function ContactPage() {
                   </p>
                   <p className="flex items-center gap-2">
                     <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
-                    <span>IATA Accredited Agency #5921820</span>
+                    <span>IATA Certified Agency</span>
                   </p>
                 </div>
               </div>

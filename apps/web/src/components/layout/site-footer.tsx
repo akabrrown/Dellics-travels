@@ -66,7 +66,7 @@ export function SiteFooter() {
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-white/75 max-w-md">
-              Dellics Travels & Tours is an accredited (IATA #5921820) and Ghana Tourism Authority licensed travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
+              Dellics Travels & Tours is an IATA Certified luxury travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
             </p>
 
             <div className="flex flex-col gap-3 pt-2">

@@ -18,7 +18,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
   description:
-    "Book domestic and international flights with Dellics Travels — IATA-accredited agent #5921820. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more with 24/7 WhatsApp ticketing.",
+    "Book domestic and international flights with Dellics Travels — IATA Certified agency. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more with 24/7 WhatsApp ticketing.",
 };
 
 const POPULAR_ROUTES = [
@@ -115,8 +115,8 @@ export default function FlightsPage() {
     <>
       <PageHero
         title="International Flight Booking & Ticketing"
-        subtitle="IATA Accredited Agency (#5921820). Best wholesale fares across major global airlines with same-day electronic ticketing."
-        badge="Official IATA Ticketing"
+        subtitle="IATA Certified Agency. Best wholesale fares across major global airlines with same-day electronic ticketing."
+        badge="IATA Certified"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Flights" }]}
       />

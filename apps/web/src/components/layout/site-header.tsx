@@ -207,7 +207,7 @@ export function SiteHeader() {
                 <SheetTitle className="text-left text-white font-display text-xl">
                   {SITE.name}
                 </SheetTitle>
-                <p className="text-xs text-white/60">IATA Accredited Luxury Agency</p>
+                <p className="text-xs text-white/60">IATA Certified Luxury Agency</p>
               </SheetHeader>
 
               <nav className="mt-6 flex flex-col gap-1" aria-label="Mobile Navigation">

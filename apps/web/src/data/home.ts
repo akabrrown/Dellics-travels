@@ -30,7 +30,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     type: "image",
     src: "/images/services/corporate-travel-management.jpg",
-    badge: "IATA Accredited Agency",
+    badge: "IATA Certified",
     caption: "Official Flight Ticketing & Corporate Travel Programmes",
     subtitle: "Best fares on Emirates, Qatar Airways, Delta, British Airways, KLM & more with same-day electronic ticketing.",
     ctaText: "Search Flights",
@@ -96,8 +96,8 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const WHY_CHOOSE_US = [
   {
-    title: "IATA Accredited & Licensed",
-    description: "Official IATA Agent #5921820 and Ghana Tourism Authority registered. Your bookings and financial transactions are 100% safeguarded.",
+    title: "IATA Certified Agency",
+    description: "Official IATA Certified travel management agency. Your bookings and financial transactions are 100% safeguarded.",
     icon: "shield",
   },
   {

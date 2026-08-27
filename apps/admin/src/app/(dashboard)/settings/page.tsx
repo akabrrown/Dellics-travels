@@ -116,29 +116,16 @@ export default function GlobalSettings() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                      IATA License Number
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="#5921820"
-                      disabled
-                      className="w-full px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-600 font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                      GTA License Code
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="GTA/T-ACC/2026-09"
-                      disabled
-                      className="w-full px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-600 font-mono"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    Aviation Accreditation Status
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue="IATA Certified Agency"
+                    disabled
+                    className="w-full px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-700 font-semibold"
+                  />
                 </div>
 
                 <div>

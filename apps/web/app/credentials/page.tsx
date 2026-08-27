@@ -7,27 +7,19 @@ import { AccreditationStrip } from "@/components/accreditation-strip";
 import { CtaBanner } from "@/components/cta-banner";
 
 export const metadata: Metadata = {
-  title: "Industry Credentials, Licenses & Global Accreditations",
+  title: "Industry Credentials & Global Accreditations",
   description:
-    "Dellics Travels accreditations: IATA Agent #5921820, Ghana Tourism Authority (GTA), RateHawk, Amadeus, Travelport, TOUGHA, Airalo, and Paystack secured.",
+    "Dellics Travels accreditations: IATA Certified agency, RateHawk, Amadeus, Travelport, TOUGHA, Airalo, and Paystack secured.",
 };
 
 const CREDENTIALS = [
   {
-    badge: "Official IATA Agency",
-    name: "IATA Accredited",
-    id: "Agent Code #5921820",
+    badge: "Official Aviation Certification",
+    name: "IATA Certified",
+    id: "Certified Travel Agency",
     logo: "/badges/iata.png",
-    copy: "Globally recognized International Air Transport Association accreditation. Enables direct issuance of electronic tickets on all world scheduled airlines.",
+    copy: "Globally recognized International Air Transport Association certification. Enables direct issuance of electronic tickets on all world scheduled airlines.",
     guarantee: "100% genuine GDS tickets issued without third-party brokers.",
-  },
-  {
-    badge: "Government Regulatory License",
-    name: "Ghana Tourism Authority (GTA)",
-    id: "Licensed Travel Operator",
-    logo: "/badges/gta.png",
-    copy: "Officially certified and licensed by the Ministry of Tourism, Arts and Culture / Ghana Tourism Authority for inbound and outbound travel operations.",
-    guarantee: "Complies with all statutory consumer protection laws in Ghana.",
   },
   {
     badge: "Industry Union Membership",
@@ -99,9 +91,9 @@ export default function CredentialsPage() {
   return (
     <>
       <PageHero
-        title="Licenses, Accreditations & Global Partnerships"
-        subtitle="Dellics Travels is fully accredited and legally licensed by national and international aviation authorities, ensuring complete financial security and peace of mind."
-        badge="IATA #5921820 · GTA Licensed"
+        title="Accreditations & Global Partnerships"
+        subtitle="Dellics Travels is an IATA Certified travel management firm with direct integrations across the world's leading aviation and hospitality networks."
+        badge="IATA Certified"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Credentials" }]}
       />
@@ -139,35 +131,32 @@ export default function CredentialsPage() {
                 <h3 className="font-display text-xl font-bold text-navy">
                   {cred.name}
                 </h3>
-                <p className="mt-0.5 text-xs font-semibold text-brand-orange">
+                <p className="mt-1 text-xs font-semibold text-brand-orange">
                   {cred.id}
                 </p>
 
-                <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                <p className="mt-4 text-xs leading-relaxed text-slate-600">
                   {cred.copy}
                 </p>
               </div>
 
               <div className="mt-6 border-t border-slate-100 pt-4">
-                <p className="text-[11px] font-medium text-emerald-700 flex items-start gap-1.5 bg-emerald-50/80 rounded-xl p-2.5 border border-emerald-200/60">
-                  <CheckCircle2 className="size-3.5 shrink-0 mt-0.5" />
-                  <span>{cred.guarantee}</span>
-                </p>
+                <div className="flex items-start gap-2 text-xs text-emerald-700">
+                  <CheckCircle2 className="size-4 shrink-0 text-emerald-600 mt-0.5" />
+                  <span className="font-medium">{cred.guarantee}</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Global Partner Accreditation Strip */}
-      <section className="bg-slate-50 py-16 border-y border-slate-200/70">
-        <AccreditationStrip />
-      </section>
+      <AccreditationStrip />
 
       <CtaBanner
-        title="Ready to Plan Your Next Trip with a Licensed Partner?"
-        copy="Work with a team backed by official IATA and GTA credentials. We guarantee transparent pricing and dependable on-ground service."
-        label="Start Your Travel Plan"
+        title="Ready to Experience Certified Luxury Travel?"
+        copy="Work with a team backed by official IATA Certification. We guarantee transparent pricing and dependable on-ground service."
+        label="Inquire Now"
         href="/inquire"
       />
     </>

@@ -48,8 +48,8 @@ export default function AboutPage() {
     <>
       <PageHero
         title="About Dellics Travels"
-        subtitle="Ghana's accredited travel management firm — organizing international itineraries with passion, licensing, and personalized care."
-        badge="IATA #5921820 · GTA Licensed"
+        subtitle="Ghana's premier travel management firm — organizing international itineraries with passion, certification, and personalized care."
+        badge="IATA Certified"
         image="/images/africa/accra-city-experience.jpg"
         breadcrumbs={[{ label: "About Us" }]}
       />
@@ -70,7 +70,7 @@ export default function AboutPage() {
                 Dellics Travels was founded with a singular conviction: that travel should be transparent, deeply enriching, and completely free from stress. Whether an executive traveling for urgent international trade meetings, a family booking their dream Dubai vacation, or a member of the diaspora walking through the historic Door of Return in Cape Coast Castle — our team stands beside you every step of the way.
               </p>
               <p>
-                Headquartered at <strong className="text-navy">Devtraco Estate, Tema Community 25, Greater Accra</strong>, we combine direct official <strong className="text-brand-orange">IATA Accreditation (#5921820)</strong> and <strong className="text-brand-orange">Ghana Tourism Authority (GTA)</strong> licensing with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).
+                Headquartered at <strong className="text-navy">Devtraco Estate, Tema Community 25, Greater Accra</strong>, we combine official <strong className="text-brand-orange">IATA Certification</strong> with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).
               </p>
               <p>
                 When you book with Dellics, you are not dealing with an anonymous algorithm or an unverified broker. You work with certified, passionate travel consultants who actively protect your schedule, your budget, and your safety.
@@ -79,7 +79,7 @@ export default function AboutPage() {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Button asChild className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold">
-                <Link href="/credentials">View Official Licenses & Credentials</Link>
+                <Link href="/inquire">Plan Your Journey With Us</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full">
                 <Link href="/contact">Visit Our Office</Link>
@@ -103,7 +103,7 @@ export default function AboutPage() {
                 Community 25, Devtraco Estate, Tema, Ghana
               </p>
               <p className="mt-1 text-xs text-white/80">
-                P.O. Box CO 2686, Tema · Reg: BN195150524 · IATA #5921820
+                P.O. Box CO 2686, Tema, Greater Accra · IATA Certified
               </p>
             </div>
           </div>

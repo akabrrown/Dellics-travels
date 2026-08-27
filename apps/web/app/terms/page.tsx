@@ -13,7 +13,7 @@ const TERMS = [
   {
     icon: Scale,
     title: "1. Acceptance of Terms & Agency Scope",
-    text: "By engaging Dellics Travels for airline ticketing, hotel accommodation, tour packages, visa consultation, or airport transfers, you agree to be bound by these Booking Terms & Conditions. Dellics Travels acts as a licensed IATA travel management agent (#5921820) and tour operator in Ghana.",
+    text: "By engaging Dellics Travels for airline ticketing, hotel accommodation, tour packages, visa consultation, or airport transfers, you agree to be bound by these Booking Terms & Conditions. Dellics Travels acts as an IATA Certified travel management agency and premier tour operator.",
   },
   {
     icon: CreditCard,

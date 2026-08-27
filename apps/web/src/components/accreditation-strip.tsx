@@ -1,8 +1,7 @@
 import Image from "next/image";
 
 const BADGES = [
-  { src: "/badges/iata.png", alt: "IATA Accredited Agent" },
-  { src: "/badges/gta.png", alt: "Ghana Tourism Authority" },
+  { src: "/badges/iata.png", alt: "IATA Certified" },
   { src: "/badges/amadeus.png", alt: "Amadeus Global Travel Partner" },
   { src: "/badges/rate-hawk.png", alt: "RateHawk Hotel Network" },
   { src: "/badges/travel-port.png", alt: "Travelport Partner" },

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Phone, Mail, ShieldCheck } from "lucide-react";
 import { SITE } from "@/lib/site";
 
@@ -9,11 +8,11 @@ export function AnnouncementBar() {
         <div className="flex items-center gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-pill bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-orange">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            IATA Accredited #5921820
+            <ShieldCheck className="size-3 text-brand-orange" />
+            IATA Certified
           </span>
-          <span className="hidden md:inline-flex items-center gap-1 text-white/80">
-            <ShieldCheck className="size-3.5 text-brand-orange" />
-            Licensed by Ghana Tourism Authority
+          <span className="hidden md:inline-flex items-center text-white/80 text-[11px]">
+            Worldwide Flights, Luxury Stays & Bespoke Holidays
           </span>
         </div>
 
@@ -33,13 +32,6 @@ export function AnnouncementBar() {
             <Mail className="size-3 text-brand-orange" />
             <span>{SITE.email}</span>
           </a>
-          <span className="text-white/30 hidden sm:inline">•</span>
-          <Link
-            href="/credentials"
-            className="text-white/80 hover:text-brand-orange transition-colors underline decoration-brand-orange/40 underline-offset-2"
-          >
-            Verify Credentials
-          </Link>
         </div>
       </div>
     </div>
