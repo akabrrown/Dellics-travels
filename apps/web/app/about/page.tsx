@@ -87,15 +87,24 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="relative h-[480px] overflow-hidden rounded-3xl border border-slate-200/80 shadow-xl">
+          <div className="relative h-[480px] overflow-hidden rounded-3xl border border-slate-200/80 shadow-xl group">
             <Image
               src="/images/services/ghana-heritage-airbnb.jpg"
               alt="Dellics Travels Heritage"
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
+            <div className="absolute top-6 right-6 size-16 rounded-2xl bg-white/95 backdrop-blur-md p-1.5 shadow-2xl border border-white/40 flex items-center justify-center z-10">
+              <Image
+                src="/Logo.png"
+                alt="Dellics Travels Official Seal"
+                width={56}
+                height={56}
+                className="size-full object-contain"
+              />
+            </div>
             <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 text-white">
+            <div className="absolute bottom-6 left-6 right-6 text-white z-10">
               <span className="rounded-full bg-brand-orange px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
                 Official Headquarters
               </span>

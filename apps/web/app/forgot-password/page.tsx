@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,15 @@ export default function ForgotPasswordPage() {
           {/* Header Banner */}
           <div className="bg-[#0A0060] p-8 text-center text-white relative overflow-hidden">
             <div className="relative z-10 flex flex-col items-center">
-              <div className="size-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-3 border border-white/20 shadow-md">
-                <Mail className="size-6 text-brand-orange" />
+              <div className="size-14 rounded-2xl bg-white p-1.5 flex items-center justify-center mb-3 border border-white/20 shadow-lg">
+                <Image
+                  src="/Logo.png"
+                  alt="Dellics Travels"
+                  width={48}
+                  height={48}
+                  className="size-full object-contain"
+                  priority
+                />
               </div>
               <h1 className="font-display text-2xl font-extrabold text-white">
                 Reset Password

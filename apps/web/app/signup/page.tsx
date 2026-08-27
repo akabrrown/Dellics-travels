@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -83,8 +84,15 @@ export default function SignUpPage() {
             <div className="absolute -left-8 -bottom-8 size-32 rounded-full bg-brand-orange/15 blur-2xl" />
 
             <div className="relative z-10 flex flex-col items-center">
-              <div className="size-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-3 border border-white/20 shadow-md">
-                <span className="font-display font-extrabold text-2xl text-brand-orange">D</span>
+              <div className="size-14 rounded-2xl bg-white p-1.5 flex items-center justify-center mb-3 border border-white/20 shadow-lg">
+                <Image
+                  src="/Logo.png"
+                  alt="Dellics Travels"
+                  width={48}
+                  height={48}
+                  className="size-full object-contain"
+                  priority
+                />
               </div>
               <h1 className="font-display text-2xl font-extrabold text-white">
                 Join Dellics Travels Club

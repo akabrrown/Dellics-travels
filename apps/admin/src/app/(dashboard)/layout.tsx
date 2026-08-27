@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -97,14 +98,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Brand Header */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-white/10">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="size-9 rounded-xl bg-gradient-to-tr from-[#F4740D] to-amber-400 flex items-center justify-center shadow-md">
-              <span className="font-display font-extrabold text-white text-lg">D</span>
+            <div className="size-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md shrink-0 border border-white/20">
+              <Image
+                src="/Logo.png"
+                alt="Dellics Travels"
+                width={36}
+                height={36}
+                className="size-full object-contain"
+              />
             </div>
             <div>
-              <span className="font-display font-bold text-base tracking-tight text-white block leading-tight">
-                Dellics Travels
+              <span className="font-display font-bold text-base tracking-tight text-white block leading-tight group-hover:text-brand-orange transition-colors">
+                Dellics <span className="text-brand-orange">Travels</span>
               </span>
-              <span className="text-[11px] font-medium text-amber-300 block uppercase tracking-wider">
+              <span className="text-[10px] font-semibold text-brand-orange block uppercase tracking-widest">
                 Ops Control Center
               </span>
             </div>

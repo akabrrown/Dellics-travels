@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
@@ -53,14 +54,21 @@ export default function AdminLogin() {
       <div className="w-full max-w-md p-8 bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl space-y-6 relative z-10">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center">
-          <div className="size-14 rounded-2xl bg-[#0A0060] border border-white/10 flex items-center justify-center mb-4 shadow-lg">
-            <span className="font-display font-extrabold text-[#F4740D] text-2xl">D</span>
+          <div className="size-16 rounded-2xl bg-white p-1.5 border border-white/20 flex items-center justify-center mb-4 shadow-xl">
+            <Image
+              src="/Logo.png"
+              alt="Dellics Travels"
+              width={56}
+              height={56}
+              className="size-full object-contain"
+              priority
+            />
           </div>
           <h1 className="font-display text-2xl font-extrabold text-white">
-            Dellics Operations Portal
+            Dellics <span className="text-[#F4740D]">Operations</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Sign in with administrative credentials & 2FA authenticator.
+            Enterprise Command Center & Administrative Portal
           </p>
         </div>
 
