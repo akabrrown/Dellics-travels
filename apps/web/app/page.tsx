@@ -29,7 +29,8 @@ const CORE_SERVICES = [
     href: "/flights",
     image: "/images/services/plane.jpg",
     icon: Plane,
-    features: ["Emirates, Qatar, Delta & KLM", "Exclusive Wholesale Fares", "24/7 Schedule Change Support"],
+    features: ["Emirates, Qatar, Delta, KLM & More", "Exclusive Competitive Fares", "24/7 Schedule Change Support"],
+
   },
   {
     title: "Hotels & Airbnb Stays",

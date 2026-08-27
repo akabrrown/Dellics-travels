@@ -36,10 +36,11 @@ const ALL_SERVICES = [
       "Direct GDS ticketing with all major global airlines including Emirates, Qatar Airways, Delta Air Lines, British Airways, KLM, Ethiopian Airlines, and RwandAir.",
     features: [
       "Same-day electronic ticket issuance",
-      "Special wholesale group and family fares",
+      "Exclusive competitive group & family fares",
       "Seat selection & extra baggage allowance concierge",
       "24/7 schedule rebooking & flight disruption support",
     ],
+
   },
   {
     title: "Hotels & Airbnb Stays Worldwide",
