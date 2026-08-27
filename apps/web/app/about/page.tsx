@@ -37,7 +37,7 @@ const DRIVERS = [
 ];
 
 const STATS = [
-  { value: "5,000+", label: "Delighted Travelers", sub: "Worldwide Trips" },
+  { value: "5,000+", label: "Delighted Travelers", sub: "" },
   { value: "40+", label: "Destinations", sub: "Across 5 Continents" },
   { value: "99.4%", label: "Visa Success", sub: "Consular Advisory" },
   { value: "24/7", label: "Live Concierge", sub: "Instant WhatsApp Support" },

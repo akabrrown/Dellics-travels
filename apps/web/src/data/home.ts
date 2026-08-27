@@ -48,7 +48,7 @@ export const HERO_SLIDES: HeroSlide[] = [
 ];
 
 export const HOME_STATS = [
-  { value: "5,000+", label: "Delighted Travelers", description: "Worldwide Trips & Vacations" },
+  { value: "5,000+", label: "Delighted Travelers", description: "" },
   { value: "40+", label: "Global Destinations", description: "Over 5 Continents" },
   { value: "99.4%", label: "Visa Approval Rate", description: "Expert Document Prep" },
   { value: "24/7", label: "VIP Travel Concierge", description: "Direct WhatsApp Support" },
