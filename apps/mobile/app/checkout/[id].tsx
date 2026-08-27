@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Alert, TextInput } from 'react-native';
 import { Skeleton } from '../../src/components/Skeleton';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ChevronLeft, ShieldCheck, User, Tag, Check } from 'lucide-react-native';
+import { ChevronLeft, ShieldCheck, User, Tag, Check, CreditCard } from 'lucide-react-native';
 import { AnimatedButton } from '../../src/components/AnimatedButton';
-import { useStripe } from '@stripe/stripe-react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { api } from '../../src/lib/api';
 import { useBookingStore } from '../../src/store/useBookingStore';
 import * as Haptics from 'expo-haptics';
@@ -12,11 +12,11 @@ import * as Haptics from 'expo-haptics';
 export default function CheckoutScreen() {
   const router = useRouter();
   const { id, fare, type } = useLocalSearchParams<{ id: string; fare?: string; type?: string }>();
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const passenger = useBookingStore((state) => state.passenger);
   
   const [loading, setLoading] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [authUrl, setAuthUrl] = useState<string | null>(null);
+  const [reference, setReference] = useState<string | null>(null);
 
   const [promoInput, setPromoInput] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
@@ -39,57 +39,48 @@ export default function CheckoutScreen() {
     }
   };
 
-  const fetchPaymentSheetParams = async () => {
-    try {
-      const response = await api.post('/payments/create-intent', {
-        amount: amount,
-        currency: 'usd',
-        bookingId: id
-      });
-      setClientSecret(response.data.clientSecret);
-    } catch (error) {
-      console.error('Error fetching payment intent:', error);
-      Alert.alert('Error', 'Unable to initialize checkout. Please try again.');
-    }
-  };
-
   const handlePay = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    if (!clientSecret) {
-      Alert.alert('Wait', 'Payment is still initializing...');
-      return;
-    }
-
     setLoading(true);
 
-    const { error: initError } = await initPaymentSheet({
-      merchantDisplayName: 'Dellics Travels',
-      paymentIntentClientSecret: clientSecret,
-      // In production, configure returnURL for deep linking back to the app after redirects
-    });
+    try {
+      const response = await api.post('/payments/initialize', {
+        amount: finalAmount,
+        currency: 'USD',
+        bookingId: id,
+        email: passenger?.email || 'traveler@dellicstravels.com',
+      });
 
-    if (initError) {
-      setLoading(false);
-      Alert.alert('Error', initError.message);
-      return;
-    }
+      const { authorizationUrl, reference: txRef } = response.data;
 
-    const { error: presentError } = await presentPaymentSheet();
+      if (authorizationUrl) {
+        setAuthUrl(authorizationUrl);
+        setReference(txRef);
+        
+        const result = await WebBrowser.openAuthSessionAsync(
+          authorizationUrl,
+          'dellics://checkout/success'
+        );
 
-    setLoading(false);
-
-    if (presentError) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      if (presentError.code !== 'Canceled') {
-        Alert.alert('Error', presentError.message);
+        if (result.type === 'success' || result.type === 'dismiss') {
+          // Verify transaction
+          if (txRef) {
+            await api.get(`/payments/verify/${txRef}`).catch(() => null);
+          }
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          router.push(`/checkout/success?bookingId=${id}`);
+        }
+      } else {
+        Alert.alert('Error', 'Unable to start payment session. Please try again.');
       }
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.push(`/checkout/success?bookingId=${id}`);
+    } catch (error: any) {
+      console.error('Paystack error:', error);
+      Alert.alert('Payment Error', error?.response?.data?.message || 'Unable to process payment.');
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <View className="flex-1 bg-background">
@@ -191,15 +182,16 @@ export default function CheckoutScreen() {
         ) : null}
 
         <AnimatedButton 
-          title={loading ? "Processing..." : `Pay $${finalAmount.toFixed(2)} with Stripe`} 
+          title={loading ? "Processing..." : `Pay $${finalAmount.toFixed(2)} with Paystack`} 
           onPress={handlePay} 
           loading={loading}
           variant="secondary"
         />
         
         <Text className="text-center text-xs text-gray-400 mt-4 px-4 leading-relaxed">
-          By clicking Pay, you agree to our Terms of Service. Your payment is securely encrypted by Stripe.
+          By clicking Pay, you agree to our Terms of Service. Your payment is securely encrypted by Paystack (Cards & Mobile Money).
         </Text>
+
       </ScrollView>
     </View>
   );

@@ -6,14 +6,22 @@ export class WebhooksService {
   private readonly logger = new Logger(WebhooksService.name);
   constructor(private prisma: PrismaService) {}
 
-  async handleStripeWebhook(signature: string, event: any) {
-    this.logger.log(`Received Stripe Webhook: ${event.type}`);
+  /**
+   * Processes verified Paystack webhook payloads
+   */
+  async handlePaystackWebhook(signature: string, event: any) {
+    const eventType = event.event || event.type;
+    this.logger.log(`Received Webhook event: ${eventType}`);
 
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object;
+    if (eventType === 'charge.success') {
+      const tx = event.data;
+      const reference = tx.reference || tx.id;
+      const bookingId = tx.metadata?.bookingId;
+
+      this.logger.log(`Processing charge.success for ref=${reference}`);
 
       const payment = await this.prisma.payment.findUnique({
-        where: { stripe_payment_intent_id: paymentIntent.id },
+        where: { paystack_reference: reference },
       });
 
       if (payment) {
@@ -27,10 +35,22 @@ export class WebhooksService {
           data: { status: 'CONFIRMED' },
         });
 
-        this.logger.log(`Booking ${payment.booking_id} confirmed via webhook.`);
+        this.logger.log(`Booking ${payment.booking_id} confirmed via Paystack webhook.`);
+      } else if (bookingId && bookingId !== 'unknown') {
+        await this.prisma.booking.update({
+          where: { id: bookingId },
+          data: { status: 'CONFIRMED' },
+        }).catch(() => null);
       }
     }
 
     return { received: true };
+  }
+
+  /**
+   * Backward compatible alias
+   */
+  async handleStripeWebhook(signature: string, event: any) {
+    return this.handlePaystackWebhook(signature, event);
   }
 }

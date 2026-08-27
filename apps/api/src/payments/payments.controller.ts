@@ -16,9 +16,10 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   // ==========================================
-  // PAYSTACK CHECKOUT (Mobile Money & Cards)
+  // PAYSTACK CHECKOUT (Cards & Mobile Money)
   // ==========================================
 
+  @Post('initialize')
   @Post('paystack/initialize')
   async initializePaystack(
     @Body()
@@ -34,7 +35,7 @@ export class PaymentsController {
   ) {
     if (!body.email || !body.amount) {
       throw new BadRequestException(
-        'Email and amount are required for Paystack checkout',
+        'Email and amount are required for payment initialization',
       );
     }
     return this.paymentsService.initializePaystack({
@@ -48,6 +49,7 @@ export class PaymentsController {
     });
   }
 
+  @Get('verify/:reference')
   @Get('paystack/verify/:reference')
   async verifyPaystack(@Param('reference') reference: string) {
     if (!reference) {
@@ -56,49 +58,42 @@ export class PaymentsController {
     return this.paymentsService.verifyPaystack(reference);
   }
 
+  @Post('webhook')
   @Post('paystack/webhook')
   async handlePaystackWebhook(
     @Req() req: Request,
-    @Headers('x-paystack-signature') signature: string,
+    @Headers('x-paystack-signature') paystackSig: string,
+    @Headers('stripe-signature') stripeSig: string,
   ) {
+    const signature = paystackSig || stripeSig;
     if (!signature) {
-      throw new BadRequestException('Missing x-paystack-signature header');
+      throw new BadRequestException('Missing payment signature header');
     }
     const rawBody = (req as any).rawBody || JSON.stringify(req.body);
     return this.paymentsService.handlePaystackWebhook(rawBody, signature);
   }
 
-  // ==========================================
-  // STRIPE CHECKOUT (International Fallback)
-  // ==========================================
-
+  /**
+   * Compatibility endpoint for mobile / web checkout
+   */
   @Post('create-intent')
   async createPaymentIntent(
     @Body()
-    createIntentDto: {
+    body: {
       amount: number;
       currency?: string;
       bookingId?: string;
+      email?: string;
     },
   ) {
-    if (!createIntentDto.amount) {
+    if (!body.amount) {
       throw new BadRequestException('Amount is required');
     }
     return this.paymentsService.createPaymentIntent(
-      createIntentDto.amount,
-      createIntentDto.currency || 'usd',
-      createIntentDto.bookingId,
+      body.amount,
+      body.currency || 'GHS',
+      body.bookingId,
+      body.email || 'guest@dellicstravels.com',
     );
-  }
-
-  @Post('webhook')
-  async handleWebhook(
-    @Req() req: Request,
-    @Headers('stripe-signature') signature: string,
-  ) {
-    if (!signature) {
-      throw new BadRequestException('Missing stripe-signature header');
-    }
-    return this.paymentsService.handleWebhook(req.body, signature);
   }
 }

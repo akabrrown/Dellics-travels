@@ -73,7 +73,8 @@ export default function RefundQueue() {
     setRefunds(
       refunds.map((r) => (r.id === id ? { ...r, status: "APPROVED" } : r))
     );
-    alert(`Refund ${id} approved and dispatched via Stripe Refunds API.`);
+    alert(`Refund ${id} approved and dispatched via Paystack Refunds API.`);
+
   };
 
   const handleDeny = () => {

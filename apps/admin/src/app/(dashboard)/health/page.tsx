@@ -104,12 +104,13 @@ export default function SupplierHealth() {
           </div>
         </div>
 
-        {/* Stripe / Paystack */}
+        {/* Paystack Gateway */}
         <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="font-display text-sm font-bold text-slate-900">Stripe / Paystack</h3>
+              <h3 className="font-display text-sm font-bold text-slate-900">Paystack Gateway</h3>
               <p className="text-[11px] text-slate-500">Card & MoMo Webhooks</p>
+
             </div>
             <span className="flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60">
               <span className="size-2 rounded-full bg-emerald-500 mr-1.5" />

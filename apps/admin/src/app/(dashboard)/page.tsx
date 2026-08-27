@@ -89,8 +89,9 @@ export default function AdminDashboardPage() {
     { name: "Duffel Flights GDS", status: "Operational", ping: "284ms", err: "0.00%", ok: true },
     { name: "RateHawk Hotels", status: "Degraded", ping: "1,420ms", err: "3.2%", ok: false, fallback: "Amadeus BedBank active" },
     { name: "Airalo eSIM API", status: "Operational", ping: "310ms", err: "0.01%", ok: true },
-    { name: "Stripe & Paystack", status: "Operational", ping: "195ms", err: "0.00%", ok: true },
+    { name: "Paystack Gateway", status: "Operational", ping: "195ms", err: "0.00%", ok: true },
   ];
+
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">

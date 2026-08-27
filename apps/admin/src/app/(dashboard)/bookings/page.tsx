@@ -182,7 +182,7 @@ export default function BookingsList() {
               </td>
               <td className="px-6 py-4">
                 <p className="font-display font-extrabold text-slate-900">GHS 4,200.00</p>
-                <span className="text-[10px] text-emerald-600 font-medium">Stripe Settled</span>
+                <span className="text-[10px] text-emerald-600 font-medium">Paystack Settled</span>
               </td>
               <td className="px-6 py-4">
                 <span className="px-2.5 py-1 rounded-full font-bold text-[10px] bg-emerald-100 text-emerald-800">
@@ -224,7 +224,7 @@ export default function BookingsList() {
               </td>
               <td className="px-6 py-4">
                 <p className="font-display font-extrabold text-slate-900">GHS 380.00</p>
-                <span className="text-[10px] text-emerald-600 font-medium">Stripe Settled</span>
+                <span className="text-[10px] text-emerald-600 font-medium">Paystack Settled</span>
               </td>
               <td className="px-6 py-4">
                 <span className="px-2.5 py-1 rounded-full font-bold text-[10px] bg-emerald-100 text-emerald-800">

@@ -120,7 +120,7 @@ export default function AddPaymentScreen() {
 
         <View className="flex-row items-center mt-6 px-1">
           <ShieldCheck size={16} color="#10b981" />
-          <Text className="text-gray-500 text-xs font-semibold ml-2">Your card is stored securely by Stripe. We never see your full card details.</Text>
+          <Text className="text-gray-500 text-xs font-semibold ml-2">Your payment details are tokenized securely by Paystack. We never store raw card numbers.</Text>
         </View>
       </ScrollView>
 

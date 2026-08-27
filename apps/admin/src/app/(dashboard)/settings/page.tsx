@@ -194,7 +194,7 @@ export default function GlobalSettings() {
                 <div className="flex items-center justify-between pt-3">
                   <div>
                     <p className="text-xs font-bold text-slate-900">Apple Pay & Google Pay</p>
-                    <p className="text-[11px] text-slate-500">Enable one-tap digital wallet checkout via Stripe</p>
+                    <p className="text-[11px] text-slate-500">Enable one-tap digital wallet checkout via Paystack</p>
                   </div>
                   <input
                     type="checkbox"
@@ -207,7 +207,8 @@ export default function GlobalSettings() {
                 <div className="flex items-center justify-between pt-3">
                   <div>
                     <p className="text-xs font-bold text-slate-900">Instant Refunds Auto-Approval (≤ GHS 500)</p>
-                    <p className="text-[11px] text-slate-500">Auto-trigger Stripe refund for cancellations within free window</p>
+                    <p className="text-[11px] text-slate-500">Auto-trigger Paystack refund for cancellations within free window</p>
+
                   </div>
                   <input
                     type="checkbox"

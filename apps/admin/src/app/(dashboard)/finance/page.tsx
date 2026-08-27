@@ -19,10 +19,10 @@ export default function FinanceReconciliation() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-[#0A0060]">
-            Finance & Stripe Reconciliation
+            Finance & Paystack Reconciliation
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Automated 3-way reconciliation: Dellics Ledger ↔ Duffel/RateHawk Costs ↔ Stripe/Paystack Payouts.
+            Automated 3-way reconciliation: Dellics Ledger ↔ Duffel/RateHawk Costs ↔ Paystack Payouts.
           </p>
         </div>
         <button className="px-4 py-2 rounded-full bg-[#0A0060] hover:bg-[#140882] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs">
@@ -57,12 +57,12 @@ export default function FinanceReconciliation() {
             <p className="font-display text-2xl font-extrabold text-amber-700">1</p>
             <span className="text-[11px] font-bold text-amber-700">Requires review</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Stripe fee rounding variance</p>
+          <p className="text-[11px] text-slate-500 mt-1">Paystack fee rounding variance</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Next Stripe Payout
+            Next Paystack Payout
           </p>
           <div className="mt-3 flex items-baseline justify-between">
             <p className="font-display text-2xl font-extrabold text-[#0A0060]">
@@ -70,7 +70,7 @@ export default function FinanceReconciliation() {
             </p>
             <span className="text-xs font-bold text-slate-500">Expected Oct 15</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Standard rolling 2-day payout</p>
+          <p className="text-[11px] text-slate-400 mt-1">Standard next-day merchant payout</p>
         </div>
       </div>
 
@@ -80,7 +80,7 @@ export default function FinanceReconciliation() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by PaymentIntent ID or Booking Reference..."
+            placeholder="Search by Paystack Reference or Booking Reference..."
             className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060] transition-all"
           />
         </div>
@@ -101,10 +101,10 @@ export default function FinanceReconciliation() {
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider">
             <tr>
-              <th className="px-6 py-4">PaymentIntent</th>
+              <th className="px-6 py-4">Paystack Ref</th>
               <th className="px-6 py-4">Booking Ref</th>
               <th className="px-6 py-4 text-right">Internal Ledger</th>
-              <th className="px-6 py-4 text-right">Stripe Record</th>
+              <th className="px-6 py-4 text-right">Paystack Record</th>
               <th className="px-6 py-4 text-center">Status</th>
             </tr>
           </thead>
@@ -113,10 +113,11 @@ export default function FinanceReconciliation() {
             <tr className="hover:bg-slate-50/50 transition-colors bg-amber-50/10">
               <td className="px-6 py-4">
                 <span className="font-mono font-bold text-slate-900 block">
-                  pi_3Mtw28491209
+                  pstk_3Mtw28491209
                 </span>
-                <span className="text-[10px] text-slate-400">Card ending 4242</span>
+                <span className="text-[10px] text-slate-400">MTN Mobile Money</span>
               </td>
+
               <td className="px-6 py-4">
                 <Link
                   href="/bookings/BK-8392"

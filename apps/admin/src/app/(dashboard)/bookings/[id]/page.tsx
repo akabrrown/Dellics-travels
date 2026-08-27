@@ -127,7 +127,8 @@ export default function BookingDetail({ params }: { params: { id: string } }) {
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
               <h3 className="font-semibold text-gray-800">Payment</h3>
-              <Link href="/finance" className="text-[#F4740D] text-xs font-medium hover:underline">View in Stripe</Link>
+              <Link href="/finance" className="text-[#F4740D] text-xs font-medium hover:underline">View in Paystack</Link>
+
             </div>
             <div className="p-4">
               <div className="flex justify-between items-center mb-3">

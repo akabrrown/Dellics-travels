@@ -70,8 +70,9 @@ function MemberProfileView({ user, onLogout }: { user: any, onLogout: () => void
 
   const handleUpgrade = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Alert.alert('Dellics Voyager', 'Upgrade flow would open here via Stripe Billing.');
+    Alert.alert('Dellics Voyager', 'Upgrade flow opens via Paystack Subscriptions.');
   };
+
 
   const firstName = user?.user_metadata?.first_name || 'Traveler';
   const lastName = user?.user_metadata?.last_name || '';

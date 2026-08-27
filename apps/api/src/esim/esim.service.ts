@@ -187,7 +187,7 @@ export class EsimService {
       data: {
         user_id: userId,
         esim_plan_id: plan.id,
-        stripe_payment_intent_id: 'pending_' + Date.now(),
+        paystack_reference: 'paystack_esim_' + Date.now(),
         status: 'PENDING',
       },
     });
@@ -198,9 +198,9 @@ export class EsimService {
   /**
    * Provisions the actual eSIM order via Airalo API upon payment success
    */
-  async provisionOrder(paymentIntentId: string) {
+  async provisionOrder(paymentReference: string) {
     this.logger.log(
-      `Provisioning eSIM order for payment reference ${paymentIntentId}`,
+      `Provisioning eSIM order for payment reference ${paymentReference}`,
     );
 
     const token = await this.getAiraloAccessToken();
@@ -209,14 +209,16 @@ export class EsimService {
     let iccid = `8900${Date.now()}001`;
 
     const order = await this.prisma.eSIMOrder.findUnique({
-      where: { stripe_payment_intent_id: paymentIntentId },
+      where: { paystack_reference: paymentReference },
       include: { esim_plan: true },
     });
 
+
     if (!order) {
-      this.logger.warn(`No pending eSIM order found for ${paymentIntentId}`);
+      this.logger.warn(`No pending eSIM order found for ${paymentReference}`);
       return null;
     }
+
 
     if (token && order.esim_plan?.airalo_package_id) {
       try {

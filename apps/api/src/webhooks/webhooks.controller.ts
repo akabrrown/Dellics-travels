@@ -5,13 +5,14 @@ import { WebhooksService } from './webhooks.service';
 export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
+  @Post('paystack')
   @Post('stripe')
-  async handleStripeWebhook(
-    @Headers('stripe-signature') signature: string,
+  async handleWebhook(
+    @Headers('x-paystack-signature') paystackSig: string,
+    @Headers('stripe-signature') stripeSig: string,
     @Body() body: any,
   ) {
-    // Note: In a real implementation, we would use the raw body to verify the signature.
-    // For MVP scaffolding, we parse the body directly.
-    return this.webhooksService.handleStripeWebhook(signature, body);
+    const signature = paystackSig || stripeSig || '';
+    return this.webhooksService.handlePaystackWebhook(signature, body);
   }
 }

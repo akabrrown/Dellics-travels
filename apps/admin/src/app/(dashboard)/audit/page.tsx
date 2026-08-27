@@ -107,7 +107,8 @@ export default function AuditLog() {
               <td className="px-6 py-4 font-bold text-slate-900">BK-8392</td>
               <td className="px-6 py-4 text-slate-600 font-mono">
                 <div className="bg-slate-50 p-2 rounded-xl border border-slate-200 text-[10px] overflow-x-auto max-w-sm">
-                  {`{"amount_ghs": 2150.0, "provider": "STRIPE", "policy": "24hr_cooling_off"}`}
+                  {`{"amount_ghs": 2150.0, "provider": "PAYSTACK", "policy": "24hr_cooling_off"}`}
+
                 </div>
               </td>
             </tr>
