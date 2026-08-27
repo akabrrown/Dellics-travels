@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 const ALL_SERVICES = [
   {
     title: "International Flight Ticketing",
-    badge: "Official IATA Agency",
+    badge: "IATA Certified",
     icon: Plane,
     image: "/images/services/plane.jpg",
     href: "/flights",
@@ -43,7 +43,7 @@ const ALL_SERVICES = [
   },
   {
     title: "Hotels & Airbnb Stays Worldwide",
-    badge: "RateHawk Live Network",
+    badge: "Luxury Stays & Villas",
     icon: Building2,
     image: "/images/services/hotel-and-airbnb.jpg",
     href: "/hotels",

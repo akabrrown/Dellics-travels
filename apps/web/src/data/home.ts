@@ -12,7 +12,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     type: "image",
     src: "/images/services/hotel-and-airbnb.jpg",
-    badge: "Verified RateHawk Inventory",
+    badge: "Verified Global Stays",
     caption: "Luxury Hotels and Private Stays Across 190+ Countries",
     subtitle: "From 5-star Dubai suites to beachfront apartments in Cape Town. Itemized room taxes with confirmed booking vouchers.",
     ctaText: "Browse Stays",

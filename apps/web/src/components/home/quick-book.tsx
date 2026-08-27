@@ -259,7 +259,7 @@ export function QuickBook() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <p className="text-xs text-slate-500 flex items-center gap-1.5">
                 <ShieldCheck className="size-4 text-emerald-600" />
-                Over 2.5 million verified hotels, luxury apartments & resorts with RateHawk wholesale pricing.
+                Over 2.5 million verified hotels, luxury apartments & resorts with best rate guarantee.
               </p>
               <Button
                 type="submit"

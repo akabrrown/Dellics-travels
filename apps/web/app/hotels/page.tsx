@@ -66,21 +66,12 @@ const FEATURED_COLLECTIONS = [
     amenities: ["White Sand Beach", "Fresh Seafood Dining", "Scuba & Snorkeling", "Spa Treatments"],
     badge: "Island Paradise",
   },
-  {
-    title: "Ghana Heritage Eco Luxury Retreat",
-    location: "Aburi & Eastern Hills, Ghana",
-    stars: 5,
-    price: "$160 / night",
-    image: "/images/services/ghana-heritage-airbnb.jpg",
-    amenities: ["Botanical Garden Views", "Organic Farm-to-Table", "Nature Trails", "Cultural Masterclass"],
-    badge: "Eco Retreat",
-  },
 ];
 
 const HOTEL_PERKS = [
   {
-    title: "Direct RateHawk Wholesale Rates",
-    description: "Enjoy exclusive B2B agency pricing negotiated with over 2.5 million properties globally without inflated retail surcharges.",
+    title: "Direct Wholesale Rates",
+    description: "Enjoy exclusive agency pricing negotiated with over 2.5 million properties globally without inflated retail surcharges.",
   },
   {
     title: "100% Verified Accommodation",
@@ -102,7 +93,7 @@ export default function HotelsPage() {
       <PageHero
         title="Luxury Hotels & Curated Stays Worldwide"
         subtitle="Search live availability across 2.5+ million hotels, boutique Airbnbs, safari lodges, and private beach villas with best rate guarantee."
-        badge="Live RateHawk Partnership"
+        badge="Verified Global Stays"
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Airbnb" }]}
       />
@@ -170,7 +161,7 @@ export default function HotelsPage() {
                 <div className="mt-6 pt-2 flex items-center justify-between border-t border-slate-100">
                   <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
                     <CheckCircle2 className="size-3.5" />
-                    Available on RateHawk
+                    Instant Confirmation
                   </span>
                   <Link
                     href={`/inquire?service=hotels&hotel=${encodeURIComponent(stay.title)}&location=${encodeURIComponent(stay.location)}&price=${encodeURIComponent(stay.price)}`}

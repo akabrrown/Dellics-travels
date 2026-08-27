@@ -21,7 +21,7 @@ import { HERO_SLIDES, HOME_STATS, TESTIMONIALS, WHY_CHOOSE_US } from "@/data/hom
 const CORE_SERVICES = [
   {
     title: "Flight Ticketing",
-    tag: "IATA Accredited",
+    tag: "IATA Certified",
     copy: "Domestic & international flights across all global airlines with instant electronic ticketing, seat selection & baggage support.",
     href: "/flights",
     image: "/images/services/plane.jpg",
@@ -30,7 +30,7 @@ const CORE_SERVICES = [
   },
   {
     title: "Hotels & Airbnb Stays",
-    tag: "RateHawk Partner",
+    tag: "Verified Global Stays",
     copy: "Over 2.5 million verified luxury hotels, boutique apartments & beach resorts worldwide with best rate guarantee.",
     href: "/hotels",
     image: "/images/services/hotel-and-airbnb.jpg",
