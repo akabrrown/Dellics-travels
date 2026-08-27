@@ -72,15 +72,24 @@ export function SiteHeader() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 group" aria-label={`${SITE.name} home`}>
-          <div className="relative h-11 w-36 sm:w-44 transition-transform group-hover:scale-102">
+        <Link href="/" className="flex items-center gap-3 group shrink-0" aria-label={`${SITE.name} home`}>
+          <div className="relative size-11 sm:size-12 overflow-hidden rounded-2xl bg-white p-1 shadow-md border border-white/20 shrink-0 transition-transform group-hover:scale-105">
             <Image
-              src="/logo.png"
-              alt={`${SITE.name} logo`}
-              fill
-              className="object-contain object-left"
+              src="/Logo.png"
+              alt={`${SITE.name} emblem`}
+              width={48}
+              height={48}
+              className="size-full object-contain"
               priority
             />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-display text-lg sm:text-xl font-black tracking-tight text-white group-hover:text-brand-orange transition-colors uppercase leading-tight">
+              Dellics <span className="text-brand-orange">Travels</span>
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-white/75">
+              See The World
+            </span>
           </div>
         </Link>
 
@@ -185,10 +194,17 @@ export function SiteHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto bg-navy text-white p-6 border-l border-white/10">
               <SheetHeader className="border-b border-white/10 pb-4 text-left">
-                <SheetTitle className="text-left text-white font-display text-xl">
-                  {SITE.name}
-                </SheetTitle>
-                <p className="text-xs text-white/60">IATA Certified Luxury Agency</p>
+                <div className="flex items-center gap-3">
+                  <div className="relative size-10 overflow-hidden rounded-xl bg-white p-1 shadow-sm shrink-0">
+                    <Image src="/Logo.png" alt={SITE.name} width={40} height={40} className="size-full object-contain" />
+                  </div>
+                  <div className="flex flex-col">
+                    <SheetTitle className="text-left text-white font-display text-lg font-bold">
+                      Dellics <span className="text-brand-orange">Travels</span>
+                    </SheetTitle>
+                    <p className="text-[11px] text-white/70">IATA Certified Agency</p>
+                  </div>
+                </div>
               </SheetHeader>
 
               <nav className="mt-6 flex flex-col gap-1" aria-label="Mobile Navigation">

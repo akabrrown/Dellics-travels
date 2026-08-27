@@ -56,14 +56,23 @@ export function SiteFooter() {
         <div className="grid gap-10 lg:grid-cols-5 md:grid-cols-2">
           {/* Column 1: Brand & Story */}
           <div className="lg:col-span-2 space-y-6">
-            <Link href="/" className="inline-block">
-              <div className="relative h-12 w-48">
+            <Link href="/" className="inline-flex items-center gap-3 group">
+              <div className="relative size-12 overflow-hidden rounded-2xl bg-white p-1 shadow-md border border-white/20 shrink-0 transition-transform group-hover:scale-105">
                 <Image
-                  src="/logo.png"
+                  src="/Logo.png"
                   alt={`${SITE.name} logo`}
-                  fill
-                  className="object-contain object-left"
+                  width={48}
+                  height={48}
+                  className="size-full object-contain"
                 />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display text-xl font-black tracking-tight text-white group-hover:text-brand-orange transition-colors uppercase leading-tight">
+                  Dellics <span className="text-brand-orange">Travels</span>
+                </span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-brand-orange font-semibold">
+                  See The World
+                </span>
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-white/75 max-w-md">
