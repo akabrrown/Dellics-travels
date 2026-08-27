@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, PhoneCall, ArrowRight, ShieldCheck } from "lucide-react";
+import { PhoneCall, ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SITE } from "@/lib/site";
@@ -17,10 +17,6 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
   const nextSlide = useCallback(() => {
     setIndex((i) => (i + 1) % slides.length);
-  }, [slides.length]);
-
-  const prevSlide = useCallback(() => {
-    setIndex((i) => (i - 1 + slides.length) % slides.length);
   }, [slides.length]);
 
   useEffect(() => {
@@ -65,7 +61,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             />
           )}
 
-          {/* Light Cinematic Gradients for clear video/picture visibility */}
+          {/* Light Cinematic Gradients for clear picture visibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A0060]/75 via-[#0A0060]/25 to-black/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0A0060]/60 via-[#0A0060]/20 to-transparent" />
 
@@ -73,9 +69,9 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8 pb-28 sm:pb-32">
             <div className="max-w-2xl text-left">
               {/* Category Badge */}
-              <div className="mb-4 inline-flex items-center gap-2 rounded-pill bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-brand-orange backdrop-blur-md border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-brand-orange backdrop-blur-md border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 <ShieldCheck className="size-3.5" />
-                {slide.badge}
+                <span>{slide.badge}</span>
               </div>
 
               {/* Title */}
@@ -93,7 +89,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-pill bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-xl hover:shadow-2xl transition-all"
+                  className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-xl hover:shadow-2xl transition-all"
                 >
                   <Link href={slide.ctaHref} className="inline-flex items-center gap-2">
                     <span>{slide.ctaText}</span>
@@ -105,7 +101,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am interested in: ${slide.caption}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-pill bg-white/15 hover:bg-white/25 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md border border-white/20 transition-all"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white/15 hover:bg-white/25 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md border border-white/20 transition-all"
                 >
                   <PhoneCall className="size-4 text-emerald-400" />
                   <span>WhatsApp Concierge</span>
@@ -116,31 +112,9 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         </div>
       ))}
 
-      {/* Prev / Next Navigation Arrows */}
-      <div className="absolute inset-y-0 left-4 z-20 hidden sm:flex items-center">
-        <button
-          type="button"
-          onClick={prevSlide}
-          className="flex size-11 items-center justify-center rounded-full bg-navy/60 hover:bg-brand-orange text-white backdrop-blur-md border border-white/15 transition-colors shadow-lg"
-          aria-label="Previous Slide"
-        >
-          <ChevronLeft className="size-6" />
-        </button>
-      </div>
-      <div className="absolute inset-y-0 right-4 z-20 hidden sm:flex items-center">
-        <button
-          type="button"
-          onClick={nextSlide}
-          className="flex size-11 items-center justify-center rounded-full bg-navy/60 hover:bg-brand-orange text-white backdrop-blur-md border border-white/15 transition-colors shadow-lg"
-          aria-label="Next Slide"
-        >
-          <ChevronRight className="size-6" />
-        </button>
-      </div>
-
-      {/* Bottom Progress Bullets */}
+      {/* Bottom Progress Indicator Dots */}
       <div
-        className="absolute bottom-8 right-6 z-20 flex items-center gap-2.5 rounded-pill bg-navy/70 px-4 py-2 backdrop-blur-md border border-white/15"
+        className="absolute bottom-8 right-6 z-20 flex items-center gap-2.5 rounded-full bg-navy/70 px-4 py-2 backdrop-blur-md border border-white/15"
         role="tablist"
         aria-label="Slide Selector"
       >
@@ -153,7 +127,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             aria-label={`Slide ${i + 1}`}
             onClick={() => setIndex(i)}
             className={cn(
-              "h-2 rounded-pill transition-all duration-500",
+              "h-2 rounded-full transition-all duration-500",
               i === index ? "w-8 bg-brand-orange" : "w-2 bg-white/40 hover:bg-white/70",
             )}
           />
