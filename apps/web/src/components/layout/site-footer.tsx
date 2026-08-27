@@ -64,12 +64,12 @@ export function SiteFooter() {
           {/* Column 1: Brand & Story */}
           <div className="lg:col-span-2 space-y-6">
             <Link href="/" className="inline-flex items-center group" aria-label="Dellics Travels Home">
-              <div className="relative h-16 w-20 overflow-hidden rounded-2xl bg-white p-1.5 shadow-md border border-white/20 shrink-0 transition-transform group-hover:scale-105">
+              <div className="relative h-16 w-24 shrink-0 transition-transform group-hover:scale-105">
                 <Image
                   src="/Logo.png"
                   alt={`${SITE.name} logo`}
                   fill
-                  className="object-contain p-0.5"
+                  className="object-contain"
                 />
               </div>
             </Link>

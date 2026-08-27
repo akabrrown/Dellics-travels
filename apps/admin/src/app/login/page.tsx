@@ -54,13 +54,12 @@ export default function AdminLogin() {
       <div className="w-full max-w-md p-8 bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl space-y-6 relative z-10">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center">
-          <div className="size-16 rounded-2xl bg-white p-1.5 border border-white/20 flex items-center justify-center mb-4 shadow-xl">
+          <div className="relative h-16 w-24 flex items-center justify-center mb-4">
             <Image
               src="/Logo.png"
               alt="Dellics Travels"
-              width={56}
-              height={56}
-              className="size-full object-contain"
+              fill
+              className="object-contain"
               priority
             />
           </div>

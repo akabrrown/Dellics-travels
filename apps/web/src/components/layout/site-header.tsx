@@ -80,12 +80,12 @@ export function SiteHeader() {
           className="flex items-center group shrink-0"
           aria-label={`${SITE.name} home`}
         >
-          <div className="relative h-14 w-20 overflow-hidden rounded-2xl bg-white p-1.5 shadow-md border border-white/20 shrink-0 transition-transform group-hover:scale-105">
+          <div className="relative h-14 w-24 shrink-0 transition-transform group-hover:scale-105">
             <Image
               src="/Logo.png"
               alt={`${SITE.name} logo`}
               fill
-              className="object-contain p-0.5"
+              className="object-contain"
               priority
             />
           </div>
@@ -222,7 +222,7 @@ export function SiteHeader() {
             >
               <SheetHeader className="border-b border-white/10 pb-4 text-left">
                 <div className="flex items-center gap-3">
-                  <div className="relative h-12 w-16 overflow-hidden rounded-xl bg-white p-1 shadow-sm shrink-0">
+                  <div className="relative h-12 w-20 shrink-0">
                     <Image
                       src="/Logo.png"
                       alt={SITE.name}
