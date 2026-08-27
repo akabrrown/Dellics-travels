@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -46,6 +49,11 @@ const COMPANY_LINKS = [
 ];
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  if (pathname === "/signin" || pathname === "/signup" || pathname === "/forgot-password") {
+    return null;
+  }
+
   return (
     <footer className="bg-navy-dark text-white">
       {/* Accreditation Banner */}
@@ -56,23 +64,14 @@ export function SiteFooter() {
         <div className="grid gap-10 lg:grid-cols-5 md:grid-cols-2">
           {/* Column 1: Brand & Story */}
           <div className="lg:col-span-2 space-y-6">
-            <Link href="/" className="inline-flex items-center gap-3 group">
-              <div className="relative size-12 overflow-hidden rounded-2xl bg-white p-1 shadow-md border border-white/20 shrink-0 transition-transform group-hover:scale-105">
+            <Link href="/" className="inline-flex items-center group" aria-label="Dellics Travels Home">
+              <div className="relative h-16 w-20 overflow-hidden rounded-2xl bg-white p-1.5 shadow-md border border-white/20 shrink-0 transition-transform group-hover:scale-105">
                 <Image
                   src="/Logo.png"
                   alt={`${SITE.name} logo`}
-                  width={48}
-                  height={48}
-                  className="size-full object-contain"
+                  fill
+                  className="object-contain p-0.5"
                 />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display text-xl font-black tracking-tight text-white group-hover:text-brand-orange transition-colors uppercase leading-tight">
-                  Dellics <span className="text-brand-orange">Travels</span>
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-brand-orange font-semibold">
-                  See The World
-                </span>
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-white/75 max-w-md">
@@ -82,7 +81,7 @@ export function SiteFooter() {
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex items-start gap-3 text-sm text-white/80">
                 <MapPin className="size-5 text-brand-orange shrink-0 mt-0.5" />
-                <span>{SITE.address}</span>
+                <span>Community 25, Devtraco Estate, Tema, Greater Accra, Ghana</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-white/80">
                 <Phone className="size-5 text-brand-orange shrink-0" />
@@ -98,24 +97,23 @@ export function SiteFooter() {
               </div>
               <div className="flex items-center gap-3 text-sm text-white/80">
                 <Clock className="size-5 text-brand-orange shrink-0" />
-                <span>Mon – Fri: 8:00 AM – 6:00 PM · 24/7 Emergency Support</span>
+                <span>Mon – Sat: 8:00 AM – 6:00 PM GMT · 24/7 Ticketing Support</span>
               </div>
             </div>
           </div>
 
-          {/* Column 2: Services */}
-          <div>
-            <h3 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange mb-4">
+          {/* Column 2: Travel Services */}
+          <div className="space-y-4">
+            <h4 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange">
               Services
-            </h3>
-            <ul className="space-y-2.5 text-sm">
+            </h4>
+            <ul className="space-y-2.5 text-sm text-white/70">
               {SERVICES_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/70 hover:text-brand-orange hover:translate-x-1 inline-flex items-center gap-1.5 transition-all"
+                    className="hover:text-white hover:underline transition-colors"
                   >
-                    <ArrowRight className="size-3 text-brand-orange/60" />
                     {link.label}
                   </Link>
                 </li>
@@ -124,18 +122,17 @@ export function SiteFooter() {
           </div>
 
           {/* Column 3: Destinations */}
-          <div>
-            <h3 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange mb-4">
+          <div className="space-y-4">
+            <h4 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange">
               Destinations
-            </h3>
-            <ul className="space-y-2.5 text-sm">
+            </h4>
+            <ul className="space-y-2.5 text-sm text-white/70">
               {DESTINATIONS_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/70 hover:text-brand-orange hover:translate-x-1 inline-flex items-center gap-1.5 transition-all"
+                    className="hover:text-white hover:underline transition-colors"
                   >
-                    <ArrowRight className="size-3 text-brand-orange/60" />
                     {link.label}
                   </Link>
                 </li>
@@ -143,58 +140,50 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Column 4: About, Gallery, Contact & WhatsApp */}
-          <div>
-            <h3 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange mb-4">
-              Explore & Contact
-            </h3>
-            <ul className="space-y-2.5 text-sm">
-              {COMPANY_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-white/70 hover:text-brand-orange hover:translate-x-1 inline-flex items-center gap-1.5 transition-all"
-                  >
-                    <ArrowRight className="size-3 text-brand-orange/60" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Column 4: Quick Links & Instant Support */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h4 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange">
+                Quick Links
+              </h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                {COMPANY_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="hover:text-white hover:underline transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            {/* WhatsApp Us Action Box */}
-            <div className="mt-6 rounded-2xl bg-emerald-950/60 p-4 border border-emerald-500/30">
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
-                <MessageCircle className="size-3.5" />
-                <span>WhatsApp Us (24/7)</span>
-              </div>
-              <p className="text-xs text-white/75 mb-3 leading-relaxed">
-                Connect directly with certified travel experts on WhatsApp.
-              </p>
+            {/* Direct WhatsApp Concierge Button */}
+            <div className="pt-2">
               <a
-                href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
+                href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I need assistance with travel planning.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-emerald-600 hover:bg-emerald-700 py-2.5 text-xs font-bold text-white shadow-lg transition-colors"
+                className="flex items-center justify-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 text-xs shadow-lg transition-colors"
               >
-                <PhoneCall className="size-3.5" />
-                <span>Chat on WhatsApp</span>
+                <MessageCircle className="size-4" />
+                <span>WhatsApp Concierge</span>
               </a>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Sub-footer */}
-      <div className="border-t border-white/10 bg-black/20 py-6 text-center text-xs text-white/60">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} {SITE.legalName}. All rights reserved.</p>
-          <div className="flex flex-wrap justify-center gap-4 text-xs">
+        {/* Bottom Legal Bar */}
+        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
+          <p>© {new Date().getFullYear()} Dellics Travels & Tours Ltd. All rights reserved. IATA Certified Agency.</p>
+          <div className="flex items-center gap-6">
             {LEGAL.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="hover:text-brand-orange transition-colors"
+                className="hover:text-white transition-colors"
               >
                 {item.label}
               </Link>

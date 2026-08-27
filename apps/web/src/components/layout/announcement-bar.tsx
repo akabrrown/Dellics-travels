@@ -1,12 +1,20 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Phone, Mail, ShieldCheck } from "lucide-react";
 import { SITE } from "@/lib/site";
 
 export function AnnouncementBar() {
+  const pathname = usePathname();
+  if (pathname === "/signin" || pathname === "/signup" || pathname === "/forgot-password") {
+    return null;
+  }
+
   return (
-    <div className="bg-gradient-to-r from-navy-dark via-navy to-ink text-white/90 text-xs py-2 px-4 border-b border-white/10">
+    <div className="bg-navy-dark text-white/90 text-xs py-2 px-4 border-b border-white/10">
       <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-pill bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-orange">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-orange">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <ShieldCheck className="size-3 text-brand-orange" />
             IATA Certified
