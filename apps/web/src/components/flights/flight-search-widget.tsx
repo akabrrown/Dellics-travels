@@ -52,8 +52,16 @@ export function FlightSearchWidget() {
       }
     }
     setError(null);
-    const link = buildWhatsAppLink(composeFlightMessage({ tripType, legs: visibleLegs, passengers, cabinClass }));
-    window.open(link, "_blank", "noopener,noreferrer");
+    const query = new URLSearchParams();
+    query.set("service", "flights");
+    query.set("tripType", tripType);
+    query.set("from", visibleLegs[0]?.from || "");
+    query.set("to", visibleLegs[0]?.to || "");
+    query.set("departDate", visibleLegs[0]?.departDate || "");
+    if (visibleLegs[1]?.departDate) query.set("returnDate", visibleLegs[1].departDate);
+    query.set("passengers", `${passengers.adults} Adult${passengers.adults > 1 ? "s" : ""}${passengers.children ? `, ${passengers.children} Child` : ""}${passengers.infants ? `, ${passengers.infants} Infant` : ""}`);
+    query.set("cabinClass", cabinClass);
+    window.location.href = `/inquire?${query.toString()}`;
   }
 
   return (

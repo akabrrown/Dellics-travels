@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types";
 import Image from "next/image";
+import Link from "next/link";
 import {
   CheckCircle2,
   Clock,
@@ -171,15 +172,13 @@ export default function TransfersPage() {
                     <Clock className="size-3.5" />
                     Instant Dispatch Available
                   </span>
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to book an Airport Transfer with vehicle: ${vehicle.name}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/inquire?service=transfers&vehicle=${encodeURIComponent(vehicle.name)}&passengers=${encodeURIComponent(vehicle.passengers)}`}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
                   >
                     <span>Book Vehicle</span>
                     <ArrowRight className="size-3.5" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

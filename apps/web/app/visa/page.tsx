@@ -1,4 +1,5 @@
 import type { Metadata } from "next/types";
+import Link from "next/link";
 import {
   CheckCircle2,
   Clock,
@@ -180,15 +181,13 @@ export default function VisaPage() {
               </div>
 
               <div className="p-6 border-t border-slate-100 bg-slate-50/70">
-                <a
-                  href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I need Visa Assistance for: ${visa.country} (${visa.category})`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={`/inquire?service=visa&country=${encodeURIComponent(visa.country)}&category=${encodeURIComponent(visa.category)}`}
                   className="flex items-center justify-center gap-2 w-full rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold py-2.5 text-xs shadow-sm transition-colors"
                 >
                   <span>Request Visa Consultation</span>
                   <ArrowRight className="size-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
           ))}

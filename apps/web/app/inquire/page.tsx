@@ -5,6 +5,7 @@ import {
   PhoneCall,
   Lock,
 } from "lucide-react";
+import { Suspense } from "react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { InquireForm } from "@/components/forms/inquire-form";
@@ -57,7 +58,9 @@ export default function InquirePage() {
             />
 
             <div className="mt-8">
-              <InquireForm />
+              <Suspense fallback={<div className="p-8 text-center text-slate-400 text-sm">Loading travel inquiry planner...</div>}>
+                <InquireForm />
+              </Suspense>
             </div>
           </div>
 

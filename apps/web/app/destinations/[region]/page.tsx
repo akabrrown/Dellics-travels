@@ -138,15 +138,13 @@ export default async function RegionPage({ params }: RouteParams) {
                   <span className="text-xs font-semibold text-slate-500">
                     Custom Itinerary Available
                   </span>
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I would like to visit: ${highlight.name} in ${data.name}. Please provide package details.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/inquire?service=destination&destination=${encodeURIComponent(highlight.name)}&region=${encodeURIComponent(data.name)}`}
                     className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
                   >
                     <span>Inquire Place</span>
                     <ArrowRight className="size-3.5" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>

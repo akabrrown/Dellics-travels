@@ -68,49 +68,56 @@ export function QuickBook() {
     if (hotelDestination) query.set("destination", hotelDestination);
     if (hotelCheckIn) query.set("checkIn", hotelCheckIn);
     if (hotelCheckOut) query.set("checkOut", hotelCheckOut);
+    if (hotelGuests) query.set("guests", hotelGuests);
     router.push(`/hotels${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   function handleTransferSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const text = `Hello Dellics Travels, I would like to request an Airport Transfer quote:
-• Pickup: ${transferPickup}
-• Drop-off: ${transferDropoff || "Not specified"}
-• Date/Time: ${transferDate || "Flexible"}
-• Service Type: ${transferType}`;
-    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
+    const query = new URLSearchParams();
+    if (transferPickup) query.set("pickup", transferPickup);
+    if (transferDropoff) query.set("dropoff", transferDropoff);
+    if (transferDate) query.set("date", transferDate);
+    if (transferType) query.set("type", transferType);
+    router.push(`/transfers${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   function handleCarSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const text = `Hello Dellics Travels, I would like to book an Executive Vehicle / Car Hire:
-• Location: ${carCity}
-• Driver: ${carType}
-• Vehicle Category: ${carClass}
-• Start Date: ${carStartDate || "Not specified"}
-• Duration: ${carDuration}`;
-    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
+    const query = new URLSearchParams();
+    query.set("service", "car_hire");
+    if (carCity) query.set("city", carCity);
+    if (carType) query.set("driver", carType);
+    if (carClass) query.set("vehicle", carClass);
+    if (carStartDate) query.set("date", carStartDate);
+    if (carDuration) query.set("duration", carDuration);
+    router.push(`/inquire${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   function handleTourSubmit(e: React.FormEvent) {
     e.preventDefault();
-    router.push("/tours");
+    const query = new URLSearchParams();
+    if (tourDestination) query.set("destination", tourDestination);
+    if (tourMonth) query.set("season", tourMonth);
+    router.push(`/tours${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   function handleDiasporaSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const text = `Hello Dellics Travels, I would like to inquire about your Diaspora & Heritage Tour packages:
-• Package of Interest: ${diasporaPackage}
-• Group Size: ${diasporaTravelers}`;
-    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
+    const query = new URLSearchParams();
+    query.set("service", "diaspora");
+    if (diasporaPackage) query.set("package", diasporaPackage);
+    if (diasporaTravelers) query.set("travelers", diasporaTravelers);
+    router.push(`/inquire${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   function handleEsimSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const text = `Hello Dellics Travels, I would like to order a travel eSIM for roaming:
-• Destination Country: ${esimCountry}
-• Data Package: ${esimDataPlan}`;
-    window.open(buildWhatsAppLink(text), "_blank", "noopener,noreferrer");
+    const query = new URLSearchParams();
+    query.set("service", "esim");
+    if (esimCountry) query.set("country", esimCountry);
+    if (esimDataPlan) query.set("plan", esimDataPlan);
+    router.push(`/inquire${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   return (

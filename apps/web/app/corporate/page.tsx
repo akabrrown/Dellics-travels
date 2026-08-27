@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Plane,
   Building2,
@@ -9,7 +10,9 @@ import {
   UserCheck,
   CheckCircle2,
   PhoneCall,
+  ArrowRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
@@ -185,16 +188,13 @@ export default function CorporatePage() {
                 </div>
               </div>
 
-              <div className="mt-10">
-                <a
-                  href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to discuss opening a Corporate Travel Account for our organization.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-navy hover:bg-navy-light text-white font-bold px-8 py-3 text-sm shadow-md transition-all"
-                >
-                  <PhoneCall className="size-4 text-brand-orange" />
-                  <span>Talk to Corporate Sales Lead</span>
-                </a>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Button asChild size="lg" className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-lg">
+                  <Link href="/inquire?service=corporate" className="inline-flex items-center gap-2">
+                    <span>Open Corporate Account</span>
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
 

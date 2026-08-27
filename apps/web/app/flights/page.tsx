@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ShieldCheck,
   CheckCircle2,
@@ -171,15 +172,13 @@ export default function FlightsPage() {
                     <CheckCircle2 className="size-3.5" />
                     Seats Available
                   </span>
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to book flights for route: ${route.from} to ${route.to}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/inquire?service=flights&from=${encodeURIComponent(route.from)}&to=${encodeURIComponent(route.to)}&airline=${encodeURIComponent(route.airline)}`}
                     className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
                   >
                     <span>Instant Quote</span>
                     <ArrowRight className="size-3" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

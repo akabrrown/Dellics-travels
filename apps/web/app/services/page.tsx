@@ -216,15 +216,13 @@ export default function ServicesPage() {
                         <ArrowRight className="size-4" />
                       </Link>
                     </Button>
-                    <a
-                      href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to inquire about: ${srv.title}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href={`/inquire?service=${encodeURIComponent(srv.title.toLowerCase().replace(/\s+/g, "_"))}&title=${encodeURIComponent(srv.title)}`}
                       className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 px-5 py-2.5 text-xs font-bold text-navy transition-colors"
                     >
-                      <PhoneCall className="size-3.5 text-brand-orange" />
-                      <span>Instant WhatsApp Quote</span>
-                    </a>
+                      <span>Request Custom Quote</span>
+                      <ArrowRight className="size-3.5 text-brand-orange" />
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Building2,
   Star,
@@ -171,15 +172,13 @@ export default function HotelsPage() {
                     <CheckCircle2 className="size-3.5" />
                     Available on RateHawk
                   </span>
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to reserve stay at: ${stay.title} (${stay.location})`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/inquire?service=hotels&hotel=${encodeURIComponent(stay.title)}&location=${encodeURIComponent(stay.location)}&price=${encodeURIComponent(stay.price)}`}
                     className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
                   >
                     <span>Reserve Stay</span>
                     <ArrowRight className="size-3" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

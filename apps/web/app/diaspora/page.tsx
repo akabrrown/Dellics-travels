@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Heart,
   ShieldCheck,
@@ -170,15 +171,13 @@ export default function DiasporaPage() {
                     <Calendar className="size-3.5" />
                     Available All Year Round
                   </span>
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to book the Homecoming Heritage Experience: ${exp.title}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/inquire?service=diaspora&package=${encodeURIComponent(exp.title)}`}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
                   >
                     <span>Plan Pilgrimage</span>
                     <ArrowRight className="size-3.5" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>

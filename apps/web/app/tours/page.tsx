@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next/types";
 import {
   CheckCircle2,
@@ -257,15 +258,13 @@ export default function ToursPage() {
                     <span className="text-xs text-slate-500 font-normal"> / person</span>
                   </div>
 
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I would like to book the: ${tour.name} (${tour.destination}) package.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/inquire?service=tours&tour=${encodeURIComponent(tour.name)}&destination=${encodeURIComponent(tour.destination)}&price=${encodeURIComponent(tour.price)}`}
                     className="inline-flex items-center gap-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-6 py-2.5 text-sm shadow-md transition-all"
                   >
                     <span>Inquire Package</span>
                     <ArrowRight className="size-4" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>
