@@ -4,6 +4,6 @@ import { EsimService } from './esim.service';
 
 @Module({
   controllers: [EsimController],
-  providers: [EsimService]
+  providers: [EsimService],
 })
 export class EsimModule {}

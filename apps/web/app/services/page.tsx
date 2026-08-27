@@ -1,131 +1,243 @@
+import type { Metadata } from "next/types";
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next/types";
+import {
+  Plane,
+  Building2,
+  Compass,
+  Car,
+  FileCheck2,
+  Briefcase,
+  Heart,
+  CheckCircle2,
+  ArrowRight,
+  PhoneCall,
+} from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
-import { ContentSections, type ContentSection } from "@/components/content-sections";
 import { CtaBanner } from "@/components/cta-banner";
+import { Button } from "@/components/ui/button";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Our Services",
+  title: "All Travel Services & Concierge Solutions",
   description:
-    "Dellics Travels Ghana services — affordable flights, Ghana heritage tours, hotel booking, airport transfers, corporate travel management and travel insurance. One agency, all your travel needs.",
+    "Dellics Travels full service travel offerings — IATA flight ticketing, 2.5M+ hotels, international tour packages, VIP airport transfers, visa assistance, and corporate accounts.",
 };
 
-const SECTIONS: ContentSection[] = [
+const ALL_SERVICES = [
   {
-    heading: "Complete Travel Solutions Under One Roof",
-    paragraphs: [
-      "From your first flight to your last transfer home — Dellics Travels takes care of every detail so you can enjoy every moment",
+    title: "International Flight Ticketing",
+    badge: "Official IATA Agency",
+    icon: Plane,
+    image: "/images/services/plane.jpg",
+    href: "/flights",
+    summary:
+      "Direct GDS ticketing with all major global airlines including Emirates, Qatar Airways, Delta Air Lines, British Airways, KLM, Ethiopian Airlines, and RwandAir.",
+    features: [
+      "Same-day electronic ticket issuance",
+      "Special wholesale group and family fares",
+      "Seat selection & extra baggage allowance concierge",
+      "24/7 schedule rebooking & flight disruption support",
     ],
   },
   {
-    heading: "Affordable Flight Booking",
-    paragraphs: [
-      "We compare prices across all major airlines to get you the best rate on domestic and international flights. Economy, business and first class — we handle it all. Our agents are available 24/7 for any flight emergencies.",
-    ],
-    bullets: [
-      "Best price guarantee",
-      "All major airlines covered",
-      "Group & corporate bookings",
-    ],
-  },
-  {
-    heading: "Ghana Heritage Tours",
-    paragraphs: [
-      "Cape Coast Castle, Kakum Canopy Walk, Nkrumah Mausoleum, Slave River — our expert local guides bring Ghana's rich history and natural beauty alive with authentic, deeply personal storytelling.",
-    ],
-    bullets: [
-      "Expert local guides",
-      "Custom & group tour packages",
-      "All entry fees & transport included",
+    title: "Hotels & Airbnb Stays Worldwide",
+    badge: "RateHawk Live Network",
+    icon: Building2,
+    image: "/images/services/hotel-and-airbnb.jpg",
+    href: "/hotels",
+    summary:
+      "Over 2.5 million verified luxury hotels, boutique serviced apartments, beach resorts, and private villas across 190+ countries with best rate guarantee.",
+    features: [
+      "Zero hidden resort fees or unexpected city taxes",
+      "Verified guest reviews and pre-screened cleanliness",
+      "Instant server-side booking confirmation",
+      "Flexible cancellation and date modification options",
     ],
   },
   {
-    heading: "Perfect Accommodation",
-    paragraphs: [
-      "Whether you need a luxury hotel in Accra, a charming Airbnb near Cape Coast or a budget guesthouse in Tema — we find you the best stay at the best price. Worldwide coverage included.",
-    ],
-    bullets: [
-      "Luxury, boutique & budget options",
-      "Ghana & worldwide coverage",
-      "Best rate guarantee",
-    ],
-  },
-  {
-    heading: "Airport Transfers",
-    paragraphs: [
-      "Professional meet-and-greet at Kotoka International Airport. Comfortable, punctual vehicles for individuals and groups — all sizes catered for.",
+    title: "Curated International Tour Packages",
+    badge: "Handcrafted Itineraries",
+    icon: Compass,
+    image: "/images/africa/serengeti-national-park.jpg",
+    href: "/tours",
+    summary:
+      "Signature guided safari holidays, romantic escapes, cultural heritage expeditions, and shopping breaks across Africa, Europe, the Middle East, and Asia.",
+    features: [
+      "Guaranteed departures with certified local guides",
+      "All-inclusive packages (flights, stays, tours & transfers)",
+      "Cape Town, Safari Valley, Dubai, Zanzibar, Kenya & Paris",
+      "Custom private group & corporate retreat itineraries",
     ],
   },
   {
-    heading: "Corporate Travel",
-    paragraphs: [
-      "End-to-end business travel management — multi-destination bookings, visa support, hotel coordination and a dedicated account manager for your company.",
+    title: "VIP Airport Transfers & Fleet Hire",
+    badge: "Flight-Tracked Fleet",
+    icon: Car,
+    image: "/images/services/airport-transfer-services.jpg",
+    href: "/transfers",
+    summary:
+      "Punctual, stress-free meet-and-greet airport pickups at Kotoka International Airport (ACC) and executive intercity transit throughout Ghana.",
+    features: [
+      "Real-time flight delay tracking & automatic adjustment",
+      "Executive sedans, luxury 4x4 SUVs, and VIP mini coaches",
+      "Sanitized, chilled AC vehicles with bottled water & Wi-Fi",
+      "Fixed upfront transparent rates without hidden fees",
     ],
   },
   {
-    heading: "Visa Assistance",
-    paragraphs: [
-      "Expert visa processing and consultation for all destinations. We handle documentation, appointments and embassy submissions for hassle-free travel.",
+    title: "Visa Assistance & Advisory",
+    badge: "99.4% Approval Record",
+    icon: FileCheck2,
+    image: "/images/services/documentation-support.jpg",
+    href: "/visa",
+    summary:
+      "Professional visa document curation, financial profile assessment, embassy appointment booking, and mock consular interview coaching.",
+    features: [
+      "UK, USA B1/B2, Canada TRV & Schengen short-stay visas",
+      "Dubai 30/60 days & South Africa electronic visas",
+      "Thorough financial & employment paperwork audit",
+      "Ethical, compliant, and transparent legal advisory",
     ],
   },
   {
-    heading: "Diaspora Tourism",
-    paragraphs: [
-      "Specialized heritage tours for the African diaspora. Connect with your roots through authentic cultural experiences and historical journeys.",
+    title: "Corporate Travel Management",
+    badge: "Enterprise Business Accounts",
+    icon: Briefcase,
+    image: "/images/services/corporate-travel-management.jpg",
+    href: "/corporate",
+    summary:
+      "Comprehensive business travel solutions for Ghanaian enterprises, multinational corporations, diplomatic missions, and NGOs.",
+    features: [
+      "Dedicated corporate travel account manager 24/7",
+      "Consolidated monthly invoicing & transparent reporting",
+      "Strict corporate travel budget and policy enforcement",
+      "Trade mission & multi-city conference group logistics",
     ],
   },
-];
-
-const SERVICE_CARDS = [
-  { title: "Flight Booking", copy: "Best fares on all major airlines, issued same day.", href: "/flights", image: "/images/services/plane.jpg" },
-  { title: "Hotels & Airbnb", copy: "Verified stays for every budget, booked server-side.", href: "/hotels", image: "/images/services/hotel-and-airbnb.jpg" },
-  { title: "Tours & Packages", copy: "Group and private tours across five continents.", href: "/tours", image: "/images/services/kenya-safari-adventure.jpg" },
-  { title: "Airport Transfers", copy: "On-time pickups with professional drivers.", href: "/transfers", image: "/images/services/airport-transfer-services.jpg" },
-  { title: "Visa Assistance", copy: "Document guidance and appointment support.", href: "/visa", image: "/images/services/documentation-support.jpg" },
-  { title: "Corporate Travel", copy: "Managed travel programmes for teams.", href: "/corporate", image: "/images/services/corporate-travel-management.jpg" },
-  { title: "Diaspora Tourism", copy: "Heritage journeys connecting you with your roots.", href: "/diaspora", image: "/images/africa/cape-coast-castle.jpg" },
+  {
+    title: "Diaspora Homecoming & Heritage Tourism",
+    badge: "Beyond The Return Partner",
+    icon: Heart,
+    image: "/images/africa/cape-coast-castle.jpg",
+    href: "/diaspora",
+    summary:
+      "Deeply meaningful, transformative ancestral pilgrimages designed for the African diaspora to reconnect with their roots, history, and people in Ghana.",
+    features: [
+      "Cape Coast & Elmina Castle Door of Return pilgrimage",
+      "Assin Manso Slave River sacred bath & memorial",
+      "Authentic traditional naming ceremony by village chiefs",
+      "Ashanti Kingdom, Bonwire Kente weaving & cultural stays",
+    ],
+  },
 ];
 
 export default function ServicesPage() {
   return (
     <>
       <PageHero
-        title="Our Travel Services"
-        subtitle="Everything you need for an unforgettable journey — flights, tours, hotels, transfers, corporate travel and insurance"
+        title="Comprehensive World-Class Travel Services"
+        subtitle="One accredited partner for every travel need — flights, luxury stays, guided safaris, airport chauffeurs, visas, and corporate management."
+        badge="Accredited Travel Solutions"
+        image="/images/services/plane.jpg"
+        breadcrumbs={[{ label: "Services" }]}
       />
-      <ContentSections sections={SECTIONS} />
 
-      <section className="mx-auto max-w-7xl px-4 pb-20">
-        <SectionHeading eyebrow="What We Do" title="Explore Our Services" />
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICE_CARDS.map((service) => (
-            <Link
-              key={service.href}
-              href={service.href}
-              className="group overflow-hidden rounded-card border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-lg"
-            >
-              <div className="relative h-44">
-                <Image
-                  src={service.image}
-                  alt={service.title}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
-                />
+      {/* Services Grid */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+        <SectionHeading
+          eyebrow="Our Expertise"
+          title="Engineered For Comfort & Complete Reliability"
+          subtitle="Explore our specialized travel verticals designed to deliver unmatched value and peace of mind."
+        />
+
+        <div className="mt-14 space-y-12">
+          {ALL_SERVICES.map((srv, idx) => {
+            const Icon = srv.icon;
+            const isEven = idx % 2 === 0;
+
+            return (
+              <div
+                key={srv.title}
+                className={`flex flex-col lg:flex-row gap-8 items-center rounded-3xl bg-white border border-slate-200/80 p-6 sm:p-8 shadow-sm transition-all duration-300 hover:shadow-xl ${
+                  isEven ? "" : "lg:flex-row-reverse"
+                }`}
+              >
+                {/* Image Section */}
+                <div className="relative h-64 lg:h-80 w-full lg:w-1/2 overflow-hidden rounded-2xl bg-slate-100 shrink-0">
+                  <Image
+                    src={srv.image}
+                    alt={srv.title}
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/70 via-transparent to-transparent" />
+                  <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3.5 py-1 text-xs font-bold text-white shadow-md">
+                    {srv.badge}
+                  </span>
+                </div>
+
+                {/* Content Section */}
+                <div className="flex flex-1 flex-col justify-between py-2">
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="flex size-10 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
+                        <Icon className="size-5" />
+                      </div>
+                      <h3 className="font-display text-2xl font-bold text-navy">
+                        {srv.title}
+                      </h3>
+                    </div>
+
+                    <p className="text-sm leading-relaxed text-slate-600">
+                      {srv.summary}
+                    </p>
+
+                    <div className="mt-6 border-t border-slate-100 pt-4">
+                      <p className="text-xs font-bold uppercase tracking-wider text-navy mb-2.5">
+                        Key Service Features:
+                      </p>
+                      <ul className="grid gap-2 sm:grid-cols-2 text-xs text-slate-700">
+                        {srv.features.map((feat) => (
+                          <li key={feat} className="flex items-start gap-2">
+                            <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-4">
+                    <Button asChild className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold">
+                      <Link href={srv.href} className="flex items-center gap-2">
+                        <span>Learn More</span>
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    </Button>
+                    <a
+                      href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I want to inquire about: ${srv.title}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 px-5 py-2.5 text-xs font-bold text-navy transition-colors"
+                    >
+                      <PhoneCall className="size-3.5 text-brand-orange" />
+                      <span>Instant WhatsApp Quote</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="p-5">
-                <h3 className="font-display text-lg font-semibold text-navy">{service.title}</h3>
-                <p className="mt-1 text-sm text-slate-body">{service.copy}</p>
-              </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       <CtaBanner
-        title="Ready to Plan Your Trip?"
-        copy="Contact our travel experts today and let us build you the perfect travel experience at an unbeatable price."
+        title="Need a Combination of Multiple Services?"
+        copy="Our travel specialists can bundle your international flights, luxury hotel stays, guided day tours, airport chauffeur pickups, and visa consultation under one unified quote."
+        label="Request Multi-Service Package"
+        href="/inquire"
       />
     </>
   );

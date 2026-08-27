@@ -1,56 +1,83 @@
 import type { Metadata } from "next/types";
+import { FileCheck2, CreditCard, RotateCcw, AlertTriangle, Scale, Mail } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
-import { ContentSections } from "@/components/content-sections";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Terms of Service | Dellics Travels",
+  title: "Terms of Service & Booking Conditions",
+  description:
+    "Dellics Travels Booking Terms & Conditions. Transparent guidelines on airline ticket issuance, cancellations, refunds, deposits, and traveler responsibilities.",
 };
+
+const TERMS = [
+  {
+    icon: Scale,
+    title: "1. Acceptance of Terms & Agency Scope",
+    text: "By engaging Dellics Travels for airline ticketing, hotel accommodation, tour packages, visa consultation, or airport transfers, you agree to be bound by these Booking Terms & Conditions. Dellics Travels acts as a licensed IATA travel management agent (#5921820) and tour operator in Ghana.",
+  },
+  {
+    icon: CreditCard,
+    title: "2. Quotations, Pricing & Payment Terms",
+    text: "Airline seat fares and hotel room rates are subject to live inventory changes and carrier tariff updates until full payment is received and official electronic tickets or hotel vouchers are issued. We accept payments in Ghanaian Cedi (GHS), USD, EUR, and GBP through Paystack (Momo, Bank Cards) and verified direct bank transfers.",
+  },
+  {
+    icon: RotateCcw,
+    title: "3. Cancellations, Rebooking & Refund Policy",
+    text: "Cancellation, re-routing, and refund conditions are governed by the specific fare rules established by the respective airline, hotel, or tour provider. Dellics Travels facilitates ticket revalidation and refund claims on your behalf. Where tickets are non-refundable by airline policy, airline vouchers or partial tax refunds will be pursued. Tour cancellations require a minimum of 48 hours notice.",
+  },
+  {
+    icon: FileCheck2,
+    title: "4. Passports, Visas & Health Entry Regulations",
+    text: "Travelers are legally responsible for holding valid travel documents (passports with at least 6 months validity from return date), transit visas, and mandatory health certificates. While Dellics provides professional visa consultation and document checks, sovereign embassies retain sole authority over final visa approvals and entry permissions.",
+  },
+  {
+    icon: AlertTriangle,
+    title: "5. Force Majeure & Flight Disruptions",
+    text: "Dellics Travels is not liable for travel disruptions caused by severe weather events, airport strikes, airline operational delays, or acts of God. In the event of airline schedule changes, our 24/7 ticketing desk actively coordinates alternate flights and rebooking assistance.",
+  },
+  {
+    icon: Mail,
+    title: "6. Customer Support & Disputes",
+    text: `For booking modifications, inquiries, or complaints, reach our client relations desk at ${SITE.email} or call ${SITE.phoneDisplay}. All contracts are governed under the laws of the Republic of Ghana.`,
+  },
+];
 
 export default function TermsPage() {
   return (
     <>
-      <PageHero title="Terms of Service" subtitle="Last updated: July 2025" />
-      <ContentSections
-        sections={[
-          {
-            heading: "1. Acceptance of Terms",
-            paragraphs: [
-              "By using the Dellics Travels website or engaging our services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.",
-            ],
-          },
-          {
-            heading: "2. Booking & Payments",
-            paragraphs: [
-              "All bookings made through Dellics Travels are subject to availability and confirmation. Prices quoted are valid at the time of booking and may change due to airline tariff changes. Full payment or an agreed deposit is required to confirm all bookings.",
-            ],
-          },
-          {
-            heading: "3. Cancellations & Refunds",
-            paragraphs: [
-              "Cancellation policies vary by airline, hotel and tour operator. Dellics Travels will communicate applicable cancellation terms at the time of booking. Service fees charged by Dellics Travels are generally non-refundable unless otherwise stated. For tour cancellations, a minimum of 48 hours notice is required for any refund consideration.",
-            ],
-          },
-          {
-            heading: "4. Travel Documents",
-            paragraphs: [
-              "It is the traveler's responsibility to ensure they hold a valid passport, required visas and any other travel documentation required for their destination. Dellics Travels provides guidance but accepts no liability for refused entry due to invalid or missing travel documents.",
-            ],
-          },
-          {
-            heading: "5. Liability",
-            paragraphs: [
-              "Dellics Travels acts as an agent for airlines, hotels and tour operators. We are not responsible for any delays, cancellations, accidents or losses caused by third-party service providers. We strongly recommend purchasing comprehensive travel insurance for all trips.",
-            ],
-          },
-          {
-            heading: "6. Contact",
-            paragraphs: [
-              "For any questions regarding these terms, contact us at info@dellicstravels.com or call +233 55 205 4174.",
-            ],
-          },
-        ]}
+      <PageHero
+        title="Terms of Service & Booking Conditions"
+        subtitle="Last Updated: August 2026 · Transparent terms governing your travel bookings, flight ticketing, and tour packages."
+        badge="Legal & Compliance"
+        image="/images/services/plane.jpg"
+        breadcrumbs={[{ label: "Terms of Service" }]}
       />
+
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20">
+        <div className="space-y-6">
+          {TERMS.map((term) => {
+            const Icon = term.icon;
+            return (
+              <div
+                key={term.title}
+                className="rounded-3xl bg-white border border-slate-200/80 p-8 shadow-sm"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange shrink-0">
+                    <Icon className="size-5" />
+                  </div>
+                  <h2 className="font-display text-lg font-bold text-navy">
+                    {term.title}
+                  </h2>
+                </div>
+                <p className="text-xs sm:text-sm leading-relaxed text-slate-600 pl-13">
+                  {term.text}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
     </>
   );
 }

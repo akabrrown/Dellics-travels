@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,12 +116,10 @@ export function FlightSearchWidget() {
           <p role="alert" className="rounded-field bg-alert-tint px-4 py-2 text-sm text-alert">{error}</p>
         ) : null}
 
-        <Button type="submit" size="lg" className="w-full rounded-pill bg-brand-orange hover:bg-brand-orange/90">
-          Continue on WhatsApp
+        <Button type="submit" size="lg" className="w-full rounded-pill bg-brand-orange hover:bg-brand-orange/90 font-bold text-white shadow-lg flex items-center justify-center gap-2">
+          <Search className="size-4" />
+          <span>Search flights</span>
         </Button>
-        <p className="text-center text-xs text-slate-body">
-          Your trip summary opens in WhatsApp — our agents reply with live options and fares.
-        </p>
       </div>
     </form>
   );

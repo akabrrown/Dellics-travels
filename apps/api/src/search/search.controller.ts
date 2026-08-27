@@ -20,7 +20,6 @@ export class SearchController {
     return this.searchService.getHomeDeals(query);
   }
 
-
   @Get('hotels')
   async searchHotels(@Query() query: any) {
     return this.searchService.searchHotels(query);

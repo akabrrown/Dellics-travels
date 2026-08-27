@@ -272,7 +272,7 @@ export const REGIONS: Region[] = [
         name: "Berlin History & Culture",
         image: "/images/europe/berlin-history-and-culture.jpg",
         caption:
-          "Germany's dynamic capital with rich history, from the Berlin Wall to the Brandenburg Gate. Explore world-class museums, vibrant nightlife, and cutting-edge art and culture scenes.",
+          "Germany's dynamic capital with rich history, from the Berlin Wall to the Brandenburg Gate. Explore world-class museums, vibrant nightlife, and contemporary art and culture scenes.",
       },
       {
         name: "Romantic Road",

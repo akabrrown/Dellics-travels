@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Req, Headers, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Headers,
+  BadRequestException,
+} from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import type { Request } from 'express';
 
@@ -7,7 +14,14 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('create-intent')
-  async createPaymentIntent(@Body() createIntentDto: { amount: number; currency?: string; bookingId?: string }) {
+  async createPaymentIntent(
+    @Body()
+    createIntentDto: {
+      amount: number;
+      currency?: string;
+      bookingId?: string;
+    },
+  ) {
     if (!createIntentDto.amount) {
       throw new BadRequestException('Amount is required');
     }
@@ -19,7 +33,10 @@ export class PaymentsController {
   }
 
   @Post('webhook')
-  async handleWebhook(@Req() req: Request, @Headers('stripe-signature') signature: string) {
+  async handleWebhook(
+    @Req() req: Request,
+    @Headers('stripe-signature') signature: string,
+  ) {
     if (!signature) {
       throw new BadRequestException('Missing stripe-signature header');
     }

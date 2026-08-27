@@ -5,7 +5,10 @@ import * as dotenv from 'dotenv';
 dotenv.config({ override: true });
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   constructor() {
     super({
       datasourceUrl: process.env.DATABASE_URL,

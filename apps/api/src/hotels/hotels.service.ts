@@ -97,11 +97,14 @@ export class HotelsService {
   private images(value: unknown): string[] {
     if (Array.isArray(value)) {
       return value
-        .map((img) => (typeof img === 'string' ? img : img?.url ?? img?.path ?? ''))
+        .map((img) =>
+          typeof img === 'string' ? img : (img?.url ?? img?.path ?? ''),
+        )
         .filter(Boolean);
     }
     if (typeof value === 'string') return [value];
-    if (value && typeof (value as any).url === 'string') return [(value as any).url];
+    if (value && typeof (value as any).url === 'string')
+      return [(value as any).url];
     return [];
   }
 }

@@ -1,35 +1,46 @@
 import type { Metadata } from "next/types";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Globe2,
+  Heart,
+  Target,
+} from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
-import { ContentSections } from "@/components/content-sections";
+import { AccreditationStrip } from "@/components/accreditation-strip";
 import { CtaBanner } from "@/components/cta-banner";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "About Us",
+  title: "About Dellics Travels — Licensed Travel Agency in Ghana",
   description:
-    "About Dellics Travels — Ghana's trusted travel agency. Learn our story, mission, values and the expert team behind your unforgettable travel experiences.",
+    "Learn about Dellics Travels: IATA-accredited agency based in Tema Devtraco Estate, Ghana. Our mission, values, and experienced travel management team.",
 };
 
 const DRIVERS = [
   {
+    icon: Target,
     name: "Our Mission",
-    copy: "To provide affordable, reliable and expertly curated travel services that create meaningful connections between travelers and the incredible destinations they explore across Africa and the world.",
+    copy: "To deliver transparent, reliable and expertly curated travel services that create meaningful connections between travelers and the world's most incredible destinations — with zero friction and exceptional personal care.",
   },
   {
+    icon: Globe2,
     name: "Our Vision",
-    copy: "To be Africa's most trusted travel agency known for outstanding customer service, unbeatable value and unforgettable experiences that bring people closer to the world's rich culture and history.",
+    copy: "To be Africa's premier, most dependable travel brand, bridging the gap between local travelers, the global diaspora, and the world through world-class technology, licensing, and warm Ghanaian hospitality.",
   },
   {
-    name: "Our Values",
-    copy: "Integrity in every booking. Personalized service for every traveler. Respect for the cultures and histories we showcase. Excellence in everything we do.",
+    icon: Heart,
+    name: "Our Core Values",
+    copy: "Absolute integrity in ticketing pricing. Zero hidden fees. Deep historical reverence for diaspora heritage travel. Uncompromising customer dedication 24 hours a day, 7 days a week.",
   },
 ];
 
 const STATS = [
-  { value: "3,000+", label: "Happy Travelers" },
-  { value: "40+", label: "Destinations Covered" },
-  { value: "4.9", label: "Client Rating" },
-  { value: "24/7", label: "Support Available" },
+  { value: "3,000+", label: "Happy Travelers", sub: "Worldwide Trips" },
+  { value: "40+", label: "Destinations", sub: "Across 5 Continents" },
+  { value: "99.4%", label: "Visa Success", sub: "Consular Advisory" },
+  { value: "24/7", label: "Live Concierge", sub: "Instant WhatsApp Support" },
 ];
 
 export default function AboutPage() {
@@ -37,57 +48,133 @@ export default function AboutPage() {
     <>
       <PageHero
         title="About Dellics Travels"
-        subtitle="Ghana's trusted travel partner — crafting unforgettable journeys with passion, expertise & genuine care"
+        subtitle="Ghana's accredited travel management firm — organizing international itineraries with passion, licensing, and personalized care."
+        badge="IATA #5921820 · GTA Licensed"
+        image="/images/africa/accra-city-experience.jpg"
+        breadcrumbs={[{ label: "About Us" }]}
       />
 
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <SectionHeading eyebrow="Our Story" title="Born from a Passion for Travel" align="left" />
-        <ContentSections
-          sections={[
-            {
-              paragraphs: [
-                "Dellics Travels was founded with a single mission to make quality travel accessible, affordable and deeply meaningful especially for those journeying to discover Africa's rich heritage and beyond.",
-                "Based in Tema, Ghana, we specialize in everything from affordable international flight tickets to immersive tours across Africa and the world. From Kenya safaris and Zanzibar beaches to South Africa adventures, Dubai luxury and Ghana heritage sites like Cape Coast Castle and Kakum National Park. We also serve corporate clients with full travel management solutions.",
-                "Our team of experienced travel consultants brings genuine local knowledge, trusted airline connections, and a personal touch that larger agencies simply can't match. When you travel with Dellics, you travel with people who care.",
-              ],
-            },
-          ]}
-        />
-      </div>
+      {/* Brand Story Section */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+        <div className="grid gap-12 lg:grid-cols-2 items-center">
+          <div>
+            <SectionHeading
+              align="left"
+              eyebrow="Our Story"
+              title="Born from a Passion to Connect People to the World"
+              subtitle="From Tema, Ghana to every major capital across Africa, Europe, Asia, and the Americas."
+            />
 
-      <section className="bg-navy/5 py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <SectionHeading eyebrow="What Drives Us" title="Our Mission, Vision & Values" />
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {DRIVERS.map((driver) => (
-              <div key={driver.name} className="rounded-card border border-black/5 bg-white p-8 shadow-sm">
-                <h3 className="font-display text-xl font-semibold text-navy">{driver.name}</h3>
-                <p className="mt-3 text-slate-body">{driver.copy}</p>
-              </div>
-            ))}
+            <div className="mt-6 space-y-4 text-sm leading-relaxed text-slate-600">
+              <p>
+                Dellics Travels was founded with a singular conviction: that travel should be transparent, deeply enriching, and completely free from stress. Whether an executive traveling for urgent international trade meetings, a family booking their dream Dubai vacation, or a member of the diaspora walking through the historic Door of Return in Cape Coast Castle — our team stands beside you every step of the way.
+              </p>
+              <p>
+                Headquartered at <strong className="text-navy">Devtraco Estate, Tema Community 25, Greater Accra</strong>, we combine direct official <strong className="text-brand-orange">IATA Accreditation (#5921820)</strong> and <strong className="text-brand-orange">Ghana Tourism Authority (GTA)</strong> licensing with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).
+              </p>
+              <p>
+                When you book with Dellics, you are not dealing with an anonymous algorithm or an unverified broker. You work with certified, passionate travel consultants who actively protect your schedule, your budget, and your safety.
+              </p>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Button asChild className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold">
+                <Link href="/credentials">View Official Licenses & Credentials</Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-full">
+                <Link href="/contact">Visit Our Office</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative h-[480px] overflow-hidden rounded-3xl border border-slate-200/80 shadow-xl">
+            <Image
+              src="/images/services/ghana-heritage-airbnb.jpg"
+              alt="Dellics Travels Heritage"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 text-white">
+              <span className="rounded-full bg-brand-orange px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                Official Headquarters
+              </span>
+              <p className="mt-2 font-display text-xl font-bold">
+                Community 25, Devtraco Estate, Tema, Ghana
+              </p>
+              <p className="mt-1 text-xs text-white/80">
+                P.O. Box CO 2686, Tema · Reg: BN195150524 · IATA #5921820
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <SectionHeading eyebrow="By The Numbers" title="Trusted by Thousands" />
-          <div className="mt-10 grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="rounded-card bg-navy/5 p-8">
-                <p className="font-display text-5xl font-extrabold text-brand-orange">{stat.value}</p>
-                <p className="mt-2 font-semibold text-navy">{stat.label}</p>
-              </div>
-            ))}
+      {/* Mission, Vision & Values */}
+      <section className="bg-slate-50 py-24 border-y border-slate-200/70">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            eyebrow="What Drives Us"
+            title="Our Guiding Principles & Commitments"
+            subtitle="The foundational standards that define every interaction, itinerary, and ticket we issue."
+          />
+
+          <div className="mt-14 grid gap-8 md:grid-cols-3">
+            {DRIVERS.map((driver) => {
+              const Icon = driver.icon;
+              return (
+                <div
+                  key={driver.name}
+                  className="rounded-3xl bg-white p-8 border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-brand-orange/30"
+                >
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-brand-orange/10 text-brand-orange mb-5">
+                    <Icon className="size-6" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold text-navy mb-3">
+                    {driver.name}
+                  </h3>
+                  <p className="text-xs sm:text-sm leading-relaxed text-slate-600">
+                    {driver.copy}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
+      </section>
+
+      {/* Stats Counter Strip */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
+          {STATS.map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-3xl bg-white p-6 border border-slate-200/80 shadow-sm"
+            >
+              <p className="font-display text-4xl sm:text-5xl font-extrabold text-brand-orange">
+                {stat.value}
+              </p>
+              <p className="mt-2 text-sm font-bold text-navy">
+                {stat.label}
+              </p>
+              <p className="text-xs text-slate-500">
+                {stat.sub}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Accreditation Strip */}
+      <section className="bg-slate-50 py-16 border-y border-slate-200/70">
+        <AccreditationStrip />
       </section>
 
       <CtaBanner
-        title="Ready to Travel with Us?"
-        copy="Let our expert team plan your perfect Ghana experience or international trip at an unbeatable price."
-        label="Contact Us"
-        href="/contact"
+        title="Ready to Travel With Ghana's Most Trusted Agency?"
+        copy="Contact our licensed travel consultants today to build your bespoke itinerary with guaranteed transparent pricing."
+        label="Start Your Free Consultation"
+        href="/inquire"
       />
     </>
   );

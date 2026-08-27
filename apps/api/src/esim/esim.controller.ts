@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Query, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { EsimService } from './esim.service';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
@@ -15,10 +23,7 @@ export class EsimController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('order')
-  async createOrder(
-    @Req() req: Request,
-    @Body() body: { packageId: string }
-  ) {
+  async createOrder(@Req() req: Request, @Body() body: { packageId: string }) {
     const user = req.user as any;
     // In a real app, we extract user ID from the JWT token.
     // For this prototype, we'll use a dummy ID if user is missing, or the ID from token

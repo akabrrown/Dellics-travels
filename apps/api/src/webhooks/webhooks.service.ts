@@ -11,7 +11,7 @@ export class WebhooksService {
 
     if (event.type === 'payment_intent.succeeded') {
       const paymentIntent = event.data.object;
-      
+
       const payment = await this.prisma.payment.findUnique({
         where: { stripe_payment_intent_id: paymentIntent.id },
       });
@@ -26,7 +26,7 @@ export class WebhooksService {
           where: { id: payment.booking_id },
           data: { status: 'CONFIRMED' },
         });
-        
+
         this.logger.log(`Booking ${payment.booking_id} confirmed via webhook.`);
       }
     }
