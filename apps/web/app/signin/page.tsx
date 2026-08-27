@@ -17,10 +17,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
+
 function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
+  const { signIn } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,18 +45,28 @@ function SignInContent() {
     setLoading(true);
 
     try {
-      // Simulate / Supabase Auth handshake
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      const res = await signIn(email.trim(), password);
+
+      if (res.error) {
+        setError(res.error);
+        setLoading(false);
+        return;
+      }
 
       setSuccess(true);
+      toast.success("Welcome back!", {
+        description: `Signed in as ${email}`,
+      });
+
       setTimeout(() => {
         router.push(redirectUrl);
-      }, 500);
+      }, 400);
     } catch (err: any) {
       setError(err.message || "Invalid email or password. Please verify your credentials.");
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen w-full bg-slate-950 flex">

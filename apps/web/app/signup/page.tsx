@@ -19,8 +19,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
+
 export default function SignUpPage() {
   const router = useRouter();
+  const { signUp } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,18 +63,33 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      // Simulate account creation handshake
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const res = await signUp(
+        email.trim(),
+        password,
+        fullName.trim(),
+        phone.trim(),
+      );
+
+      if (res.error) {
+        setError(res.error);
+        setLoading(false);
+        return;
+      }
 
       setSuccess(true);
+      toast.success("Account created successfully!", {
+        description: `Welcome to Dellics Travels, ${fullName.trim()}!`,
+      });
+
       setTimeout(() => {
-        router.push("/signin?registered=true");
-      }, 700);
+        router.push("/");
+      }, 500);
     } catch (err: any) {
       setError(err.message || "Unable to register account. Please try again.");
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen w-full bg-slate-950 flex">

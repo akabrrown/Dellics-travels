@@ -18,6 +18,10 @@ import {
   Briefcase,
   HeartHandshake,
   User,
+  LogOut,
+  Sparkles,
+  ShieldCheck,
+  MessageSquareQuote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +39,8 @@ import {
 import { NAV_ITEMS } from "@/data/nav";
 import { SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
 
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "/": Home,
@@ -52,6 +58,9 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -60,9 +69,27 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (pathname === "/signin" || pathname === "/signup" || pathname === "/forgot-password") {
+  const handleSignOut = async () => {
+    await signOut();
+    setUserDropdownOpen(false);
+    setMobileOpen(false);
+    toast.success("Signed out successfully", {
+      description: "You have been logged out of your account.",
+    });
+  };
+
+  if (
+    pathname === "/signin" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password"
+  ) {
     return null;
   }
+
+  const userInitial = user?.fullName
+    ? user.fullName.charAt(0).toUpperCase()
+    : "T";
+  const userFirstName = user?.fullName ? user.fullName.split(" ")[0] : "Traveler";
 
   return (
     <header
@@ -92,7 +119,10 @@ export function SiteHeader() {
         </Link>
 
         {/* Desktop Navigation with Icons */}
-        <nav className="hidden items-center gap-1.5 lg:flex" aria-label="Main Navigation">
+        <nav
+          className="hidden items-center gap-1.5 lg:flex"
+          aria-label="Main Navigation"
+        >
           {NAV_ITEMS.map((item) => {
             const Icon = NAV_ICONS[item.href] || Home;
             return item.children ? (
@@ -101,7 +131,8 @@ export function SiteHeader() {
                   <button
                     className={cn(
                       "group flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 data-[state=open]:bg-white/15 data-[state=open]:text-white transition-all outline-none",
-                      pathname.startsWith(item.href) && "text-brand-orange bg-white/10 font-semibold",
+                      pathname.startsWith(item.href) &&
+                        "text-brand-orange bg-white/10 font-semibold",
                     )}
                   >
                     <Icon className="size-4 text-brand-orange/90 group-hover:text-brand-orange transition-colors" />
@@ -155,7 +186,8 @@ export function SiteHeader() {
                 href={item.href}
                 className={cn(
                   "inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all group",
-                  pathname === item.href && "text-brand-orange bg-white/10 font-semibold",
+                  pathname === item.href &&
+                    "text-brand-orange bg-white/10 font-semibold",
                 )}
               >
                 <Icon
@@ -172,18 +204,95 @@ export function SiteHeader() {
           })}
         </nav>
 
-        {/* Action Group: Separated Login & Inquire CTA */}
+        {/* Action Group: Dynamic Login / User Profile & Inquire CTA */}
         <div className="hidden items-center gap-3 lg:flex">
-          <Link
-            href="/signin"
-            className={cn(
-              "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all border border-white/15",
-              pathname === "/signin" && "text-brand-orange bg-white/10 font-semibold border-brand-orange/40",
-            )}
-          >
-            <User className="size-4 text-brand-orange" />
-            <span>Login</span>
-          </Link>
+          {user ? (
+            /* Logged In User Popover */
+            <Popover open={userDropdownOpen} onOpenChange={setUserDropdownOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className="flex items-center gap-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 px-3.5 py-1.5 text-sm font-semibold text-white transition-all outline-none"
+                  aria-label="User Account Menu"
+                >
+                  <div className="size-7 rounded-full bg-brand-orange flex items-center justify-center text-white text-xs font-bold shadow-xs">
+                    {userInitial}
+                  </div>
+                  <span className="max-w-[120px] truncate">{userFirstName}</span>
+                  <ChevronDown className="size-3.5 text-white/70" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={8}
+                className="w-64 p-2 bg-white rounded-2xl shadow-2xl border border-slate-100 ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-200"
+              >
+                {/* User Header */}
+                <div className="p-3 bg-slate-50 rounded-xl mb-2 border border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="size-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                      {userInitial}
+                    </div>
+                    <div className="overflow-hidden">
+                      <p className="text-xs font-bold text-navy truncate">
+                        {user.fullName}
+                      </p>
+                      <p className="text-[11px] text-slate-500 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-2.5 flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 w-fit">
+                    <ShieldCheck className="size-3" />
+                    <span>Verified Account</span>
+                  </div>
+                </div>
+
+                {/* Account Actions */}
+                <div className="space-y-1">
+                  <Link
+                    href="/inquire"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
+                  >
+                    <MessageSquareQuote className="size-4 text-brand-orange" />
+                    <span>Submit Travel Inquiry</span>
+                  </Link>
+
+                  <a
+                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am logged in as ${user.fullName} (${user.email}) and need concierge support.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600 rounded-lg transition-colors"
+                  >
+                    <PhoneCall className="size-4 text-emerald-600" />
+                    <span>WhatsApp Concierge</span>
+                  </a>
+
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border-t border-slate-100 mt-1"
+                  >
+                    <LogOut className="size-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            /* Logged Out Login Link */
+            <Link
+              href="/signin"
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all border border-white/15",
+                pathname === "/signin" &&
+                  "text-brand-orange bg-white/10 font-semibold border-brand-orange/40",
+              )}
+            >
+              <User className="size-4 text-brand-orange" />
+              <span>Login</span>
+            </Link>
+          )}
 
           <Button
             asChild
@@ -239,17 +348,51 @@ export function SiteHeader() {
                 </div>
               </SheetHeader>
 
-              <nav className="mt-6 flex flex-col gap-1.5" aria-label="Mobile Navigation">
+              {/* Mobile User Status Card if Logged In */}
+              {user && (
+                <div className="mt-4 p-3.5 bg-white/10 rounded-2xl border border-white/15 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="size-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                      {userInitial}
+                    </div>
+                    <div className="overflow-hidden">
+                      <p className="text-xs font-bold text-white truncate">
+                        {user.fullName}
+                      </p>
+                      <p className="text-[10px] text-white/70 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="p-1.5 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 transition-colors"
+                    title="Sign Out"
+                    aria-label="Sign out"
+                  >
+                    <LogOut className="size-4" />
+                  </button>
+                </div>
+              )}
+
+              <nav
+                className="mt-6 flex flex-col gap-1.5"
+                aria-label="Mobile Navigation"
+              >
                 {NAV_ITEMS.map((item) => {
                   const Icon = NAV_ICONS[item.href] || Home;
                   return (
-                    <div key={item.label} className="border-b border-white/5 pb-1.5">
+                    <div
+                      key={item.label}
+                      className="border-b border-white/5 pb-1.5"
+                    >
                       <Link
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className={cn(
                           "flex items-center gap-3 rounded-xl px-3 py-2.5 text-base font-semibold text-white/90 hover:bg-white/10 hover:text-brand-orange transition-colors",
-                          pathname === item.href && "text-brand-orange bg-white/10",
+                          pathname === item.href &&
+                            "text-brand-orange bg-white/10",
                         )}
                       >
                         <div className="flex size-8 items-center justify-center rounded-lg bg-white/10 text-brand-orange shrink-0">
@@ -269,7 +412,8 @@ export function SiteHeader() {
                                 onClick={() => setMobileOpen(false)}
                                 className={cn(
                                   "flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-xs text-white/75 hover:bg-white/5 hover:text-white transition-colors",
-                                  pathname === child.href && "text-brand-orange font-semibold",
+                                  pathname === child.href &&
+                                    "text-brand-orange font-semibold",
                                 )}
                               >
                                 <ChildIcon className="size-3.5 text-brand-orange/80" />
@@ -285,16 +429,27 @@ export function SiteHeader() {
               </nav>
 
               <div className="mt-8 space-y-3 pt-4 border-t border-white/10">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full rounded-full border-white/20 text-white hover:bg-white/10 font-semibold py-3 justify-center gap-2"
-                >
-                  <Link href="/signin" onClick={() => setMobileOpen(false)}>
-                    <User className="size-4 text-brand-orange" />
-                    <span>Client Login</span>
-                  </Link>
-                </Button>
+                {user ? (
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="w-full rounded-full border-rose-400/40 text-rose-300 hover:bg-rose-500/20 font-semibold py-3 justify-center gap-2"
+                  >
+                    <LogOut className="size-4" />
+                    <span>Sign Out</span>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full rounded-full border-white/20 text-white hover:bg-white/10 font-semibold py-3 justify-center gap-2"
+                  >
+                    <Link href="/signin" onClick={() => setMobileOpen(false)}>
+                      <User className="size-4 text-brand-orange" />
+                      <span>Client Login</span>
+                    </Link>
+                  </Button>
+                )}
 
                 <Button
                   asChild

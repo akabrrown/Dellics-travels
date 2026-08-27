@@ -10,9 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { postJson } from "@/lib/api";
 import { inquireSchema } from "@/lib/schemas";
 import { Sparkles } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 export function InquireForm() {
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const [pending, setPending] = useState(false);
 
   // Form State
@@ -26,7 +28,17 @@ export function InquireForm() {
   const [contextBanner, setContextBanner] = useState<string | null>(null);
 
   useEffect(() => {
+    if (user) {
+      if (user.fullName) setName((prev) => prev || user.fullName);
+      if (user.email) setEmail((prev) => prev || user.email);
+      if (user.phone) setPhone((prev) => prev || user.phone || "");
+    }
+  }, [user]);
+
+
+  useEffect(() => {
     const service = searchParams.get("service");
+
     const tour = searchParams.get("tour");
     const hotel = searchParams.get("hotel");
     const vehicle = searchParams.get("vehicle");
