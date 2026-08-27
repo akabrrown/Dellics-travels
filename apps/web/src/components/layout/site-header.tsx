@@ -9,6 +9,7 @@ import {
   PhoneCall,
   ArrowRight,
   ChevronDown,
+  Home,
   Plane,
   Building2,
   Compass,
@@ -36,9 +37,11 @@ import { SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  "/": Home,
   "/flights": Plane,
   "/hotels": Building2,
   "/tours": Compass,
+  "/services": Briefcase,
   "/transfers": Car,
   "/visa": FileCheck2,
   "/corporate": Briefcase,
@@ -88,18 +91,20 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        {/* Desktop Navigation (Home, Flights, Hotels, Tours, Services) */}
+        {/* Desktop Navigation with Icons */}
         <nav className="hidden items-center gap-1.5 lg:flex" aria-label="Main Navigation">
-          {NAV_ITEMS.map((item) =>
-            item.children ? (
+          {NAV_ITEMS.map((item) => {
+            const Icon = NAV_ICONS[item.href] || Home;
+            return item.children ? (
               <Popover key={item.label}>
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
-                      "group flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 data-[state=open]:bg-white/15 data-[state=open]:text-white transition-all outline-none",
+                      "group flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 data-[state=open]:bg-white/15 data-[state=open]:text-white transition-all outline-none",
                       pathname.startsWith(item.href) && "text-brand-orange bg-white/10 font-semibold",
                     )}
                   >
+                    <Icon className="size-4 text-brand-orange/90 group-hover:text-brand-orange transition-colors" />
                     <span>{item.label}</span>
                     <ChevronDown
                       className="size-3.5 opacity-75 transition-transform duration-200 group-data-[state=open]:rotate-180"
@@ -114,7 +119,7 @@ export function SiteHeader() {
                 >
                   <div className="grid gap-1">
                     {item.children.map((child) => {
-                      const Icon = NAV_ICONS[child.href] || Compass;
+                      const ChildIcon = NAV_ICONS[child.href] || Compass;
                       const isActive = pathname === child.href;
                       return (
                         <Link
@@ -135,7 +140,7 @@ export function SiteHeader() {
                                 : "bg-navy/5 text-navy group-hover:bg-[#0A0060] group-hover:text-white",
                             )}
                           >
-                            <Icon className="size-4" />
+                            <ChildIcon className="size-4" />
                           </div>
                           <span>{child.label}</span>
                         </Link>
@@ -149,14 +154,22 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all",
+                  "inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all group",
                   pathname === item.href && "text-brand-orange bg-white/10 font-semibold",
                 )}
               >
-                {item.label}
+                <Icon
+                  className={cn(
+                    "size-4 transition-colors",
+                    pathname === item.href
+                      ? "text-brand-orange"
+                      : "text-brand-orange/80 group-hover:text-brand-orange",
+                  )}
+                />
+                <span>{item.label}</span>
               </Link>
-            ),
-          )}
+            );
+          })}
         </nav>
 
         {/* Action Group: Separated Login & Inquire CTA */}
@@ -226,39 +239,49 @@ export function SiteHeader() {
                 </div>
               </SheetHeader>
 
-              <nav className="mt-6 flex flex-col gap-1" aria-label="Mobile Navigation">
-                {NAV_ITEMS.map((item) => (
-                  <div key={item.label} className="border-b border-white/5 py-1">
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        "block rounded-lg px-3 py-2 text-base font-semibold text-white/90 hover:bg-white/10 hover:text-brand-orange transition-colors",
-                        pathname === item.href && "text-brand-orange bg-white/10",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
+              <nav className="mt-6 flex flex-col gap-1.5" aria-label="Mobile Navigation">
+                {NAV_ITEMS.map((item) => {
+                  const Icon = NAV_ICONS[item.href] || Home;
+                  return (
+                    <div key={item.label} className="border-b border-white/5 pb-1.5">
+                      <Link
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-xl px-3 py-2.5 text-base font-semibold text-white/90 hover:bg-white/10 hover:text-brand-orange transition-colors",
+                          pathname === item.href && "text-brand-orange bg-white/10",
+                        )}
+                      >
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-white/10 text-brand-orange shrink-0">
+                          <Icon className="size-4" />
+                        </div>
+                        <span>{item.label}</span>
+                      </Link>
 
-                    {item.children && (
-                      <div className="ml-4 mt-1 space-y-1 border-l border-white/10 pl-3">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            onClick={() => setMobileOpen(false)}
-                            className={cn(
-                              "block rounded-lg px-2 py-1.5 text-xs text-white/75 hover:bg-white/5 hover:text-white transition-colors",
-                              pathname === child.href && "text-brand-orange font-semibold",
-                            )}
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      {item.children && (
+                        <div className="ml-6 mt-1 space-y-1 border-l border-white/10 pl-3">
+                          {item.children.map((child) => {
+                            const ChildIcon = NAV_ICONS[child.href] || Compass;
+                            return (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={cn(
+                                  "flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-xs text-white/75 hover:bg-white/5 hover:text-white transition-colors",
+                                  pathname === child.href && "text-brand-orange font-semibold",
+                                )}
+                              >
+                                <ChildIcon className="size-3.5 text-brand-orange/80" />
+                                <span>{child.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </nav>
 
               <div className="mt-8 space-y-3 pt-4 border-t border-white/10">
