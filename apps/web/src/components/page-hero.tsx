@@ -41,14 +41,14 @@ export function PageHero({
             src={image}
             alt={title}
             fill
-            className="object-cover opacity-25 scale-105 transform motion-safe:animate-subtle-zoom"
+            className="object-cover opacity-80 scale-105 transform motion-safe:animate-subtle-zoom"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/80 to-navy/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0060]/85 via-[#0A0060]/40 to-black/25" />
         </div>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-navy-dark via-navy to-ink opacity-95">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-orange/15 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0A0060] via-[#140882] to-[#0A0060] opacity-95">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-orange/20 via-transparent to-transparent" />
         </div>
       )}
 

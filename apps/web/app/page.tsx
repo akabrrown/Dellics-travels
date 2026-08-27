@@ -272,7 +272,7 @@ export default function HomePage() {
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/95 via-navy-dark/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0060]/85 via-[#0A0060]/20 to-transparent" />
 
               <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy backdrop-blur-md">
                 {dest.tag}

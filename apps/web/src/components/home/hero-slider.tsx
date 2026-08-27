@@ -65,9 +65,9 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             />
           )}
 
-          {/* Luxury Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/60 to-navy-dark/30" />
-          <div className="absolute inset-0 bg-gradient-to-r from-navy-dark/90 via-navy-dark/40 to-transparent" />
+          {/* Light Cinematic Gradients for clear video/picture visibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0060]/75 via-[#0A0060]/25 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0060]/60 via-[#0A0060]/20 to-transparent" />
 
           {/* Slide Text Content */}
           <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8 pb-28 sm:pb-32">
