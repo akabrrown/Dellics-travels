@@ -6,8 +6,13 @@
   "types": "./index.ts",
   "scripts": {
     "generate": "prisma generate",
-    "push": "prisma db push"
+    "push": "prisma db push",
+    "seed": "tsx prisma/seed.ts"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+
   "dependencies": {
     "@prisma/client": "^6.3.1"
   },
