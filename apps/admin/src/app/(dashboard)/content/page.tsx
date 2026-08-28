@@ -84,7 +84,7 @@ export default function ContentList() {
           </p>
         </div>
         <Link
-          href="/inquire"
+          href="/content/new"
           className="px-5 py-2.5 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 w-fit"
         >
           <Plus className="size-3.5" />
@@ -155,13 +155,12 @@ export default function ContentList() {
                       {pkg.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right space-x-2">
                     <Link
-                      href="/packages"
+                      href={`/content/${pkg.id}`}
                       className="px-3 py-1 rounded-full bg-slate-100 hover:bg-[#0A0060] hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
                     >
-                      <Eye className="size-3" />
-                      <span>Preview</span>
+                      <span>Edit</span>
                     </Link>
                   </td>
                 </tr>
