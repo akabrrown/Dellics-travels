@@ -123,6 +123,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   };
 
+  const fetchDbProfile = async (identifier: { email?: string; id?: string }) => {
+    try {
+      const param = identifier.email
+        ? `email=${encodeURIComponent(identifier.email)}`
+        : identifier.id
+          ? `id=${encodeURIComponent(identifier.id)}`
+          : null;
+      if (!param) return;
+      const res = await fetch(`/api/auth/profile?${param}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.user) {
+          const u = data.user;
+          setUser((prev) => {
+            const merged: AuthProfile = {
+              id: u.id,
+              email: u.email,
+              fullName: u.name,
+              phone: u.phone || prev?.phone || "",
+              role: u.role,
+              membershipTier: u.membership_tier,
+              pointsBalance: u.points_balance,
+              nationality: u.nationality || prev?.nationality || "",
+              homeAirport: u.home_airport || prev?.homeAirport || "",
+              seatPreference: u.seat_preference || prev?.seatPreference || "Window",
+              mealPreference: u.meal_preference || prev?.mealPreference || "Standard / No Restriction",
+              emergencyContact: u.emergency_contact || prev?.emergencyContact || "",
+              emergencyPhone: u.emergency_phone || prev?.emergencyPhone || "",
+              passportNumber: u.passport_number || prev?.passportNumber || "",
+              passportExpiry: u.passport_expiry || prev?.passportExpiry || "",
+              passportCountry: u.passport_country || prev?.passportCountry || "",
+              onboardingCompleted: u.onboarding_completed,
+              savedTravelers: prev?.savedTravelers || [],
+              savedFavorites: prev?.savedFavorites || [],
+              bookings: prev?.bookings || [],
+              currency: prev?.currency || "GHS",
+              notificationPreferences: prev?.notificationPreferences || {
+                whatsapp: true,
+                email: true,
+                priceDrops: true,
+              },
+            };
+            try {
+              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+            } catch {}
+            return merged;
+          });
+          return;
+        }
+      } else if (res.status === 404) {
+        // Account does not exist in live Supabase DB — purge any phantom cached profile
+        setUser(null);
+        setSupabaseUser(null);
+        setSession(null);
+        try {
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+        } catch {}
+      }
+    } catch (err) {
+      console.error("Failed to sync live DB user profile:", err);
+    }
+  };
+
   useEffect(() => {
     // 1. Initial local profile hydration
     let cached: string | null = null;
@@ -137,60 +200,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
 
-    const fetchDbProfile = async (identifier: { email?: string; id?: string }) => {
-      try {
-        const param = identifier.email
-          ? `email=${encodeURIComponent(identifier.email)}`
-          : identifier.id
-            ? `id=${encodeURIComponent(identifier.id)}`
-            : null;
-        if (!param) return;
-        const res = await fetch(`/api/auth/profile?${param}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.user) {
-            const u = data.user;
-            setUser((prev) => {
-              const merged: AuthProfile = {
-                id: u.id,
-                email: u.email,
-                fullName: u.name,
-                phone: u.phone || prev?.phone || "",
-                role: u.role,
-                membershipTier: u.membership_tier,
-                pointsBalance: u.points_balance,
-                nationality: u.nationality || prev?.nationality || "",
-                homeAirport: u.home_airport || prev?.homeAirport || "",
-                seatPreference: u.seat_preference || prev?.seatPreference || "Window",
-                mealPreference: u.meal_preference || prev?.mealPreference || "Standard / No Restriction",
-                emergencyContact: u.emergency_contact || prev?.emergencyContact || "",
-                emergencyPhone: u.emergency_phone || prev?.emergencyPhone || "",
-                passportNumber: u.passport_number || prev?.passportNumber || "",
-                passportExpiry: u.passport_expiry || prev?.passportExpiry || "",
-                passportCountry: u.passport_country || prev?.passportCountry || "",
-                onboardingCompleted: u.onboarding_completed,
-                savedTravelers: prev?.savedTravelers || [],
-                savedFavorites: prev?.savedFavorites || [],
-                bookings: prev?.bookings || [],
-                currency: prev?.currency || "GHS",
-                notificationPreferences: prev?.notificationPreferences || {
-                  whatsapp: true,
-                  email: true,
-                  priceDrops: true,
-                },
-              };
-              try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-              } catch {}
-              return merged;
-            });
-          }
-        }
-      } catch (err) {
-        console.error("Failed to sync live DB user profile:", err);
-      }
-    };
-
     // 2. Fetch active Supabase session safely
     try {
       supabase.auth
@@ -200,24 +209,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(currentSession);
           setSupabaseUser(currentSession?.user ?? null);
           if (currentSession?.user) {
-            const profile = extractProfile(currentSession.user);
-            if (profile) {
-              setUser((prev) => (prev ? { ...profile, ...prev } : profile));
-              fetchDbProfile({ email: currentSession.user.email, id: currentSession.user.id });
-            }
+            fetchDbProfile({ email: currentSession.user.email, id: currentSession.user.id });
           } else if (cached) {
             try {
               const parsed = JSON.parse(cached);
-              if (parsed?.email) fetchDbProfile({ email: parsed.email, id: parsed.id });
-            } catch {}
+              if (parsed?.email) {
+                fetchDbProfile({ email: parsed.email, id: parsed.id });
+              }
+            } catch {
+              localStorage.removeItem(LOCAL_STORAGE_KEY);
+              setUser(null);
+            }
           }
         })
         .catch(() => {
           if (cached) {
             try {
               const parsed = JSON.parse(cached);
-              if (parsed?.email) fetchDbProfile({ email: parsed.email, id: parsed.id });
-            } catch {}
+              if (parsed?.email) {
+                fetchDbProfile({ email: parsed.email, id: parsed.id });
+              }
+            } catch {
+              localStorage.removeItem(LOCAL_STORAGE_KEY);
+              setUser(null);
+            }
           }
         })
         .finally(() => {
@@ -226,7 +241,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       setIsLoading(false);
     }
-
 
     // 3. Listen to Auth State Changes safely
     try {
@@ -237,17 +251,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSupabaseUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          const profile = extractProfile(newSession.user);
-          if (profile) {
-            setUser((prev) => (prev ? { ...profile, ...prev } : profile));
-            try {
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
-            } catch {}
-          }
+          fetchDbProfile({ email: newSession.user.email, id: newSession.user.id });
+        } else {
+          setUser(null);
+          try {
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+          } catch {}
         }
         setIsLoading(false);
       });
-
 
       return () => {
         subscription.unsubscribe();
@@ -331,34 +343,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const localProfile: AuthProfile = {
-      id: `usr_${Date.now()}`,
-      email,
-      fullName: (email.split("@")[0] || "Traveler")
-        .replace(/[._-]/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
-      role: "traveler",
-      membershipTier: "EXPLORER",
-      pointsBalance: 500,
-      nationality: "",
-      homeAirport: "",
-      seatPreference: "Window",
-      mealPreference: "Standard / No Restriction",
-      savedTravelers: [],
-      savedFavorites: [],
-      bookings: [],
-      currency: "GHS",
-      notificationPreferences: {
-        whatsapp: true,
-        email: true,
-        priceDrops: true,
-      },
-      onboardingCompleted: true,
-    };
+    const cleanEmail = email.trim().toLowerCase();
 
+    // 1. Supabase Auth authentication
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: cleanEmail,
         password,
       });
 
@@ -371,36 +361,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
           } catch {}
+          await fetchDbProfile({ email: cleanEmail, id: data.user.id });
           return {};
         }
       }
-
-      // If user exists in local profile cache
-      try {
-        const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.email?.toLowerCase() === email.toLowerCase()) {
-            setUser(parsed);
-            return {};
-          }
-        }
-      } catch {}
-
-      // Fallback local auth
-      setUser(localProfile);
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
-      } catch {}
-      return {};
-    } catch {
-      // Graceful fallback for offline / DNS outage
-      setUser(localProfile);
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
-      } catch {}
-      return {};
+    } catch (sbErr) {
+      console.error("Supabase auth sign in error:", sbErr);
     }
+
+    // 2. Check direct PostgreSQL database record
+    try {
+      const res = await fetch(`/api/auth/profile?email=${encodeURIComponent(cleanEmail)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.user) {
+          const u = data.user;
+          const dbProfile: AuthProfile = {
+            id: u.id,
+            email: u.email,
+            fullName: u.name,
+            phone: u.phone || "",
+            role: u.role,
+            membershipTier: u.membership_tier,
+            pointsBalance: u.points_balance,
+            nationality: u.nationality || "",
+            homeAirport: u.home_airport || "",
+            seatPreference: u.seat_preference || "Window",
+            mealPreference: u.meal_preference || "Standard / No Restriction",
+            emergencyContact: u.emergency_contact || "",
+            emergencyPhone: u.emergency_phone || "",
+            passportNumber: u.passport_number || "",
+            passportExpiry: u.passport_expiry || "",
+            passportCountry: u.passport_country || "",
+            onboardingCompleted: u.onboarding_completed,
+            savedTravelers: [],
+            savedFavorites: [],
+            bookings: [],
+            currency: "GHS",
+            notificationPreferences: {
+              whatsapp: true,
+              email: true,
+              priceDrops: true,
+            },
+          };
+          setUser(dbProfile);
+          try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbProfile));
+          } catch {}
+          return {};
+        }
+      }
+    } catch (dbErr) {
+      console.error("Failed to authenticate with database:", dbErr);
+    }
+
+    return { error: "Invalid email or password. No registered account found in database." };
   };
 
   const signUp = async (
@@ -409,93 +424,80 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fullName: string,
     phone?: string,
   ) => {
-    let assignedId = `usr_${Date.now()}`;
+    const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Direct Server-Side DB write to PostgreSQL Supabase Database
     try {
+      // 1. Direct Server-Side DB write to PostgreSQL Supabase Database
       const dbRes = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
+          email: cleanEmail,
           password,
-          fullName,
-          phone,
+          fullName: fullName.trim(),
+          phone: phone ? phone.trim() : undefined,
         }),
       });
+
       const dbData = await dbRes.json();
-      if (dbData?.user?.id) {
-        assignedId = dbData.user.id;
+      if (!dbRes.ok || !dbData?.user?.id) {
+        return { error: dbData?.error || "Failed to create account in database." };
       }
-    } catch (dbErr) {
-      console.error("Database user registration sync attempt:", dbErr);
-    }
 
-    const localProfile: AuthProfile = {
-      id: assignedId,
-      email,
-      fullName,
-      phone: phone || "",
-      role: "traveler",
-      membershipTier: "EXPLORER",
-      pointsBalance: 500,
-      nationality: "",
-      homeAirport: "",
-      seatPreference: "Window",
-      mealPreference: "Standard / No Restriction",
-      savedTravelers: [],
-      savedFavorites: [],
-      bookings: [],
-      currency: "GHS",
-      notificationPreferences: {
-        whatsapp: true,
-        email: true,
-        priceDrops: true,
-      },
-      onboardingCompleted: false,
-    };
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            phone: phone || "",
-            membership_tier: "EXPLORER",
-            points_balance: 500,
-            onboarding_completed: false,
-          },
+      const createdUser = dbData.user;
+      const profile: AuthProfile = {
+        id: createdUser.id,
+        email: createdUser.email,
+        fullName: createdUser.fullName || fullName,
+        phone: createdUser.phone || phone || "",
+        role: createdUser.role || "traveler",
+        membershipTier: createdUser.membershipTier || "EXPLORER",
+        pointsBalance: 500,
+        nationality: "",
+        homeAirport: "",
+        seatPreference: "Window",
+        mealPreference: "Standard / No Restriction",
+        savedTravelers: [],
+        savedFavorites: [],
+        bookings: [],
+        currency: "GHS",
+        notificationPreferences: {
+          whatsapp: true,
+          email: true,
+          priceDrops: true,
         },
-      });
+        onboardingCompleted: false,
+      };
 
-      if (!error && data?.user) {
-        const profile = extractProfile(data.user) || localProfile;
-        setUser(profile);
-        setSupabaseUser(data.user);
-        setSession(data.session);
-        try {
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
-        } catch {}
-        return {};
-      }
+      setUser(profile);
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
+      } catch {}
 
-      // Seamless fallback with database assigned ID
-      setUser(localProfile);
+      // 2. Also register in Supabase Auth if available
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
+        await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              phone: phone || "",
+              membership_tier: "EXPLORER",
+              points_balance: 500,
+              onboarding_completed: false,
+            },
+          },
+        });
       } catch {}
+
       return {};
-    } catch {
-      // Seamless fallback on network/DNS outage with database assigned ID
-      setUser(localProfile);
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
-      } catch {}
-      return {};
+    } catch (err: any) {
+      console.error("Database user registration error:", err);
+      return { error: err.message || "Registration service error." };
     }
   };
+
 
 
   const signOut = async () => {
