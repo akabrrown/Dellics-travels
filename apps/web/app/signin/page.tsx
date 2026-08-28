@@ -136,7 +136,9 @@ function SignInContent() {
                     fill
                     className="object-contain"
                     priority
+                    unoptimized
                   />
+
                 </div>
               </Link>
               <Link

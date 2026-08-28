@@ -159,7 +159,9 @@ export default function SignUpPage() {
                     fill
                     className="object-contain"
                     priority
+                    unoptimized
                   />
+
                 </div>
               </Link>
               <Link

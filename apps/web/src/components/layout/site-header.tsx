@@ -114,7 +114,9 @@ export function SiteHeader() {
               fill
               className="object-contain"
               priority
+              unoptimized
             />
+
           </div>
         </Link>
 
@@ -337,7 +339,9 @@ export function SiteHeader() {
                       alt={SITE.name}
                       fill
                       className="object-contain"
+                      unoptimized
                     />
+
                   </div>
                   <div>
                     <SheetTitle className="text-left text-white font-display text-base font-bold">

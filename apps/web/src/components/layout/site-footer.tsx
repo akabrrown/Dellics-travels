@@ -70,7 +70,9 @@ export function SiteFooter() {
                   alt={`${SITE.name} logo`}
                   fill
                   className="object-contain"
+                  unoptimized
                 />
+
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-white/75 max-w-md">
