@@ -22,7 +22,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "All Travel Services & Concierge Solutions",
   description:
-    "Dellics Travels full service travel offerings — IATA flight ticketing, 2.5M+ hotels, international tour packages, VIP airport transfers, visa assistance, and corporate accounts.",
+    "Dellics Travels full service travel offerings — IATA flight ticketing, 3.3M+ hotels, international tour packages, VIP airport transfers, visa assistance, and corporate accounts.",
 };
 
 const ALL_SERVICES = [
@@ -49,7 +49,8 @@ const ALL_SERVICES = [
     image: "/images/services/hotel-and-airbnb.jpg",
     href: "/hotels",
     summary:
-      "Over 2.5 million verified luxury hotels, boutique serviced apartments, beach resorts, and private villas across 190+ countries with best rate guarantee.",
+      "Over 3.3 million verified luxury hotels, boutique serviced apartments, beach resorts, and private villas across 190+ countries with best rate guarantee.",
+
     features: [
       "Zero hidden resort fees or unexpected city taxes",
       "Verified guest reviews and pre-screened cleanliness",

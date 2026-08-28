@@ -34,7 +34,8 @@ const CREDENTIALS = [
     name: "RateHawk",
     id: "Direct API Partner",
     logo: "/badges/rate-hawk.png",
-    copy: "B2B partnership providing instant booking access to over 2.5 million verified hotels, luxury apartments, and boutique stays across 190+ countries.",
+    copy: "B2B partnership providing instant booking access to over 3.3 million verified hotels, luxury apartments, and boutique stays across 190+ countries.",
+
     guarantee: "Wholesale room rates with verified instant confirmation.",
   },
   {

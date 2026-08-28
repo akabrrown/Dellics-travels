@@ -35,7 +35,8 @@ const CORE_SERVICES = [
   {
     title: "Hotels & Airbnb Stays",
     tag: "Verified Global Stays",
-    copy: "Over 2.5 million verified luxury hotels, boutique apartments & beach resorts worldwide with best rate guarantee.",
+    copy: "Over 3.3 million verified luxury hotels, boutique apartments & beach resorts worldwide with best rate guarantee.",
+
     href: "/hotels",
     image: "/images/services/hotel-and-airbnb.jpg",
     icon: Building2,

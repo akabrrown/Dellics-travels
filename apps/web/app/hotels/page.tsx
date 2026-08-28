@@ -17,7 +17,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Hotels & Airbnb Stays Worldwide",
   description:
-    "Search over 2.5 million verified luxury hotels, boutique apartments & beach resorts worldwide with Dellics Travels' RateHawk partnership.",
+    "Search over 3.3 million verified luxury hotels, boutique apartments & beach resorts worldwide with Dellics Travels' RateHawk partnership.",
 };
 
 const FEATURED_COLLECTIONS = [
@@ -71,7 +71,7 @@ const FEATURED_COLLECTIONS = [
 const HOTEL_PERKS = [
   {
     title: "Direct Wholesale Rates",
-    description: "Enjoy exclusive agency pricing negotiated with over 2.5 million properties globally without inflated retail surcharges.",
+    description: "Enjoy exclusive agency pricing negotiated with over 3.3 million properties globally without inflated retail surcharges.",
   },
   {
     title: "100% Verified Accommodation",
@@ -92,7 +92,8 @@ export default function HotelsPage() {
     <>
       <PageHero
         title="Luxury Hotels & Curated Stays Worldwide"
-        subtitle="Search live availability across 2.5+ million hotels, boutique Airbnbs, safari lodges, and private beach villas with best rate guarantee."
+        subtitle="Search live availability across 3.3+ million hotels, boutique Airbnbs, safari lodges, and private beach villas with best rate guarantee."
+
         badge="Verified Global Stays"
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Airbnb" }]}
