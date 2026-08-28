@@ -11,6 +11,8 @@ const supabaseAnonKey =
   process.env.SUPABASE_ANON_KEY ||
   "";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
