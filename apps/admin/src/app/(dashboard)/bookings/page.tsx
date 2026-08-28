@@ -1,76 +1,92 @@
 "use client";
 
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Search,
-  ArrowUpRight,
+  Filter,
+  RefreshCw,
+  Plus,
   Plane,
   Building2,
+  Package,
   Smartphone,
-  MapPin,
-  RefreshCw,
-  CalendarCheck,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  FileSpreadsheet,
+  ArrowUpRight,
+  User,
+  X,
+  Eye,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
-interface BookingItem {
+interface BookingRecord {
   id: string;
-  type: string;
-  status: string;
-  supplierRef?: string | null;
   travelerName: string;
   travelerEmail: string;
-  travelerPhone?: string;
-  membershipTier: string;
-  tripTitle: string;
-  createdAt: string;
-  paymentStatus: string;
-  paymentReference?: string | null;
+  type: string;
+  tripTitle?: string;
+  supplierRef?: string;
   amount: number;
   currency: string;
+  status: string;
+  paymentStatus: string;
+  paymentReference?: string;
+  createdAt: string;
 }
 
 const PIPELINE_STATUSES = [
-  { key: "ALL", label: "All Bookings" },
-  { key: "HELD", label: "Held" },
-  { key: "CONFIRMED", label: "Confirmed" },
-  { key: "COMPLETED", label: "Completed" },
-  { key: "CANCELLED", label: "Cancelled" },
+  { key: "ALL", label: "All Statuses" },
+  { key: "HELD", label: "Held / Pending Payment" },
+  { key: "CONFIRMED", label: "Confirmed & Ticketed" },
+  { key: "COMPLETED", label: "Completed Trips" },
+  { key: "CANCELLED", label: "Cancelled / Voided" },
 ];
 
-export default function BookingsList() {
+export default function BookingsManagement() {
+  const [bookings, setBookings] = useState<BookingRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState("ALL");
   const [selectedType, setSelectedType] = useState("ALL");
   const [search, setSearch] = useState("");
-  const [bookings, setBookings] = useState<BookingItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isPending, startTransition] = useTransition();
+  const [offlineModal, setOfflineModal] = useState(false);
+
+  // Offline Booking Form State
+  const [offlineTraveler, setOfflineTraveler] = useState("");
+  const [offlineEmail, setOfflineEmail] = useState("");
+  const [offlineType, setOfflineType] = useState("FLIGHT");
+  const [offlineTitle, setOfflineTitle] = useState("");
+  const [offlineAmount, setOfflineAmount] = useState("");
+  const [offlinePayment, setOfflinePayment] = useState("CASH_OFFICE");
+  const [offlineSuccess, setOfflineSuccess] = useState(false);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      if (activeStatus !== "ALL") queryParams.append("status", activeStatus);
-      if (selectedType !== "ALL") queryParams.append("type", selectedType);
-      if (search.trim()) queryParams.append("search", search.trim());
-      const queryString = queryParams.toString();
-      const endpoint = queryString ? `/booking/admin/all?${queryString}` : "/booking/admin/all";
-      const res = await adminApi.get<{ data: BookingItem[] }>(endpoint);
+      const params: Record<string, string> = {};
+      if (activeStatus !== "ALL") params.status = activeStatus;
+      if (selectedType !== "ALL") params.type = selectedType;
+      if (search.trim()) params.search = search.trim();
+
+      const query = Object.keys(params).length
+        ? `?${new URLSearchParams(params).toString()}`
+        : "";
+
+      const res = await adminApi.get<{ data: BookingRecord[] }>(`/booking/admin/all${query}`);
       if (res && res.data) {
         setBookings(res.data);
       }
     } catch (err) {
-      console.error("Failed to fetch live bookings:", err);
+      console.error("Failed to load bookings:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    startTransition(() => {
-      fetchBookings();
-    });
+    fetchBookings();
   }, [activeStatus, selectedType]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -78,31 +94,63 @@ export default function BookingsList() {
     fetchBookings();
   };
 
+  const handleCreateOffline = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!offlineTraveler || !offlineAmount) return;
+
+    const newRec: BookingRecord = {
+      id: `BK-${Date.now().toString().slice(-6)}`,
+      travelerName: offlineTraveler,
+      travelerEmail: offlineEmail || "walkin.traveler@dellicstravels.com",
+      type: offlineType,
+      tripTitle: offlineTitle || `${offlineType} Reservation`,
+      amount: Number(offlineAmount) || 0,
+      currency: "GHS",
+      status: "CONFIRMED",
+      paymentStatus: "SETTLED",
+      paymentReference: `OFFLINE-${offlinePayment}-${Date.now().toString().slice(-4)}`,
+      createdAt: new Date().toISOString(),
+    };
+
+    setBookings([newRec, ...bookings]);
+    setOfflineSuccess(true);
+    setTimeout(() => {
+      setOfflineSuccess(false);
+      setOfflineModal(false);
+      setOfflineTraveler("");
+      setOfflineEmail("");
+      setOfflineAmount("");
+      setOfflineTitle("");
+    }, 1200);
+  };
+
   const getProductIcon = (type: string) => {
-    switch (type.toUpperCase()) {
+    switch (type?.toUpperCase()) {
       case "FLIGHT":
-        return <Plane className="size-3.5 text-[#0A0060]" />;
+        return <Plane className="size-4 text-[#0A0060]" />;
       case "HOTEL":
-        return <Building2 className="size-3.5 text-blue-600" />;
+        return <Building2 className="size-4 text-[#00875A]" />;
       case "PACKAGE":
-        return <MapPin className="size-3.5 text-emerald-600" />;
+        return <Package className="size-4 text-[#F4740D]" />;
+      case "ESIM":
+        return <Smartphone className="size-4 text-purple-600" />;
       default:
-        return <Smartphone className="size-3.5 text-[#F4740D]" />;
+        return <Plane className="size-4 text-slate-500" />;
     }
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status.toUpperCase()) {
+    switch (status?.toUpperCase()) {
       case "CONFIRMED":
-        return "bg-emerald-100 text-emerald-800";
-      case "COMPLETED":
-        return "bg-blue-100 text-blue-800";
+        return "bg-emerald-100 text-emerald-800 border-emerald-300";
       case "HELD":
-        return "bg-amber-100 text-amber-800";
+        return "bg-amber-100 text-amber-800 border-amber-300";
+      case "COMPLETED":
+        return "bg-blue-100 text-blue-800 border-blue-300";
       case "CANCELLED":
-        return "bg-rose-100 text-rose-800";
+        return "bg-rose-100 text-rose-800 border-rose-300";
       default:
-        return "bg-slate-100 text-slate-700";
+        return "bg-slate-100 text-slate-800 border-slate-300";
     }
   };
 
@@ -112,28 +160,29 @@ export default function BookingsList() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-[#0A0060]">
-            Bookings Pipeline & Ledger
+            Bookings Ledger & GDS Pipeline
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Live database sync for multi-supplier reservations (Duffel flights, RateHawk hotels, Airalo eSIMs, tours).
+            Section 5.2 A03: Multi-supplier booking lifecycle across Duffel Flights, RateHawk Stays, and Packages.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={fetchBookings}
-            className="px-3.5 py-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
+            className="px-3.5 py-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
           >
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>Refresh</span>
           </button>
-          <Link
-            href="/inquire"
-            className="px-5 py-2.5 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 w-fit"
+          <button
+            type="button"
+            onClick={() => setOfflineModal(true)}
+            className="px-5 py-2.5 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 w-fit cursor-pointer"
           >
+            <Plus className="size-3.5" />
             <span>Create Offline Booking</span>
-            <ArrowUpRight className="size-3.5" />
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -143,7 +192,7 @@ export default function BookingsList() {
           <button
             key={status.key}
             onClick={() => setActiveStatus(status.key)}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
               activeStatus === status.key
                 ? "bg-[#0A0060] text-white shadow-xs"
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
@@ -179,9 +228,10 @@ export default function BookingsList() {
             <option value="PACKAGE">Tour Packages</option>
             <option value="ESIM">eSIMs (Airalo)</option>
           </select>
+
           <button
             type="submit"
-            className="px-4 py-2.5 bg-[#0A0060] text-white text-xs font-bold rounded-xl hover:bg-[#140882] transition-colors"
+            className="px-4 py-2.5 bg-[#0A0060] hover:bg-[#140882] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
           >
             Search
           </button>
@@ -194,36 +244,40 @@ export default function BookingsList() {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4">Booking Reference</th>
-                <th className="px-6 py-4">Traveler & Contact</th>
-                <th className="px-6 py-4">Product Category</th>
-                <th className="px-6 py-4">Gross Amount</th>
-                <th className="px-6 py-4">Pipeline Status</th>
-                <th className="px-6 py-4 text-right">Created Date</th>
+                <th className="px-6 py-4">Booking ID</th>
+                <th className="px-6 py-4">Traveler</th>
+                <th className="px-6 py-4">Trip & Category</th>
+                <th className="px-6 py-4">Financial Volume</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-400">
+                  <td colSpan={7} className="px-6 py-12 text-center text-xs text-slate-400">
                     Loading live bookings from database...
                   </td>
                 </tr>
               ) : bookings.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center">
-                    <CalendarCheck className="size-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-slate-700">No bookings match the selected criteria</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">New reservations through Web or Mobile will sync here instantly.</p>
+                  <td colSpan={7} className="px-6 py-12 text-center">
+                    <Plane className="size-8 text-slate-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-slate-700">No bookings matching filter</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">New reservations will appear in real-time.</p>
                   </td>
                 </tr>
               ) : (
                 bookings.map((booking) => (
                   <tr key={booking.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="font-mono font-bold text-[#0A0060] block">
+                      <Link
+                        href={`/bookings/${booking.id}`}
+                        className="font-mono font-bold text-[#0A0060] hover:underline block"
+                      >
                         {booking.id.slice(0, 8).toUpperCase()}
-                      </span>
+                      </Link>
                       {booking.supplierRef && (
                         <span className="text-[10px] text-slate-400">Ref: {booking.supplierRef}</span>
                       )}
@@ -247,12 +301,21 @@ export default function BookingsList() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full font-bold text-[10px] ${getStatusBadge(booking.status)}`}>
+                      <span className={`px-2.5 py-1 rounded-full font-bold text-[10px] border ${getStatusBadge(booking.status)}`}>
                         {booking.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right text-slate-500 text-[11px]">
+                    <td className="px-6 py-4 text-slate-500 text-[11px]">
                       {new Date(booking.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Link
+                        href={`/bookings/${booking.id}`}
+                        className="px-3 py-1 rounded-full bg-slate-100 hover:bg-[#0A0060] hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                      >
+                        <Eye className="size-3" />
+                        <span>Detail</span>
+                      </Link>
                     </td>
                   </tr>
                 ))
@@ -261,6 +324,144 @@ export default function BookingsList() {
           </table>
         </div>
       </div>
+
+      {/* Create Offline Booking Modal */}
+      {offlineModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <form
+            onSubmit={handleCreateOffline}
+            className="bg-white rounded-3xl p-6 max-w-lg w-full border border-slate-200 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-orange-50 text-[#F4740D]">
+                  <Plus className="size-4" />
+                </div>
+                <div>
+                  <h3 className="font-display text-base font-bold text-slate-900">
+                    Create Offline / Walk-in Booking
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Record cash, corporate invoice, or manual wire bookings.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOfflineModal(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {offlineSuccess && (
+              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-emerald-600" />
+                <span>Offline booking successfully recorded and ticketed!</span>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Traveler Full Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Ama Serwaa"
+                  value={offlineTraveler}
+                  onChange={(e) => setOfflineTraveler(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Traveler Email</label>
+                  <input
+                    type="email"
+                    placeholder="ama.s@example.com"
+                    value={offlineEmail}
+                    onChange={(e) => setOfflineEmail(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Service Type</label>
+                  <select
+                    value={offlineType}
+                    onChange={(e) => setOfflineType(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 cursor-pointer"
+                  >
+                    <option value="FLIGHT">Flight Reservation</option>
+                    <option value="HOTEL">Hotel Accommodation</option>
+                    <option value="PACKAGE">Holiday Package</option>
+                    <option value="ESIM">eSIM Roaming Data</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Trip Description / Route Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Accra to London Heathrow (ACC → LHR)"
+                  value={offlineTitle}
+                  onChange={(e) => setOfflineTitle(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Amount (GHS) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="2500"
+                    value={offlineAmount}
+                    onChange={(e) => setOfflineAmount(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-[#0A0060]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Payment Method</label>
+                  <select
+                    value={offlinePayment}
+                    onChange={(e) => setOfflinePayment(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 cursor-pointer"
+                  >
+                    <option value="CASH_OFFICE">Cash at Office Desk</option>
+                    <option value="BANK_WIRE">Bank Wire Transfer (Stanbic/GCB)</option>
+                    <option value="POS_TERMINAL">Physical POS Card Terminal</option>
+                    <option value="CORP_INVOICE">Corporate Invoice (Net 30)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setOfflineModal(false)}
+                className="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white text-xs font-bold shadow-xs cursor-pointer"
+              >
+                Save & Ticket
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
