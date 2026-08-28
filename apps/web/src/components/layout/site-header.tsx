@@ -18,10 +18,12 @@ import {
   Briefcase,
   HeartHandshake,
   User,
+  Crown,
   LogOut,
   Sparkles,
   ShieldCheck,
   MessageSquareQuote,
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -252,6 +254,33 @@ export function SiteHeader() {
                 {/* Account Actions */}
                 <div className="space-y-1">
                   <Link
+                    href="/profile"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
+                  >
+                    <User className="size-4 text-brand-orange" />
+                    <span>My Profile & Account</span>
+                  </Link>
+
+                  <Link
+                    href="/profile?tab=trips"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
+                  >
+                    <Plane className="size-4 text-brand-orange" />
+                    <span>My Trips & Itineraries</span>
+                  </Link>
+
+                  <Link
+                    href="/profile?tab=membership"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-amber-600 rounded-lg transition-colors"
+                  >
+                    <Crown className="size-4 text-amber-500" />
+                    <span>Voyager Club Rewards</span>
+                  </Link>
+
+                  <Link
                     href="/inquire"
                     onClick={() => setUserDropdownOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
@@ -279,6 +308,7 @@ export function SiteHeader() {
                     <span>Sign Out</span>
                   </button>
                 </div>
+
               </PopoverContent>
             </Popover>
           ) : (
@@ -354,30 +384,66 @@ export function SiteHeader() {
 
               {/* Mobile User Status Card if Logged In */}
               {user && (
-                <div className="mt-4 p-3.5 bg-white/10 rounded-2xl border border-white/15 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center text-sm shadow-xs">
-                      {userInitial}
-                    </div>
-                    <div className="overflow-hidden">
-                      <p className="text-xs font-bold text-white truncate">
-                        {user.fullName}
-                      </p>
-                      <p className="text-[10px] text-white/70 truncate">
-                        {user.email}
-                      </p>
-                    </div>
+                <div className="mt-4 space-y-2">
+                  <div className="p-3.5 bg-white/10 rounded-2xl border border-white/15 flex items-center justify-between">
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2.5 overflow-hidden"
+                    >
+
+                      <div className="size-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0">
+                        {userInitial}
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-xs font-bold text-white truncate">
+                          {user.fullName}
+                        </p>
+                        <p className="text-[10px] text-white/70 truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="p-1.5 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 transition-colors shrink-0"
+                      title="Sign Out"
+                      aria-label="Sign out"
+                    >
+                      <LogOut className="size-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={handleSignOut}
-                    className="p-1.5 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 transition-colors"
-                    title="Sign Out"
-                    aria-label="Sign out"
-                  >
-                    <LogOut className="size-4" />
-                  </button>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-center border border-white/10 transition-colors"
+                    >
+                      <User className="size-4 text-brand-orange mx-auto" />
+                      <span className="text-[10px] font-bold text-white block mt-1">Profile</span>
+                    </Link>
+                    <Link
+                      href="/profile?tab=trips"
+                      onClick={() => setMobileOpen(false)}
+                      className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-center border border-white/10 transition-colors"
+                    >
+                      <Plane className="size-4 text-brand-orange mx-auto" />
+                      <span className="text-[10px] font-bold text-white block mt-1">Trips</span>
+                    </Link>
+                    <Link
+                      href="/profile?tab=membership"
+                      onClick={() => setMobileOpen(false)}
+                      className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-center border border-white/10 transition-colors"
+                    >
+                      <Crown className="size-4 text-amber-400 mx-auto" />
+                      <span className="text-[10px] font-bold text-white block mt-1">Rewards</span>
+                    </Link>
+                  </div>
+
                 </div>
               )}
+
 
               <nav
                 className="mt-6 flex flex-col gap-1.5"
