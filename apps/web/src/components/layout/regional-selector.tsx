@@ -11,6 +11,7 @@ import {
   useLocaleCurrency,
   LANGUAGES,
 } from "@/context/locale-currency-context";
+import { CountryFlag } from "@/components/ui/country-flag";
 import { cn } from "@/lib/utils";
 
 interface RegionalSelectorProps {
@@ -57,8 +58,8 @@ export function RegionalSelector({ variant = "announcement", className }: Region
         >
           <span className="font-semibold tracking-wide uppercase">{language}</span>
           <span className="text-white/40">|</span>
-          <span className="inline-flex items-center gap-1">
-            <span className="text-sm leading-none">{country.flag}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <CountryFlag countryCode={country.code} className="w-4 h-2.5 rounded-2xs" />
             <span className="font-semibold">{country.code}</span>
           </span>
           <span className="text-white/40">|</span>
@@ -119,16 +120,19 @@ export function RegionalSelector({ variant = "announcement", className }: Region
                 {countries.length} live
               </span>
             </div>
-            <div className="relative">
+            <div className="relative flex items-center">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                <CountryFlag countryCode={country.code} className="w-4 h-2.5 rounded-2xs" />
+              </div>
               <select
                 id="select-country"
                 value={country.code}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 shadow-xs focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy pr-8 cursor-pointer"
+                className="w-full appearance-none rounded-lg border border-slate-300 bg-white pl-9 pr-8 py-2 text-xs font-medium text-slate-800 shadow-xs focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
               >
                 {filteredCountries.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.flag} {c.name} ({c.code})
+                    {c.name} ({c.code})
                   </option>
                 ))}
               </select>
