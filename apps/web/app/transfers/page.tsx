@@ -81,7 +81,7 @@ const FLEET = [
 const STEPS = [
   {
     step: "01",
-    title: "Reserve Online or WhatsApp",
+    title: "Reserve Online",
     description: "Provide your flight number, arrival date, and drop-off destination (Hotel, Residence or Region).",
   },
   {

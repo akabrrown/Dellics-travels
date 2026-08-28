@@ -96,7 +96,7 @@ export default function MembershipConfig() {
                 <ul className="space-y-1.5 text-xs text-slate-600">
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="size-3.5 text-emerald-600" />
-                    <span>Instant flight booking via WhatsApp</span>
+                    <span>Fast-track online flight ticketing</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="size-3.5 text-emerald-600" />

@@ -14,18 +14,18 @@ import { ContactForm } from "@/components/forms/contact-form";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact Dellics Travels — US & Ghana Offices, Phone & 24/7 WhatsApp",
+  title: "Contact Dellics Travels — US & Ghana Offices, Phone & Inquiries",
   description:
-    "Contact Dellics Travels LLC in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via 24/7 WhatsApp concierge, phone, email, or schedule an office consultation.",
+    "Contact Dellics Travels LLC in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
 };
 
 const CONTACT_CHANNELS = [
   {
     icon: MessageSquare,
-    title: "24/7 WhatsApp Concierge",
-    value: SITE.phoneDisplay,
-    href: `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to make an inquiry.")}`,
-    action: "Chat with an Expert Now",
+    title: "Online Inquiry Desk",
+    value: "Bespoke Bookings & Trips",
+    href: "/inquire",
+    action: "Submit Booking Inquiry",
     primary: true,
   },
   {
@@ -160,7 +160,7 @@ export default function ContactPage() {
                   </div>
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
                     <span className="font-semibold text-white">Sunday & Holidays</span>
-                    <span className="text-brand-orange font-bold">24/7 WhatsApp Emergency Desk</span>
+                    <span className="text-brand-orange font-bold">24/7 Emergency Support Desk</span>
                   </div>
                 </div>
 
@@ -202,11 +202,11 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-display text-sm font-bold text-emerald-950">
-                    Fast WhatsApp Response
+                    Prompt Response Guarantee
                   </h4>
 
                   <p className="text-xs text-emerald-800 mt-0.5">
-                    Need instant flight quote? Message our ticketing desk directly for live pricing.
+                    Our certified travel desk reviews and confirms your flight and vacation inquiries within hours.
                   </p>
                 </div>
               </div>

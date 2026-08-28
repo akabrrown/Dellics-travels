@@ -53,7 +53,7 @@ const CORPORATE_SERVICES = [
   {
     icon: UserCheck,
     title: "Dedicated Account Manager",
-    description: "A seasoned corporate travel specialist assigned specifically to your company, reachable via direct mobile line and WhatsApp 24/7.",
+    description: "A seasoned corporate travel specialist assigned specifically to your company, reachable via direct phone line and priority email 24/7.",
   },
 ];
 

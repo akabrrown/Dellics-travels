@@ -52,17 +52,16 @@ export function CtaBanner({
             </Link>
           </Button>
 
-          {showWhatsapp ? (
-            <a
-              href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to plan a trip with an expert.")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-pill bg-white/10 hover:bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md border border-white/10 transition-colors"
-            >
-              <PhoneCall className="size-4 text-emerald-400" />
-              <span>WhatsApp Concierge (24/7)</span>
-            </a>
-          ) : null}
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="rounded-pill bg-white/10 hover:bg-white/20 text-white border-white/20 font-semibold px-8 transition-all"
+          >
+            <Link href="/contact" className="inline-flex items-center gap-2">
+              <span>Contact Our Team</span>
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

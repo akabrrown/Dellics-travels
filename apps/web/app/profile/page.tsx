@@ -540,18 +540,16 @@ export default function ProfilePage() {
                 <div className="space-y-1">
                   <h3 className="font-display text-lg font-bold">Dedicated Travel Concierge</h3>
                   <p className="text-xs text-white/75 leading-relaxed">
-                    Have an urgent itinerary adjustment, flight change, or special request? Your dedicated travel desk is ready to help on WhatsApp.
+                    Have an urgent itinerary adjustment, flight change, or special request? Our certified travel team is ready to assist.
                   </p>
                 </div>
-                <a
-                  href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am ${user.fullName || user.email} and need travel assistance.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/contact"
                   className="inline-flex items-center justify-center w-full rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white text-sm font-bold py-3 transition-colors shadow-md gap-2"
                 >
                   <PhoneCall className="size-4" />
-                  <span>Message Travel Desk</span>
-                </a>
+                  <span>Contact Support Desk</span>
+                </Link>
               </div>
 
               <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs space-y-3">
@@ -633,15 +631,13 @@ export default function ProfilePage() {
                         <p className="text-right font-display text-base font-bold text-navy hidden sm:block">
                           {b.amount}
                         </p>
-                        <a
-                          href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I need assistance with my booking ${b.ref} (${b.title}).`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <Link
+                          href="/contact"
                           className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 transition-colors flex items-center gap-1.5"
                         >
-                          <PhoneCall className="size-3.5 text-emerald-600" />
-                          Concierge
-                        </a>
+                          <PhoneCall className="size-3.5 text-navy" />
+                          Support
+                        </Link>
                       </div>
                     </div>
                   ))}

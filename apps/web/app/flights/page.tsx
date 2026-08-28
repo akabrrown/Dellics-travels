@@ -20,7 +20,7 @@ import { getLiveHomeDeals } from "@/lib/flights";
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
   description:
-    "Book domestic and international flights with Dellics Travels — IATA Certified agency. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more with 24/7 WhatsApp ticketing.",
+    "Book domestic and international flights with Dellics Travels — IATA Certified agency. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
 };
 
 const DEFAULT_ROUTES = [
@@ -58,7 +58,7 @@ const DEFAULT_ROUTES = [
     airline: "South African Airways / ASKY",
     price: "From $620",
     duration: "5h 55m Direct",
-    image: "/images/africa/cape-town-and-table-mountain.jpg",
+    image: "/images/africa/safari.jpg",
   },
   {
     from: "Accra (ACC)",
@@ -83,18 +83,18 @@ const DEFAULT_ROUTES = [
 const FLIGHT_BENEFITS = [
   {
     icon: ShieldCheck,
-    title: "Official IATA Certification",
-    description: "Tickets are issued directly via Global Distribution Systems (Amadeus & Travelport) without intermediaries or hidden charges.",
+    title: "Official IATA Certified Agency",
+    description: "Your bookings are issued directly through accredited airline Global Distribution Systems (GDS) with verifiable airline PNR references.",
   },
   {
     icon: Clock,
-    title: "Instant 24/7 Rebooking & Support",
-    description: "Flight delayed or missed connection? Our dedicated agents manage changes, cancellations, and ticket revalidation immediately.",
+    title: "Dedicated Ticketing Desk",
+    description: "Get prompt human assistance for date changes, emergency cancellations, baggage add-ons, and re-routing.",
   },
   {
     icon: Luggage,
-    title: "Extra Baggage & Seat Concierge",
-    description: "We negotiate extra baggage allowances, secure preferred seating, and request special in-flight meal options on your behalf.",
+    title: "Full Baggage Allowance Guarantees",
+    description: "We verify transparent 2x23kg or 2x32kg luggage limits so you never get surprised by airport excess baggage fees.",
   },
   {
     icon: Tag,
@@ -105,8 +105,8 @@ const FLIGHT_BENEFITS = [
 
 const FAQS = [
   {
-    q: "How does booking through Dellics Travels WhatsApp work?",
-    a: "When you submit your itinerary, our certified ticketing agent queries live GDS inventory and presents you with 2–3 best flight combinations, timings, and prices. Once you confirm, we issue your official e-ticket and send the airline PNR reference immediately.",
+    q: "How does booking through Dellics Travels work?",
+    a: "When you search or submit your flight inquiry, our certified ticketing agents query live GDS inventory and present you with the optimal flight combinations, timings, and fares. Once confirmed, we issue your official e-ticket and send your airline PNR reference immediately.",
   },
   {
     q: "Can I pay with Ghanaian Cedi (GHS) or Mobile Money?",

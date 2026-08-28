@@ -1,4 +1,5 @@
 import type { Metadata } from "next/types";
+import Link from "next/link";
 import {
   ShieldCheck,
   Clock,
@@ -74,22 +75,20 @@ export default function InquirePage() {
                   Need Quick Answers?
                 </span>
                 <h3 className="font-display text-xl font-bold">
-                  Prefer Direct WhatsApp Chat?
+                  Speak Directly With an Advisor
                 </h3>
                 <p className="text-xs leading-relaxed text-white/80">
-                  Skip the form and message our certified ticketing and tour consultant directly on WhatsApp.
+                  Prefer to speak by phone or visit our offices in Sheridan, USA or Greater Accra, Ghana?
                 </p>
 
                 <div className="pt-2">
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I want to inquire about planning a custom trip.")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/contact"
                     className="flex items-center justify-center gap-2 w-full rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold py-3 text-xs shadow-md transition-colors"
                   >
                     <PhoneCall className="size-4" />
-                    <span>Chat on WhatsApp</span>
-                  </a>
+                    <span>View Contact & Office Directory</span>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -80,7 +80,7 @@ const COUNTRY_VISAS = [
       "Clear passport bio-data page copy",
       "Passport-sized photograph with white background",
       "Return flight ticket booking",
-      "Delivered electronically directly on WhatsApp",
+      "Delivered electronically directly to your email",
     ],
   },
   {

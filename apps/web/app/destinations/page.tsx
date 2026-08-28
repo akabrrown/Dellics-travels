@@ -175,7 +175,7 @@ export default function DestinationsPage() {
                 Emergency On-Ground Help
               </h3>
               <p className="text-xs leading-relaxed text-slate-600">
-                Travel with peace of mind. Our 24/7 emergency concierge helpline is reachable worldwide on WhatsApp throughout your stay.
+                Travel with peace of mind. Our 24/7 emergency concierge helpline is reachable worldwide throughout your stay.
               </p>
             </div>
           </div>
