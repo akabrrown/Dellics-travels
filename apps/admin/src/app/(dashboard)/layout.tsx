@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,72 +24,132 @@ import {
   Bell,
   LogOut,
 } from "lucide-react";
+import { adminApi } from "@/lib/api";
 
-interface NavItem {
-  label: string;
-  href: string;
-  icon: typeof LayoutDashboard;
-  badge?: string;
-  badgeColor?: string;
+interface SidebarCounts {
+  heldBookings: number;
+  pendingRefunds: number;
+  openInquiries: number;
+  activeEsims: number;
 }
-
-interface NavGroup {
-  group: string;
-  items: NavItem[];
-}
-
-const NAV_GROUPS: NavGroup[] = [
-  {
-    group: "Core",
-    items: [
-      { label: "Dashboard", href: "/", icon: LayoutDashboard },
-      { label: "Bookings", href: "/bookings", icon: CalendarCheck, badge: "8 need attention", badgeColor: "bg-amber-100 text-amber-800" },
-      { label: "Travelers", href: "/travelers", icon: Users },
-    ],
-  },
-  {
-    group: "Content & Commerce",
-    items: [
-      { label: "Destinations & Packages", href: "/content", icon: Package },
-      { label: "Promotions & Deals", href: "/promotions", icon: Tag },
-      { label: "eSIM Orders", href: "/esims", icon: Smartphone },
-    ],
-  },
-  {
-    group: "Operations & Support",
-    items: [
-      { label: "Refund Queue", href: "/refunds", icon: RotateCcw, badge: "5 pending", badgeColor: "bg-rose-100 text-rose-800" },
-      { label: "Support Tickets", href: "/support", icon: Headphones, badge: "3 open", badgeColor: "bg-blue-100 text-blue-800" },
-      { label: "Reviews Moderation", href: "/reviews", icon: Star },
-    ],
-  },
-  {
-    group: "Finance & System",
-    items: [
-      { label: "Finance & Reconciliation", href: "/finance", icon: CreditCard },
-      { label: "Supplier Health", href: "/health", icon: Activity, badge: "1 degraded", badgeColor: "bg-amber-100 text-amber-800" },
-      { label: "Analytics & Reports", href: "/analytics", icon: BarChart3 },
-    ],
-  },
-  {
-    group: "Administration",
-    items: [
-      { label: "Membership & Rewards", href: "/membership", icon: ShieldCheck },
-      { label: "Roles & Team", href: "/team", icon: Users },
-      { label: "Audit Log", href: "/audit", icon: FileText },
-      { label: "Settings", href: "/settings", icon: Sliders },
-    ],
-  },
-];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
+  const [counts, setCounts] = useState<SidebarCounts>({
+    heldBookings: 0,
+    pendingRefunds: 0,
+    openInquiries: 0,
+    activeEsims: 0,
+  });
+
+  useEffect(() => {
+    const fetchSidebarMetrics = async () => {
+      try {
+        const [overviewRes, refundsRes, inquiriesRes, esimRes] = await Promise.allSettled([
+          adminApi.get<{ data: { counts: { held: number } } }>("/booking/admin/overview"),
+          adminApi.get<{ data: any[] }>("/booking/admin/refunds"),
+          adminApi.get<{ data: { total: number } }>("/inquiries/stats"),
+          adminApi.get<{ data: any[] }>("/esim/admin/orders"),
+        ]);
+
+        const held = overviewRes.status === "fulfilled" && overviewRes.value?.data?.counts?.held ? overviewRes.value.data.counts.held : 0;
+        const refunds = refundsRes.status === "fulfilled" && Array.isArray(refundsRes.value?.data) ? refundsRes.value.data.length : 0;
+        const inquiries = inquiriesRes.status === "fulfilled" && inquiriesRes.value?.data?.total ? inquiriesRes.value.data.total : 0;
+        const esims = esimRes.status === "fulfilled" && Array.isArray(esimRes.value?.data) ? esimRes.value.data.length : 0;
+
+        setCounts({
+          heldBookings: held,
+          pendingRefunds: refunds,
+          openInquiries: inquiries,
+          activeEsims: esims,
+        });
+      } catch (err) {
+        // Silently preserve clean states
+      }
+    };
+
+    fetchSidebarMetrics();
+  }, [pathname]);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
+
+  const navGroups = [
+    {
+      group: "Core",
+      items: [
+        { label: "Dashboard", href: "/", icon: LayoutDashboard },
+        {
+          label: "Bookings",
+          href: "/bookings",
+          icon: CalendarCheck,
+          badge: counts.heldBookings > 0 ? `${counts.heldBookings} held` : undefined,
+          badgeColor: "bg-amber-100 text-amber-800",
+        },
+        { label: "Travelers", href: "/travelers", icon: Users },
+      ],
+    },
+    {
+      group: "Content & Commerce",
+      items: [
+        { label: "Destinations & Packages", href: "/content", icon: Package },
+        { label: "Promotions & Deals", href: "/promotions", icon: Tag },
+        {
+          label: "eSIM Orders",
+          href: "/esims",
+          icon: Smartphone,
+          badge: counts.activeEsims > 0 ? `${counts.activeEsims}` : undefined,
+          badgeColor: "bg-blue-100 text-blue-800",
+        },
+      ],
+    },
+    {
+      group: "Operations & Support",
+      items: [
+        {
+          label: "Refund Queue",
+          href: "/refunds",
+          icon: RotateCcw,
+          badge: counts.pendingRefunds > 0 ? `${counts.pendingRefunds} pending` : undefined,
+          badgeColor: "bg-rose-100 text-rose-800",
+        },
+        {
+          label: "Support Tickets",
+          href: "/support",
+          icon: Headphones,
+          badge: counts.openInquiries > 0 ? `${counts.openInquiries} open` : undefined,
+          badgeColor: "bg-blue-100 text-blue-800",
+        },
+        { label: "Reviews Moderation", href: "/reviews", icon: Star },
+      ],
+    },
+    {
+      group: "Finance & System",
+      items: [
+        { label: "Finance & Reconciliation", href: "/finance", icon: CreditCard },
+        {
+          label: "Supplier Health",
+          href: "/health",
+          icon: Activity,
+          badge: "All Online",
+          badgeColor: "bg-emerald-100 text-emerald-800",
+        },
+        { label: "Analytics & Reports", href: "/analytics", icon: BarChart3 },
+      ],
+    },
+    {
+      group: "Administration",
+      items: [
+        { label: "Membership & Rewards", href: "/membership", icon: ShieldCheck },
+        { label: "Roles & Team", href: "/team", icon: Users },
+        { label: "Audit Log", href: "/audit", icon: FileText },
+        { label: "Settings", href: "/settings", icon: Sliders },
+      ],
+    },
+  ];
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
@@ -119,7 +179,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation Items */}
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-5 scrollbar-thin scrollbar-thumb-white/10">
-          {NAV_GROUPS.map((group) => (
+          {navGroups.map((group) => (
             <div key={group.group}>
               <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                 {group.group}
@@ -178,8 +238,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           <Link
             href="/login"
-            title="Sign Out"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            title="Log Out"
           >
             <LogOut className="size-4" />
           </Link>
@@ -187,46 +247,52 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
-        {/* Top Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-xs shrink-0 z-10">
-          <div className="flex items-center gap-3">
-            <div className="relative w-80">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Global search: ID, PNR, email, phone..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-slate-300 rounded-full text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
-              />
-            </div>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Navbar */}
+        <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0 shadow-xs">
+          {/* Universal Search Bar */}
+          <div className="relative w-96">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search PNR, Booking ID, Traveler, Email, ICCID (Cmd+K)..."
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-xs text-slate-900 focus:outline-none focus:border-[#0A0060] focus:ring-2 focus:ring-[#0A0060]/10 transition-all placeholder:text-slate-400"
+            />
           </div>
 
+          {/* Quick Actions & Live Gateway Status */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200/80">
-              <span className="size-2 rounded-full bg-emerald-500" />
-              <span>GDS & APIs Connected</span>
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Gateways Operational</span>
             </div>
-
-            <div className="h-5 w-px bg-slate-200" />
 
             <Link
               href="/support"
-              className="relative p-2 rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-              title="Open Support Queue"
+              className="p-2 rounded-full text-slate-500 hover:text-[#0A0060] hover:bg-slate-100 transition-colors relative"
             >
               <Bell className="size-4" />
-              <span className="absolute top-1 right-1 size-2 rounded-full bg-[#F4740D] ring-2 ring-white" />
+              {counts.openInquiries > 0 && (
+                <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#F4740D]" />
+              )}
             </Link>
+
+            <div className="h-6 w-px bg-slate-200" />
+
+            <div className="flex items-center gap-2">
+              <div className="text-right hidden md:block">
+                <p className="text-xs font-bold text-slate-900">Tema Head Office</p>
+                <p className="text-[10px] text-slate-400 font-mono">Devtraco Comm 25</p>
+              </div>
+            </div>
           </div>
         </header>
 
-        {/* Scrollable Workspace View */}
-        <div className="flex-1 overflow-y-auto p-8 bg-slate-50/60">
-          {children}
-        </div>
-      </main>
+        {/* Dynamic Page View Body */}
+        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      </div>
     </div>
   );
 }

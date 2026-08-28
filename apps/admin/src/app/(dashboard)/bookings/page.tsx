@@ -54,10 +54,9 @@ export default function BookingsList() {
       if (activeStatus !== "ALL") queryParams.append("status", activeStatus);
       if (selectedType !== "ALL") queryParams.append("type", selectedType);
       if (search.trim()) queryParams.append("search", search.trim());
-
-      const res = await adminApi.get<{ data: BookingItem[] }>(
-        `/booking/admin/all?${queryParams.toString()}`
-      );
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/booking/admin/all?${queryString}` : "/booking/admin/all";
+      const res = await adminApi.get<{ data: BookingItem[] }>(endpoint);
       if (res && res.data) {
         setBookings(res.data);
       }
