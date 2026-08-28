@@ -6,11 +6,17 @@ const globalForPrisma = globalThis as unknown as {
 
 const defaultDbUrl =
   process.env.DATABASE_URL ||
-  process.env.DIRECT_URL ||
   "postgresql://postgres.gfypumkjomlvvpiiwdfq:X2tCgmfP5yGSP0d0@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true";
+
+const defaultDirectUrl =
+  process.env.DIRECT_URL ||
+  "postgresql://postgres.gfypumkjomlvvpiiwdfq:X2tCgmfP5yGSP0d0@aws-1-eu-west-1.pooler.supabase.com:5432/postgres";
 
 if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = defaultDbUrl;
+}
+if (!process.env.DIRECT_URL) {
+  process.env.DIRECT_URL = defaultDirectUrl;
 }
 
 export const prisma =
