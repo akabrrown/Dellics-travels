@@ -23,14 +23,6 @@ import { CountryFlag } from "@/components/ui/country-flag";
 import { useLocaleCurrency } from "@/context/locale-currency-context";
 import { toast } from "sonner";
 
-const QUICK_AIRPORTS = [
-  { code: "ACC", name: "Accra Kotoka", full: "ACC - Kotoka International (Accra, Ghana)" },
-  { code: "LHR", name: "London Heathrow", full: "LHR - London Heathrow (United Kingdom)" },
-  { code: "JFK", name: "New York JFK", full: "JFK - John F. Kennedy (New York, USA)" },
-  { code: "LOS", name: "Lagos Murtala", full: "LOS - Murtala Muhammed (Lagos, Nigeria)" },
-  { code: "DXB", name: "Dubai Intl", full: "DXB - Dubai International (UAE)" },
-];
-
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, updateProfile, isLoading } = useAuth();
@@ -261,25 +253,9 @@ export default function OnboardingPage() {
                     onChange={setHomeAirport}
                     placeholder="Search international airport or city..."
                   />
-
-                  {/* Quick Select Pills */}
-                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                    <span className="text-[10px] text-slate-400 font-semibold uppercase">Popular:</span>
-                    {QUICK_AIRPORTS.map((hub) => (
-                      <button
-                        key={hub.code}
-                        type="button"
-                        onClick={() => setHomeAirport(hub.full)}
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-colors ${
-                          homeAirport === hub.full
-                            ? "bg-navy text-white border-navy"
-                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                        }`}
-                      >
-                        {hub.code} · {hub.name}
-                      </button>
-                    ))}
-                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Search and select from live international IATA airport hubs worldwide.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
