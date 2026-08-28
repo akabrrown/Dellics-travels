@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PassengerSelector } from "./passenger-selector";
+import { AirportCombobox } from "@/components/ui/airport-combobox";
 import { buildWhatsAppLink, composeFlightMessage, type FlightLeg, type TripType } from "@/lib/whatsapp";
 import type { PassengerCounts } from "@/lib/passengers";
 
@@ -79,17 +80,28 @@ export function FlightSearchWidget() {
           <fieldset key={index} className="grid gap-3 rounded-field border border-black/5 p-4 sm:grid-cols-3">
             {tripType === "multicity" ? <legend className="px-1 text-sm font-semibold text-navy">Leg {index + 1}</legend> : null}
             <div>
-              <Label htmlFor={`from-${index}`}>From</Label>
-              <Input id={`from-${index}`} placeholder="e.g. Accra" value={leg.from} onChange={(e) => updateLeg(index, { from: e.target.value })} />
+              <Label htmlFor={`from-${index}`}>From (Origin)</Label>
+              <AirportCombobox
+                id={`from-${index}`}
+                placeholder="Search origin airport/city..."
+                value={leg.from}
+                onChange={(val) => updateLeg(index, { from: val })}
+              />
             </div>
             <div>
-              <Label htmlFor={`to-${index}`}>To</Label>
-              <Input id={`to-${index}`} placeholder="e.g. Dubai" value={leg.to} onChange={(e) => updateLeg(index, { to: e.target.value })} />
+              <Label htmlFor={`to-${index}`}>To (Destination)</Label>
+              <AirportCombobox
+                id={`to-${index}`}
+                placeholder="Search arrival airport/city..."
+                value={leg.to}
+                onChange={(val) => updateLeg(index, { to: val })}
+              />
             </div>
             <div>
-              <Label htmlFor={`date-${index}`}>Departure</Label>
-              <Input id={`date-${index}`} type="date" value={leg.departDate} onChange={(e) => updateLeg(index, { departDate: e.target.value })} />
+              <Label htmlFor={`date-${index}`}>Departure Date</Label>
+              <Input id={`date-${index}`} type="date" value={leg.departDate} onChange={(e) => updateLeg(index, { departDate: e.target.value })} className="h-[44px] rounded-xl" />
             </div>
+
             {tripType === "multicity" && legs.length > MIN_LEGS ? (
               <Button type="button" variant="ghost" size="sm" className="justify-self-start text-alert" onClick={() => setLegs(legs.filter((_, i) => i !== index))}>
                 <Trash2 className="mr-1 size-4" /> Remove leg

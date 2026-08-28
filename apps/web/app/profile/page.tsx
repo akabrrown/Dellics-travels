@@ -40,7 +40,9 @@ import {
   Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AirportCombobox } from "@/components/ui/airport-combobox";
 import { toast } from "sonner";
+
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -467,19 +469,14 @@ export default function ProfilePage() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-700">Preferred Home Departure Airport</label>
-                    <select
+                    <AirportCombobox
                       value={homeAirport}
-                      onChange={(e) => setHomeAirport(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
-                    >
-                      <option value="ACC - Kotoka International">ACC - Kotoka International (Accra, Ghana)</option>
-                      <option value="LOS - Murtala Muhammed">LOS - Murtala Muhammed (Lagos, Nigeria)</option>
-                      <option value="LHR - London Heathrow">LHR - London Heathrow (United Kingdom)</option>
-                      <option value="JFK - New York JFK">JFK - New York JFK (United States)</option>
-                      <option value="DXB - Dubai International">DXB - Dubai International (UAE)</option>
-                      <option value="NBO - Jomo Kenyatta">NBO - Jomo Kenyatta (Nairobi, Kenya)</option>
-                    </select>
+                      onChange={setHomeAirport}
+                      placeholder="Search international airport or city (e.g. Accra, London, JFK)..."
+                    />
+                    <p className="text-[11px] text-slate-400">Live search across global IATA international airports & departure hubs.</p>
                   </div>
+
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-700">In-Flight Seat Preference</label>
