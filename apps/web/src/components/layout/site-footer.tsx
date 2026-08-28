@@ -9,8 +9,6 @@ import {
   Mail,
   Clock,
   ArrowRight,
-  PhoneCall,
-  MessageCircle,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { AccreditationStrip } from "@/components/accreditation-strip";
@@ -169,17 +167,14 @@ export function SiteFooter() {
               </ul>
             </div>
 
-            {/* Direct WhatsApp Concierge Button */}
             <div className="pt-2">
-              <a
-                href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I need assistance with travel planning.")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 text-xs shadow-lg transition-colors"
+              <Link
+                href="/inquire"
+                className="flex items-center justify-center gap-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold py-2.5 px-4 text-xs shadow-md transition-colors"
               >
-                <MessageCircle className="size-4" />
-                <span>WhatsApp Concierge</span>
-              </a>
+                <ArrowRight className="size-3.5" />
+                <span>Start an Inquiry</span>
+              </Link>
             </div>
           </div>
         </div>
