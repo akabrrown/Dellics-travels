@@ -21,6 +21,11 @@ export class EsimController {
     return this.esimService.getPackages(targetRegion);
   }
 
+  @Get('admin/orders')
+  async getAdminOrders() {
+    return this.esimService.getAdminOrders();
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Post('order')
   async createOrder(@Req() req: Request, @Body() body: { packageId: string }) {

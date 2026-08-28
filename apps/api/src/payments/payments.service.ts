@@ -289,4 +289,93 @@ export class PaymentsService {
   async handleWebhook(rawBody: string | Buffer, signature: string) {
     return this.handlePaystackWebhook(rawBody, signature);
   }
+
+  /**
+   * Admin Transactions & Settlement Ledger
+   */
+  async getAdminTransactions(params: { status?: string; limit?: number }) {
+    try {
+      const where: any = {};
+      if (params.status && params.status !== 'ALL') {
+        where.status = params.status;
+      }
+
+      const payments = await this.prisma.payment.findMany({
+        where,
+        take: params.limit || 50,
+        orderBy: { created_at: 'desc' },
+        include: {
+          booking: {
+            include: {
+              trip: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        count: payments.length,
+        data: payments.map((p) => ({
+          id: p.id,
+          reference: p.paystack_reference,
+          amount: Number(p.amount),
+          currency: p.currency,
+          status: p.status,
+          createdAt: p.created_at,
+          bookingId: p.booking_id,
+          bookingType: p.booking?.type,
+          bookingStatus: p.booking?.status,
+          travelerName: p.booking?.trip?.user?.name || 'Client',
+          travelerEmail: p.booking?.trip?.user?.email || '',
+          tripTitle: p.booking?.trip?.title || 'Trip',
+        })),
+      };
+    } catch (err: any) {
+      this.logger.error(`getAdminTransactions failed: ${err.message}`);
+      return { status: 'error', count: 0, data: [] };
+    }
+  }
+
+  /**
+   * Payment Revenue and Settlement Statistics
+   */
+  async getPaymentStats() {
+    try {
+      const [totalCount, succeeded, pending, refunded] = await Promise.all([
+        this.prisma.payment.count(),
+        this.prisma.payment.findMany({ where: { status: 'SUCCEEDED' } }),
+        this.prisma.payment.count({ where: { status: 'PENDING' } }),
+        this.prisma.payment.count({ where: { status: 'REFUNDED' } }),
+      ]);
+
+      const grossVolumeGHS = succeeded.reduce((sum, p) => sum + Number(p.amount), 0);
+
+      return {
+        status: 'success',
+        data: {
+          grossVolumeGHS,
+          successfulCount: succeeded.length,
+          pendingCount: pending,
+          refundedCount: refunded,
+          totalCount,
+        },
+      };
+    } catch (err: any) {
+      return {
+        status: 'error',
+        data: {
+          grossVolumeGHS: 0,
+          successfulCount: 0,
+          pendingCount: 0,
+          refundedCount: 0,
+          totalCount: 0,
+        },
+      };
+    }
+  }
 }

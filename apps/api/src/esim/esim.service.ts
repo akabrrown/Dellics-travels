@@ -259,4 +259,42 @@ export class EsimService {
 
     return updated;
   }
+
+  /**
+   * Admin: List all eSIM orders across all users with user details and plan data
+   */
+  async getAdminOrders() {
+    try {
+      const orders = await this.prisma.eSIMOrder.findMany({
+        take: 100,
+        orderBy: { created_at: 'desc' },
+        include: {
+          user: true,
+          esim_plan: true,
+        },
+      });
+
+      return {
+        status: 'success',
+        count: orders.length,
+        data: orders.map((o) => ({
+          id: o.id,
+          reference: o.paystack_reference,
+          status: o.status,
+          iccid: o.iccid,
+          qrCodeUrl: o.qr_code_url,
+          region: o.esim_plan?.country_or_region || 'Global',
+          dataGb: o.esim_plan?.data_gb ? Number(o.esim_plan.data_gb) : 0,
+          validityDays: o.esim_plan?.validity_days || 0,
+          price: o.esim_plan?.price ? Number(o.esim_plan.price) : 0,
+          travelerName: o.user?.name || 'Client',
+          travelerEmail: o.user?.email || '',
+          createdAt: o.created_at,
+        })),
+      };
+    } catch (err: any) {
+      this.logger.error(`getAdminOrders failed: ${err.message}`);
+      return { status: 'error', count: 0, data: [] };
+    }
+  }
 }

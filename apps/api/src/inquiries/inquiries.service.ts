@@ -67,4 +67,29 @@ export class InquiriesService {
       );
     }
   }
+
+  async findAll(kind?: string) {
+    const where: any = {};
+    if (kind) {
+      where.kind = kind.toUpperCase();
+    }
+    const items = await this.prisma.inquiry.findMany({
+      where,
+      orderBy: { created_at: 'desc' },
+      take: 100,
+    });
+    return { status: 'success', count: items.length, data: items };
+  }
+
+  async getStats() {
+    const [total, inquiries, contacts] = await Promise.all([
+      this.prisma.inquiry.count(),
+      this.prisma.inquiry.count({ where: { kind: 'INQUIRY' } }),
+      this.prisma.inquiry.count({ where: { kind: 'CONTACT' } }),
+    ]);
+    return {
+      status: 'success',
+      data: { total, inquiries, contacts },
+    };
+  }
 }

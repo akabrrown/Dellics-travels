@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Query,
   Body,
   Param,
   Req,
@@ -14,6 +15,22 @@ import type { Request } from 'express';
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Get('admin/transactions')
+  async getAdminTransactions(
+    @Query('status') status?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.paymentsService.getAdminTransactions({
+      status,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+  }
+
+  @Get('stats')
+  async getPaymentStats() {
+    return this.paymentsService.getPaymentStats();
+  }
 
   // ==========================================
   // PAYSTACK CHECKOUT (Cards & Mobile Money)

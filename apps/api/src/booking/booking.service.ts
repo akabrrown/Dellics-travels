@@ -2,13 +2,17 @@ import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient } from '@supabase/supabase-js';
 import * as crypto from 'crypto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class BookingService {
   private readonly logger = new Logger(BookingService.name);
   private supabase: any;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     const supabaseKey = this.configService.get<string>(
       'SUPABASE_SERVICE_ROLE_KEY',
@@ -208,5 +212,185 @@ export class BookingService {
 
   async handleStripeWebhook(signature: string, payload: Buffer) {
     return this.handlePaystackWebhook(signature, payload);
+  }
+
+  /**
+   * Admin dashboard metrics & pipeline overview
+   */
+  async getAdminOverview() {
+    try {
+      const [total, held, confirmed, completed, cancelled, recentBookings, payments] = await Promise.all([
+        this.prisma.booking.count(),
+        this.prisma.booking.count({ where: { status: 'HELD' } }),
+        this.prisma.booking.count({ where: { status: 'CONFIRMED' } }),
+        this.prisma.booking.count({ where: { status: 'COMPLETED' } }),
+        this.prisma.booking.count({ where: { status: 'CANCELLED' } }),
+        this.prisma.booking.findMany({
+          take: 10,
+          orderBy: { created_at: 'desc' },
+          include: {
+            trip: {
+              include: {
+                user: true,
+              },
+            },
+            payments: true,
+          },
+        }),
+        this.prisma.payment.findMany({
+          where: { status: 'SUCCEEDED' },
+          select: { amount: true, currency: true },
+        }),
+      ]);
+
+      const totalRevenueGHS = payments.reduce((acc, p) => acc + Number(p.amount), 0);
+
+      return {
+        status: 'success',
+        data: {
+          pipeline: [
+            { label: 'Held', count: held, sub: 'Active holds', status: 'HELD' },
+            { label: 'Confirmed', count: confirmed, sub: 'Ticketed & active', status: 'CONFIRMED' },
+            { label: 'Completed', count: completed, sub: 'Completed trips', status: 'COMPLETED' },
+            { label: 'Cancelled', count: cancelled, sub: 'Voided / Cancelled', status: 'CANCELLED' },
+          ],
+          counts: { total, held, confirmed, completed, cancelled },
+          totalRevenueGHS,
+          recentBookings: recentBookings.map((b) => ({
+            id: b.id,
+            type: b.type,
+            status: b.status,
+            supplierRef: b.supplier_ref,
+            travelerName: b.trip?.user?.name || 'Client',
+            travelerEmail: b.trip?.user?.email || '',
+            membershipTier: b.trip?.user?.membership_tier || 'EXPLORER',
+            tripTitle: b.trip?.title || 'Trip',
+            createdAt: b.created_at,
+            amount: b.payments?.[0]?.amount ? Number(b.payments[0].amount) : 0,
+            currency: b.payments?.[0]?.currency || 'USD',
+          })),
+        },
+      };
+    } catch (err: any) {
+      this.logger.error(`getAdminOverview failed: ${err.message}`);
+      return {
+        status: 'error',
+        data: {
+          pipeline: [],
+          counts: { total: 0, held: 0, confirmed: 0, completed: 0, cancelled: 0 },
+          totalRevenueGHS: 0,
+          recentBookings: [],
+        },
+      };
+    }
+  }
+
+  /**
+   * Admin paginated bookings list with search and filters
+   */
+  async getAdminBookings(params: { status?: string; type?: string; search?: string; limit?: number }) {
+    try {
+      const where: any = {};
+      if (params.status && params.status !== 'ALL') {
+        where.status = params.status;
+      }
+      if (params.type && params.type !== 'ALL') {
+        where.type = params.type;
+      }
+      if (params.search) {
+        where.OR = [
+          { id: { contains: params.search, mode: 'insensitive' } },
+          { supplier_ref: { contains: params.search, mode: 'insensitive' } },
+          { trip: { title: { contains: params.search, mode: 'insensitive' } } },
+          { trip: { user: { name: { contains: params.search, mode: 'insensitive' } } } },
+          { trip: { user: { email: { contains: params.search, mode: 'insensitive' } } } },
+        ];
+      }
+
+      const bookings = await this.prisma.booking.findMany({
+        where,
+        take: params.limit || 50,
+        orderBy: { created_at: 'desc' },
+        include: {
+          trip: {
+            include: {
+              user: true,
+            },
+          },
+          payments: true,
+        },
+      });
+
+      return {
+        status: 'success',
+        count: bookings.length,
+        data: bookings.map((b) => ({
+          id: b.id,
+          type: b.type,
+          status: b.status,
+          supplierRef: b.supplier_ref,
+          travelerName: b.trip?.user?.name || 'Client',
+          travelerEmail: b.trip?.user?.email || '',
+          travelerPhone: b.trip?.user?.phone || '',
+          membershipTier: b.trip?.user?.membership_tier || 'EXPLORER',
+          tripTitle: b.trip?.title || 'Trip',
+          startDate: b.trip?.start_date,
+          endDate: b.trip?.end_date,
+          createdAt: b.created_at,
+          paymentStatus: b.payments?.[0]?.status || 'PENDING',
+          paymentReference: b.payments?.[0]?.paystack_reference || null,
+          amount: b.payments?.[0]?.amount ? Number(b.payments[0].amount) : 0,
+          currency: b.payments?.[0]?.currency || 'USD',
+        })),
+      };
+    } catch (err: any) {
+      this.logger.error(`getAdminBookings failed: ${err.message}`);
+      return { status: 'error', count: 0, data: [] };
+    }
+  }
+
+  /**
+   * Admin pending & processed refunds
+   */
+  async getAdminRefunds() {
+    try {
+      const refunds = await this.prisma.payment.findMany({
+        where: { status: 'REFUNDED' },
+        take: 50,
+        orderBy: { updated_at: 'desc' },
+        include: {
+          booking: {
+            include: {
+              trip: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        count: refunds.length,
+        data: refunds.map((r) => ({
+          id: r.id,
+          reference: r.paystack_reference,
+          amount: Number(r.amount),
+          currency: r.currency,
+          status: r.status,
+          updatedAt: r.updated_at,
+          bookingId: r.booking_id,
+          bookingType: r.booking?.type,
+          travelerName: r.booking?.trip?.user?.name || 'Client',
+          travelerEmail: r.booking?.trip?.user?.email || '',
+          tripTitle: r.booking?.trip?.title || 'Trip',
+        })),
+      };
+    } catch (err: any) {
+      this.logger.error(`getAdminRefunds failed: ${err.message}`);
+      return { status: 'error', count: 0, data: [] };
+    }
   }
 }

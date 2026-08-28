@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
 
@@ -54,6 +54,52 @@ export class AuthController {
     } catch (error: any) {
       console.error('Error syncing user:', error);
       return { success: false, error: error.message };
+    }
+  }
+
+  @Get('admin/users')
+  @Post('admin/users')
+  async getAdminUsers() {
+    try {
+      const users = await this.prisma.user.findMany({
+        orderBy: { created_at: 'desc' },
+        take: 100,
+        include: {
+          trips: {
+            include: {
+              bookings: true,
+            },
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        count: users.length,
+        data: users.map((u) => {
+          const totalBookings = u.trips.reduce((acc, t) => acc + t.bookings.length, 0);
+          return {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            phone: u.phone,
+            role: u.role,
+            membershipTier: u.membership_tier,
+            pointsBalance: u.points_balance,
+            nationality: u.nationality,
+            homeAirport: u.home_airport,
+            passportNumber: u.passport_number,
+            passportExpiry: u.passport_expiry,
+            passportCountry: u.passport_country,
+            onboardingCompleted: u.onboarding_completed,
+            totalTrips: u.trips.length,
+            totalBookings,
+            createdAt: u.created_at,
+          };
+        }),
+      };
+    } catch (err: any) {
+      return { status: 'error', count: 0, data: [], message: err.message };
     }
   }
 }

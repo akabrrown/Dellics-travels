@@ -1,7 +1,9 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
+  Query,
   UseGuards,
   Req,
   Headers,
@@ -13,6 +15,31 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
+
+  @Get('admin/overview')
+  async getAdminOverview() {
+    return this.bookingService.getAdminOverview();
+  }
+
+  @Get('admin/all')
+  async getAdminBookings(
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+    @Query('search') search?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.bookingService.getAdminBookings({
+      status,
+      type,
+      search,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+  }
+
+  @Get('admin/refunds')
+  async getAdminRefunds() {
+    return this.bookingService.getAdminRefunds();
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('payment-intent')

@@ -1,14 +1,77 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Search,
+  Headphones,
+  RefreshCw,
+  Clock,
+  Mail,
+  Phone,
+  MessageSquare,
 } from "lucide-react";
+import { adminApi } from "@/lib/api";
+
+interface InquiryItem {
+  id: string;
+  kind: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  message: string;
+  payload?: any;
+  created_at: string;
+}
+
+interface InquiryStats {
+  total: number;
+  inquiries: number;
+  contacts: number;
+}
 
 export default function SupportQueue() {
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [assigneeFilter, setAssigneeFilter] = useState("ALL");
+  const [kindFilter, setKindFilter] = useState("ALL");
+  const [search, setSearch] = useState("");
+  const [inquiries, setInquiries] = useState<InquiryItem[]>([]);
+  const [stats, setStats] = useState<InquiryStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchInquiries = async () => {
+    try {
+      setLoading(true);
+      const [listRes, statsRes] = await Promise.allSettled([
+        adminApi.get<{ data: InquiryItem[] }>("/inquiries"),
+        adminApi.get<{ data: InquiryStats }>("/inquiries/stats"),
+      ]);
+
+      if (listRes.status === "fulfilled" && listRes.value?.data) {
+        setInquiries(listRes.value.data);
+      }
+      if (statsRes.status === "fulfilled" && statsRes.value?.data) {
+        setStats(statsRes.value.data);
+      }
+    } catch (err) {
+      console.error("Failed to load inquiries:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInquiries();
+  }, []);
+
+  const filteredInquiries = inquiries.filter((item) => {
+    const matchesKind = kindFilter === "ALL" || item.kind === kindFilter;
+    const matchesSearch =
+      !search.trim() ||
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.email.toLowerCase().includes(search.toLowerCase()) ||
+      item.message.toLowerCase().includes(search.toLowerCase()) ||
+      (item.phone && item.phone.includes(search));
+    return matchesKind && matchesSearch;
+  });
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
@@ -16,193 +79,161 @@ export default function SupportQueue() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-[#0A0060]">
-            Support & Concierge SLA Queue
+            Support & Concierge Inquiries
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Zendesk-style ticket triage prioritized by traveler membership tier SLA.
+            Live customer consultation requests, bespoke trip inquiries, and direct contact desk tickets.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200/60">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            Live Chat Gateway Online
-          </span>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={fetchInquiries}
+            className="px-3.5 py-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
+          >
+            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
+            <span>Sync Inbox</span>
+          </button>
         </div>
       </div>
 
       {/* KPI Triage Strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-rose-200 shadow-xs flex flex-col justify-between bg-rose-50/20">
-          <p className="text-xs font-semibold uppercase tracking-wider text-rose-700">
-            SLA Warning / Breached
-          </p>
-          <div className="mt-3 flex items-baseline justify-between">
-            <p className="font-display text-2xl font-extrabold text-rose-700">3</p>
-            <span className="text-[11px] font-bold text-rose-600">&gt; 15m (Elite Target)</span>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Unassigned Queue
+            Total Inquiries
           </p>
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="font-display text-2xl font-extrabold text-slate-900">14</p>
-            <span className="text-[11px] text-slate-400 font-medium">Awaiting claim</span>
+            <p className="font-display text-2xl font-extrabold text-slate-900">
+              {stats?.total ?? inquiries.length}
+            </p>
+            <span className="text-[11px] text-slate-400 font-medium">All channels</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            My Open Tickets
+            Custom Trip Inquiries
           </p>
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="font-display text-2xl font-extrabold text-[#0A0060]">5</p>
-            <span className="text-[11px] text-slate-400 font-medium">Active conversations</span>
+            <p className="font-display text-2xl font-extrabold text-[#0A0060]">
+              {stats?.inquiries ?? inquiries.filter((i) => i.kind === "INQUIRY").length}
+            </p>
+            <span className="text-[11px] font-bold text-emerald-600">Bespoke itineraries</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-xs flex flex-col justify-between bg-emerald-50/20">
-          <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
-            Active Live Sessions
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Direct Contact Messages
           </p>
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="font-display text-2xl font-extrabold text-emerald-700">2</p>
-            <span className="text-[11px] font-bold text-emerald-600">Real-time socket</span>
+            <p className="font-display text-2xl font-extrabold text-slate-700">
+              {stats?.contacts ?? inquiries.filter((i) => i.kind === "CONTACT").length}
+            </p>
+            <span className="text-[11px] text-slate-400 font-medium">Office & Ticketing Desk</span>
           </div>
         </div>
       </div>
 
-      {/* Filter Dropdown Bar */}
+      {/* Filter Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search traveler, ticket ID, or message subject..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060] focus:ring-2 focus:ring-[#0A0060]/10 transition-all"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search traveler name, email, or message keyword..."
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060] transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#0A0060] cursor-pointer"
-          >
-            <option value="ALL">Status: All</option>
-            <option value="OPEN">Status: Open</option>
-            <option value="PENDING">Status: Pending Customer</option>
-            <option value="RESOLVED">Status: Resolved</option>
-          </select>
-
-          <select
-            value={assigneeFilter}
-            onChange={(e) => setAssigneeFilter(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#0A0060] cursor-pointer"
-          >
-            <option value="ALL">Assignee: All Agents</option>
-            <option value="ME">Assignee: Me (Michael K.)</option>
-            <option value="UNASSIGNED">Assignee: Unassigned</option>
-          </select>
-        </div>
+        <select
+          value={kindFilter}
+          onChange={(e) => setKindFilter(e.target.value)}
+          className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#0A0060] cursor-pointer"
+        >
+          <option value="ALL">All Categories</option>
+          <option value="INQUIRY">Custom Inquiries</option>
+          <option value="CONTACT">Contact Messages</option>
+        </select>
       </div>
 
-      {/* Support Queue Table */}
+      {/* Inquiries Table */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider">
-            <tr>
-              <th className="px-6 py-4">Ticket & Traveler</th>
-              <th className="px-6 py-4">Tier & Priority</th>
-              <th className="px-6 py-4">Subject & Context</th>
-              <th className="px-6 py-4">Wait Time</th>
-              <th className="px-6 py-4">Assigned Agent</th>
-              <th className="px-6 py-4 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {/* Ticket 1 */}
-            <tr className="hover:bg-slate-50/50 transition-colors bg-amber-50/20">
-              <td className="px-6 py-4">
-                <Link
-                  href="/support/TKT-4410"
-                  className="font-mono font-bold text-[#0A0060] hover:underline block"
-                >
-                  #TKT-4410
-                </Link>
-                <span className="font-bold text-slate-900">Kwame Mensah</span>
-              </td>
-              <td className="px-6 py-4">
-                <span className="px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-100 text-amber-800 border border-amber-300">
-                  Elite Member (5m SLA)
-                </span>
-              </td>
-              <td className="px-6 py-4 max-w-xs">
-                <p className="font-semibold text-slate-800 truncate">
-                  Emirates Schedule Revision Inquiry
-                </p>
-                <p className="text-[11px] text-slate-500 truncate">
-                  Booking #BK-8392 flight departure pushed back by 2 hours
-                </p>
-              </td>
-              <td className="px-6 py-4">
-                <span className="font-bold text-rose-600 font-mono">14m (Warning)</span>
-              </td>
-              <td className="px-6 py-4">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700">
-                  Unassigned
-                </span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <Link
-                  href="/support/TKT-4410"
-                  className="px-3.5 py-1.5 rounded-full bg-[#0A0060] hover:bg-[#140882] text-white font-bold text-[11px] transition-colors inline-block"
-                >
-                  Claim & Reply
-                </Link>
-              </td>
-            </tr>
-
-            {/* Ticket 2 */}
-            <tr className="hover:bg-slate-50/50 transition-colors">
-              <td className="px-6 py-4">
-                <Link
-                  href="/support/TKT-4409"
-                  className="font-mono font-bold text-[#0A0060] hover:underline block"
-                >
-                  #TKT-4409
-                </Link>
-                <span className="font-bold text-slate-900">Afia Osei</span>
-              </td>
-              <td className="px-6 py-4">
-                <span className="px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-blue-100 text-blue-800">
-                  Plus Member (15m SLA)
-                </span>
-              </td>
-              <td className="px-6 py-4 max-w-xs">
-                <p className="font-semibold text-slate-800 truncate">
-                  Hotel Early Check-In Request
-                </p>
-                <p className="text-[11px] text-slate-500 truncate">
-                  Marina Bay Grand Dubai reservation #BK-8391
-                </p>
-              </td>
-              <td className="px-6 py-4 text-slate-500 font-mono">6m</td>
-              <td className="px-6 py-4">
-                <span className="text-slate-700 font-medium">Jane Doe</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <Link
-                  href="/support/TKT-4409"
-                  className="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-[#0A0060] hover:text-white font-bold text-[11px] transition-colors inline-block"
-                >
-                  Open Chat
-                </Link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Client Name</th>
+                <th className="px-6 py-4">Contact Information</th>
+                <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Message / Requirements</th>
+                <th className="px-6 py-4 text-right">Received Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-xs text-slate-400">
+                    Loading customer inquiries from database...
+                  </td>
+                </tr>
+              ) : filteredInquiries.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center">
+                    <MessageSquare className="size-8 text-slate-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-slate-700">No inquiry submissions found</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Submissions from /inquire and /contact will appear here in real time.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredInquiries.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-900">{item.name}</p>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {item.id.slice(0, 8)}...
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-slate-800 font-medium flex items-center gap-1.5">
+                        <Mail className="size-3 text-slate-400" />
+                        <span>{item.email}</span>
+                      </p>
+                      {item.phone && (
+                        <p className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                          <Phone className="size-3 text-slate-400" />
+                          <span>{item.phone}</span>
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
+                          item.kind === "INQUIRY"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}
+                      >
+                        {item.kind}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 max-w-md">
+                      <p className="text-slate-700 font-normal line-clamp-2 leading-relaxed">
+                        {item.message}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-500 text-[11px]">
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
