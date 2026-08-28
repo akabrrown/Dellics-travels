@@ -1,145 +1,295 @@
-/* eslint-disable react/no-unescaped-entities */
-import React from 'react';
-import Link from 'next/link';
+"use client";
 
-export default function SupportTicketDetail({ params }: { params: { id: string } }) {
-  const ticketId = params?.id || 'T-992';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import {
+  ArrowLeft,
+  MessageSquare,
+  Paperclip,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  User,
+  Shield,
+  FileText,
+} from "lucide-react";
+
+interface MessageItem {
+  id: string;
+  sender: "TRAVELER" | "AGENT" | "SYSTEM";
+  name: string;
+  content: string;
+  timestamp: string;
+  isInternalNote?: boolean;
+}
+
+export default function SupportTicketDetail() {
+  const params = useParams();
+  const ticketId = typeof params?.id === "string" ? params.id : "T-992";
+
+  const [activeReplyMode, setActiveReplyMode] = useState<"REPLY" | "INTERNAL">("REPLY");
+  const [replyText, setReplyText] = useState("");
+  const [status, setStatus] = useState<"OPEN" | "RESOLVED">("OPEN");
+
+  const [messages, setMessages] = useState<MessageItem[]>([
+    {
+      id: "1",
+      sender: "TRAVELER",
+      name: "Ama Osei",
+      content: "Hello Dellics Support, I have an urgent date change request for my Emirates flight to Dubai. My business conference was shifted by two days. Can you please assist with rebooking?",
+      timestamp: "Yesterday at 09:30 AM",
+    },
+    {
+      id: "2",
+      sender: "SYSTEM",
+      name: "SLA Router",
+      content: "Ticket automatically prioritized for Elite Member Ama Osei (< 2hr target SLA).",
+      timestamp: "Yesterday at 09:31 AM",
+    },
+    {
+      id: "3",
+      sender: "AGENT",
+      name: "Jane Doe (Support Ops)",
+      content: "Checked Duffel GDS inventory for EK 788 on Oct 20. Seats available in Economy Flex with no fare difference penalty.",
+      timestamp: "Yesterday at 11:45 AM",
+      isInternalNote: true,
+    },
+  ]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replyText.trim()) return;
+
+    const newMsg: MessageItem = {
+      id: Date.now().toString(),
+      sender: "AGENT",
+      name: "Support Desk",
+      content: replyText.trim(),
+      timestamp: "Just now",
+      isInternalNote: activeReplyMode === "INTERNAL",
+    };
+
+    setMessages([...messages, newMsg]);
+    setReplyText("");
+  };
+
+  const handleResolve = () => {
+    setStatus("RESOLVED");
+    setMessages([
+      ...messages,
+      {
+        id: Date.now().toString(),
+        sender: "SYSTEM",
+        name: "Dellics Desk",
+        content: "Ticket marked as RESOLVED by Support Agent.",
+        timestamp: "Just now",
+      },
+    ]);
+  };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto h-[calc(100vh-8rem)] flex flex-col pb-4">
-      {/* Header & Breadcrumb */}
-      <div className="shrink-0">
-        <Link href="/support" className="text-sm text-gray-500 hover:text-[#0A0060] mb-2 inline-flex items-center">
-          &larr; Back to Queue
+    <div className="space-y-6 max-w-5xl mx-auto pb-16">
+      {/* Header */}
+      <div>
+        <Link
+          href="/support"
+          className="text-xs font-semibold text-slate-500 hover:text-[#0A0060] mb-2 inline-flex items-center gap-1.5 transition-colors"
+        >
+          <ArrowLeft className="size-3.5" />
+          <span>Back to Inquiries Queue</span>
         </Link>
-        <div className="flex justify-between items-start mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-2">
           <div>
-            <div className="flex items-center space-x-2 mb-1">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FDEEE2] text-[#B5540B]">HIGH PRIORITY</span>
-              <span className="text-gray-500 text-sm">#{ticketId}</span>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-rose-100 text-rose-800">
+                HIGH PRIORITY
+              </span>
+              <h1 className="font-display text-2xl font-bold text-[#0A0060]">
+                Ticket #{ticketId}: Date Change & Rebooking
+              </h1>
             </div>
-            <h2 className="text-2xl font-bold text-[#0A0060]">Medical emergency cancellation</h2>
-            <p className="text-gray-500 text-sm mt-1">Opened by Ama Osei • 26 hours ago</p>
+            <p className="text-slate-500 text-xs mt-1">
+              Opened by Ama Osei (Elite Member) · Flight #BK-8392
+            </p>
           </div>
-          <div className="flex space-x-3">
-            <button className="px-4 py-2 border border-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-50 text-sm transition-colors">
-              Reassign
-            </button>
-            <button className="px-4 py-2 bg-[#1E7A34] text-white font-medium rounded-md hover:bg-green-700 text-sm transition-colors">
-              Mark as Resolved
-            </button>
+          <div className="flex items-center gap-3">
+            {status === "OPEN" ? (
+              <button
+                onClick={handleResolve}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-full text-xs transition-colors shadow-xs"
+              >
+                Mark as Resolved
+              </button>
+            ) : (
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">
+                ✓ Resolved
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 flex-1 min-h-0">
-        {/* Chat / Thread */}
-        <div className="col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <h3 className="font-semibold text-gray-800">Conversation</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chat / Messages Thread (2 cols) */}
+        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-xs flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <h3 className="font-display font-bold text-sm text-slate-900">
+              Threaded Conversation
+            </h3>
+            <span className="text-xs text-slate-500">{messages.length} messages</span>
           </div>
-          
-          <div className="flex-1 overflow-auto p-4 space-y-6">
-            {/* Traveler Message */}
-            <div className="flex space-x-3 max-w-lg">
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex shrink-0 items-center justify-center text-xs font-bold text-gray-600">AO</div>
-              <div>
-                <div className="bg-gray-100 p-3 rounded-2xl rounded-tl-none text-sm text-gray-800">
-                  Hi, I have a medical emergency and need to cancel my hotel booking for next week. I know it's a non-refundable rate but I have a doctor's note. Is there anything you can do?
-                </div>
-                <p className="text-xs text-gray-400 mt-1 ml-1">Yesterday at 09:30 AM</p>
-              </div>
-            </div>
 
-            {/* System Note */}
-            <div className="flex justify-center">
-              <span className="px-3 py-1 bg-gray-50 text-gray-500 text-xs rounded-full border border-gray-100">
-                Ticket automatically escalated to High Priority due to keywords ("medical emergency")
-              </span>
-            </div>
-
-            {/* Agent Internal Note */}
-            <div className="flex space-x-3 max-w-lg self-end ml-auto justify-end">
-              <div>
-                <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-2xl rounded-tr-none text-sm text-gray-800 italic">
-                  Internal note: Reached out to RateHawk (supplier). They agreed to waive the cancellation fee if we provide the doctor's note. Waiting on traveler to upload it.
-                </div>
-                <p className="text-xs text-gray-400 mt-1 mr-1 text-right">Yesterday at 11:45 AM • Jane Doe</p>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-[#0A0060] flex shrink-0 items-center justify-center text-xs font-bold text-white">JD</div>
-            </div>
-            
-            {/* Traveler Upload */}
-            <div className="flex space-x-3 max-w-lg">
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex shrink-0 items-center justify-center text-xs font-bold text-gray-600">AO</div>
-              <div>
-                <div className="bg-gray-100 p-3 rounded-2xl rounded-tl-none text-sm text-gray-800">
-                  Here is the doctor's note as requested.
-                  <div className="mt-2 p-2 bg-white rounded border border-gray-200 flex items-center space-x-2 cursor-pointer hover:border-[#0A0060]">
-                    <span className="text-gray-400">📄</span>
-                    <span className="text-xs font-medium text-[#0A0060]">medical_note_2026.pdf</span>
+          <div className="p-5 space-y-4 max-h-[480px] overflow-y-auto">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex flex-col ${
+                  msg.sender === "SYSTEM"
+                    ? "items-center"
+                    : msg.sender === "AGENT"
+                      ? "items-end"
+                      : "items-start"
+                }`}
+              >
+                {msg.sender === "SYSTEM" ? (
+                  <div className="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[11px] text-center border border-slate-200">
+                    {msg.content}
                   </div>
-                </div>
-                <p className="text-xs text-gray-400 mt-1 ml-1">Today at 10:15 AM</p>
+                ) : (
+                  <div className="max-w-md space-y-1">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                      <span className="font-bold text-slate-700">{msg.name}</span>
+                      <span>·</span>
+                      <span>{msg.timestamp}</span>
+                    </div>
+                    <div
+                      className={`p-4 rounded-2xl text-xs leading-relaxed ${
+                        msg.isInternalNote
+                          ? "bg-amber-50 border border-amber-200 text-amber-900 italic font-mono text-[11px]"
+                          : msg.sender === "AGENT"
+                            ? "bg-[#0A0060] text-white rounded-tr-none"
+                            : "bg-slate-100 text-slate-800 rounded-tl-none"
+                      }`}
+                    >
+                      {msg.isInternalNote && (
+                        <span className="block font-bold text-[10px] uppercase text-amber-700 not-italic mb-1">
+                          🔒 Internal Ops Note (Admin Only)
+                        </span>
+                      )}
+                      {msg.content}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            ))}
           </div>
 
-          <div className="p-4 border-t border-gray-200 bg-white">
-            <div className="flex space-x-2 border-b border-gray-200 mb-3">
-              <button className="pb-2 border-b-2 border-[#0A0060] text-[#0A0060] text-sm font-medium">Reply to Traveler</button>
-              <button className="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm font-medium">Internal Note</button>
-            </div>
-            <textarea 
-              rows={3} 
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-[#0A0060] resize-none"
-              placeholder="Type your reply to Ama..."
-            />
-            <div className="flex justify-between items-center mt-2">
-              <button className="text-gray-400 hover:text-gray-600">📎 Attach</button>
-              <button className="px-4 py-2 bg-[#F4740D] text-white font-medium rounded-md hover:bg-[#d6660b] text-sm transition-colors">
-                Send Reply
+          {/* Reply Box */}
+          <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveReplyMode("REPLY")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  activeReplyMode === "REPLY"
+                    ? "bg-[#0A0060] text-white"
+                    : "text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Reply to Traveler
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReplyMode("INTERNAL")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  activeReplyMode === "INTERNAL"
+                    ? "bg-amber-600 text-white"
+                    : "text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Post Internal Ops Note
               </button>
             </div>
+
+            <form onSubmit={handleSendMessage} className="space-y-2">
+              <textarea
+                rows={3}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder={
+                  activeReplyMode === "REPLY"
+                    ? "Type your response to the traveler..."
+                    : "Add an internal note visible only to admins and support staff..."
+                }
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs text-slate-900 focus:outline-none focus:border-[#0A0060]"
+              />
+              <div className="flex justify-between items-center">
+                <button
+                  type="button"
+                  onClick={() => alert("Upload dialog opened for e-ticket / voucher attachment.")}
+                  className="p-2 text-slate-500 hover:text-[#0A0060] text-xs font-bold inline-flex items-center gap-1"
+                >
+                  <Paperclip className="size-3.5" />
+                  <span>Attach Document</span>
+                </button>
+                <button
+                  type="submit"
+                  className={`px-5 py-2 rounded-full text-xs font-bold text-white transition-colors flex items-center gap-1.5 shadow-xs ${
+                    activeReplyMode === "REPLY" ? "bg-[#F4740D] hover:bg-[#d6660b]" : "bg-amber-600 hover:bg-amber-700"
+                  }`}
+                >
+                  <Send className="size-3.5" />
+                  <span>{activeReplyMode === "REPLY" ? "Send Reply" : "Save Note"}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
 
-        {/* Context Sidebar */}
-        <div className="col-span-1 space-y-6 overflow-y-auto pr-2">
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-              <h3 className="font-semibold text-gray-800">Related Booking</h3>
-              <Link href="/bookings/BK-8391" className="text-[#F4740D] text-xs font-medium hover:underline">View Detail</Link>
-            </div>
-            <div className="p-4">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <p className="font-bold text-gray-900">#BK-8391</p>
-                  <p className="text-sm text-gray-500">Hotel (Kempinski)</p>
-                </div>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#FDEEE2] text-[#B5540B]">Needs Attention</span>
+        {/* Sidebar Traveler & Linked Entity Info (1 col) */}
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+            <h3 className="font-display font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">
+              Traveler Information
+            </h3>
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-full bg-[#0A0060] text-white font-bold flex items-center justify-center text-xs shrink-0">
+                AO
               </div>
-              <p className="text-sm text-gray-700 mb-1"><span className="font-medium">Total:</span> GHS 4,200.00</p>
-              <p className="text-sm text-gray-700 mb-1"><span className="font-medium">Dates:</span> Oct 20 - Oct 25</p>
-              <button className="w-full mt-3 py-1.5 border border-red-200 text-red-700 bg-red-50 text-xs font-medium rounded hover:bg-red-100 transition-colors">
-                Escalate to Refund Queue
-              </button>
+              <div>
+                <p className="font-bold text-xs text-slate-900">Ama Osei</p>
+                <p className="text-[11px] text-slate-500">ama.osei@example.com</p>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                  Elite Member
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-              <h3 className="font-semibold text-gray-800">Traveler Info</h3>
-              <Link href="/travelers/TRV-103" className="text-[#F4740D] text-xs font-medium hover:underline">Profile</Link>
-            </div>
-            <div className="p-4">
-              <p className="font-bold text-gray-900 mb-1">Ama Osei</p>
-              <p className="text-sm text-gray-500 mb-1">ama.osei@example.com</p>
-              <p className="text-sm text-gray-500 mb-3">+233 24 987 6543</p>
-              
-              <div className="pt-3 border-t border-gray-100">
-                <p className="text-xs font-medium text-gray-500 mb-1">MEMBERSHIP</p>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-100 text-gray-700">Explorer (Base)</span>
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+            <h3 className="font-display font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">
+              Associated Booking
+            </h3>
+            <div className="text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Booking ID:</span>
+                <Link href="/bookings/BK-8392" className="font-mono font-bold text-[#0A0060] hover:underline">
+                  #BK-8392
+                </Link>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Route:</span>
+                <span className="font-semibold text-slate-900">ACC → DXB</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">PNR:</span>
+                <span className="font-mono font-bold text-slate-900">7F9K2A</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Airline:</span>
+                <span className="font-semibold text-slate-900">Emirates (EK 788)</span>
               </div>
             </div>
           </div>
