@@ -7,8 +7,10 @@
   "scripts": {
     "generate": "prisma generate",
     "push": "prisma db push",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "clean:users": "tsx prisma/reset-users.ts"
   },
+
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
