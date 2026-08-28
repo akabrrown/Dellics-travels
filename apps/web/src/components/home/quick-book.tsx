@@ -11,57 +11,53 @@ import {
   Globe2,
   Wifi,
   Search,
-  ArrowRight,
   MapPin,
   Calendar,
   Users,
   Key,
-  Smartphone,
   ShieldCheck,
-  CheckCircle2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FlightSearchWidget } from "@/components/flights/flight-search-widget";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function QuickBook() {
   const router = useRouter();
 
-  // 2. Hotels State
+  // Hotels State
   const [hotelDestination, setHotelDestination] = useState("");
   const [hotelCheckIn, setHotelCheckIn] = useState("");
   const [hotelCheckOut, setHotelCheckOut] = useState("");
   const [hotelGuests, setHotelGuests] = useState("2 Adults, 1 Room");
 
-  // 3. Transfers State
+  // Transfers State
   const [transferPickup, setTransferPickup] = useState("Kotoka International Airport (ACC)");
   const [transferDropoff, setTransferDropoff] = useState("");
   const [transferDate, setTransferDate] = useState("");
   const [transferType, setTransferType] = useState("One Way");
 
-  // 4. Cars State
-  const [carCity, setCarCity] = useState("Accra / Tema, Ghana");
+  // Cars State
+  const [carCity, setCarCity] = useState("Accra, Ghana");
   const [carType, setCarType] = useState("With Professional Chauffeur");
   const [carClass, setCarClass] = useState("Luxury SUV (Prado / Land Cruiser)");
   const [carStartDate, setCarStartDate] = useState("");
   const [carDuration, setCarDuration] = useState("3 Days");
 
-  // 5. Tours & Activities State
+  // Tours & Activities State
   const [tourDestination, setTourDestination] = useState("Dubai, UAE");
   const [tourMonth, setTourMonth] = useState("Upcoming Season");
 
-  // 6. Diaspora / Packages State
+  // Diaspora / Packages State
   const [diasporaPackage, setDiasporaPackage] = useState("Ghana Heritage & Cape Coast 7-Day Tour");
   const [diasporaTravelers, setDiasporaTravelers] = useState("2 Travelers");
 
-  // 7. eSIM State
+  // eSIM State
   const [esimCountry, setEsimCountry] = useState("Ghana");
   const [esimDataPlan, setEsimDataPlan] = useState("3 GB (30 Days)");
 
-  // Form Submissions
+  // Handlers
   function handleHotelSubmit(e: React.FormEvent) {
     e.preventDefault();
     const query = new URLSearchParams();
@@ -98,14 +94,14 @@ export function QuickBook() {
     e.preventDefault();
     const query = new URLSearchParams();
     if (tourDestination) query.set("destination", tourDestination);
-    if (tourMonth) query.set("season", tourMonth);
+    if (tourMonth) query.set("month", tourMonth);
     router.push(`/tours${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
   function handleDiasporaSubmit(e: React.FormEvent) {
     e.preventDefault();
     const query = new URLSearchParams();
-    query.set("service", "diaspora");
+    query.set("service", "diaspora_tour");
     if (diasporaPackage) query.set("package", diasporaPackage);
     if (diasporaTravelers) query.set("travelers", diasporaTravelers);
     router.push(`/inquire${query.toString() ? `?${query.toString()}` : ""}`);
@@ -121,64 +117,64 @@ export function QuickBook() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl rounded-3xl bg-white p-4 sm:p-7 shadow-2xl border border-black/5 ring-1 ring-black/5 backdrop-blur-xl">
+    <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-3.5 sm:p-5 shadow-xl border border-slate-100 ring-1 ring-black/5">
       <Tabs defaultValue="flights" className="w-full">
-        {/* Navigation Tabs Bar */}
-        <div className="flex justify-start border-b border-slate-100 pb-4 mb-6 overflow-x-auto no-scrollbar scroll-smooth">
-          <TabsList className="bg-slate-100/90 p-1.5 rounded-full flex gap-1.5 h-auto min-w-max">
+        {/* Compact Navigation Tabs Bar */}
+        <div className="flex justify-start border-b border-slate-100 pb-2.5 mb-3.5 overflow-x-auto no-scrollbar scroll-smooth">
+          <TabsList className="bg-slate-100/90 p-1 rounded-xl flex gap-1 h-auto min-w-max">
             <TabsTrigger
               value="flights"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Plane className="size-4" />
+              <Plane className="size-3.5" />
               <span>Flights</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="hotels"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Building2 className="size-4" />
+              <Building2 className="size-3.5" />
               <span>Hotels</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="transfers"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Car className="size-4" />
+              <Car className="size-3.5" />
               <span>Transfers</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="cars"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Key className="size-4" />
+              <Key className="size-3.5" />
               <span>Cars</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="tours"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Compass className="size-4" />
-              <span>Tours & Activities</span>
+              <Compass className="size-3.5" />
+              <span>Tours</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="packages"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Globe2 className="size-4" />
-              <span>Packages/Diaspora Tours</span>
+              <Globe2 className="size-3.5" />
+              <span>Diaspora Packages</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="esim"
-              className="rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0"
+              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
             >
-              <Wifi className="size-4" />
+              <Wifi className="size-3.5" />
               <span>eSIM</span>
             </TabsTrigger>
           </TabsList>
@@ -191,95 +187,81 @@ export function QuickBook() {
 
         {/* 2. HOTELS TAB */}
         <TabsContent value="hotels" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleHotelSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-4">
-              <div className="sm:col-span-1">
-                <Label htmlFor="hotel-dest" className="text-xs font-bold uppercase tracking-wider text-navy">
+          <form onSubmit={handleHotelSubmit} className="space-y-3">
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <Label htmlFor="hotel-dest" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Destination / City
                 </Label>
-                <div className="relative mt-1.5">
-                  <MapPin className="absolute left-3.5 top-3.5 size-4 text-slate-400" />
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
                   <Input
                     id="hotel-dest"
                     placeholder="e.g. Dubai, London, Accra"
                     value={hotelDestination}
                     onChange={(e) => setHotelDestination(e.target.value)}
-                    className="pl-10 h-12 rounded-2xl bg-slate-50 border-slate-200 text-sm"
+                    className="pl-8 h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="hotel-in" className="text-xs font-bold uppercase tracking-wider text-navy">
+                <Label htmlFor="hotel-in" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Check-in Date
                 </Label>
-                <div className="relative mt-1.5">
-                  <Input
-                    id="hotel-in"
-                    type="date"
-                    value={hotelCheckIn}
-                    onChange={(e) => setHotelCheckIn(e.target.value)}
-                    className="h-12 rounded-2xl bg-slate-50 border-slate-200 text-sm"
-                  />
-                </div>
+                <Input
+                  id="hotel-in"
+                  type="date"
+                  value={hotelCheckIn}
+                  onChange={(e) => setHotelCheckIn(e.target.value)}
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                />
               </div>
               <div>
-                <Label htmlFor="hotel-out" className="text-xs font-bold uppercase tracking-wider text-navy">
+                <Label htmlFor="hotel-out" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Check-out Date
                 </Label>
-                <div className="relative mt-1.5">
-                  <Input
-                    id="hotel-out"
-                    type="date"
-                    value={hotelCheckOut}
-                    onChange={(e) => setHotelCheckOut(e.target.value)}
-                    className="h-12 rounded-2xl bg-slate-50 border-slate-200 text-sm"
-                  />
-                </div>
+                <Input
+                  id="hotel-out"
+                  type="date"
+                  value={hotelCheckOut}
+                  onChange={(e) => setHotelCheckOut(e.target.value)}
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                />
               </div>
               <div>
-                <Label htmlFor="hotel-guests" className="text-xs font-bold uppercase tracking-wider text-navy">
+                <Label htmlFor="hotel-guests" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Guests & Rooms
                 </Label>
-                <div className="relative mt-1.5">
-                  <select
-                    id="hotel-guests"
-                    value={hotelGuests}
-                    onChange={(e) => setHotelGuests(e.target.value)}
-                    className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
-                  >
-                    <option value="1 Adult, 1 Room">1 Adult, 1 Room</option>
-                    <option value="2 Adults, 1 Room">2 Adults, 1 Room</option>
-                    <option value="2 Adults, 2 Children">2 Adults + Children</option>
-                    <option value="Family Suite (4+ Guests)">Family Suite (4+ Guests)</option>
-                  </select>
-                </div>
+                <select
+                  id="hotel-guests"
+                  value={hotelGuests}
+                  onChange={(e) => setHotelGuests(e.target.value)}
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
+                >
+                  <option value="1 Adult, 1 Room">1 Adult, 1 Room</option>
+                  <option value="2 Adults, 1 Room">2 Adults, 1 Room</option>
+                  <option value="2 Adults, 2 Children">2 Adults + Children</option>
+                  <option value="Family Suite (4+ Guests)">Family Suite (4+ Guests)</option>
+                </select>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-              <p className="text-xs text-slate-500 flex items-center gap-1.5">
-                <ShieldCheck className="size-4 text-emerald-600" />
-                Over 3.3 million verified hotels, luxury apartments & resorts with best rate guarantee.
-
-              </p>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full sm:w-auto rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-lg"
-              >
-                <Search className="size-4 mr-2" />
-                Search Stays
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
+            >
+              <Search className="size-4" />
+              <span>Search Verified Stays & Best Rates</span>
+            </Button>
           </form>
         </TabsContent>
 
         {/* 3. TRANSFERS TAB */}
         <TabsContent value="transfers" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleTransferSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-4">
+          <form onSubmit={handleTransferSubmit} className="space-y-3">
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <Label htmlFor="trans-pick" className="text-xs font-bold uppercase tracking-wider text-navy">
+                <Label htmlFor="trans-pick" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Pickup Location
                 </Label>
                 <Input
@@ -287,11 +269,11 @@ export function QuickBook() {
                   placeholder="e.g. Kotoka Airport (ACC)"
                   value={transferPickup}
                   onChange={(e) => setTransferPickup(e.target.value)}
-                  className="h-12 rounded-2xl bg-slate-50 border-slate-200 mt-1.5 text-sm"
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
                 />
               </div>
               <div>
-                <Label htmlFor="trans-drop" className="text-xs font-bold uppercase tracking-wider text-navy">
+                <Label htmlFor="trans-drop" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Drop-off Destination
                 </Label>
                 <Input
@@ -299,30 +281,30 @@ export function QuickBook() {
                   placeholder="e.g. Accra, Tema, Cape Coast"
                   value={transferDropoff}
                   onChange={(e) => setTransferDropoff(e.target.value)}
-                  className="h-12 rounded-2xl bg-slate-50 border-slate-200 mt-1.5 text-sm"
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
                 />
               </div>
               <div>
-                <Label htmlFor="trans-date" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Date & Flight Arrival Time
+                <Label htmlFor="trans-date" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Date & Arrival Time
                 </Label>
                 <Input
                   id="trans-date"
                   type="datetime-local"
                   value={transferDate}
                   onChange={(e) => setTransferDate(e.target.value)}
-                  className="h-12 rounded-2xl bg-slate-50 border-slate-200 mt-1.5 text-sm"
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
                 />
               </div>
               <div>
-                <Label htmlFor="trans-type" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Transfer Type
+                <Label htmlFor="trans-type" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Transfer Service Type
                 </Label>
                 <select
                   id="trans-type"
                   value={transferType}
                   onChange={(e) => setTransferType(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
                   <option value="One Way Airport Pickup">One Way Airport Pickup</option>
                   <option value="Round Trip Airport Transfer">Round Trip Airport Transfer</option>
@@ -331,259 +313,218 @@ export function QuickBook() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-              <p className="text-xs text-slate-500">
-                Includes flight delay monitoring, professional chauffeur meet & greet, and air-conditioned luxury fleet.
-              </p>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full sm:w-auto rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-lg flex items-center justify-center gap-2"
-              >
-                <Car className="size-4" />
-                <span>Request Transfer Quote</span>
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
+            >
+              <Search className="size-4" />
+              <span>Find Airport Transfers</span>
+            </Button>
           </form>
         </TabsContent>
 
         {/* 4. CARS TAB */}
         <TabsContent value="cars" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleCarSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-4">
+          <form onSubmit={handleCarSubmit} className="space-y-3">
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <Label htmlFor="car-city" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Pickup City / Region
+                <Label htmlFor="car-city" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  City / Region
                 </Label>
                 <Input
                   id="car-city"
-                  placeholder="e.g. Accra, Tema, Kumasi"
+                  placeholder="e.g. Accra / Tema, Ghana"
                   value={carCity}
                   onChange={(e) => setCarCity(e.target.value)}
-                  className="h-12 rounded-2xl bg-slate-50 border-slate-200 mt-1.5 text-sm"
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
                 />
               </div>
               <div>
-                <Label htmlFor="car-driver" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Service Mode
+                <Label htmlFor="car-driver" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Driver Preference
                 </Label>
                 <select
                   id="car-driver"
                   value={carType}
                   onChange={(e) => setCarType(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
-                  <option value="With Professional Chauffeur">With Dedicated Chauffeur</option>
-                  <option value="Self-Drive (Vetted)">Self-Drive (Vetted Deposit)</option>
-                  <option value="Corporate Fleet Delegation">Corporate Fleet Delegation</option>
+                  <option value="With Professional Chauffeur">With Professional Chauffeur</option>
+                  <option value="Self Drive (Security Clearance)">Self Drive</option>
+                  <option value="Armored / Security Escort">Armored VIP Escort</option>
                 </select>
               </div>
               <div>
-                <Label htmlFor="car-class" className="text-xs font-bold uppercase tracking-wider text-navy">
+                <Label htmlFor="car-veh" className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Vehicle Category
                 </Label>
                 <select
-                  id="car-class"
+                  id="car-veh"
                   value={carClass}
                   onChange={(e) => setCarClass(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
-                  <option value="Luxury SUV (Prado / Land Cruiser V8)">Luxury 4x4 SUV (Prado / V8)</option>
-                  <option value="Executive Sedan (Mercedes / Toyota Camry)">Executive Sedan</option>
-                  <option value="Luxury Minibus / Coaster (15-30 Seats)">Executive Coaster Bus</option>
-                  <option value="Compact City Car">Economy City Car</option>
+                  <option value="Luxury SUV (Prado / Land Cruiser)">Luxury SUV (Prado / Land Cruiser)</option>
+                  <option value="Executive Sedan (Mercedes / Camry)">Executive Sedan (Mercedes / Camry)</option>
+                  <option value="Hiace Van / Coaster Bus (Groups)">Group Bus / Van (15-30 Pax)</option>
                 </select>
               </div>
               <div>
-                <Label htmlFor="car-duration" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Rental Period
+                <Label htmlFor="car-start" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Rental Start Date
                 </Label>
-                <select
-                  id="car-duration"
-                  value={carDuration}
-                  onChange={(e) => setCarDuration(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
-                >
-                  <option value="1 Day (24 Hours)">1 Day</option>
-                  <option value="3 Days Package">3 Days Package</option>
-                  <option value="7 Days Weekly Rate">7 Days (Weekly Rate)</option>
-                  <option value="Monthly Corporate Lease">Monthly Corporate Lease</option>
-                </select>
+                <Input
+                  id="car-start"
+                  type="date"
+                  value={carStartDate}
+                  onChange={(e) => setCarStartDate(e.target.value)}
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                />
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-              <p className="text-xs text-slate-500">
-                All vehicles fully insured with air conditioning, GPS tracking, and premium concierge support.
-              </p>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full sm:w-auto rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-lg flex items-center justify-center gap-2"
-              >
-                <Key className="size-4" />
-                <span>Reserve Car Hire</span>
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
+            >
+              <Search className="size-4" />
+              <span>Reserve Chauffeur & Vehicle</span>
+            </Button>
           </form>
         </TabsContent>
 
-        {/* 5. TOURS & ACTIVITIES TAB */}
+        {/* 5. TOURS TAB */}
         <TabsContent value="tours" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleTourSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+          <form onSubmit={handleTourSubmit} className="space-y-3">
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
               <div>
-                <Label htmlFor="tour-dest" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Destination or Experience
+                <Label htmlFor="tour-dest" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Destination or Holiday Package
                 </Label>
-                <select
+                <Input
                   id="tour-dest"
+                  placeholder="e.g. Dubai, Zanzibar, Cape Town, Paris"
                   value={tourDestination}
                   onChange={(e) => setTourDestination(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
-                >
-                  <option value="Dubai, UAE (Desert Safari & Yacht)">Dubai, UAE (Safari & Marina)</option>
-                  <option value="South Africa (Cape Town & Table Mountain)">Cape Town & Table Mountain</option>
-                  <option value="Ghana (Safari Valley & Cape Coast)">Safari Valley & Cape Coast (Ghana)</option>
-                  <option value="Kenya & Tanzania (Maasai Mara Safari)">Maasai Mara Wildlife Safari</option>
-                  <option value="Zanzibar Island Beach Escape">Zanzibar Island Beach Escape</option>
-                  <option value="Paris & French Riviera (Europe)">Paris & French Riviera</option>
-                </select>
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                />
               </div>
               <div>
-                <Label htmlFor="tour-season" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Travel Timing
+                <Label htmlFor="tour-m" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Preferred Travel Month / Season
                 </Label>
                 <select
-                  id="tour-season"
+                  id="tour-m"
                   value={tourMonth}
                   onChange={(e) => setTourMonth(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
-                  <option value="Upcoming Season / Next 30 Days">Next 30 Days</option>
-                  <option value="Easter Holiday Getaway">Easter Holidays</option>
-                  <option value="Summer Holiday Package">Summer Holidays (July/August)</option>
-                  <option value="Year-End December / Christmas Tour">December Year-End</option>
+                  <option value="Upcoming Season">Upcoming Season</option>
+                  <option value="Easter Holiday">Easter Holiday</option>
+                  <option value="Summer Season (July - Aug)">Summer Season (July - Aug)</option>
+                  <option value="December / Year-End Festive">December / Year-End Festive</option>
                 </select>
               </div>
-              <div className="flex flex-col justify-end">
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full h-12 rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-lg flex items-center justify-center gap-2"
-                >
-                  <Compass className="size-4" />
-                  <span>Browse 25+ Curated Tours</span>
-                </Button>
-              </div>
             </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
+            >
+              <Search className="size-4" />
+              <span>Explore Curated Tour Packages</span>
+            </Button>
           </form>
         </TabsContent>
 
-        {/* 6. PACKAGES & DIASPORA TOURS TAB */}
+        {/* 6. DIASPORA / PACKAGES TAB */}
         <TabsContent value="packages" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleDiasporaSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+          <form onSubmit={handleDiasporaSubmit} className="space-y-3">
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
               <div>
-                <Label htmlFor="diaspora-pkg" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Heritage / Vacation Package
+                <Label htmlFor="diaspora-pkg" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Selected Heritage Experience
                 </Label>
                 <select
                   id="diaspora-pkg"
                   value={diasporaPackage}
                   onChange={(e) => setDiasporaPackage(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
-                  <option value="Ghana Heritage & Cape Coast 7-Day Tour">Ghana Heritage & Cape Coast (7 Days)</option>
-                  <option value="Year of Return Cultural Immersion & Chieftaincy">Year of Return Cultural Immersion</option>
-                  <option value="Ashanti Kingdom & Kumasi Craft Tour">Ashanti Kingdom & Kente Craft</option>
-                  <option value="Custom Family Reunion & Diaspora Package">Custom Family Reunion Package</option>
+                  <option value="Ghana Heritage & Cape Coast 7-Day Tour">Ghana Heritage & Cape Coast 7-Day Tour</option>
+                  <option value="Year of Return & AfroFuture Festival VIP">Year of Return & AfroFuture VIP Experience</option>
+                  <option value="Ashanti Kingdom & Kumasi Cultural Expedition">Ashanti Kingdom & Kumasi Cultural Expedition</option>
                 </select>
               </div>
               <div>
-                <Label htmlFor="diaspora-count" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Travelers in Group
+                <Label htmlFor="diaspora-pax" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Number of Travelers
                 </Label>
                 <select
-                  id="diaspora-count"
+                  id="diaspora-pax"
                   value={diasporaTravelers}
                   onChange={(e) => setDiasporaTravelers(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
-                  <option value="Solo Traveler">Solo Traveler</option>
-                  <option value="Couple (2 Travelers)">Couple (2 Travelers)</option>
-                  <option value="Family (3-5 Travelers)">Family (3–5 Travelers)</option>
-                  <option value="Group Delegation (6+ Travelers)">Group Delegation (6+ Travelers)</option>
+                  <option value="1 Solo Traveler">1 Solo Traveler</option>
+                  <option value="2 Travelers (Couple/Friends)">2 Travelers (Couple/Friends)</option>
+                  <option value="Family (3-5 Travelers)">Family (3-5 Travelers)</option>
+                  <option value="Group / Organization (6+ Pax)">Group (6+ Pax)</option>
                 </select>
               </div>
-              <div className="flex flex-col justify-end">
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full h-12 rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-lg flex items-center justify-center gap-2"
-                >
-                  <Globe2 className="size-4" />
-                  <span>Request Diaspora Package</span>
-                </Button>
-              </div>
             </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
+            >
+              <Search className="size-4" />
+              <span>Inquire About Heritage Packages</span>
+            </Button>
           </form>
         </TabsContent>
 
         {/* 7. ESIM TAB */}
         <TabsContent value="esim" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleEsimSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+          <form onSubmit={handleEsimSubmit} className="space-y-3">
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
               <div>
-                <Label htmlFor="esim-country" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Destination Country / Region
+                <Label htmlFor="esim-c" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Travel Destination Country
                 </Label>
-                <select
-                  id="esim-country"
+                <Input
+                  id="esim-c"
+                  placeholder="e.g. Ghana, UAE, UK, USA, Schengen"
                   value={esimCountry}
                   onChange={(e) => setEsimCountry(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
-                >
-                  <option value="Ghana">Ghana (Local)</option>
-                  <option value="United Arab Emirates (Dubai)">United Arab Emirates (Dubai)</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                  <option value="United States & Canada">United States & Canada</option>
-                  <option value="South Africa">South Africa</option>
-                  <option value="Europe Regional (39 Countries)">Europe Regional (39 Countries)</option>
-                  <option value="Global 130+ Countries">Global (130+ Countries)</option>
-                </select>
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                />
               </div>
               <div>
-                <Label htmlFor="esim-plan" className="text-xs font-bold uppercase tracking-wider text-navy">
-                  Data Allowance & Validity
+                <Label htmlFor="esim-d" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                  Recommended Data Allowance
                 </Label>
                 <select
-                  id="esim-plan"
+                  id="esim-d"
                   value={esimDataPlan}
                   onChange={(e) => setEsimDataPlan(e.target.value)}
-                  className="w-full h-12 rounded-2xl bg-slate-50 border border-slate-200 px-3.5 mt-1.5 text-sm text-slate-900 focus:outline-none focus:border-brand-orange"
+                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
                 >
-                  <option value="1 GB (7 Days) - $4.50">1 GB (7 Days) · $4.50</option>
-                  <option value="3 GB (30 Days) - $11.00">3 GB (30 Days) · $11.00</option>
-                  <option value="10 GB (30 Days) - $26.00">10 GB (30 Days) · $26.00</option>
-                  <option value="20 GB (30 Days) - $42.00">20 GB (30 Days) · $42.00</option>
+                  <option value="3 GB (30 Days)">3 GB High-Speed (30 Days)</option>
+                  <option value="5 GB (30 Days)">5 GB High-Speed (30 Days)</option>
+                  <option value="10 GB (30 Days)">10 GB High-Speed (30 Days)</option>
+                  <option value="Unlimited Global (15 Days)">Unlimited Global (15 Days)</option>
                 </select>
               </div>
-              <div className="flex flex-col justify-end">
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full h-12 rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-lg flex items-center justify-center gap-2"
-                >
-                  <Smartphone className="size-4" />
-                  <span>Get Instant eSIM</span>
-                </Button>
-              </div>
             </div>
-            <p className="text-xs text-slate-500 flex items-center gap-1.5 pt-1">
-              <ShieldCheck className="size-4 text-emerald-600" />
-              Powered by Airalo. High-speed 4G/5G data delivered via QR code instantly to your phone.
-            </p>
+
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
+            >
+              <Search className="size-4" />
+              <span>Get Instant eSIM QR Code</span>
+            </Button>
           </form>
         </TabsContent>
       </Tabs>
