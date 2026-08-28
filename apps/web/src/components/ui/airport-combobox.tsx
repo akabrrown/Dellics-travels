@@ -11,6 +11,7 @@ interface AirportComboboxProps {
   placeholder?: string;
   className?: string;
   id?: string;
+  compact?: boolean;
 }
 
 export function AirportCombobox({
@@ -19,6 +20,7 @@ export function AirportCombobox({
   placeholder = "Search airport or city (e.g. Accra, London, JFK)...",
   className = "",
   id,
+  compact = true,
 }: AirportComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -80,15 +82,15 @@ export function AirportCombobox({
       {/* Combobox Trigger Field */}
       <div
         onClick={() => setIsOpen(true)}
-        className={`w-full min-h-[44px] px-3.5 py-2 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 bg-white ${
+        className={`w-full ${compact ? "h-10 px-3 py-1.5 rounded-xl text-xs" : "min-h-[44px] px-3.5 py-2 rounded-xl text-sm"} border transition-all cursor-pointer flex items-center justify-between gap-2 bg-white ${
           isOpen
             ? "border-navy ring-2 ring-navy/10"
-            : "border-slate-200 hover:border-slate-300"
+            : "border-slate-200 hover:border-slate-300 shadow-2xs"
         }`}
       >
-        <div className="flex items-center gap-2.5 overflow-hidden flex-1">
-          <Plane className="size-4 text-brand-orange shrink-0" />
-          <span className="text-sm font-medium text-slate-800 truncate">
+        <div className="flex items-center gap-2 overflow-hidden flex-1">
+          <Plane className={`${compact ? "size-3.5" : "size-4"} text-brand-orange shrink-0`} />
+          <span className={`${compact ? "text-xs" : "text-sm"} font-medium text-slate-800 truncate`}>
             {value || <span className="text-slate-400 font-normal">{placeholder}</span>}
           </span>
         </div>

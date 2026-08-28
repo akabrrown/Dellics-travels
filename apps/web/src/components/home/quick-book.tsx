@@ -117,10 +117,10 @@ export function QuickBook() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-3.5 sm:p-5 shadow-xl border border-slate-100 ring-1 ring-black/5">
+    <div className="mx-auto w-full max-w-4xl rounded-2xl bg-white p-3 sm:p-4 shadow-xl border border-slate-100 ring-1 ring-black/5">
       <Tabs defaultValue="flights" className="w-full">
         {/* Compact Navigation Tabs Bar */}
-        <div className="flex justify-start border-b border-slate-100 pb-2.5 mb-3.5 overflow-x-auto no-scrollbar scroll-smooth">
+        <div className="flex justify-start border-b border-slate-100 pb-2 mb-3 overflow-x-auto no-scrollbar scroll-smooth">
           <TabsList className="bg-slate-100/90 p-1 rounded-xl flex gap-1 h-auto min-w-max">
             <TabsTrigger
               value="flights"

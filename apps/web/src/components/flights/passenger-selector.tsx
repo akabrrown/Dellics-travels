@@ -37,9 +37,9 @@ export function PassengerSelector({ value, onChange }: PassengerSelectorProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-10 w-full justify-start rounded-field font-normal">
-          <Users className="mr-2 size-4" aria-hidden />
-          {formatPassengers(value)}
+        <Button variant="outline" className="h-9 px-3 rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 flex items-center gap-1.5">
+          <Users className="size-3.5 text-slate-500" aria-hidden />
+          <span>{formatPassengers(value)}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72" align="start">
