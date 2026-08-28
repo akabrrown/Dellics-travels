@@ -42,6 +42,7 @@ import { NAV_ITEMS } from "@/data/nav";
 import { SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
+import { RegionalSelector } from "@/components/layout/regional-selector";
 import { toast } from "sonner";
 
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -498,7 +499,14 @@ export function SiteHeader() {
                 })}
               </nav>
 
-              <div className="mt-8 space-y-3 pt-4 border-t border-white/10">
+              <div className="mt-6 p-3 bg-white/5 rounded-xl border border-white/10">
+                <p className="text-[11px] font-bold text-white/70 uppercase tracking-wider mb-2">
+                  Regional & Currency Settings
+                </p>
+                <RegionalSelector variant="mobile" />
+              </div>
+
+              <div className="mt-6 space-y-3 pt-4 border-t border-white/10">
                 {user ? (
                   <Button
                     onClick={handleSignOut}

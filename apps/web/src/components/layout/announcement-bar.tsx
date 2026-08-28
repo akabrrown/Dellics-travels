@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import { Phone, Mail, ShieldCheck } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { RegionalSelector } from "@/components/layout/regional-selector";
+import { AccountDropdown } from "@/components/layout/account-dropdown";
 
 export function AnnouncementBar() {
   const pathname = usePathname();
@@ -11,37 +13,42 @@ export function AnnouncementBar() {
   }
 
   return (
-    <div className="bg-navy-dark text-white/90 text-xs py-2 px-4 border-b border-white/10">
-      <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div className="bg-[#050038] text-white/90 text-xs py-1.5 px-4 border-b border-white/10 relative z-50">
+      <div className="mx-auto max-w-7xl flex flex-row items-center justify-between gap-4">
+        {/* Left Section: Accreditation & Contact Info */}
         <div className="flex items-center gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-orange">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <ShieldCheck className="size-3 text-brand-orange" />
             IATA Certified
           </span>
-          <span className="hidden md:inline-flex items-center text-white/80 text-[11px]">
-            Worldwide Flights, Luxury Stays & Bespoke Holidays
-          </span>
+          <div className="hidden lg:flex items-center gap-3 text-[11px] text-white/80">
+            <a
+              href={`tel:${SITE.whatsappNumber}`}
+              className="flex items-center gap-1 hover:text-brand-orange transition-colors"
+            >
+              <Phone className="size-3 text-brand-orange" />
+              <span>{SITE.phoneDisplay}</span>
+            </a>
+            <span className="text-white/30">•</span>
+            <a
+              href={`mailto:${SITE.email}`}
+              className="flex items-center gap-1 hover:text-brand-orange transition-colors"
+            >
+              <Mail className="size-3 text-brand-orange" />
+              <span>{SITE.email}</span>
+            </a>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4 text-[11px] sm:text-xs">
-          <a
-            href={`tel:${SITE.whatsappNumber}`}
-            className="flex items-center gap-1 hover:text-brand-orange transition-colors"
-          >
-            <Phone className="size-3 text-brand-orange" />
-            <span>{SITE.phoneDisplay}</span>
-          </a>
-          <span className="text-white/30 hidden sm:inline">•</span>
-          <a
-            href={`mailto:${SITE.email}`}
-            className="hidden sm:flex items-center gap-1 hover:text-brand-orange transition-colors"
-          >
-            <Mail className="size-3 text-brand-orange" />
-            <span>{SITE.email}</span>
-          </a>
+        {/* Right Section: Regional Selector (EN | Flag GH | GHS ⌵) & Account Menu */}
+        <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs">
+          <RegionalSelector variant="announcement" />
+          <span className="text-white/30" aria-hidden>|</span>
+          <AccountDropdown variant="announcement" />
         </div>
       </div>
     </div>
   );
 }
+
