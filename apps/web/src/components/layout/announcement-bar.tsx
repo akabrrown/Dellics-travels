@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { Phone, Mail, ShieldCheck } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { RegionalSelector } from "@/components/layout/regional-selector";
-import { AccountDropdown } from "@/components/layout/account-dropdown";
 
 export function AnnouncementBar() {
   const pathname = usePathname();
@@ -41,14 +40,11 @@ export function AnnouncementBar() {
           </div>
         </div>
 
-        {/* Right Section: Regional Selector (EN | Flag GH | GHS ⌵) & Account Menu */}
+        {/* Right Section: Regional Selector (EN | Flag GH | GHS ⌵) */}
         <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs">
           <RegionalSelector variant="announcement" />
-          <span className="text-white/30" aria-hidden>|</span>
-          <AccountDropdown variant="announcement" />
         </div>
       </div>
     </div>
   );
 }
-
