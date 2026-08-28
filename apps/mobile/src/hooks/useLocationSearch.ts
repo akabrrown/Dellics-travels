@@ -21,15 +21,7 @@ export function useLocationSearch(query: string, type: string = 'flight') {
       const res = await fetch(`${API_URL}/search/places?q=${encodeURIComponent(query)}&type=${type}`).catch(() => null);
       
       if (!res || !res.ok) {
-        console.warn('Backend API failed, falling back to mock data');
-        const mockPlaces = [
-          { id: 'LHR', name: 'London Heathrow', iataCode: 'LHR', type: 'airport', cityName: 'London', countryName: 'United Kingdom' },
-          { id: 'LGW', name: 'London Gatwick', iataCode: 'LGW', type: 'airport', cityName: 'London', countryName: 'United Kingdom' },
-          { id: 'ACC', name: 'Kotoka International', iataCode: 'ACC', type: 'airport', cityName: 'Accra', countryName: 'Ghana' },
-          { id: 'JFK', name: 'John F. Kennedy', iataCode: 'JFK', type: 'airport', cityName: 'New York', countryName: 'United States' },
-          { id: 'DXB', name: 'Dubai International', iataCode: 'DXB', type: 'airport', cityName: 'Dubai', countryName: 'United Arab Emirates' },
-        ].filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || p.cityName.toLowerCase().includes(query.toLowerCase()));
-        return mockPlaces;
+        return [];
       }
       
       const json = await res.json();

@@ -35,15 +35,15 @@ export class SearchService {
     const duffelApiKey = this.configService.get<string>('DUFFEL_API_KEY');
 
     if (!duffelApiKey || duffelApiKey === 'placeholder') {
-      this.logger.warn('DUFFEL_API_KEY not configured. Returning mock data.');
-      return this.getMockedFlights(query);
+      this.logger.warn('DUFFEL_API_KEY not configured.');
+      return { status: 'success', provider: 'duffel', data: [] };
     }
 
     const today = new Date();
     today.setDate(today.getDate() + 30);
     const dateStr = query.date || today.toISOString().split('T')[0];
-    const origin = (query.origin || 'LHR').toUpperCase().slice(0, 3);
-    const destination = (query.destination || 'JFK').toUpperCase().slice(0, 3);
+    const origin = (query.origin || 'ACC').toUpperCase().slice(0, 3);
+    const destination = (query.destination || 'LHR').toUpperCase().slice(0, 3);
 
     const duffelHeaders = {
       Authorization: `Bearer ${duffelApiKey}`,
@@ -74,12 +74,12 @@ export class SearchService {
           'Duffel offer request returned no ID',
           offerRequestResponse.data,
         );
-        throw new Error('Duffel offer request returned no ID');
+        return { status: 'success', provider: 'duffel', data: [] };
       }
 
       this.logger.log(`Duffel offer request created: ${offerRequestId}`);
 
-      // Step 2: Fetch the offers for this request (they are returned immediately in sandbox)
+      // Step 2: Fetch the offers for this request
       const offersResponse = await firstValueFrom(
         this.httpService.get(
           `https://api.duffel.com/air/offers?offer_request_id=${offerRequestId}&limit=10`,
@@ -120,8 +120,7 @@ export class SearchService {
     } catch (error: any) {
       const detail = error.response?.data;
       this.logger.error('Duffel flight search failed', detail || error.message);
-      // Graceful fallback so mobile doesn't get a 500
-      return this.getMockedFlights(query);
+      return { status: 'error', provider: 'duffel', data: [], message: error.message };
     }
   }
 
@@ -957,10 +956,8 @@ export class SearchService {
     const ratehawkKey = this.configService.get<string>('RATEHAWK_API_KEY');
 
     if (!ratehawkId || !ratehawkKey) {
-      this.logger.warn(
-        'RATEHAWK credentials not configured. Returning mock data.',
-      );
-      return this.getMockedHotels(query);
+      this.logger.warn('RATEHAWK credentials not configured.');
+      return { status: 'success', provider: 'ratehawk', data: [] };
     }
 
     const destination = query.destination || 'London';
@@ -984,7 +981,7 @@ export class SearchService {
       const regions = multiRes.data?.data?.regions || [];
       if (regions.length === 0) {
         this.logger.warn(`RateHawk: No region found for "${destination}"`);
-        return this.getMockedHotels(query);
+        return { status: 'success', provider: 'ratehawk', data: [] };
       }
 
       const regionId = regions[0].id;
@@ -1022,11 +1019,10 @@ export class SearchService {
       const hotels = serpRes.data?.data?.hotels || [];
 
       if (hotels.length === 0) {
-        return this.getMockedHotels(query);
+        return { status: 'success', provider: 'ratehawk', data: [] };
       }
 
       const mapped = hotels.slice(0, 10).map((hotel: any) => {
-        // RateHawk returns rates in an array
         const minPrice = hotel.rates?.[0]?.daily_prices?.[0] || 150;
 
         return {
@@ -1053,7 +1049,7 @@ export class SearchService {
         'RateHawk hotel search failed',
         detail || error.message,
       );
-      return this.getMockedHotels(query);
+      return { status: 'error', provider: 'ratehawk', data: [], message: error.message };
     }
   }
 
@@ -1087,79 +1083,8 @@ export class SearchService {
     };
   }
 
-  private getMockedFlights(query: any) {
-    const origin = (query.origin || 'ACC').toUpperCase();
-    const destination = (query.destination || 'LHR').toUpperCase();
-    return {
-      status: 'success',
-      provider: 'mocked',
-      data: [
-        {
-          id: 'f1',
-          origin,
-          destination,
-          price: 520,
-          currency: 'USD',
-          airline: 'British Airways',
-          iataCode: 'BA',
-          departureTime: null,
-          arrivalTime: null,
-          duration: 'PT6H30M',
-          stops: 0,
-          cabinClass: 'economy',
-        },
-        {
-          id: 'f2',
-          origin,
-          destination,
-          price: 480,
-          currency: 'USD',
-          airline: 'KLM',
-          iataCode: 'KL',
-          departureTime: null,
-          arrivalTime: null,
-          duration: 'PT8H10M',
-          stops: 1,
-          cabinClass: 'economy',
-        },
-      ],
-    };
-  }
-
-  private getMockedHotels(query: any) {
-    const location = query.destination || 'London';
-    return {
-      status: 'success',
-      provider: 'mocked',
-      data: [
-        {
-          id: 'h1',
-          name: 'The Grand Meridian',
-          location,
-          rating: 4.8,
-          reviewCount: 2314,
-          pricePerNight: 185,
-          currency: 'USD',
-          photoReference: null,
-          website: null,
-        },
-        {
-          id: 'h2',
-          name: 'City Boutique Inn',
-          location,
-          rating: 4.3,
-          reviewCount: 891,
-          pricePerNight: 95,
-          currency: 'USD',
-          photoReference: null,
-          website: null,
-        },
-      ],
-    };
-  }
-
   async searchPlaces(query: any) {
-    const q = query.q || '';
+    const q = (query.q || '').trim();
     if (!q) return { status: 'success', data: [] };
 
     // If type=hotel, use RateHawk multicomplete
@@ -1168,7 +1093,7 @@ export class SearchService {
       const ratehawkKey = this.configService.get<string>('RATEHAWK_API_KEY');
 
       if (!ratehawkId || !ratehawkKey) {
-        return { status: 'success', provider: 'mocked', data: [] };
+        return { status: 'success', provider: 'ratehawk', data: [] };
       }
 
       const authHeader = `Basic ${Buffer.from(`${ratehawkId}:${ratehawkKey}`).toString('base64')}`;
@@ -1186,42 +1111,12 @@ export class SearchService {
           ),
         );
 
-        let regions = response.data?.data?.regions || [];
-
-        // RateHawk Sandbox is notoriously empty. If no regions are found, inject mocks.
-        if (regions.length === 0) {
-          const lowerQ = q.toLowerCase();
-          const mockRegions = [
-            {
-              id: 536,
-              name: 'London',
-              type: 'City',
-              country_code: 'United Kingdom',
-            },
-            {
-              id: 2470,
-              name: 'New York',
-              type: 'City',
-              country_code: 'United States',
-            },
-            {
-              id: 1221,
-              name: 'Dubai',
-              type: 'City',
-              country_code: 'United Arab Emirates',
-            },
-            { id: 185, name: 'Accra', type: 'City', country_code: 'Ghana' },
-          ];
-          regions = mockRegions.filter((r) =>
-            r.name.toLowerCase().includes(lowerQ),
-          );
-        }
-
+        const regions = response.data?.data?.regions || [];
         const mapped = regions.map((r: any) => ({
           id: r.id.toString(),
           name: r.name,
           iataCode: null,
-          type: 'city', // Ratehawk uses 'Region' and 'City'
+          type: 'city',
           cityName: r.name,
           countryName: r.country_code,
         }));
@@ -1233,90 +1128,76 @@ export class SearchService {
       }
     }
 
-    // Default to Duffel for Flights
+    // Default: query live Duffel Places API or global autocomplete
     const duffelApiKey = this.configService.get<string>('DUFFEL_API_KEY');
 
-    if (!duffelApiKey || duffelApiKey === 'placeholder') {
-      // Mock places
-      const mockPlaces = [
-        {
-          id: 'LHR',
-          name: 'London Heathrow',
-          iataCode: 'LHR',
-          type: 'airport',
-          cityName: 'London',
-          countryName: 'United Kingdom',
-        },
-        {
-          id: 'ACC',
-          name: 'Kotoka International',
-          iataCode: 'ACC',
-          type: 'airport',
-          cityName: 'Accra',
-          countryName: 'Ghana',
-        },
-        {
-          id: 'JFK',
-          name: 'John F. Kennedy',
-          iataCode: 'JFK',
-          type: 'airport',
-          cityName: 'New York',
-          countryName: 'United States',
-        },
-        {
-          id: 'DXB',
-          name: 'Dubai International',
-          iataCode: 'DXB',
-          type: 'airport',
-          cityName: 'Dubai',
-          countryName: 'United Arab Emirates',
-        },
-      ].filter(
-        (p) =>
-          p.name.toLowerCase().includes(q.toLowerCase()) ||
-          p.cityName.toLowerCase().includes(q.toLowerCase()),
-      );
+    if (duffelApiKey && duffelApiKey !== 'placeholder') {
+      try {
+        const response = await firstValueFrom(
+          this.httpService.get(
+            `https://api.duffel.com/places/suggestions?query=${encodeURIComponent(q)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${duffelApiKey}`,
+                'Duffel-Version': 'v2',
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+              },
+            },
+          ),
+        );
 
-      return { status: 'success', provider: 'mocked', data: mockPlaces };
+        const places = response.data?.data || [];
+        const mapped = places.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          iataCode: p.iata_code || p.iata_country_code,
+          type: p.type,
+          cityName: p.city_name || p.name,
+          countryName: p.country_name || '',
+        }));
+
+        return { status: 'success', provider: 'duffel', data: mapped };
+      } catch (error: any) {
+        this.logger.error(
+          'Duffel Places search failed',
+          error.response?.data || error.message,
+        );
+      }
     }
 
+    // Live global places fallback via Travelpayouts
     try {
-      const response = await firstValueFrom(
+      const tpRes = await firstValueFrom(
         this.httpService.get(
-          `https://api.duffel.com/places/suggestions?query=${encodeURIComponent(q)}`,
+          `https://autocomplete.travelpayouts.com/places2?term=${encodeURIComponent(q)}&locale=en&types[]=airport&types[]=city`,
           {
             headers: {
-              Authorization: `Bearer ${duffelApiKey}`,
-              'Duffel-Version': 'v2',
-              'Content-Type': 'application/json',
               Accept: 'application/json',
+              'User-Agent': 'DellicsTravels/1.0',
             },
           },
         ),
       );
 
-      const places = response.data?.data || [];
-      const mapped = places.map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        iataCode: p.iata_code || p.iata_country_code,
-        type: p.type, // 'airport' | 'city'
-        cityName: p.city_name || p.name,
-        countryName: p.country_name || '',
+      const tpData = tpRes.data || [];
+      const mapped = tpData.map((item: any) => ({
+        id: item.code || item.id,
+        name: item.name || item.main_airport_name,
+        iataCode: item.code,
+        type: item.type === 'city' ? 'city' : 'airport',
+        cityName: item.city_name || item.name,
+        countryName: item.country_name || '',
       }));
 
-      return { status: 'success', provider: 'duffel', data: mapped };
-    } catch (error: any) {
-      this.logger.error(
-        'Duffel Places search failed',
-        error.response?.data || error.message,
-      );
+      return { status: 'success', provider: 'travelpayouts', data: mapped };
+    } catch (err: any) {
       return { status: 'error', data: [] };
     }
   }
 
   /**
-   * FX-Port API Integration: Real-time Multi-Currency Foreign Exchange rates
+   * Live Foreign Exchange rates from Open Exchange Rates
    */
   async getFxRates(): Promise<{
     provider: string;
@@ -1324,30 +1205,39 @@ export class SearchService {
     timestamp: number;
     rates: Record<string, number>;
   }> {
-    const apiKey = this.configService.get<string>('FXPORT_API_KEY') || '';
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get('https://open.er-api.com/v6/latest/USD', {
+          headers: { Accept: 'application/json' },
+        }),
+      );
 
-    this.logger.log(
-      `Fetching FX rates (FX-Port key: ${apiKey.substring(0, 8)}...)`,
-    );
-
-    // Base currency is USD with real-time conversion spreads for African & Global destinations
-    const liveRates: Record<string, number> = {
-      USD: 1.0,
-      GHS: 15.65, // Ghana Cedi
-      EUR: 0.92, // Euro
-      GBP: 0.78, // British Pound
-      AED: 3.67, // UAE Dirham
-      ZAR: 18.25, // South African Rand
-      KES: 129.5, // Kenyan Shilling
-      NGN: 1580.0, // Nigerian Naira
-      CAD: 1.36, // Canadian Dollar
-    };
+      if (response.data && response.data.rates) {
+        return {
+          provider: 'open-er-api',
+          base: 'USD',
+          timestamp: Date.now(),
+          rates: response.data.rates,
+        };
+      }
+    } catch (err: any) {
+      this.logger.error('Live FX rate fetch failed', err.message);
+    }
 
     return {
-      provider: 'fx-port',
+      provider: 'fallback',
       base: 'USD',
       timestamp: Date.now(),
-      rates: liveRates,
+      rates: {
+        USD: 1.0,
+        GHS: 15.65,
+        EUR: 0.92,
+        GBP: 0.78,
+        AED: 3.67,
+        ZAR: 18.25,
+        NGN: 1580.0,
+        CAD: 1.36,
+      },
     };
   }
 
