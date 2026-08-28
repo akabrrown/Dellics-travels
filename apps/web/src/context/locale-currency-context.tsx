@@ -21,7 +21,7 @@ export interface LanguageOption {
   nativeName: string;
 }
 
-export const COUNTRIES: CountryOption[] = [
+export const DEFAULT_COUNTRIES: CountryOption[] = [
   { code: "GH", name: "Ghana", flag: "🇬🇭", defaultCurrency: "GHS" },
   { code: "NG", name: "Nigeria", flag: "🇳🇬", defaultCurrency: "NGN" },
   { code: "GB", name: "United Kingdom", flag: "🇬🇧", defaultCurrency: "GBP" },
@@ -29,7 +29,10 @@ export const COUNTRIES: CountryOption[] = [
   { code: "AE", name: "United Arab Emirates", flag: "🇦🇪", defaultCurrency: "AED" },
   { code: "CA", name: "Canada", flag: "🇨🇦", defaultCurrency: "CAD" },
   { code: "ZA", name: "South Africa", flag: "🇿🇦", defaultCurrency: "ZAR" },
-  { code: "DE", name: "Germany (EU)", flag: "🇩🇪", defaultCurrency: "EUR" },
+  { code: "DE", name: "Germany", flag: "🇩🇪", defaultCurrency: "EUR" },
+  { code: "FR", name: "France", flag: "🇫🇷", defaultCurrency: "EUR" },
+  { code: "KE", name: "Kenya", flag: "🇰🇪", defaultCurrency: "KES" },
+  { code: "RW", name: "Rwanda", flag: "🇷🇼", defaultCurrency: "RWF" },
 ];
 
 export const CURRENCIES: CurrencyOption[] = [
@@ -41,6 +44,8 @@ export const CURRENCIES: CurrencyOption[] = [
   { code: "AED", symbol: "AED", name: "UAE Dirham" },
   { code: "CAD", symbol: "CA$", name: "Canadian Dollar" },
   { code: "ZAR", symbol: "R", name: "South African Rand" },
+  { code: "KES", symbol: "KSh", name: "Kenyan Shilling" },
+  { code: "RWF", symbol: "FRw", name: "Rwandan Franc" },
 ];
 
 export const LANGUAGES: LanguageOption[] = [
@@ -51,8 +56,11 @@ export const LANGUAGES: LanguageOption[] = [
 interface LocaleCurrencyContextType {
   language: string;
   country: CountryOption;
+  countries: CountryOption[];
   currency: CurrencyOption;
+  currencies: CurrencyOption[];
   rates: Record<string, number>;
+  loading: boolean;
   setLanguage: (langCode: string) => void;
   setCountry: (countryCode: string) => void;
   setCurrency: (currencyCode: string) => void;
@@ -62,7 +70,7 @@ interface LocaleCurrencyContextType {
 
 const STORAGE_KEY = "dellics_regional_preferences";
 
-const DEFAULT_COUNTRY = COUNTRIES[0] as CountryOption;
+const DEFAULT_COUNTRY = DEFAULT_COUNTRIES[0] as CountryOption;
 const DEFAULT_CURRENCY = CURRENCIES[0] as CurrencyOption;
 
 const LocaleCurrencyContext = createContext<LocaleCurrencyContextType | null>(null);
@@ -70,6 +78,7 @@ const LocaleCurrencyContext = createContext<LocaleCurrencyContextType | null>(nu
 export function LocaleCurrencyProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<string>("EN");
   const [country, setCountryState] = useState<CountryOption>(DEFAULT_COUNTRY);
+  const [countries, setCountries] = useState<CountryOption[]>(DEFAULT_COUNTRIES);
   const [currency, setCurrencyState] = useState<CurrencyOption>(DEFAULT_CURRENCY);
   const [rates, setRates] = useState<Record<string, number>>({
     USD: 1.0,
@@ -80,27 +89,53 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
     AED: 3.67,
     CAD: 1.38,
     ZAR: 18.2,
+    KES: 130.0,
+    RWF: 1350.0,
   });
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // 1. Hydrate from storage on mount
+  // 1. Initial Load: Stored preferences, Geo IP Detection, Live Countries API, and Live Rates API
   useEffect(() => {
+    let hasSavedPreference = false;
+
+    // Check stored user preferences first
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.language) setLanguageState(parsed.language);
         if (parsed.countryCode) {
-          const match = COUNTRIES.find((c) => c.code === parsed.countryCode);
+          const match = DEFAULT_COUNTRIES.find((c) => c.code === parsed.countryCode);
           if (match) setCountryState(match);
         }
         if (parsed.currencyCode) {
           const match = CURRENCIES.find((c) => c.code === parsed.currencyCode);
           if (match) setCurrencyState(match);
         }
+        hasSavedPreference = true;
       }
     } catch {}
 
-    // 2. Fetch live FX rates from live endpoint
+    // A. Fetch Live Countries List via API
+    fetch("/api/countries")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+          setCountries(data.data);
+          // If we had a saved country code, update with enriched API object
+          try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              const found = data.data.find((c: CountryOption) => c.code === parsed.countryCode);
+              if (found) setCountryState(found);
+            }
+          } catch {}
+        }
+      })
+      .catch((err) => console.error("Countries API error:", err));
+
+    // B. Fetch Live FX Exchange Rates via API
     fetch("/api/currency/rates")
       .then((res) => res.json())
       .then((data) => {
@@ -108,7 +143,31 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
           setRates(data.rates);
         }
       })
-      .catch((err) => console.error("Error fetching live FX rates:", err));
+      .catch((err) => console.error("FX Rates API error:", err));
+
+    // C. Auto-detect Country & Currency via Live Geo API if user hasn't set custom preference
+    if (!hasSavedPreference) {
+      fetch("/api/geo")
+        .then((res) => res.json())
+        .then((geo) => {
+          if (geo?.country) {
+            const matchedCountry = DEFAULT_COUNTRIES.find((c) => c.code === geo.country);
+            if (matchedCountry) {
+              setCountryState(matchedCountry);
+            }
+            if (geo.currency) {
+              const matchedCurr = CURRENCIES.find((c) => c.code === geo.currency);
+              if (matchedCurr) {
+                setCurrencyState(matchedCurr);
+              }
+            }
+          }
+        })
+        .catch((err) => console.error("Geo auto-detect error:", err))
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const savePreferences = (newLang: string, newCountry: CountryOption, newCurr: CurrencyOption) => {
@@ -130,10 +189,10 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
   };
 
   const setCountry = (countryCode: string) => {
-    const match = COUNTRIES.find((c) => c.code === countryCode);
+    const match = countries.find((c) => c.code === countryCode) || DEFAULT_COUNTRIES.find((c) => c.code === countryCode);
     if (match) {
       setCountryState(match);
-      // Automatically adapt default currency of country if needed
+      // Automatically map to currency if available in currency options
       const matchedCurrency = CURRENCIES.find((c) => c.code === match.defaultCurrency) || currency;
       setCurrencyState(matchedCurrency);
       savePreferences(language, match, matchedCurrency);
@@ -167,8 +226,11 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
       value={{
         language,
         country,
+        countries,
         currency,
+        currencies: CURRENCIES,
         rates,
+        loading,
         setLanguage,
         setCountry,
         setCurrency,

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, Globe } from "lucide-react";
+import { ChevronDown, Globe, Search } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/popover";
 import {
   useLocaleCurrency,
-  COUNTRIES,
-  CURRENCIES,
   LANGUAGES,
 } from "@/context/locale-currency-context";
 import { cn } from "@/lib/utils";
@@ -22,8 +20,25 @@ interface RegionalSelectorProps {
 
 export function RegionalSelector({ variant = "announcement", className }: RegionalSelectorProps) {
   const [open, setOpen] = useState(false);
-  const { language, country, currency, setLanguage, setCountry, setCurrency } =
-    useLocaleCurrency();
+  const [countrySearch, setCountrySearch] = useState("");
+  const {
+    language,
+    country,
+    countries,
+    currency,
+    currencies,
+    setLanguage,
+    setCountry,
+    setCurrency,
+  } = useLocaleCurrency();
+
+  const filteredCountries = countrySearch.trim()
+    ? countries.filter(
+        (c) =>
+          c.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
+          c.code.toLowerCase().includes(countrySearch.toLowerCase()),
+      )
+    : countries;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -61,9 +76,9 @@ export function RegionalSelector({ variant = "announcement", className }: Region
       <PopoverContent
         align="end"
         sideOffset={10}
-        className="w-72 p-0 bg-white rounded-xl shadow-2xl border border-slate-200/80 ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-150 z-50 overflow-hidden"
+        className="w-80 p-0 bg-white rounded-xl shadow-2xl border border-slate-200/80 ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-150 z-50 overflow-hidden"
       >
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 max-h-[85vh] overflow-y-auto">
           {/* 1. Change Language */}
           <div className="space-y-1.5">
             <label
@@ -91,14 +106,19 @@ export function RegionalSelector({ variant = "announcement", className }: Region
 
           <div className="h-px bg-slate-100 w-full" />
 
-          {/* 2. Change Country */}
+          {/* 2. Change Country (Live API list with search) */}
           <div className="space-y-1.5">
-            <label
-              htmlFor="select-country"
-              className="block text-xs font-bold text-slate-900 tracking-tight"
-            >
-              Change Country
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="select-country"
+                className="block text-xs font-bold text-slate-900 tracking-tight"
+              >
+                Change Country
+              </label>
+              <span className="text-[10px] text-slate-400 font-medium">
+                {countries.length} live
+              </span>
+            </div>
             <div className="relative">
               <select
                 id="select-country"
@@ -106,9 +126,9 @@ export function RegionalSelector({ variant = "announcement", className }: Region
                 onChange={(e) => setCountry(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 shadow-xs focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy pr-8 cursor-pointer"
               >
-                {COUNTRIES.map((c) => (
+                {filteredCountries.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.flag} {c.name}
+                    {c.flag} {c.name} ({c.code})
                   </option>
                 ))}
               </select>
@@ -118,7 +138,7 @@ export function RegionalSelector({ variant = "announcement", className }: Region
 
           <div className="h-px bg-slate-100 w-full" />
 
-          {/* 3. Change Currency */}
+          {/* 3. Change Currency (Live Exchange Rate mapped) */}
           <div className="space-y-1.5">
             <label
               htmlFor="select-currency"
@@ -133,7 +153,7 @@ export function RegionalSelector({ variant = "announcement", className }: Region
                 onChange={(e) => setCurrency(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 shadow-xs focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy pr-8 cursor-pointer"
               >
-                {CURRENCIES.map((curr) => (
+                {currencies.map((curr) => (
                   <option key={curr.code} value={curr.code}>
                     {curr.code} - {curr.symbol} ({curr.name})
                   </option>
@@ -144,11 +164,11 @@ export function RegionalSelector({ variant = "announcement", className }: Region
           </div>
         </div>
 
-        {/* Subtle Footer Note */}
+        {/* Live Status Strip */}
         <div className="bg-slate-50 px-4 py-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-          <span className="flex items-center gap-1">
-            <Globe className="size-3 text-slate-400" />
-            Live rates updated
+          <span className="flex items-center gap-1.5">
+            <Globe className="size-3 text-emerald-500 animate-pulse" />
+            Live IP & FX sync active
           </span>
           <span className="font-semibold text-brand-orange">{currency.code}</span>
         </div>
