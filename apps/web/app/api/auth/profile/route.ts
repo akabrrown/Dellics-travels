@@ -36,8 +36,8 @@ export async function POST(req: Request) {
       where,
     });
 
-    let updatedUser;
     const updateData: any = {};
+
     if (fullName !== undefined) updateData.name = fullName.trim();
     if (phone !== undefined) updateData.phone = phone ? phone.trim() : null;
     if (nationality !== undefined) updateData.nationality = nationality;
@@ -53,39 +53,24 @@ export async function POST(req: Request) {
     if (membershipTier !== undefined) updateData.membership_tier = membershipTier;
     if (onboardingCompleted !== undefined) updateData.onboarding_completed = onboardingCompleted;
 
-    if (existing) {
-      updatedUser = await prisma.user.update({
-        where: { id: existing.id },
-        data: updateData,
-      });
-    } else if (email) {
-      updatedUser = await prisma.user.create({
-        data: {
-          id: id || undefined,
-          email: email.trim().toLowerCase(),
-          name: fullName?.trim() || email.split("@")[0],
-          phone: phone?.trim() || null,
-          role: "USER",
-          membership_tier: membershipTier || "EXPLORER",
-          points_balance: pointsBalance !== undefined ? pointsBalance : 500,
-          nationality: nationality || null,
-          home_airport: homeAirport || null,
-          seat_preference: seatPreference || "Window",
-          meal_preference: mealPreference || "Standard / No Restriction",
-          emergency_contact: emergencyContact || null,
-          emergency_phone: emergencyPhone || null,
-          passport_number: passportNumber || null,
-          passport_expiry: passportExpiry || null,
-          passport_country: passportCountry || null,
-          onboarding_completed: onboardingCompleted !== undefined ? onboardingCompleted : false,
-        },
-      });
+    if (!existing) {
+      return NextResponse.json(
+        { error: "User not found in database" },
+        { status: 404 },
+      );
     }
+
+
+    const updatedUser = await prisma.user.update({
+      where: { id: existing.id },
+      data: updateData,
+    });
 
     return NextResponse.json({
       success: true,
       user: updatedUser,
     });
+
   } catch (error: any) {
     console.error("Error updating user in database:", error);
     return NextResponse.json(

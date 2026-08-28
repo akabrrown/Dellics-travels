@@ -187,18 +187,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // 1. Initial local profile hydration
-    let cached: string | null = null;
+    let cachedEmail: string | null = null;
+    let cachedId: string | null = null;
     try {
-      cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
-        setUser(parsed);
+        cachedEmail = parsed?.email || null;
+        cachedId = parsed?.id || null;
       }
     } catch {
       // LocalStorage access error
     }
-
 
     // 2. Fetch active Supabase session safely
     try {
@@ -210,37 +210,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSupabaseUser(currentSession?.user ?? null);
           if (currentSession?.user) {
             fetchDbProfile({ email: currentSession.user.email, id: currentSession.user.id });
-          } else if (cached) {
-            try {
-              const parsed = JSON.parse(cached);
-              if (parsed?.email) {
-                fetchDbProfile({ email: parsed.email, id: parsed.id });
-              }
-            } catch {
-              localStorage.removeItem(LOCAL_STORAGE_KEY);
-              setUser(null);
-            }
+          } else if (cachedEmail || cachedId) {
+            fetchDbProfile({ email: cachedEmail || undefined, id: cachedId || undefined });
+          } else {
+            setUser(null);
+            setIsLoading(false);
           }
         })
         .catch(() => {
-          if (cached) {
-            try {
-              const parsed = JSON.parse(cached);
-              if (parsed?.email) {
-                fetchDbProfile({ email: parsed.email, id: parsed.id });
-              }
-            } catch {
-              localStorage.removeItem(LOCAL_STORAGE_KEY);
-              setUser(null);
-            }
+          if (cachedEmail || cachedId) {
+            fetchDbProfile({ email: cachedEmail || undefined, id: cachedId || undefined });
+          } else {
+            setUser(null);
+            setIsLoading(false);
           }
         })
         .finally(() => {
           setIsLoading(false);
         });
     } catch {
+      setUser(null);
       setIsLoading(false);
     }
+
 
     // 3. Listen to Auth State Changes safely
     try {
