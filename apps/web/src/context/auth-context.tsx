@@ -337,78 +337,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Supabase Auth authentication
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password }),
       });
 
-      if (!error && data?.user) {
-        const profile = extractProfile(data.user);
-        if (profile) {
-          setUser(profile);
-          setSupabaseUser(data.user);
-          setSession(data.session);
-          try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
-          } catch {}
-          await fetchDbProfile({ email: cleanEmail, id: data.user.id });
-          return {};
-        }
-      }
-    } catch (sbErr) {
-      console.error("Supabase auth sign in error:", sbErr);
-    }
+      const data = await res.json();
 
-    // 2. Check direct PostgreSQL database record
-    try {
-      const res = await fetch(`/api/auth/profile?email=${encodeURIComponent(cleanEmail)}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data?.user) {
-          const u = data.user;
-          const dbProfile: AuthProfile = {
-            id: u.id,
-            email: u.email,
-            fullName: u.name,
-            phone: u.phone || "",
-            role: u.role,
-            membershipTier: u.membership_tier,
-            pointsBalance: u.points_balance,
-            nationality: u.nationality || "",
-            homeAirport: u.home_airport || "",
-            seatPreference: u.seat_preference || "Window",
-            mealPreference: u.meal_preference || "Standard / No Restriction",
-            emergencyContact: u.emergency_contact || "",
-            emergencyPhone: u.emergency_phone || "",
-            passportNumber: u.passport_number || "",
-            passportExpiry: u.passport_expiry || "",
-            passportCountry: u.passport_country || "",
-            onboardingCompleted: u.onboarding_completed,
-            savedTravelers: [],
-            savedFavorites: [],
-            bookings: [],
-            currency: "GHS",
-            notificationPreferences: {
-              whatsapp: true,
-              email: true,
-              priceDrops: true,
-            },
-          };
-          setUser(dbProfile);
-          try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbProfile));
-          } catch {}
-          return {};
-        }
+      if (!res.ok || !data?.user) {
+        setUser(null);
+        setSupabaseUser(null);
+        setSession(null);
+        try {
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+        } catch {}
+        return { error: data?.error || "Invalid email or password. No account found in database." };
       }
-    } catch (dbErr) {
-      console.error("Failed to authenticate with database:", dbErr);
-    }
 
-    return { error: "Invalid email or password. No registered account found in database." };
+      const u = data.user;
+      const dbProfile: AuthProfile = {
+        id: u.id,
+        email: u.email,
+        fullName: u.name,
+        phone: u.phone || "",
+        role: u.role,
+        membershipTier: u.membership_tier,
+        pointsBalance: u.points_balance,
+        nationality: u.nationality || "",
+        homeAirport: u.home_airport || "",
+        seatPreference: u.seat_preference || "Window",
+        mealPreference: u.meal_preference || "Standard / No Restriction",
+        emergencyContact: u.emergency_contact || "",
+        emergencyPhone: u.emergency_phone || "",
+        passportNumber: u.passport_number || "",
+        passportExpiry: u.passport_expiry || "",
+        passportCountry: u.passport_country || "",
+        onboardingCompleted: u.onboarding_completed,
+        savedTravelers: [],
+        savedFavorites: [],
+        bookings: u.trips || [],
+        currency: "GHS",
+        notificationPreferences: {
+          whatsapp: true,
+          email: true,
+          priceDrops: true,
+        },
+      };
+
+      setUser(dbProfile);
+      if (data.authUser) setSupabaseUser(data.authUser);
+      if (data.session) setSession(data.session);
+
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbProfile));
+      } catch {}
+
+      return {};
+    } catch (err: any) {
+      console.error("Sign in failed:", err);
+      setUser(null);
+      try {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+      } catch {}
+      return { error: err.message || "Failed to authenticate with database." };
+    }
   };
+
 
   const signUp = async (
     email: string,

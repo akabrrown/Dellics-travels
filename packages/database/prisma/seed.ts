@@ -3,86 +3,11 @@ import { PrismaClient, Role, MembershipTier, InquiryKind } from "@prisma/client"
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🚀 Starting Supabase Database Seed...");
+  console.log("🚀 Starting Supabase Database Seed (Catalog & Infrastructure)...");
 
-  // 1. Seed User Accounts (including requested user accounts)
-  const usersToSeed = [
-    {
-      email: "akayeteb@gmail.com",
-      name: "Akayete Brown",
-      phone: "+233552054174",
-      role: Role.USER,
-      membership_tier: MembershipTier.EXPLORER,
-      points_balance: 1000,
-      nationality: "Ghana",
-      home_airport: "ACC - Kotoka International (Accra, Ghana)",
-      seat_preference: "Window",
-      meal_preference: "Standard / No Restriction",
-      onboarding_completed: true,
-    },
-    {
-      email: "akayetb@gmail.com",
-      name: "Akayet B",
-      phone: "+233552054174",
-      role: Role.USER,
-      membership_tier: MembershipTier.VOYAGER,
-      points_balance: 2500,
-      nationality: "Ghana",
-      home_airport: "ACC - Kotoka International (Accra, Ghana)",
-      seat_preference: "Aisle",
-      meal_preference: "Standard / No Restriction",
-      onboarding_completed: true,
-    },
-    {
-      email: "admin@dellicstravels.com",
-      name: "Dellics Travels Admin",
-      phone: "+233552054174",
-      role: Role.ADMIN,
-      membership_tier: MembershipTier.ELITE,
-      points_balance: 10000,
-      nationality: "Ghana",
-      home_airport: "ACC - Kotoka International (Accra, Ghana)",
-      seat_preference: "Window",
-      meal_preference: "Standard / No Restriction",
-      onboarding_completed: true,
-    },
-    {
-      email: "info@dellicstravels.com",
-      name: "Dellics Operations",
-      phone: "+233552054174",
-      role: Role.ADMIN,
-      membership_tier: MembershipTier.ELITE,
-      points_balance: 10000,
-      nationality: "Ghana",
-      home_airport: "ACC - Kotoka International (Accra, Ghana)",
-      seat_preference: "Window",
-      meal_preference: "Standard / No Restriction",
-      onboarding_completed: true,
-    },
-  ];
-
-  for (const u of usersToSeed) {
-    const upserted = await prisma.user.upsert({
-      where: { email: u.email },
-      update: {
-        name: u.name,
-        phone: u.phone,
-        role: u.role,
-        membership_tier: u.membership_tier,
-        points_balance: u.points_balance,
-        nationality: u.nationality,
-        home_airport: u.home_airport,
-        seat_preference: u.seat_preference,
-        meal_preference: u.meal_preference,
-        onboarding_completed: u.onboarding_completed,
-      },
-      create: u,
-    });
-    console.log(`✅ Upserted User: ${upserted.email} (ID: ${upserted.id})`);
-  }
-
-  // 2. Seed Tour Packages
+  // 1. Seed Tour Packages
   const packages = [
+
     {
       slug: "cape-coast-elmina-heritage-tour",
       title: "Cape Coast & Elmina Castle Heritage Immersion",
