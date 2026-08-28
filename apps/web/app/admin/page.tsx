@@ -41,12 +41,15 @@ export default function AdminPage() {
         </div>
 
         <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
-          <Button asChild size="lg" className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-lg">
-            <Link href="/signin" className="inline-flex items-center gap-2">
-              <span>Client Sign In</span>
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
+          <a
+            href={process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3000"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white font-bold px-8 py-3 text-sm shadow-lg transition-all"
+          >
+            <span>Launch Admin Console</span>
+            <ArrowRight className="size-4" />
+          </a>
           <Button asChild size="lg" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10">
             <Link href="/" className="inline-flex items-center gap-2">
               <Home className="size-4" />
