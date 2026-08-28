@@ -213,8 +213,8 @@ export default function OnboardingPage() {
                       onChange={(e) => setNationality(e.target.value)}
                       className="w-full h-10 pl-9 pr-3.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                     >
-                      {countries.map((c) => (
-                        <option key={c.code} value={c.code}>
+                      {countries.map((c, index) => (
+                        <option key={`${c.code}-${index}`} value={c.code}>
                           {c.name} ({c.code})
                         </option>
                       ))}

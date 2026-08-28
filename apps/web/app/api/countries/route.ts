@@ -31,14 +31,23 @@ export async function GET() {
     if (res.ok) {
       const json = await res.json();
       if (json?.data && Array.isArray(json.data)) {
-        const list: ApiCountryItem[] = json.data
-          .filter((item: { iso2?: string; name?: string }) => item.iso2 && item.name)
-          .map((item: { iso2: string; name: string; currency?: string }) => ({
-            code: item.iso2.toUpperCase(),
-            name: item.name,
-            flag: getFlagEmoji(item.iso2),
-            defaultCurrency: item.currency || "USD",
-          }));
+        const seenCodes = new Set<string>();
+        const list: ApiCountryItem[] = [];
+
+        for (const item of json.data) {
+          if (item.iso2 && item.name) {
+            const code = item.iso2.trim().toUpperCase();
+            if (!seenCodes.has(code) && code.length === 2) {
+              seenCodes.add(code);
+              list.push({
+                code,
+                name: item.name.trim(),
+                flag: getFlagEmoji(code),
+                defaultCurrency: item.currency || "USD",
+              });
+            }
+          }
+        }
 
         // Sort priority countries to top, then alphabetical
         const sorted = list.sort((a, b) => {

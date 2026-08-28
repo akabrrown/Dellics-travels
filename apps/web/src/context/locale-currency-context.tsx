@@ -121,13 +121,21 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
       .then((res) => res.json())
       .then((data) => {
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-          setCountries(data.data);
+          const uniqueCountries: CountryOption[] = [];
+          const seen = new Set<string>();
+          for (const item of data.data) {
+            if (item?.code && !seen.has(item.code)) {
+              seen.add(item.code);
+              uniqueCountries.push(item);
+            }
+          }
+          setCountries(uniqueCountries);
           // If we had a saved country code, update with enriched API object
           try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
               const parsed = JSON.parse(saved);
-              const found = data.data.find((c: CountryOption) => c.code === parsed.countryCode);
+              const found = uniqueCountries.find((c: CountryOption) => c.code === parsed.countryCode);
               if (found) setCountryState(found);
             }
           } catch {}

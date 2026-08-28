@@ -130,8 +130,8 @@ export function RegionalSelector({ variant = "announcement", className }: Region
                 onChange={(e) => setCountry(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-slate-300 bg-white pl-9 pr-8 py-2 text-xs font-medium text-slate-800 shadow-xs focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
               >
-                {filteredCountries.map((c) => (
-                  <option key={c.code} value={c.code}>
+                {filteredCountries.map((c, index) => (
+                  <option key={`${c.code}-${index}`} value={c.code}>
                     {c.name} ({c.code})
                   </option>
                 ))}
