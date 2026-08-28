@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
+import { useAuth, SavedTraveler, UserBooking } from "@/context/auth-context";
 import { SITE } from "@/lib/site";
 import {
   User,
@@ -37,133 +37,46 @@ import {
   ChevronRight,
   AlertCircle,
   FileCheck,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface SavedTraveler {
-  id: string;
-  name: string;
-  relationship: string;
-  passportNumber: string;
-  expiryDate: string;
-  nationality: string;
-}
-
-interface UserBooking {
-  id: string;
-  ref: string;
-  title: string;
-  type: "flight" | "hotel" | "tour" | "transfer";
-  destination: string;
-  date: string;
-  amount: string;
-  status: "CONFIRMED" | "IN_REVIEW" | "COMPLETED";
-  passengers: number;
-}
-
-const DEMO_BOOKINGS: UserBooking[] = [
-  {
-    id: "bk_001",
-    ref: "DEL-84920",
-    title: "Accra (ACC) → Dubai (DXB) Roundtrip",
-    type: "flight",
-    destination: "Dubai, United Arab Emirates",
-    date: "14 Oct 2026 - 22 Oct 2026",
-    amount: "GHS 9,450",
-    status: "CONFIRMED",
-    passengers: 2,
-  },
-  {
-    id: "bk_002",
-    ref: "DEL-73819",
-    title: "Luxury Dubai Marina Penthouse & Suites",
-    type: "hotel",
-    destination: "Dubai Marina, UAE",
-    date: "14 Oct 2026 - 20 Oct 2026",
-    amount: "GHS 12,800",
-    status: "CONFIRMED",
-    passengers: 2,
-  },
-  {
-    id: "bk_003",
-    ref: "DEL-62910",
-    title: "7-Day Serengeti & Ngorongoro Big 5 Safari",
-    type: "tour",
-    destination: "Tanzania",
-    date: "05 Dec 2026 - 12 Dec 2026",
-    amount: "GHS 24,500",
-    status: "IN_REVIEW",
-    passengers: 1,
-  },
-];
-
-const DEMO_FAVORITES = [
-  {
-    id: "fav_1",
-    title: "Cape Town Oceanfront Clifftop Villa",
-    type: "Stay",
-    location: "Camps Bay, South Africa",
-    price: "$340 / night",
-    image: "/images/services/south-africa-cape-town-villa.jpg",
-    href: "/hotels",
-  },
-  {
-    id: "fav_2",
-    title: "Dubai Desert Safari & Dune Bashing",
-    type: "Tour Package",
-    location: "Dubai, UAE",
-    price: "$140 / person",
-    image: "/images/services/dubai-marina-apartment.jpg",
-    href: "/tours",
-  },
-  {
-    id: "fav_3",
-    title: "Accra (ACC) to London Heathrow (LHR)",
-    type: "Flight",
-    location: "British Airways & Emirates",
-    price: "$890 roundtrip",
-    image: "/images/services/plane.jpg",
-    href: "/flights",
-  },
-];
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, isLoading, signOut } = useAuth();
+  const { user, isLoading, updateProfile, signOut } = useAuth();
 
   const [activeTab, setActiveTab] = useState<
     "personal" | "trips" | "passports" | "membership" | "saved" | "settings"
   >("personal");
 
-  // Edit Profile Form State
+  // Edit Profile Form State (Initialized purely from user state, NO mock dates or mock names)
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [nationality, setNationality] = useState("Ghana");
+  const [nationality, setNationality] = useState("");
   const [homeAirport, setHomeAirport] = useState("ACC - Kotoka International");
   const [mealPreference, setMealPreference] = useState("Standard / No Restriction");
   const [seatPreference, setSeatPreference] = useState("Window");
   const [emergencyContact, setEmergencyContact] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
   const [isSavedToast, setIsSavedToast] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Passport state
-  const [passportNumber, setPassportNumber] = useState("G2849102");
-  const [passportExpiry, setPassportExpiry] = useState("2031-06-15");
+  const [passportNumber, setPassportNumber] = useState("");
+  const [passportExpiry, setPassportExpiry] = useState("");
+  const [passportCountry, setPassportCountry] = useState("");
   const [showPassport, setShowPassport] = useState(false);
-  const [travelers, setTravelers] = useState<SavedTraveler[]>([
-    {
-      id: "trav_1",
-      name: "Akosua Brown",
-      relationship: "Spouse",
-      passportNumber: "G9182371",
-      expiryDate: "2030-11-20",
-      nationality: "Ghana",
-    },
-  ]);
+  const [isEditingPassport, setIsEditingPassport] = useState(false);
+
+  // Companion Travelers State
+  const [travelers, setTravelers] = useState<SavedTraveler[]>([]);
   const [newTravelerName, setNewTravelerName] = useState("");
   const [newTravelerRelation, setNewTravelerRelation] = useState("Family");
   const [newTravelerPassport, setNewTravelerPassport] = useState("");
+  const [newTravelerExpiry, setNewTravelerExpiry] = useState("");
+  const [newTravelerNationality, setNewTravelerNationality] = useState("");
   const [isAddTravelerOpen, setIsAddTravelerOpen] = useState(false);
 
   // Settings State
@@ -186,47 +99,117 @@ export default function ProfilePage() {
     }
   }, [searchParams]);
 
-  // Sync user profile fields on load
+  // Sync user profile fields dynamically from real authenticated profile
   useEffect(() => {
     if (user) {
       setFullName(user.fullName || "");
-      setPhone(user.phone || "+233 55 205 4174");
-      setEmergencyContact("Dr. Kwame Mensah");
-      setEmergencyPhone("+233 24 411 2233");
+      setPhone(user.phone || "");
+      setNationality(user.nationality || "Ghana");
+      setHomeAirport(user.homeAirport || "ACC - Kotoka International");
+      setSeatPreference(user.seatPreference || "Window");
+      setMealPreference(user.mealPreference || "Standard / No Restriction");
+      setEmergencyContact(user.emergencyContact || "");
+      setEmergencyPhone(user.emergencyPhone || "");
+      setPassportNumber(user.passportNumber || "");
+      setPassportExpiry(user.passportExpiry || "");
+      setPassportCountry(user.passportCountry || user.nationality || "Ghana");
+      setTravelers(user.savedTravelers || []);
+      setCurrency(user.currency || "GHS");
+      if (user.notificationPreferences) {
+        setNotifyWhatsApp(user.notificationPreferences.whatsapp ?? true);
+        setNotifyEmail(user.notificationPreferences.email ?? true);
+        setNotifyPriceDrops(user.notificationPreferences.priceDrops ?? true);
+      }
     }
   }, [user]);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSavedToast(true);
-    setTimeout(() => setIsSavedToast(false), 3500);
+    setSaving(true);
+    try {
+      await updateProfile({
+        fullName: fullName.trim(),
+        phone: phone.trim(),
+        nationality,
+        homeAirport,
+        seatPreference,
+        mealPreference,
+        emergencyContact: emergencyContact.trim(),
+        emergencyPhone: emergencyPhone.trim(),
+      });
+      setIsSavedToast(true);
+      toast.success("Profile saved successfully!");
+      setTimeout(() => setIsSavedToast(false), 3500);
+    } catch {
+      toast.error("Failed to save profile.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleAddTraveler = (e: React.FormEvent) => {
+  const handleSavePassport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateProfile({
+        passportNumber: passportNumber.trim(),
+        passportExpiry,
+        passportCountry: passportCountry.trim() || nationality || "Ghana",
+      });
+      setIsEditingPassport(false);
+      toast.success("Passport details updated securely.");
+    } catch {
+      toast.error("Failed to update passport.");
+    }
+  };
+
+  const handleAddTraveler = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTravelerName.trim()) return;
     const newTrav: SavedTraveler = {
       id: `trav_${Date.now()}`,
-      name: newTravelerName,
+      name: newTravelerName.trim(),
       relationship: newTravelerRelation,
-      passportNumber: newTravelerPassport || "Pending",
-      expiryDate: "2032-01-01",
-      nationality: "Ghana",
+      passportNumber: newTravelerPassport.trim(),
+      expiryDate: newTravelerExpiry,
+      nationality: newTravelerNationality.trim() || nationality || "Ghana",
     };
-    setTravelers((prev) => [...prev, newTrav]);
+    const updated = [...travelers, newTrav];
+    setTravelers(updated);
+    await updateProfile({ savedTravelers: updated });
     setNewTravelerName("");
     setNewTravelerPassport("");
+    setNewTravelerExpiry("");
+    setNewTravelerNationality("");
     setIsAddTravelerOpen(false);
+    toast.success("Companion traveler added.");
   };
 
-  const handleDeleteTraveler = (id: string) => {
-    setTravelers((prev) => prev.filter((t) => t.id !== id));
+  const handleDeleteTraveler = async (id: string) => {
+    const updated = travelers.filter((t) => t.id !== id);
+    setTravelers(updated);
+    await updateProfile({ savedTravelers: updated });
+    toast.success("Traveler removed.");
+  };
+
+  const handleUpdatePreferences = async (newCurrency?: string) => {
+    const cur = newCurrency || currency;
+    setCurrency(cur);
+    await updateProfile({
+      currency: cur,
+      notificationPreferences: {
+        whatsapp: notifyWhatsApp,
+        email: notifyEmail,
+        priceDrops: notifyPriceDrops,
+      },
+    });
+    toast.success("Preferences updated.");
   };
 
   const handleCopyReferral = () => {
     const code = `https://dellicstravels.com/signup?ref=${user?.id || "dellics"}`;
     navigator.clipboard.writeText(code);
     setCopiedReferral(true);
+    toast.success("Referral link copied to clipboard!");
     setTimeout(() => setCopiedReferral(false), 2500);
   };
 
@@ -281,6 +264,10 @@ export default function ProfilePage() {
   }
 
   const userInitial = (user.fullName || user.email || "T").charAt(0).toUpperCase();
+  const realBookings: UserBooking[] = user.bookings || [];
+  const realFavorites = user.savedFavorites || [];
+  const points = user.pointsBalance !== undefined ? user.pointsBalance : 500;
+  const pointsValueInGhs = (points * 0.1).toFixed(0);
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-20">
@@ -339,13 +326,13 @@ export default function ProfilePage() {
                   Voyager Club Tier
                 </p>
                 <p className="text-base font-bold text-navy">
-                  Dellics Explorer <span className="text-xs font-normal text-slate-500">(Free)</span>
+                  Dellics {user.membershipTier || "Explorer"} <span className="text-xs font-normal text-slate-500">(Active)</span>
                 </p>
                 <button
                   onClick={() => setActiveTab("membership")}
                   className="text-xs font-bold text-brand-orange hover:underline flex items-center gap-1 mt-0.5"
                 >
-                  View Perks & Upgrade <ArrowRight className="size-3" />
+                  View Perks & Tiers <ArrowRight className="size-3" />
                 </button>
               </div>
             </div>
@@ -356,18 +343,20 @@ export default function ProfilePage() {
             <div className="p-4 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-colors">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
                 <Plane className="size-3.5 text-brand-orange" />
-                <span>Total Trips</span>
+                <span>Active Trips</span>
               </div>
-              <p className="font-display text-2xl font-bold text-navy mt-1">3 Bookings</p>
+              <p className="font-display text-2xl font-bold text-navy mt-1">
+                {realBookings.length} {realBookings.length === 1 ? "Booking" : "Bookings"}
+              </p>
             </div>
 
             <div className="p-4 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-colors">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
                 <Sparkles className="size-3.5 text-amber-500" />
-                <span>Reward Points</span>
+                <span>Voyager Points</span>
               </div>
-              <p className="font-display text-2xl font-bold text-navy mt-1">1,250 pts</p>
-              <p className="text-[10px] font-semibold text-emerald-600 mt-0.5">≈ GHS 125 Credit</p>
+              <p className="font-display text-2xl font-bold text-navy mt-1">{points.toLocaleString()} pts</p>
+              <p className="text-[10px] font-semibold text-emerald-600 mt-0.5">≈ GHS {pointsValueInGhs} Credit</p>
             </div>
 
             <div className="p-4 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-colors">
@@ -375,7 +364,9 @@ export default function ProfilePage() {
                 <Heart className="size-3.5 text-rose-500" />
                 <span>Saved Wishlist</span>
               </div>
-              <p className="font-display text-2xl font-bold text-navy mt-1">3 Items</p>
+              <p className="font-display text-2xl font-bold text-navy mt-1">
+                {realFavorites.length} {realFavorites.length === 1 ? "Item" : "Items"}
+              </p>
             </div>
 
             <div className="p-4 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-colors">
@@ -383,7 +374,7 @@ export default function ProfilePage() {
                 <Globe className="size-3.5 text-blue-500" />
                 <span>eSIM Roaming</span>
               </div>
-              <p className="font-display text-2xl font-bold text-navy mt-1">1 Active Plan</p>
+              <p className="font-display text-2xl font-bold text-navy mt-1">0 Plans</p>
             </div>
           </div>
         </div>
@@ -431,11 +422,12 @@ export default function ProfilePage() {
               <form onSubmit={handleSaveProfile} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Full Legal Name (as on Passport)</label>
+                    <label className="text-xs font-bold text-slate-700">Full Legal Name (as on Passport / ID)</label>
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
+                      placeholder="e.g. Kwame Mensah"
                       required
                       className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
                     />
@@ -463,17 +455,18 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Nationality / Citizenship</label>
+                    <label className="text-xs font-bold text-slate-700">Nationality / Country of Residence</label>
                     <input
                       type="text"
                       value={nationality}
                       onChange={(e) => setNationality(e.target.value)}
+                      placeholder="e.g. Ghana, Nigeria, United Kingdom"
                       className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Preferred Home Airport</label>
+                    <label className="text-xs font-bold text-slate-700">Preferred Home Departure Airport</label>
                     <select
                       value={homeAirport}
                       onChange={(e) => setHomeAirport(e.target.value)}
@@ -482,8 +475,9 @@ export default function ProfilePage() {
                       <option value="ACC - Kotoka International">ACC - Kotoka International (Accra, Ghana)</option>
                       <option value="LOS - Murtala Muhammed">LOS - Murtala Muhammed (Lagos, Nigeria)</option>
                       <option value="LHR - London Heathrow">LHR - London Heathrow (United Kingdom)</option>
-                      <option value="JFK - John F. Kennedy">JFK - New York JFK (United States)</option>
+                      <option value="JFK - New York JFK">JFK - New York JFK (United States)</option>
                       <option value="DXB - Dubai International">DXB - Dubai International (UAE)</option>
+                      <option value="NBO - Jomo Kenyatta">NBO - Jomo Kenyatta (Nairobi, Kenya)</option>
                     </select>
                   </div>
 
@@ -510,7 +504,7 @@ export default function ProfilePage() {
                         type="text"
                         value={emergencyContact}
                         onChange={(e) => setEmergencyContact(e.target.value)}
-                        placeholder="e.g. Dr. Kwame Mensah"
+                        placeholder="e.g. Spouse / Parent / Relative"
                         className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
                       />
                     </div>
@@ -520,7 +514,7 @@ export default function ProfilePage() {
                         type="tel"
                         value={emergencyPhone}
                         onChange={(e) => setEmergencyPhone(e.target.value)}
-                        placeholder="+233 24 411 2233"
+                        placeholder="+233 24 000 0000"
                         className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
                       />
                     </div>
@@ -531,9 +525,10 @@ export default function ProfilePage() {
                   <Button
                     type="submit"
                     size="lg"
+                    disabled={saving}
                     className="rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-md"
                   >
-                    Save Changes
+                    {saving ? "Saving..." : "Save Profile Details"}
                   </Button>
                 </div>
               </form>
@@ -546,19 +541,19 @@ export default function ProfilePage() {
                   <PhoneCall className="size-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-display text-lg font-bold">VIP Concierge Desk</h3>
+                  <h3 className="font-display text-lg font-bold">Dedicated Travel Concierge</h3>
                   <p className="text-xs text-white/75 leading-relaxed">
-                    Need instant flight rescheduling, VIP airport meet & greet, or visa consultation? Your dedicated travel desk is 1 tap away.
+                    Have an urgent itinerary adjustment, flight change, or special request? Your dedicated travel desk is ready to help on WhatsApp.
                   </p>
                 </div>
                 <a
-                  href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels concierge, I am ${user.fullName} (${user.email}) and need immediate travel assistance.`)}`}
+                  href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am ${user.fullName || user.email} and need travel assistance.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center w-full rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white text-sm font-bold py-3 transition-colors shadow-md gap-2"
                 >
                   <PhoneCall className="size-4" />
-                  <span>Chat with Concierge</span>
+                  <span>Message Travel Desk</span>
                 </a>
               </div>
 
@@ -570,14 +565,14 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-600">
                   <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
-                  <span>IATA & TOUGHA Verified Agency</span>
+                  <span>IATA & TOUGHA Certified Agency</span>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab 2: My Trips & Bookings */}
+        {/* Tab 2: My Trips & Bookings (Real Data Only — Clean Empty State if 0 bookings) */}
         {activeTab === "trips" && (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs space-y-6">
@@ -596,67 +591,100 @@ export default function ProfilePage() {
                 </Link>
               </div>
 
-              <div className="space-y-4">
-                {DEMO_BOOKINGS.map((b) => (
-                  <div
-                    key={b.id}
-                    className="p-5 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="size-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-brand-orange shrink-0 shadow-xs">
-                        {b.type === "flight" && <Plane className="size-6" />}
-                        {b.type === "hotel" && <Building2 className="size-6" />}
-                        {b.type === "tour" && <Compass className="size-6" />}
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-display text-base font-bold text-navy">{b.title}</h3>
-                          <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase ${
-                              b.status === "CONFIRMED"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-amber-100 text-amber-800"
-                            }`}
-                          >
-                            {b.status}
-                          </span>
+              {realBookings.length > 0 ? (
+                <div className="space-y-4">
+                  {realBookings.map((b) => (
+                    <div
+                      key={b.id}
+                      className="p-5 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="size-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-brand-orange shrink-0 shadow-xs">
+                          {b.type === "flight" && <Plane className="size-6" />}
+                          {b.type === "hotel" && <Building2 className="size-6" />}
+                          {b.type === "tour" && <Compass className="size-6" />}
+                          {b.type === "transfer" && <Globe className="size-6" />}
                         </div>
-                        <p className="text-xs text-slate-500 flex items-center gap-3 flex-wrap">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="size-3 text-slate-400" />
-                            {b.destination}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Calendar className="size-3 text-slate-400" />
-                            {b.date}
-                          </span>
-                          <span className="font-bold text-navy">Ref: {b.ref}</span>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-display text-base font-bold text-navy">{b.title}</h3>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase ${
+                                b.status === "CONFIRMED"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : "bg-amber-100 text-amber-800"
+                              }`}
+                            >
+                              {b.status}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 flex items-center gap-3 flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="size-3 text-slate-400" />
+                              {b.destination}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="size-3 text-slate-400" />
+                              {b.date}
+                            </span>
+                            <span className="font-bold text-navy">Ref: {b.ref}</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 self-end md:self-auto">
+                        <p className="text-right font-display text-base font-bold text-navy hidden sm:block">
+                          {b.amount}
                         </p>
+                        <a
+                          href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I need assistance with my booking ${b.ref} (${b.title}).`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 transition-colors flex items-center gap-1.5"
+                        >
+                          <PhoneCall className="size-3.5 text-emerald-600" />
+                          Concierge
+                        </a>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3 self-end md:self-auto">
-                      <p className="text-right font-display text-base font-bold text-navy hidden sm:block">
-                        {b.amount}
-                      </p>
-                      <a
-                        href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I need assistance with my booking ${b.ref} (${b.title}).`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 transition-colors flex items-center gap-1.5"
-                      >
-                        <PhoneCall className="size-3.5 text-emerald-600" />
-                        Concierge
-                      </a>
-                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* High-Converting Zero-State when no bookings exist */
+                <div className="py-12 px-4 text-center space-y-5 max-w-md mx-auto">
+                  <div className="size-16 rounded-3xl bg-orange-50 text-brand-orange flex items-center justify-center mx-auto shadow-inner">
+                    <Plane className="size-8" />
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-1.5">
+                    <h3 className="font-display text-lg font-bold text-navy">No Active Trips Yet</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Ready to take off? Explore exclusive wholesale flight fares, over 3.3 million verified hotels, or curated safari itineraries.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2.5 justify-center pt-2">
+                    <Link href="/flights">
+                      <Button size="sm" className="rounded-xl bg-navy hover:bg-navy/90 text-white text-xs font-bold">
+                        Search Flights
+                      </Button>
+                    </Link>
+                    <Link href="/hotels">
+                      <Button size="sm" className="rounded-xl bg-navy hover:bg-navy/90 text-white text-xs font-bold">
+                        Browse Stays
+                      </Button>
+                    </Link>
+                    <Link href="/tours">
+                      <Button size="sm" className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold">
+                        View Safari Tours
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Tab 3: Passports & Passenger Manifests */}
+        {/* Tab 3: Passports & Passenger Manifests (Real User Input & Companion Management) */}
         {activeTab === "passports" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs space-y-6">
@@ -677,76 +705,160 @@ export default function ProfilePage() {
                 </Button>
               </div>
 
-              {/* Primary Traveler Passport */}
-              <div className="p-5 bg-gradient-to-br from-slate-900 to-navy text-white rounded-2xl shadow-md space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="size-4 text-emerald-400" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-white/80">
-                      Primary Traveler Passport
-                    </span>
+              {/* Primary Traveler Passport (Real State) */}
+              {user.passportNumber ? (
+                <div className="p-5 bg-gradient-to-br from-slate-900 to-navy text-white rounded-2xl shadow-md space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="size-4 text-emerald-400" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-white/80">
+                        Primary Traveler Passport
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setIsEditingPassport(true)}
+                      className="text-xs font-bold text-brand-orange hover:underline"
+                    >
+                      Edit
+                    </button>
                   </div>
-                  <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded text-white">
-                    {nationality}
-                  </span>
-                </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
-                  <div>
-                    <p className="text-[10px] text-white/60 uppercase">Passport Holder</p>
-                    <p className="text-sm font-bold text-white mt-0.5">{fullName || "Primary Traveler"}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-white/60 uppercase">Passport Number</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-sm font-mono font-bold text-white">
-                        {showPassport ? passportNumber : "••••••••"}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                      <p className="text-[10px] text-white/60 uppercase">Passport Holder</p>
+                      <p className="text-sm font-bold text-white mt-0.5">{fullName || "Primary Traveler"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-white/60 uppercase">Passport Number</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-sm font-mono font-bold text-white">
+                          {showPassport ? passportNumber : "••••••••"}
+                        </p>
+                        <button
+                          onClick={() => setShowPassport(!showPassport)}
+                          className="text-white/70 hover:text-white"
+                        >
+                          {showPassport ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-white/60 uppercase">Valid Until</p>
+                      <p className="text-sm font-bold text-emerald-400 mt-0.5">
+                        {passportExpiry || "Not specified"}
                       </p>
-                      <button
-                        onClick={() => setShowPassport(!showPassport)}
-                        className="text-white/70 hover:text-white"
-                      >
-                        {showPassport ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
-                      </button>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-white/60 uppercase">Valid Until</p>
-                    <p className="text-sm font-bold text-emerald-400 mt-0.5">{passportExpiry}</p>
-                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Prompt to add Passport */
+                <div className="p-6 bg-slate-50 border border-slate-200 border-dashed rounded-2xl text-center space-y-3">
+                  <FileCheck className="size-8 text-slate-400 mx-auto" />
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-navy">No Primary Passport On File</p>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                      Add your passport number and expiry date to expedite international airline ticket booking.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setIsEditingPassport(true)}
+                    size="sm"
+                    className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs"
+                  >
+                    Add My Passport
+                  </Button>
+                </div>
+              )}
+
+              {/* Edit Primary Passport Form */}
+              {isEditingPassport && (
+                <form
+                  onSubmit={handleSavePassport}
+                  className="p-5 bg-orange-50/50 border border-brand-orange/20 rounded-2xl space-y-4 animate-in fade-in duration-200"
+                >
+                  <h4 className="text-sm font-bold text-navy">Enter Passport Details</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Passport Number (e.g. G1234567)"
+                      value={passportNumber}
+                      onChange={(e) => setPassportNumber(e.target.value)}
+                      required
+                      className="h-10 px-3 rounded-xl border border-slate-200 text-xs font-medium bg-white outline-none"
+                    />
+                    <input
+                      type="date"
+                      placeholder="Expiry Date"
+                      value={passportExpiry}
+                      onChange={(e) => setPassportExpiry(e.target.value)}
+                      required
+                      className="h-10 px-3 rounded-xl border border-slate-200 text-xs font-medium bg-white outline-none"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Issuing Country"
+                      value={passportCountry}
+                      onChange={(e) => setPassportCountry(e.target.value)}
+                      className="h-10 px-3 rounded-xl border border-slate-200 text-xs font-medium bg-white outline-none"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditingPassport(false)}
+                      className="rounded-xl text-xs"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold"
+                    >
+                      Save Passport
+                    </Button>
+                  </div>
+                </form>
+              )}
 
               {/* Saved Companions List */}
               <div className="space-y-3 pt-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Family & Companion Manifests ({travelers.length})
                 </h3>
-                {travelers.map((t) => (
-                  <div
-                    key={t.id}
-                    className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-4"
-                  >
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-navy">{t.name}</p>
-                        <span className="text-[10px] font-semibold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
-                          {t.relationship}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 font-mono">
-                        Passport: {t.passportNumber} · Expires {t.expiryDate}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteTraveler(t.id)}
-                      className="text-slate-400 hover:text-rose-600 transition-colors p-2"
-                      title="Remove Traveler"
+                {travelers.length > 0 ? (
+                  travelers.map((t) => (
+                    <div
+                      key={t.id}
+                      className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-4"
                     >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </div>
-                ))}
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-navy">{t.name}</p>
+                          <span className="text-[10px] font-semibold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
+                            {t.relationship}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-mono">
+                          {t.passportNumber ? `Passport: ${t.passportNumber}` : "No passport entered"} {t.expiryDate && `· Expires ${t.expiryDate}`}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteTraveler(t.id)}
+                        className="text-slate-400 hover:text-rose-600 transition-colors p-2"
+                        title="Remove Traveler"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400 italic py-2">
+                    No companion travelers added yet. Add family members or colleagues for group bookings.
+                  </p>
+                )}
               </div>
 
               {/* Add Traveler Modal Form */}
@@ -756,10 +868,10 @@ export default function ProfilePage() {
                   className="p-5 bg-orange-50/50 border border-brand-orange/20 rounded-2xl space-y-4 animate-in fade-in duration-200"
                 >
                   <h4 className="text-sm font-bold text-navy">Add Companion Traveler</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       type="text"
-                      placeholder="Full Name as on Passport"
+                      placeholder="Full Name (as on passport / ID)"
                       value={newTravelerName}
                       onChange={(e) => setNewTravelerName(e.target.value)}
                       required
@@ -781,6 +893,13 @@ export default function ProfilePage() {
                       placeholder="Passport Number (Optional)"
                       value={newTravelerPassport}
                       onChange={(e) => setNewTravelerPassport(e.target.value)}
+                      className="h-10 px-3 rounded-xl border border-slate-200 text-xs font-medium bg-white outline-none"
+                    />
+                    <input
+                      type="date"
+                      placeholder="Passport Expiry"
+                      value={newTravelerExpiry}
+                      onChange={(e) => setNewTravelerExpiry(e.target.value)}
                       className="h-10 px-3 rounded-xl border border-slate-200 text-xs font-medium bg-white outline-none"
                     />
                   </div>
@@ -937,7 +1056,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Tab 5: Saved Wishlist */}
+        {/* Tab 5: Saved Wishlist (Zero Mock Data — High Converting Empty State) */}
         {activeTab === "saved" && (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs space-y-6">
@@ -948,34 +1067,55 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {DEMO_FAVORITES.map((fav) => (
-                  <div
-                    key={fav.id}
-                    className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-xs hover:shadow-md transition-all space-y-3 pb-4"
-                  >
-                    <div className="h-44 bg-slate-200 relative overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={fav.image} alt={fav.title} className="w-full h-full object-cover" />
-                      <span className="absolute top-3 left-3 bg-navy/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs">
-                        {fav.type}
-                      </span>
+              {realFavorites.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {realFavorites.map((fav: any, idx: number) => (
+                    <div
+                      key={fav.id || idx}
+                      className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-xs hover:shadow-md transition-all space-y-3 pb-4"
+                    >
+                      <div className="h-44 bg-slate-200 relative overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={fav.image || "/images/services/plane.jpg"} alt={fav.title} className="w-full h-full object-cover" />
+                        <span className="absolute top-3 left-3 bg-navy/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs">
+                          {fav.type || "Favorite"}
+                        </span>
+                      </div>
+                      <div className="px-4 space-y-1">
+                        <h4 className="font-display text-sm font-bold text-navy line-clamp-1">{fav.title}</h4>
+                        <p className="text-xs text-slate-500">{fav.location}</p>
+                        <p className="text-sm font-bold text-brand-orange pt-1">{fav.price}</p>
+                      </div>
+                      <div className="px-4 pt-2">
+                        <Link href={fav.href || "/flights"}>
+                          <Button size="sm" className="w-full rounded-xl bg-navy hover:bg-navy/90 text-white font-bold text-xs">
+                            Book Now
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="px-4 space-y-1">
-                      <h4 className="font-display text-sm font-bold text-navy line-clamp-1">{fav.title}</h4>
-                      <p className="text-xs text-slate-500">{fav.location}</p>
-                      <p className="text-sm font-bold text-brand-orange pt-1">{fav.price}</p>
-                    </div>
-                    <div className="px-4 pt-2">
-                      <Link href={fav.href}>
-                        <Button size="sm" className="w-full rounded-xl bg-navy hover:bg-navy/90 text-white font-bold text-xs">
-                          Book Now
-                        </Button>
-                      </Link>
-                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 px-4 text-center space-y-4 max-w-md mx-auto">
+                  <div className="size-16 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto shadow-inner">
+                    <Heart className="size-8" />
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-1">
+                    <h3 className="font-display text-base font-bold text-navy">Your Wishlist is Empty</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Tap the heart icon on any flight offer, hotel stay, or safari package to save it here for future planning.
+                    </p>
+                  </div>
+                  <div className="pt-2">
+                    <Link href="/tours">
+                      <Button size="sm" className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold">
+                        Browse Dream Destinations
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1005,7 +1145,7 @@ export default function ProfilePage() {
                     <button
                       key={c.code}
                       type="button"
-                      onClick={() => setCurrency(c.code)}
+                      onClick={() => handleUpdatePreferences(c.code)}
                       className={`p-3 rounded-xl border text-center transition-all ${
                         currency === c.code
                           ? "border-brand-orange bg-orange-50/50 text-brand-orange font-bold"
@@ -1031,7 +1171,16 @@ export default function ProfilePage() {
                     <input
                       type="checkbox"
                       checked={notifyWhatsApp}
-                      onChange={(e) => setNotifyWhatsApp(e.target.checked)}
+                      onChange={(e) => {
+                        setNotifyWhatsApp(e.target.checked);
+                        updateProfile({
+                          notificationPreferences: {
+                            whatsapp: e.target.checked,
+                            email: notifyEmail,
+                            priceDrops: notifyPriceDrops,
+                          },
+                        });
+                      }}
                       className="size-4 accent-brand-orange cursor-pointer"
                     />
                   </label>
@@ -1044,7 +1193,16 @@ export default function ProfilePage() {
                     <input
                       type="checkbox"
                       checked={notifyEmail}
-                      onChange={(e) => setNotifyEmail(e.target.checked)}
+                      onChange={(e) => {
+                        setNotifyEmail(e.target.checked);
+                        updateProfile({
+                          notificationPreferences: {
+                            whatsapp: notifyWhatsApp,
+                            email: e.target.checked,
+                            priceDrops: notifyPriceDrops,
+                          },
+                        });
+                      }}
                       className="size-4 accent-brand-orange cursor-pointer"
                     />
                   </label>
@@ -1057,7 +1215,16 @@ export default function ProfilePage() {
                     <input
                       type="checkbox"
                       checked={notifyPriceDrops}
-                      onChange={(e) => setNotifyPriceDrops(e.target.checked)}
+                      onChange={(e) => {
+                        setNotifyPriceDrops(e.target.checked);
+                        updateProfile({
+                          notificationPreferences: {
+                            whatsapp: notifyWhatsApp,
+                            email: notifyEmail,
+                            priceDrops: e.target.checked,
+                          },
+                        });
+                      }}
                       className="size-4 accent-brand-orange cursor-pointer"
                     />
                   </label>

@@ -82,8 +82,9 @@ export default function SignUpPage() {
       });
 
       setTimeout(() => {
-        router.push("/");
+        router.push("/onboarding");
       }, 500);
+
     } catch (err: any) {
       setError(err.message || "Unable to register account. Please try again.");
       setLoading(false);

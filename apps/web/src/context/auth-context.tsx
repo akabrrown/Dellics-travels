@@ -4,6 +4,28 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 
+export interface SavedTraveler {
+  id: string;
+  name: string;
+  relationship: string;
+  passportNumber?: string;
+  expiryDate?: string;
+  nationality?: string;
+}
+
+export interface UserBooking {
+  id: string;
+  ref: string;
+  title: string;
+  type: "flight" | "hotel" | "tour" | "transfer" | "visa" | "esim";
+  destination: string;
+  date: string;
+  amount: string;
+  status: "CONFIRMED" | "IN_REVIEW" | "COMPLETED" | "CANCELLED";
+  passengers: number;
+  details?: Record<string, any>;
+}
+
 export interface AuthProfile {
   id: string;
   email: string;
@@ -11,6 +33,27 @@ export interface AuthProfile {
   phone?: string;
   avatarUrl?: string;
   role?: string;
+  membershipTier?: "EXPLORER" | "VOYAGER" | "ELITE";
+  pointsBalance?: number;
+  nationality?: string;
+  homeAirport?: string;
+  seatPreference?: string;
+  mealPreference?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  passportNumber?: string;
+  passportExpiry?: string;
+  passportCountry?: string;
+  savedTravelers?: SavedTraveler[];
+  savedFavorites?: any[];
+  bookings?: UserBooking[];
+  currency?: string;
+  notificationPreferences?: {
+    whatsapp: boolean;
+    email: boolean;
+    priceDrops: boolean;
+  };
+  onboardingCompleted?: boolean;
 }
 
 interface AuthContextType {
@@ -25,6 +68,7 @@ interface AuthContextType {
     fullName: string,
     phone?: string,
   ) => Promise<{ error?: string }>;
+  updateProfile: (data: Partial<AuthProfile>) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -55,6 +99,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       phone: meta.phone || sbUser.phone || "",
       avatarUrl: meta.avatar_url || "",
       role: meta.role || "traveler",
+      membershipTier: meta.membership_tier || "EXPLORER",
+      pointsBalance: meta.points_balance !== undefined ? meta.points_balance : 500,
+      nationality: meta.nationality || "Ghana",
+      homeAirport: meta.home_airport || "ACC - Kotoka International",
+      seatPreference: meta.seat_preference || "Window",
+      mealPreference: meta.meal_preference || "Standard / No Restriction",
+      emergencyContact: meta.emergency_contact || "",
+      emergencyPhone: meta.emergency_phone || "",
+      passportNumber: meta.passport_number || "",
+      passportExpiry: meta.passport_expiry || "",
+      passportCountry: meta.passport_country || "",
+      savedTravelers: meta.saved_travelers || [],
+      savedFavorites: meta.saved_favorites || [],
+      bookings: meta.bookings || [],
+      currency: meta.currency || "GHS",
+      notificationPreferences: meta.notification_preferences || {
+        whatsapp: true,
+        email: true,
+        priceDrops: true,
+      },
+      onboardingCompleted: meta.onboarding_completed || false,
     };
   };
 
@@ -80,10 +145,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSupabaseUser(currentSession?.user ?? null);
           if (currentSession?.user) {
             const profile = extractProfile(currentSession.user);
-            setUser(profile);
             if (profile) {
+              setUser((prev) => (prev ? { ...profile, ...prev } : profile));
               try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
+                localStorage.setItem(
+                  LOCAL_STORAGE_KEY,
+                  JSON.stringify(profile),
+                );
               } catch {}
             }
           }
@@ -108,8 +176,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (newSession?.user) {
           const profile = extractProfile(newSession.user);
-          setUser(profile);
           if (profile) {
+            setUser((prev) => (prev ? { ...profile, ...prev } : profile));
             try {
               localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
             } catch {}
@@ -117,6 +185,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         setIsLoading(false);
       });
+
 
       return () => {
         subscription.unsubscribe();
@@ -126,6 +195,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const updateProfile = async (data: Partial<AuthProfile>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated: AuthProfile = {
+        ...prev,
+        ...data,
+      };
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
+    // Sync to Supabase user metadata if available
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          full_name: data.fullName,
+          phone: data.phone,
+          nationality: data.nationality,
+          home_airport: data.homeAirport,
+          seat_preference: data.seatPreference,
+          meal_preference: data.mealPreference,
+          emergency_contact: data.emergencyContact,
+          emergency_phone: data.emergencyPhone,
+          passport_number: data.passportNumber,
+          passport_expiry: data.passportExpiry,
+          passport_country: data.passportCountry,
+          saved_travelers: data.savedTravelers,
+          saved_favorites: data.savedFavorites,
+          bookings: data.bookings,
+          currency: data.currency,
+          notification_preferences: data.notificationPreferences,
+          onboarding_completed: data.onboardingCompleted,
+        },
+      });
+    } catch {
+      // Offline / fallback storage intact
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     const localProfile: AuthProfile = {
       id: `usr_${Date.now()}`,
@@ -134,6 +244,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .replace(/[._-]/g, " ")
         .replace(/\b\w/g, (c) => c.toUpperCase()),
       role: "traveler",
+      membershipTier: "EXPLORER",
+      pointsBalance: 500,
+      nationality: "Ghana",
+      homeAirport: "ACC - Kotoka International",
+      seatPreference: "Window",
+      mealPreference: "Standard / No Restriction",
+      savedTravelers: [],
+      savedFavorites: [],
+      bookings: [],
+      currency: "GHS",
+      notificationPreferences: {
+        whatsapp: true,
+        email: true,
+        priceDrops: true,
+      },
+      onboardingCompleted: true,
     };
 
     try {
@@ -167,7 +293,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch {}
 
-      // If Supabase API key is 401 or invalid signature, seamlessly authenticate locally
+      // Fallback local auth
       setUser(localProfile);
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
@@ -195,6 +321,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       fullName,
       phone: phone || "",
       role: "traveler",
+      membershipTier: "EXPLORER",
+      pointsBalance: 500,
+      nationality: "Ghana",
+      homeAirport: "ACC - Kotoka International",
+      seatPreference: "Window",
+      mealPreference: "Standard / No Restriction",
+      savedTravelers: [],
+      savedFavorites: [],
+      bookings: [],
+      currency: "GHS",
+      notificationPreferences: {
+        whatsapp: true,
+        email: true,
+        priceDrops: true,
+      },
+      onboardingCompleted: false,
     };
 
     try {
@@ -205,6 +347,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: {
             full_name: fullName,
             phone: phone || "",
+            membership_tier: "EXPLORER",
+            points_balance: 500,
+            onboarding_completed: false,
           },
         },
       });
@@ -236,7 +381,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -261,6 +405,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         signIn,
         signUp,
+        updateProfile,
         signOut,
       }}
     >
