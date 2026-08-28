@@ -208,6 +208,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return updated;
     });
 
+    // Sync to Supabase PostgreSQL database via server route
+    try {
+      if (user?.id || user?.email) {
+        await fetch("/api/auth/profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: user.id,
+            email: user.email,
+            fullName: data.fullName,
+            phone: data.phone,
+            membershipTier: data.membershipTier,
+          }),
+        });
+      }
+    } catch {
+      // Offline fallback
+    }
+
     // Sync to Supabase user metadata if available
     try {
       await supabase.auth.updateUser({
@@ -270,15 +289,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!error && data?.user) {
         const profile = extractProfile(data.user);
-        setUser(profile);
-        setSupabaseUser(data.user);
-        setSession(data.session);
         if (profile) {
+          setUser(profile);
+          setSupabaseUser(data.user);
+          setSession(data.session);
           try {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
           } catch {}
+          return {};
         }
-        return {};
       }
 
       // If user exists in local profile cache
@@ -315,8 +334,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fullName: string,
     phone?: string,
   ) => {
+    let assignedId = `usr_${Date.now()}`;
+
+    // 1. Direct Server-Side DB write to PostgreSQL Supabase Database
+    try {
+      const dbRes = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          fullName,
+          phone,
+        }),
+      });
+      const dbData = await dbRes.json();
+      if (dbData?.user?.id) {
+        assignedId = dbData.user.id;
+      }
+    } catch (dbErr) {
+      console.error("Database user registration sync attempt:", dbErr);
+    }
+
     const localProfile: AuthProfile = {
-      id: `usr_${Date.now()}`,
+      id: assignedId,
       email,
       fullName,
       phone: phone || "",
@@ -365,14 +406,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return {};
       }
 
-      // Seamless fallback
+      // Seamless fallback with database assigned ID
       setUser(localProfile);
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
       } catch {}
       return {};
     } catch {
-      // Seamless fallback on network/DNS outage
+      // Seamless fallback on network/DNS outage with database assigned ID
       setUser(localProfile);
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localProfile));
@@ -380,6 +421,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return {};
     }
   };
+
 
   const signOut = async () => {
     try {
