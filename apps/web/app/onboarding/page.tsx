@@ -12,28 +12,36 @@ import {
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
   Phone,
   MapPin,
-  FileCheck,
-  Heart,
-  Globe,
+  Crown,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AirportCombobox } from "@/components/ui/airport-combobox";
+import { CountryFlag } from "@/components/ui/country-flag";
+import { useLocaleCurrency } from "@/context/locale-currency-context";
 import { toast } from "sonner";
 
+const QUICK_AIRPORTS = [
+  { code: "ACC", name: "Accra Kotoka", full: "ACC - Kotoka International (Accra, Ghana)" },
+  { code: "LHR", name: "London Heathrow", full: "LHR - London Heathrow (United Kingdom)" },
+  { code: "JFK", name: "New York JFK", full: "JFK - John F. Kennedy (New York, USA)" },
+  { code: "LOS", name: "Lagos Murtala", full: "LOS - Murtala Muhammed (Lagos, Nigeria)" },
+  { code: "DXB", name: "Dubai Intl", full: "DXB - Dubai International (UAE)" },
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, updateProfile, isLoading } = useAuth();
+  const { countries } = useLocaleCurrency();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Step 1: Traveler Essentials
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [nationality, setNationality] = useState("Ghana");
+  const [nationality, setNationality] = useState("GH");
 
   // Step 2: Flight & Stay Preferences
   const [homeAirport, setHomeAirport] = useState("ACC - Kotoka International (Accra, Ghana)");
@@ -78,11 +86,11 @@ export default function OnboardingPage() {
         emergencyContact: emergencyContact.trim(),
         emergencyPhone: emergencyPhone.trim(),
         onboardingCompleted: true,
-        pointsBalance: 500, // 500 Welcome bonus points
+        pointsBalance: 500,
       });
 
-      toast.success("Profile configured successfully!", {
-        description: "You've earned 500 Welcome Bonus Voyager Points.",
+      toast.success("Profile updated", {
+        description: "500 welcome points credited to your account.",
       });
 
       router.push("/profile");
@@ -95,22 +103,18 @@ export default function OnboardingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="size-8 border-4 border-brand-orange border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#050038] flex items-center justify-center">
+        <div className="size-8 border-3 border-brand-orange border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 flex flex-col justify-between p-4 sm:p-8 lg:p-12 relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute -top-40 -left-40 size-96 bg-brand-orange/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 size-96 bg-navy/40 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="min-h-screen w-full bg-[#050038] text-white flex flex-col justify-between p-4 sm:p-8 lg:p-12">
       {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between max-w-4xl mx-auto w-full">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="relative h-10 w-20">
+      <div className="flex items-center justify-between max-w-2xl mx-auto w-full">
+        <Link href="/" className="inline-block">
+          <div className="relative h-10 w-24">
             <Image
               src="/Logo.png"
               alt="Dellics Travels"
@@ -122,130 +126,172 @@ export default function OnboardingPage() {
           </div>
         </Link>
 
-        {/* Progress Tracker */}
-        <div className="flex items-center gap-2">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={`h-2 rounded-full transition-all ${
-                s === step
-                  ? "w-8 bg-brand-orange"
-                  : s < step
-                    ? "w-4 bg-emerald-500"
-                    : "w-4 bg-white/20"
-              }`}
-            />
-          ))}
-          <span className="text-xs font-bold text-white/70 ml-2">Step {step} of 3</span>
+        {/* Step Indicator */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            {[1, 2, 3].map((s) => (
+              <span
+                key={s}
+                className={`h-1.5 rounded-full transition-all ${
+                  s === step
+                    ? "w-6 bg-brand-orange"
+                    : s < step
+                      ? "w-3 bg-emerald-400"
+                      : "w-3 bg-white/20"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-xs font-semibold text-white/70">
+            {step} of 3
+          </span>
         </div>
       </div>
 
-      {/* Center Container Card */}
-      <div className="relative z-10 max-w-2xl mx-auto w-full my-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-white/10 space-y-8 animate-in fade-in duration-300">
-          
-          {/* STEP 1: Traveler Essentials */}
+      {/* Main Card Container */}
+      <div className="max-w-2xl mx-auto w-full my-6">
+        <div className="bg-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-100">
+          {/* STEP 1: Contact & Legal Name */}
           {step === 1 && (
-            <div className="space-y-6">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-brand-orange text-xs font-bold rounded-full border border-orange-200">
-                  <User className="size-3.5" />
-                  <span>Step 1: Traveler Essentials</span>
-                </div>
-                <h1 className="font-display text-2xl sm:text-3xl font-bold text-navy">
-                  Welcome aboard! Let&apos;s set up your profile.
+            <div className="space-y-5">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange">
+                  Step 1 · Passenger Details
+                </span>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                  Primary contact and passenger name
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  Enter your legal passenger details as they appear on your government-issued ID for smooth airline booking and visa assistance.
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Enter your name as it appears on your passport or national ID to ensure issue-free airline ticketing.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Full Legal Passenger Name</label>
+              <div className="space-y-3.5 pt-1">
+                <div>
+                  <label htmlFor="input-fullname" className="text-xs font-semibold text-slate-700 block mb-1">
+                    Full Name (as on ID / Passport)
+                  </label>
                   <input
+                    id="input-fullname"
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Kwame Mensah"
                     required
-                    className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                    className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Primary WhatsApp & Phone Number</label>
+                <div>
+                  <label htmlFor="input-phone" className="text-xs font-semibold text-slate-700 block mb-1">
+                    WhatsApp & Phone Number
+                  </label>
                   <input
+                    id="input-phone"
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+233 55 205 4174"
-                    className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                    className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                   />
-                  <p className="text-[11px] text-slate-400">Used for instant flight gate updates and WhatsApp concierge itineraries.</p>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Used for flight disruption notices and WhatsApp e-ticket delivery.
+                  </p>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Country of Residence / Nationality</label>
-                  <input
-                    type="text"
-                    value={nationality}
-                    onChange={(e) => setNationality(e.target.value)}
-                    placeholder="e.g. Ghana, United States, United Kingdom"
-                    className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
-                  />
+                <div>
+                  <label htmlFor="select-nationality" className="text-xs font-semibold text-slate-700 block mb-1">
+                    Country of Residence / Nationality
+                  </label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                      <CountryFlag countryCode={nationality} className="w-4 h-2.5 rounded-2xs" />
+                    </div>
+                    <select
+                      id="select-nationality"
+                      value={nationality}
+                      onChange={(e) => setNationality(e.target.value)}
+                      className="w-full h-10 pl-9 pr-3.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
+                    >
+                      {countries.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.name} ({c.code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end pt-3 border-t border-slate-100">
                 <Button
                   type="button"
-                  size="lg"
                   onClick={() => setStep(2)}
-                  className="rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-md gap-2"
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
                 >
-                  <span>Continue to Preferences</span>
-                  <ArrowRight className="size-4" />
+                  <span>Continue</span>
+                  <ArrowRight className="size-3.5" />
                 </Button>
               </div>
             </div>
           )}
 
-          {/* STEP 2: Travel Preferences */}
+          {/* STEP 2: Flight & Stay Preferences */}
           {step === 2 && (
-            <div className="space-y-6">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-brand-orange text-xs font-bold rounded-full border border-orange-200">
-                  <Plane className="size-3.5" />
-                  <span>Step 2: Travel Preferences</span>
-                </div>
-                <h2 className="font-display text-2xl sm:text-3xl font-bold text-navy">
-                  Customize your flying & stay experience.
+            <div className="space-y-5">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange">
+                  Step 2 · Travel Preferences
+                </span>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                  Default airport and seating preferences
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  We&apos;ll automatically pre-select your preferred home airport and in-flight seat on Emirates, Qatar, Delta, and partner airlines.
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  We pre-fill these when booking flights with our partner airlines.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Primary Home Airport</label>
+              <div className="space-y-3.5 pt-1">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    Primary Departure Airport
+                  </label>
                   <AirportCombobox
                     value={homeAirport}
                     onChange={setHomeAirport}
-                    placeholder="Search international airport or city (e.g. Accra, London, JFK)..."
+                    placeholder="Search international airport or city..."
                   />
-                  <p className="text-[11px] text-slate-400">Live search across global IATA international airports & departure hubs.</p>
+
+                  {/* Quick Select Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                    <span className="text-[10px] text-slate-400 font-semibold uppercase">Popular:</span>
+                    {QUICK_AIRPORTS.map((hub) => (
+                      <button
+                        key={hub.code}
+                        type="button"
+                        onClick={() => setHomeAirport(hub.full)}
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-colors ${
+                          homeAirport === hub.full
+                            ? "bg-navy text-white border-navy"
+                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        {hub.code} · {hub.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Seating Preference</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label htmlFor="select-seat" className="text-xs font-semibold text-slate-700 block mb-1">
+                      Seat Preference
+                    </label>
                     <select
+                      id="select-seat"
                       value={seatPreference}
                       onChange={(e) => setSeatPreference(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                      className="w-full h-10 px-3 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                     >
                       <option value="Window">Window Seat</option>
                       <option value="Aisle">Aisle Seat</option>
@@ -253,16 +299,19 @@ export default function OnboardingPage() {
                     </select>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Dietary / Meal Preference</label>
+                  <div>
+                    <label htmlFor="select-meal" className="text-xs font-semibold text-slate-700 block mb-1">
+                      In-Flight Meal Option
+                    </label>
                     <select
+                      id="select-meal"
                       value={mealPreference}
                       onChange={(e) => setMealPreference(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                      className="w-full h-10 px-3 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                     >
                       <option value="Standard / No Restriction">Standard / No Restriction</option>
-                      <option value="Vegetarian / Vegan">Vegetarian / Vegan</option>
                       <option value="Halal Certified">Halal Certified</option>
+                      <option value="Vegetarian / Vegan">Vegetarian / Vegan</option>
                       <option value="Kosher Meal">Kosher Meal</option>
                       <option value="Gluten-Free">Gluten-Free</option>
                     </select>
@@ -270,147 +319,165 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                 <Button
                   type="button"
                   variant="outline"
-                  size="lg"
                   onClick={() => setStep(1)}
-                  className="rounded-2xl text-xs font-bold gap-1.5"
+                  className="rounded-lg text-xs font-semibold h-10 px-4 gap-1 border-slate-300"
                 >
-                  <ArrowLeft className="size-4" />
+                  <ArrowLeft className="size-3.5" />
                   <span>Back</span>
                 </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  onClick={() => setStep(3)}
-                  className="rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-md gap-2"
-                >
-                  <span>Continue to Documents</span>
-                  <ArrowRight className="size-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setStep(3)}
+                    className="text-xs text-slate-500 hover:text-slate-900 font-semibold"
+                  >
+                    Skip
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
+                  >
+                    <span>Continue</span>
+                    <ArrowRight className="size-3.5" />
+                  </Button>
+                </div>
               </div>
             </div>
           )}
 
           {/* STEP 3: Passport & Security (Optional) */}
           {step === 3 && (
-            <div className="space-y-6">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-brand-orange text-xs font-bold rounded-full border border-orange-200">
-                  <ShieldCheck className="size-3.5" />
-                  <span>Step 3: Document Readiness & Contact</span>
-                </div>
-                <h2 className="font-display text-2xl sm:text-3xl font-bold text-navy">
-                  Add your passport details (Optional).
+            <div className="space-y-5">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange">
+                  Step 3 · Travel Documents (Optional)
+                </span>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                  Passport information & emergency contact
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  Store your passport securely for 1-click international flight ticket issuance. You can also skip this and add it later in your Profile.
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Save your passport number securely for fast-track booking. You can also skip this and add it later.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Passport Number (Optional)</label>
+              <div className="space-y-3.5 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="input-passport" className="text-xs font-semibold text-slate-700 block mb-1">
+                      Passport Number (Optional)
+                    </label>
                     <input
+                      id="input-passport"
                       type="text"
                       value={passportNumber}
                       onChange={(e) => setPassportNumber(e.target.value)}
                       placeholder="e.g. G1234567"
-                      className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                      className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Passport Expiry Date</label>
+                  <div>
+                    <label htmlFor="input-expiry" className="text-xs font-semibold text-slate-700 block mb-1">
+                      Passport Expiry Date
+                    </label>
                     <input
+                      id="input-expiry"
                       type="date"
                       value={passportExpiry}
                       onChange={(e) => setPassportExpiry(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                      className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                     />
                   </div>
                 </div>
 
-                <div className="border-t border-slate-100 pt-4 space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                <div className="border-t border-slate-100 pt-3">
+                  <span className="text-xs font-bold text-slate-700 block mb-2">
                     Emergency Contact (Optional)
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-600">Contact Person Name</label>
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="input-em-name" className="text-[11px] font-medium text-slate-600 block mb-1">
+                        Contact Person
+                      </label>
                       <input
+                        id="input-em-name"
                         type="text"
                         value={emergencyContact}
                         onChange={(e) => setEmergencyContact(e.target.value)}
-                        placeholder="e.g. Parent / Spouse Name"
-                        className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                        placeholder="e.g. Next of kin / Spouse"
+                        className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-600">Emergency Phone</label>
+                    <div>
+                      <label htmlFor="input-em-phone" className="text-[11px] font-medium text-slate-600 block mb-1">
+                        Emergency Phone
+                      </label>
                       <input
+                        id="input-em-phone"
                         type="tel"
                         value={emergencyPhone}
                         onChange={(e) => setEmergencyPhone(e.target.value)}
                         placeholder="+233 24 000 0000"
-                        className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                        className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Voyager Welcome Reward Pill */}
-                <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-200/60 flex items-center gap-3">
-                  <Sparkles className="size-6 text-brand-orange shrink-0" />
+                {/* Loyalty Bonus Card */}
+                <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/80 flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-brand-orange text-white flex items-center justify-center shrink-0 shadow-2xs">
+                    <Crown className="size-4" />
+                  </div>
                   <div>
-                    <p className="text-xs font-bold text-navy">500 Welcome Bonus Points</p>
+                    <p className="text-xs font-bold text-slate-900">500 Welcome Bonus Points</p>
                     <p className="text-[11px] text-slate-600">
-                      Completing onboarding awards 500 Voyager Club points towards your next trip.
+                      Credited to your Voyager Rewards balance upon completing setup.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                 <Button
                   type="button"
                   variant="outline"
-                  size="lg"
                   onClick={() => setStep(2)}
-                  className="rounded-2xl text-xs font-bold gap-1.5"
+                  className="rounded-lg text-xs font-semibold h-10 px-4 gap-1 border-slate-300"
                 >
-                  <ArrowLeft className="size-4" />
+                  <ArrowLeft className="size-3.5" />
                   <span>Back</span>
                 </Button>
                 <Button
                   type="button"
-                  size="lg"
                   disabled={saving}
                   onClick={handleFinishOnboarding}
-                  className="rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-lg gap-2"
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5 shadow-sm"
                 >
                   {saving ? (
-                    <span>Saving Profile...</span>
+                    <span>Saving...</span>
                   ) : (
                     <>
-                      <span>Complete & Enter Hub</span>
-                      <CheckCircle2 className="size-4" />
+                      <span>Save and view profile</span>
+                      <CheckCircle2 className="size-3.5" />
                     </>
                   )}
                 </Button>
               </div>
             </div>
           )}
-
         </div>
       </div>
 
       {/* Footer Branding */}
-      <div className="relative z-10 text-center text-xs text-white/50">
-        © {new Date().getFullYear()} Dellics Travels & Tours Ltd. · IATA Certified Agency
+      <div className="text-center text-xs text-white/40">
+        Dellics Travels & Tours Ltd. · IATA Certified Agency
       </div>
     </div>
   );
