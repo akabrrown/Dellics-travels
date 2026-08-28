@@ -55,12 +55,23 @@ enum ESIMOrderStatus {
 }
 
 model User {
-  id              String         @id @default(uuid())
-  name            String
-  email           String         @unique
-  phone           String?
-  role            Role           @default(USER)
-  membership_tier MembershipTier @default(EXPLORER)
+  id                   String         @id @default(uuid())
+  name                 String
+  email                String         @unique
+  phone                String?
+  role                 Role           @default(USER)
+  membership_tier      MembershipTier @default(EXPLORER)
+  points_balance       Int            @default(500)
+  nationality          String?
+  home_airport         String?
+  seat_preference      String?
+  meal_preference      String?
+  emergency_contact    String?
+  emergency_phone      String?
+  passport_number      String?
+  passport_expiry      String?
+  passport_country     String?
+  onboarding_completed Boolean        @default(false)
 
   trips         Trip[]
   memberships   Membership[]
@@ -73,6 +84,7 @@ model User {
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
 }
+
 
 model Trip {
   id         String    @id @default(uuid())

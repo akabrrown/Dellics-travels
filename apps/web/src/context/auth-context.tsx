@@ -125,8 +125,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // 1. Initial local profile hydration
+    let cached: string | null = null;
     try {
-      const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+      cached = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
         setUser(parsed);
@@ -134,6 +135,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // LocalStorage access error
     }
+
+
+    const fetchDbProfile = async (identifier: { email?: string; id?: string }) => {
+      try {
+        const param = identifier.email
+          ? `email=${encodeURIComponent(identifier.email)}`
+          : identifier.id
+            ? `id=${encodeURIComponent(identifier.id)}`
+            : null;
+        if (!param) return;
+        const res = await fetch(`/api/auth/profile?${param}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.user) {
+            const u = data.user;
+            setUser((prev) => {
+              const merged: AuthProfile = {
+                id: u.id,
+                email: u.email,
+                fullName: u.name,
+                phone: u.phone || prev?.phone || "",
+                role: u.role,
+                membershipTier: u.membership_tier,
+                pointsBalance: u.points_balance,
+                nationality: u.nationality || prev?.nationality || "",
+                homeAirport: u.home_airport || prev?.homeAirport || "",
+                seatPreference: u.seat_preference || prev?.seatPreference || "Window",
+                mealPreference: u.meal_preference || prev?.mealPreference || "Standard / No Restriction",
+                emergencyContact: u.emergency_contact || prev?.emergencyContact || "",
+                emergencyPhone: u.emergency_phone || prev?.emergencyPhone || "",
+                passportNumber: u.passport_number || prev?.passportNumber || "",
+                passportExpiry: u.passport_expiry || prev?.passportExpiry || "",
+                passportCountry: u.passport_country || prev?.passportCountry || "",
+                onboardingCompleted: u.onboarding_completed,
+                savedTravelers: prev?.savedTravelers || [],
+                savedFavorites: prev?.savedFavorites || [],
+                bookings: prev?.bookings || [],
+                currency: prev?.currency || "GHS",
+                notificationPreferences: prev?.notificationPreferences || {
+                  whatsapp: true,
+                  email: true,
+                  priceDrops: true,
+                },
+              };
+              try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+              } catch {}
+              return merged;
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to sync live DB user profile:", err);
+      }
+    };
 
     // 2. Fetch active Supabase session safely
     try {
@@ -147,17 +203,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const profile = extractProfile(currentSession.user);
             if (profile) {
               setUser((prev) => (prev ? { ...profile, ...prev } : profile));
-              try {
-                localStorage.setItem(
-                  LOCAL_STORAGE_KEY,
-                  JSON.stringify(profile),
-                );
-              } catch {}
+              fetchDbProfile({ email: currentSession.user.email, id: currentSession.user.id });
             }
+          } else if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed?.email) fetchDbProfile({ email: parsed.email, id: parsed.id });
+            } catch {}
           }
         })
         .catch(() => {
-          // Fallback gracefully on network/DNS error
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed?.email) fetchDbProfile({ email: parsed.email, id: parsed.id });
+            } catch {}
+          }
         })
         .finally(() => {
           setIsLoading(false);
@@ -165,6 +226,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       setIsLoading(false);
     }
+
 
     // 3. Listen to Auth State Changes safely
     try {
@@ -210,16 +272,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Sync to Supabase PostgreSQL database via server route
     try {
-      if (user?.id || user?.email) {
+      const activeId = user?.id;
+      const activeEmail = user?.email;
+      if (activeId || activeEmail) {
         await fetch("/api/auth/profile", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            id: user.id,
-            email: user.email,
+            id: activeId,
+            email: activeEmail,
             fullName: data.fullName,
             phone: data.phone,
+            nationality: data.nationality,
+            homeAirport: data.homeAirport,
+            seatPreference: data.seatPreference,
+            mealPreference: data.mealPreference,
+            emergencyContact: data.emergencyContact,
+            emergencyPhone: data.emergencyPhone,
+            passportNumber: data.passportNumber,
+            passportExpiry: data.passportExpiry,
+            passportCountry: data.passportCountry,
+            pointsBalance: data.pointsBalance,
             membershipTier: data.membershipTier,
+            onboardingCompleted: data.onboardingCompleted,
           }),
         });
       }
