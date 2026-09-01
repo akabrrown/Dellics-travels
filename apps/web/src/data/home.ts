@@ -1,7 +1,7 @@
 export interface HeroSlide {
   type: "image" | "video";
   src: string;
-  badge: string;
+  badge?: string;
   caption: string;
   subtitle: string;
   ctaText: string;
@@ -39,10 +39,9 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     type: "image",
     src: "/images/services/airport-transfer-services.jpg",
-    badge: "VIP Chauffeur Fleet",
     caption: "Flight-Tracked Airport Transfers in Accra and Beyond",
     subtitle: "Reliable Kotoka International (ACC) meet-and-greet with vetted air-conditioned executive sedans and SUVs.",
-    ctaText: "Book Chauffeur",
+    ctaText: "Book Airport Transfer",
     ctaHref: "/transfers",
   },
 ];

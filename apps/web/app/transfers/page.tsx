@@ -14,7 +14,7 @@ import { CtaBanner } from "@/components/cta-banner";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Airport Transfers & VIP Chauffeur Fleet",
+  title: "Airport Transfers & Executive Transit Services",
   description:
     "Professional airport transfers in Ghana with Dellics Travels. Kotoka International Airport (ACC) meet-and-greet, luxury SUVs, sedans, and intercity transit.",
 };
@@ -105,9 +105,8 @@ export default function TransfersPage() {
   return (
     <>
       <PageHero
-        title="VIP Airport Transfers & Chauffeur Fleet"
+        title="Airport Transfers & Executive Transit"
         subtitle="Punctual, stress-free transfers at Kotoka International Airport (ACC) and across Ghana with professional vetted drivers."
-        badge="Flight-Tracked Fleet"
         image="/images/services/airport-transfer-services.jpg"
         breadcrumbs={[{ label: "Transfers" }]}
       />

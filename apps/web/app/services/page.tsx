@@ -74,8 +74,8 @@ const ALL_SERVICES = [
     ],
   },
   {
-    title: "VIP Airport Transfers & Fleet Hire",
-    badge: "Flight-Tracked Fleet",
+    title: "Airport Transfers & Executive Transit",
+    badge: "Kotoka ACC Pickups",
     icon: Car,
     image: "/images/services/airport-transfer-services.jpg",
     href: "/transfers",

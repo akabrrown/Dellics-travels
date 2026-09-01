@@ -52,13 +52,13 @@ const CORE_SERVICES = [
     features: ["Professional Local Guides", "All-Inclusive Options", "Custom Group & Family Dates"],
   },
   {
-    title: "VIP Airport Transfers",
-    tag: "Flight-Tracked Fleet",
+    title: "Airport Transfers & Transit",
+    tag: "Kotoka ACC Pickups",
     copy: "Punctual airport meet & greet and city transit in air-conditioned executive sedans, luxury SUVs and passenger coaches.",
     href: "/transfers",
     image: "/images/services/airport-transfer-services.jpg",
     icon: Car,
-    features: ["Live Flight Delay Tracking", "Luggage Assistance", "Vetted Chauffeurs"],
+    features: ["Live Flight Delay Tracking", "Luggage Assistance", "Vetted Executive Drivers"],
   },
   {
     title: "Visa Assistance & Advisory",

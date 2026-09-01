@@ -68,10 +68,12 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8 pb-28 sm:pb-32">
             <div className="max-w-2xl text-left">
               {/* Category Badge */}
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-brand-orange backdrop-blur-md border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <ShieldCheck className="size-3.5" />
-                <span>{slide.badge}</span>
-              </div>
+              {slide.badge ? (
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-brand-orange backdrop-blur-md border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  <ShieldCheck className="size-3.5" />
+                  <span>{slide.badge}</span>
+                </div>
+              ) : null}
 
               {/* Title */}
               <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-md leading-[1.1] animate-in fade-in slide-in-from-bottom-3 duration-700">
