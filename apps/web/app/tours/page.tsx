@@ -16,6 +16,7 @@ import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
 import { ViatorTourSearch } from "@/components/tours/viator-tour-search";
+import { TourList } from "@/components/tours/tour-list";
 import { SITE } from "@/lib/site";
 import { getTours } from "@/lib/tours";
 
@@ -65,96 +66,12 @@ export default async function ToursPage() {
         <ViatorTourSearch />
 
         <SectionHeading
-          eyebrow="Curated Experiences"
-          title="Explore Our Signature Tour Packages"
-          subtitle="Every tour is designed to give you an authentic, meaningful and hassle-free vacation with all logistics handled."
+          eyebrow="Dellics Signature & Partner Experiences"
+          title="Curated Tour Packages & Day Escapes"
+          subtitle="Book Dellics Signature Tours directly on our website via Paystack (Mobile Money & Cards), or explore 300,000+ verified worldwide day-trips through our Viator partner integration."
         />
 
-        <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-          {tours.map((tour) => (
-            <article
-              key={tour.name}
-              className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
-            >
-              <div className="relative h-64 w-full overflow-hidden">
-                <Image
-                  src={tour.image}
-                  alt={tour.name}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/80 via-transparent to-transparent" />
-                <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3.5 py-1 text-xs font-bold text-white shadow-md">
-                  {tour.badge}
-                </span>
-                <span className="absolute right-4 top-4 rounded-full bg-navy-dark/80 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-                  {tour.duration}
-                </span>
-                <div className="absolute left-4 bottom-3 flex items-center gap-1 text-xs text-white/90 font-medium">
-                  <MapPin className="size-3.5 text-brand-orange" />
-                  <span>{tour.destination}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-orange bg-brand-orange/10 px-2.5 py-0.5 rounded-full">
-                    <Compass className="size-3" />
-                    Viator Verified
-                  </span>
-                </div>
-
-                <h3 className="font-display text-xl font-bold text-navy">
-                  {tour.name}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {tour.copy}
-                </p>
-
-                <div className="mt-5 border-t border-slate-100 pt-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-navy mb-2.5">
-                    Package Inclusions:
-                  </p>
-                  <ul className="grid gap-1.5 sm:grid-cols-2 text-xs text-slate-700">
-                    {tour.includes.map((include) => (
-                      <li key={include} className="flex items-center gap-2">
-                        <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
-                        <span className="line-clamp-1">{include}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
-                  <div>
-                    <span className="block text-[11px] text-slate-500 uppercase tracking-wider">Starting From</span>
-                    <span className="font-display text-2xl font-extrabold text-brand-orange">{tour.price}</span>
-                    <span className="text-xs text-slate-500 font-normal"> / person</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/inquire?service=tours&tour=${encodeURIComponent(tour.name)}&destination=${encodeURIComponent(tour.destination)}&price=${encodeURIComponent(tour.price)}`}
-                      className="text-xs font-semibold text-slate-500 hover:text-navy px-3 py-2"
-                    >
-                      Inquire
-                    </Link>
-
-                    <a
-                      href={tour.viatorUrl || `https://www.viator.com/search/${encodeURIComponent(tour.destination)}?sortType=featured`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-2.5 text-xs shadow-md transition-all active:scale-95"
-                    >
-                      <span>Explore on Viator</span>
-                      <ExternalLink className="size-3.5" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+        <TourList tours={tours} />
       </section>
 
       {/* Why Book Tour Packages with Dellics */}

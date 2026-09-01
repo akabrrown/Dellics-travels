@@ -145,13 +145,10 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* 1. Cinematic Hero Slider */}
-      <HeroSlider slides={HERO_SLIDES} />
-
-      {/* 2. Interactive Quick Booking Search Engine */}
-      <section className="relative z-30 -mt-20 sm:-mt-24 lg:-mt-28 px-4 sm:px-6 lg:px-8">
+      {/* 1. Cinematic Hero Slider with Transparent Booking Engine */}
+      <HeroSlider slides={HERO_SLIDES}>
         <QuickBook />
-      </section>
+      </HeroSlider>
 
       {/* 3. Core Services Grid */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
