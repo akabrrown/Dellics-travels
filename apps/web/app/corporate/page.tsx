@@ -70,7 +70,6 @@ export default function CorporatePage() {
       <PageHero
         title="Corporate Travel Management & Enterprise Solutions"
         subtitle="Streamline your company's global business travel. We manage flights, executive accommodations, visas, and VIP logistics under one unified account."
-        badge="Enterprise Travel Management"
         image="/images/services/corporate-travel-management.jpg"
         breadcrumbs={[{ label: "Corporate Travel" }]}
       />

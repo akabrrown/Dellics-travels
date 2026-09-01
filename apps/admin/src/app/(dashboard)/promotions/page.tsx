@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {
   Plus,
   X,
-  Sparkles,
+  Flame,
   Tag,
   Clock,
   CheckCircle2,
@@ -242,7 +242,7 @@ export default function PromotionsManager() {
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
           <div className="border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-[#F4740D]" />
+              <Flame className="size-4 text-[#F4740D]" />
               <h3 className="font-display text-sm font-bold text-slate-900">
                 Deal Urgency Overrides
               </h3>
@@ -320,7 +320,7 @@ export default function PromotionsManager() {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-orange-50 text-[#F4740D]">
-                  <Sparkles className="size-4" />
+                  <Tag className="size-4" />
                 </div>
                 <div>
                   <h3 className="font-display text-base font-bold text-slate-900">

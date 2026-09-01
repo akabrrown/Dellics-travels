@@ -48,7 +48,6 @@ export default function PrivacyPage() {
       <PageHero
         title="Privacy Policy & Data Protection"
         subtitle="Last Updated: August 2026 · Committed to safeguarding your personal travel details and transaction security."
-        badge="Legal & Compliance"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Privacy Policy" }]}
       />

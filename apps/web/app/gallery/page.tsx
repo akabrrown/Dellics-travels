@@ -16,7 +16,6 @@ export default function GalleryPage() {
       <PageHero
         title="Travel Moments & Client Adventures"
         subtitle="Real memories from our travelers across Ghana, South Africa, Dubai, Kenya, Tanzania, Europe, and beyond."
-        badge="Real Client Moments"
         image="/images/africa/cape-coast-castle.jpg"
         breadcrumbs={[{ label: "Gallery" }]}
       />

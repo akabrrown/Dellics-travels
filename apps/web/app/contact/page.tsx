@@ -16,7 +16,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact Dellics Travels — US & Ghana Offices, Phone & Inquiries",
   description:
-    "Contact Dellics Travels LLC in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
+    "Contact Dellics Travels in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
 };
 
 const CONTACT_CHANNELS = [
@@ -57,7 +57,7 @@ const CONTACT_CHANNELS = [
     title: "United States Office",
     value: "30 N Gould ST, STER, SHERIDAN, WY 82801",
     href: "#us-office",
-    action: "Dellics Travels LLC, USA",
+    action: "Dellics Travels, USA",
     primary: false,
   },
 ];
@@ -68,7 +68,6 @@ export default function ContactPage() {
       <PageHero
         title="Get in Touch with Our Global Travel Team"
         subtitle="Have a question about flights, luxury stays, tour packages, or visa consultation? Reach out via WhatsApp, phone, or connect with our USA and Ghana offices."
-        badge="Live Support Available"
         image="/images/africa/accra-city-experience.jpg"
         breadcrumbs={[{ label: "Contact Us" }]}
       />
@@ -180,7 +179,7 @@ export default function ContactPage() {
                   <div id="us-office" className="rounded-2xl bg-white/5 p-4 border border-white/10 space-y-1">
                     <div className="flex items-center gap-2 font-bold text-brand-orange">
                       <Building2 className="size-4 shrink-0" />
-                      <span>Dellics Travels LLC (USA)</span>
+                      <span>Dellics Travels (USA)</span>
                     </div>
                     <p className="text-white/80">30 N Gould ST, STER, SHERIDAN</p>
                     <p className="text-white/60">WYOMING, 82801, United States</p>

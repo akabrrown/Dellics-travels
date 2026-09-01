@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { normalizeCountryCode, getFlagEmoji } from "@/components/ui/country-flag";
 
 export interface CountryOption {
   code: string;
@@ -197,14 +198,39 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
   };
 
   const setCountry = (countryCode: string) => {
-    const match = countries.find((c) => c.code === countryCode) || DEFAULT_COUNTRIES.find((c) => c.code === countryCode);
-    if (match) {
-      setCountryState(match);
-      // Automatically map to currency if available in currency options
-      const matchedCurrency = CURRENCIES.find((c) => c.code === match.defaultCurrency) || currency;
-      setCurrencyState(matchedCurrency);
-      savePreferences(language, match, matchedCurrency);
-    }
+    const raw = (countryCode || "").trim();
+    const iso2 = normalizeCountryCode(raw);
+    const upperRaw = raw.toUpperCase();
+    const lowerRaw = raw.toLowerCase();
+
+    const match =
+      countries.find(
+        (c) =>
+          c.code.toUpperCase() === iso2 ||
+          c.code.toUpperCase() === upperRaw ||
+          c.name.toLowerCase() === lowerRaw,
+      ) ||
+      DEFAULT_COUNTRIES.find(
+        (c) =>
+          c.code.toUpperCase() === iso2 ||
+          c.code.toUpperCase() === upperRaw ||
+          c.name.toLowerCase() === lowerRaw,
+      );
+
+    const countryObj: CountryOption = match || {
+      code: iso2,
+      name: raw || iso2,
+      flag: getFlagEmoji(iso2),
+      defaultCurrency: currency.code || "USD",
+    };
+
+    setCountryState(countryObj);
+
+    // Automatically map to currency if available in currency options
+    const matchedCurrency =
+      CURRENCIES.find((c) => c.code === countryObj.defaultCurrency) || currency;
+    setCurrencyState(matchedCurrency);
+    savePreferences(language, countryObj, matchedCurrency);
   };
 
   const setCurrency = (currencyCode: string) => {

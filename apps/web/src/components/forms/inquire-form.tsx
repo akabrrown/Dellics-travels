@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { postJson } from "@/lib/api";
 import { inquireSchema } from "@/lib/schemas";
-import { Sparkles } from "lucide-react";
+import { Compass } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 
 export function InquireForm() {
@@ -146,7 +146,7 @@ export function InquireForm() {
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
       {contextBanner ? (
         <div className="flex items-center gap-2.5 rounded-2xl bg-brand-orange/10 border border-brand-orange/30 p-3.5 text-xs text-navy font-semibold">
-          <Sparkles className="size-4 text-brand-orange shrink-0" />
+          <Compass className="size-4 text-brand-orange shrink-0" />
           <span>Inquiring about: <strong className="text-brand-orange">{contextBanner}</strong></span>
         </div>
       ) : null}

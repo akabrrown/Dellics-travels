@@ -9,7 +9,7 @@ import { CtaBanner } from "@/components/cta-banner";
 export const metadata: Metadata = {
   title: "Industry Credentials & Global Accreditations",
   description:
-    "Dellics Travels accreditations: IATA Certified agency, RateHawk, Amadeus, Travelport, TOUGHA, Airalo, and Paystack secured.",
+    "Dellics Travels accreditations: IATA Certified, RateHawk, Amadeus, Travelport, TOUGHA, Airalo, and Paystack secured.",
 };
 
 const CREDENTIALS = [
@@ -94,7 +94,6 @@ export default function CredentialsPage() {
       <PageHero
         title="Accreditations & Global Partnerships"
         subtitle="Dellics Travels is an IATA Certified travel management firm with direct integrations across the world's leading aviation and hospitality networks."
-        badge="IATA Certified"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Credentials" }]}
       />

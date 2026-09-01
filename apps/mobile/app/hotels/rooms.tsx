@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, CheckCircle2, User, Wifi, Coffee, ShieldCheck, Bed, Sparkles } from 'lucide-react-native';
+import { ChevronLeft, CheckCircle2, User, Wifi, Coffee, ShieldCheck, Bed } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 export default function RoomSelectionScreen() {

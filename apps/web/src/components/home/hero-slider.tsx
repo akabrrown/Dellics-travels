@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { HeroSlide } from "@/data/home";
@@ -26,7 +26,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
   return (
     <section
-      className="relative h-[85vh] min-h-[580px] max-h-[820px] w-full overflow-hidden bg-navy-dark"
+      className="relative h-[58vh] min-h-[440px] max-h-[560px] sm:h-[62vh] w-full overflow-hidden bg-navy-dark"
       aria-label="Featured Travel Experiences"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -65,32 +65,24 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           <div className="absolute inset-0 bg-gradient-to-r from-[#0A0060]/60 via-[#0A0060]/20 to-transparent" />
 
           {/* Slide Text Content */}
-          <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8 pb-28 sm:pb-32">
+          <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20 pt-6 sm:pt-8">
             <div className="max-w-2xl text-left">
-              {/* Category Badge */}
-              {slide.badge ? (
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-brand-orange backdrop-blur-md border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  <ShieldCheck className="size-3.5" />
-                  <span>{slide.badge}</span>
-                </div>
-              ) : null}
-
               {/* Title */}
-              <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-md leading-[1.1] animate-in fade-in slide-in-from-bottom-3 duration-700">
+              <h1 className="font-display text-2xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-md leading-[1.15] animate-in fade-in slide-in-from-bottom-3 duration-700">
                 {slide.caption}
               </h1>
 
               {/* Subtitle */}
-              <p className="mt-4 text-base sm:text-lg text-white/85 leading-relaxed font-light drop-shadow animate-in fade-in slide-in-from-bottom-4 duration-900">
+              <p className="mt-3 text-sm sm:text-base text-white/85 leading-relaxed font-light drop-shadow animate-in fade-in slide-in-from-bottom-4 duration-900 max-w-xl">
                 {slide.subtitle}
               </p>
 
               {/* Action CTA */}
-              <div className="mt-8 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+              <div className="mt-5 sm:mt-6 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-5 duration-1000">
                 <Button
                   asChild
-                  size="lg"
-                  className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 shadow-xl hover:shadow-2xl transition-all"
+                  size="default"
+                  className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-7 shadow-xl hover:shadow-2xl transition-all"
                 >
                   <Link href={slide.ctaHref} className="inline-flex items-center gap-2">
                     <span>{slide.ctaText}</span>
@@ -105,7 +97,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
       {/* Bottom Progress Indicator Dots */}
       <div
-        className="absolute bottom-8 right-6 z-20 flex items-center gap-2.5 rounded-full bg-navy/70 px-4 py-2 backdrop-blur-md border border-white/15"
+        className="absolute bottom-24 sm:bottom-28 right-6 z-20 flex items-center gap-2 rounded-full bg-navy/80 px-3.5 py-1.5 backdrop-blur-md border border-white/15 shadow-lg"
         role="tablist"
         aria-label="Slide Selector"
       >

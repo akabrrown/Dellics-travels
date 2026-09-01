@@ -67,6 +67,8 @@ export default function OnboardingPage() {
     setSaving(true);
     try {
       await updateProfile({
+        id: user?.id,
+        email: user?.email,
         fullName: fullName.trim() || user?.fullName || "Traveler",
         phone: phone.trim() || user?.phone || "",
         nationality,
@@ -197,12 +199,16 @@ export default function OnboardingPage() {
                   </label>
                   <div className="relative flex items-center">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
-                      <CountryFlag countryCode={nationality} className="w-4 h-2.5 rounded-2xs" />
+                      <CountryFlag key={nationality} countryCode={nationality} className="w-4 h-2.5 rounded-2xs" />
                     </div>
                     <select
                       id="select-nationality"
                       value={nationality}
-                      onChange={(e) => setNationality(e.target.value)}
+                      onChange={(e) => {
+                        const nextNat = e.target.value;
+                        setNationality(nextNat);
+                        updateProfile({ nationality: nextNat, id: user?.id, email: user?.email });
+                      }}
                       className="w-full h-10 pl-9 pr-3.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                     >
                       {countries.map((c, index) => (
@@ -218,7 +224,16 @@ export default function OnboardingPage() {
               <div className="flex justify-end pt-3 border-t border-slate-100">
                 <Button
                   type="button"
-                  onClick={() => setStep(2)}
+                  onClick={() => {
+                    updateProfile({
+                      fullName: fullName.trim(),
+                      phone: phone.trim(),
+                      nationality,
+                      id: user?.id,
+                      email: user?.email,
+                    });
+                    setStep(2);
+                  }}
                   className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
                 >
                   <span>Continue</span>
@@ -250,7 +265,10 @@ export default function OnboardingPage() {
                   </label>
                   <AirportCombobox
                     value={homeAirport}
-                    onChange={setHomeAirport}
+                    onChange={(nextAirport) => {
+                      setHomeAirport(nextAirport);
+                      updateProfile({ homeAirport: nextAirport, id: user?.id, email: user?.email });
+                    }}
                     placeholder="Search international airport or city..."
                   />
                   <p className="text-[11px] text-slate-400 mt-1">
@@ -266,7 +284,11 @@ export default function OnboardingPage() {
                     <select
                       id="select-seat"
                       value={seatPreference}
-                      onChange={(e) => setSeatPreference(e.target.value)}
+                      onChange={(e) => {
+                        const nextSeat = e.target.value;
+                        setSeatPreference(nextSeat);
+                        updateProfile({ seatPreference: nextSeat, id: user?.id, email: user?.email });
+                      }}
                       className="w-full h-10 px-3 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                     >
                       <option value="Window">Window Seat</option>
@@ -282,7 +304,11 @@ export default function OnboardingPage() {
                     <select
                       id="select-meal"
                       value={mealPreference}
-                      onChange={(e) => setMealPreference(e.target.value)}
+                      onChange={(e) => {
+                        const nextMeal = e.target.value;
+                        setMealPreference(nextMeal);
+                        updateProfile({ mealPreference: nextMeal, id: user?.id, email: user?.email });
+                      }}
                       className="w-full h-10 px-3 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                     >
                       <option value="Standard / No Restriction">Standard / No Restriction</option>
@@ -309,14 +335,32 @@ export default function OnboardingPage() {
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => setStep(3)}
+                    onClick={() => {
+                      updateProfile({
+                        homeAirport,
+                        seatPreference,
+                        mealPreference,
+                        id: user?.id,
+                        email: user?.email,
+                      });
+                      setStep(3);
+                    }}
                     className="text-xs text-slate-500 hover:text-slate-900 font-semibold"
                   >
                     Skip
                   </Button>
                   <Button
                     type="button"
-                    onClick={() => setStep(3)}
+                    onClick={() => {
+                      updateProfile({
+                        homeAirport,
+                        seatPreference,
+                        mealPreference,
+                        id: user?.id,
+                        email: user?.email,
+                      });
+                      setStep(3);
+                    }}
                     className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
                   >
                     <span>Continue</span>
@@ -453,7 +497,7 @@ export default function OnboardingPage() {
 
       {/* Footer Branding */}
       <div className="text-center text-xs text-white/40">
-        Dellics Travels & Tours Ltd. · IATA Certified Agency
+        Dellics Travels & Tours Ltd. · IATA Certified
       </div>
     </div>
   );

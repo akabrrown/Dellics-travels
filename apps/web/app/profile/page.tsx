@@ -20,7 +20,7 @@ import {
   Globe,
   Lock,
   LogOut,
-  Sparkles,
+  Award,
   Share2,
   Copy,
   CheckCircle2,
@@ -354,7 +354,7 @@ export default function ProfilePage() {
 
             <div className="p-4 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-colors">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                <Sparkles className="size-3.5 text-amber-500" />
+                <Award className="size-3.5 text-amber-500" />
                 <span>Voyager Points</span>
               </div>
               <p className="font-display text-2xl font-bold text-navy mt-1">{points.toLocaleString()} pts</p>
@@ -478,17 +478,34 @@ export default function ProfilePage() {
                   </div>
 
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">In-Flight Seat Preference</label>
-                    <select
-                      value={seatPreference}
-                      onChange={(e) => setSeatPreference(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
-                    >
-                      <option value="Window">Window Seat</option>
-                      <option value="Aisle">Aisle Seat</option>
-                      <option value="Extra Legroom">Extra Legroom (Exit Row)</option>
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">In-Flight Seat Preference</label>
+                      <select
+                        value={seatPreference}
+                        onChange={(e) => setSeatPreference(e.target.value)}
+                        className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                      >
+                        <option value="Window">Window Seat</option>
+                        <option value="Aisle">Aisle Seat</option>
+                        <option value="Extra Legroom">Extra Legroom (Exit Row)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">In-Flight Meal Option</label>
+                      <select
+                        value={mealPreference}
+                        onChange={(e) => setMealPreference(e.target.value)}
+                        className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none"
+                      >
+                        <option value="Standard / No Restriction">Standard / No Restriction</option>
+                        <option value="Halal Certified">Halal Certified</option>
+                        <option value="Vegetarian / Vegan">Vegetarian / Vegan</option>
+                        <option value="Kosher Meal">Kosher Meal</option>
+                        <option value="Gluten-Free">Gluten-Free</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -560,7 +577,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-600">
                   <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
-                  <span>IATA & TOUGHA Certified Agency</span>
+                  <span>IATA & TOUGHA Certified</span>
                 </div>
               </div>
             </div>
@@ -1246,7 +1263,7 @@ export default function ProfilePage() {
               <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Agency Identification</h4>
                 <p className="text-xs text-slate-600">
-                  Dellics Travels · IATA Certified Agency
+                  Dellics Travels · IATA Certified
                 </p>
                 <p className="text-xs text-slate-500">
                   Devtraco Estate, Community 25, Tema, Ghana

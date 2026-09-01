@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, User, Calendar, CreditCard, AlertCircle, Sparkles } from 'lucide-react-native';
+import { ChevronLeft, User, Calendar, CreditCard, AlertCircle, UserCheck } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../src/lib/supabase';
 import { useBookingStore } from '../../src/store/useBookingStore';
@@ -129,7 +129,7 @@ export default function PassengerDetailsScreen() {
                 onPress={handleAutofill}
                 className="flex-row items-center bg-[#F4740D]/10 px-3 py-1.5 rounded-full"
               >
-                <Sparkles size={14} color="#F4740D" />
+                <UserCheck size={14} color="#F4740D" />
                 <Text className="text-[#F4740D] font-bold text-xs ml-1.5">Autofill Profile</Text>
               </Pressable>
             </View>

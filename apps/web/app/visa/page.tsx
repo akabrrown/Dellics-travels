@@ -127,7 +127,6 @@ export default function VisaPage() {
       <PageHero
         title="Visa Assistance & Document Consultation"
         subtitle="Navigate international embassy requirements with confidence. Over 3,000 successful visa applications guided by certified immigration document consultants."
-        badge="99.4% Approval Rate"
         image="/images/services/documentation-support.jpg"
         breadcrumbs={[{ label: "Visa Assistance" }]}
       />

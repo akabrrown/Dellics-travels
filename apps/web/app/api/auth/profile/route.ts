@@ -55,24 +55,36 @@ export async function POST(req: Request) {
     if (membershipTier !== undefined) updateData.membership_tier = membershipTier;
     if (onboardingCompleted !== undefined) updateData.onboarding_completed = onboardingCompleted;
 
-    if (!existing) {
-      return NextResponse.json(
-        { error: "User not found in database" },
-        { status: 404 },
-      );
+    let updatedUser;
+    if (existing) {
+      updatedUser = await prisma.user.update({
+        where: { id: existing.id },
+        data: updateData,
+      });
+    } else {
+      const cleanEmail = email
+        ? email.trim().toLowerCase()
+        : id
+          ? `${id}@traveler.dellicstravels.com`
+          : "traveler@dellicstravels.com";
+      updatedUser = await prisma.user.create({
+        data: {
+          id: id || undefined,
+          email: cleanEmail,
+          name: fullName ? fullName.trim() : cleanEmail.split("@")[0] || "Traveler",
+          phone: phone ? phone.trim() : null,
+          role: "traveler",
+          membership_tier: membershipTier || "EXPLORER",
+          points_balance: pointsBalance !== undefined ? pointsBalance : 500,
+          ...updateData,
+        },
+      });
     }
-
-
-    const updatedUser = await prisma.user.update({
-      where: { id: existing.id },
-      data: updateData,
-    });
 
     return NextResponse.json({
       success: true,
       user: updatedUser,
     });
-
   } catch (error: any) {
     console.error("Error updating user in database:", error);
     return NextResponse.json(
@@ -106,7 +118,7 @@ export async function GET(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ user: null }, { status: 404 });
+      return NextResponse.json({ user: null });
     }
 
     return NextResponse.json({ user });

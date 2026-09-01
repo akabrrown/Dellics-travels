@@ -94,7 +94,7 @@ function SignInContent() {
         <div className="relative z-10 space-y-6 max-w-lg">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-brand-orange border border-white/15 backdrop-blur-sm">
             <ShieldCheck className="size-3.5" />
-            <span>IATA Certified Agency</span>
+            <span>IATA Certified</span>
           </div>
 
           <h2 className="font-display text-4xl font-bold tracking-tight text-white leading-tight">

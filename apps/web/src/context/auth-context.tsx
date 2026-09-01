@@ -173,13 +173,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
       } else if (res.status === 404) {
-        // Account does not exist in live Supabase DB — purge any phantom cached profile
-        setUser(null);
-        setSupabaseUser(null);
-        setSession(null);
-        try {
-          localStorage.removeItem(LOCAL_STORAGE_KEY);
-        } catch {}
+        // DB record pending initial sync; do not purge active Supabase session
+        if (!supabaseUser && !session) {
+          try {
+            const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (!cached) setUser(null);
+          } catch {}
+        }
       }
     } catch (err) {
       console.error("Failed to sync live DB user profile:", err);
@@ -262,10 +262,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateProfile = async (data: Partial<AuthProfile>) => {
+    let cachedUser: any = null;
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (cached) cachedUser = JSON.parse(cached);
+    } catch {}
+
+    const activeId =
+      data.id || user?.id || supabaseUser?.id || session?.user?.id || cachedUser?.id;
+    const activeEmail =
+      data.email || user?.email || supabaseUser?.email || session?.user?.email || cachedUser?.email;
+
     setUser((prev) => {
-      if (!prev) return null;
+      const base: AuthProfile = prev || cachedUser || {
+        id: activeId || "temp",
+        email: activeEmail || "",
+        fullName: data.fullName || "Traveler",
+        role: "traveler",
+        membershipTier: "EXPLORER",
+        pointsBalance: 500,
+        currency: "GHS",
+      };
       const updated: AuthProfile = {
-        ...prev,
+        ...base,
         ...data,
       };
       try {
@@ -276,8 +295,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Sync to Supabase PostgreSQL database via server route
     try {
-      const activeId = user?.id;
-      const activeEmail = user?.email;
       if (activeId || activeEmail) {
         await fetch("/api/auth/profile", {
           method: "POST",

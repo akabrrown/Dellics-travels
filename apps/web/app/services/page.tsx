@@ -141,7 +141,6 @@ export default function ServicesPage() {
       <PageHero
         title="Comprehensive World-Class Travel Services"
         subtitle="One accredited partner for every travel need — flights, luxury stays, guided safaris, airport chauffeurs, visas, and corporate management."
-        badge="Accredited Travel Solutions"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Services" }]}
       />

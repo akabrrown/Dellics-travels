@@ -15,7 +15,6 @@ import {
   Eye,
   Calendar,
   Clock,
-  Sparkles,
   ShieldCheck,
   Smartphone,
   Car,

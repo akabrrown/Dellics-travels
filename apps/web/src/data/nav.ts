@@ -15,6 +15,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Hotels", href: "/hotels" },
   { label: "Tours", href: "/tours" },
   { label: "Packages/Diaspora Tours", href: "/diaspora" },
+  { label: "eSIM", href: "/esim" },
   {
     label: "Services",
     href: "/services",

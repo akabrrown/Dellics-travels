@@ -9,10 +9,13 @@ import {
   Plane,
   Building2,
   Car,
+  ExternalLink,
+  Compass,
 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
+import { ViatorTourSearch } from "@/components/tours/viator-tour-search";
 import { SITE } from "@/lib/site";
 import { getTours } from "@/lib/tours";
 
@@ -53,13 +56,14 @@ export default async function ToursPage() {
       <PageHero
         title="Curated International Tour Packages"
         subtitle="Experience world-class safari expeditions, luxury city breaks, and tropical beach retreats with all flights, stays, and transfers included."
-        badge="Tailor-Made Itineraries"
         image="/images/africa/serengeti-national-park.jpg"
         breadcrumbs={[{ label: "Tours & Holidays" }]}
       />
 
-      {/* Signature Tour Packages Grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+      {/* Signature Tour Packages Grid & Viator Search */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+        <ViatorTourSearch />
+
         <SectionHeading
           eyebrow="Curated Experiences"
           title="Explore Our Signature Tour Packages"
@@ -93,6 +97,13 @@ export default async function ToursPage() {
               </div>
 
               <div className="flex flex-1 flex-col p-6 sm:p-8">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-orange bg-brand-orange/10 px-2.5 py-0.5 rounded-full">
+                    <Compass className="size-3" />
+                    Viator Verified
+                  </span>
+                </div>
+
                 <h3 className="font-display text-xl font-bold text-navy">
                   {tour.name}
                 </h3>
@@ -114,20 +125,31 @@ export default async function ToursPage() {
                   </ul>
                 </div>
 
-                <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-5">
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
                   <div>
                     <span className="block text-[11px] text-slate-500 uppercase tracking-wider">Starting From</span>
                     <span className="font-display text-2xl font-extrabold text-brand-orange">{tour.price}</span>
                     <span className="text-xs text-slate-500 font-normal"> / person</span>
                   </div>
 
-                  <Link
-                    href={`/inquire?service=tours&tour=${encodeURIComponent(tour.name)}&destination=${encodeURIComponent(tour.destination)}&price=${encodeURIComponent(tour.price)}`}
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-6 py-2.5 text-sm shadow-md transition-all"
-                  >
-                    <span>Inquire Package</span>
-                    <ArrowRight className="size-4" />
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/inquire?service=tours&tour=${encodeURIComponent(tour.name)}&destination=${encodeURIComponent(tour.destination)}&price=${encodeURIComponent(tour.price)}`}
+                      className="text-xs font-semibold text-slate-500 hover:text-navy px-3 py-2"
+                    >
+                      Inquire
+                    </Link>
+
+                    <a
+                      href={tour.viatorUrl || `https://www.viator.com/search/${encodeURIComponent(tour.destination)}?sortType=featured`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-2.5 text-xs shadow-md transition-all active:scale-95"
+                    >
+                      <span>Explore on Viator</span>
+                      <ExternalLink className="size-3.5" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </article>

@@ -66,6 +66,47 @@ export class PaymentsController {
     });
   }
 
+  // ==========================================
+  // STRIPE FLIGHT CHECKOUT (Redirect to Stripe)
+  // ==========================================
+
+  @Post('flights/stripe-checkout')
+  async createFlightStripeCheckout(
+    @Body()
+    body: {
+      origin: string;
+      destination: string;
+      departureDate: string;
+      returnDate?: string;
+      airline?: string;
+      price: number;
+      currency?: string;
+      email: string;
+      customerName?: string;
+      passengerCount?: number;
+      cabinClass?: string;
+    },
+  ) {
+    if (!body.origin || !body.destination || !body.price) {
+      throw new BadRequestException(
+        'Origin, destination, and price are required for flight Stripe checkout',
+      );
+    }
+    return this.paymentsService.createFlightStripeCheckout({
+      origin: body.origin,
+      destination: body.destination,
+      departureDate: body.departureDate,
+      returnDate: body.returnDate,
+      airline: body.airline,
+      price: body.price,
+      currency: body.currency,
+      email: body.email || 'traveler@dellicstravels.com',
+      customerName: body.customerName,
+      passengerCount: body.passengerCount,
+      cabinClass: body.cabinClass,
+    });
+  }
+
   @Get('verify/:reference')
   @Get('paystack/verify/:reference')
   async verifyPaystack(@Param('reference') reference: string) {

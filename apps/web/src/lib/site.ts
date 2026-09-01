@@ -1,13 +1,13 @@
 export const SITE = {
   name: "Dellics Travels",
-  legalName: "Dellics Travels LLC / Dellics Travels & Tours",
+  legalName: "Dellics Travels",
   whatsappNumber: "233552054174",
   phone: "+233552054174",
   phoneDisplay: "+233 55 205 4174",
   email: "info@dellicstravels.com",
   offices: {
     us: {
-      entity: "Dellics Travels LLC",
+      entity: "Dellics Travels",
       address: "30 N Gould ST, STER, SHERIDAN, WYOMING, 82801",
       country: "United States",
       email: "info@dellicstravels.com",

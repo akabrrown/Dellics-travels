@@ -13,6 +13,7 @@ import {
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { FlightSearchWidget } from "@/components/flights/flight-search-widget";
+import { StripeFlightBookButton } from "@/components/flights/stripe-flight-book-button";
 import { CtaBanner } from "@/components/cta-banner";
 import { SITE } from "@/lib/site";
 import { getLiveHomeDeals } from "@/lib/flights";
@@ -20,7 +21,7 @@ import { getLiveHomeDeals } from "@/lib/flights";
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
   description:
-    "Book domestic and international flights with Dellics Travels — IATA Certified agency. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
+    "Book domestic and international flights with Dellics Travels — IATA Certified. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
 };
 
 const DEFAULT_ROUTES = [
@@ -83,7 +84,7 @@ const DEFAULT_ROUTES = [
 const FLIGHT_BENEFITS = [
   {
     icon: ShieldCheck,
-    title: "Official IATA Certified Agency",
+    title: "Official IATA Certified",
     description: "Your bookings are issued directly through accredited airline Global Distribution Systems (GDS) with verifiable airline PNR references.",
   },
   {
@@ -137,8 +138,7 @@ export default async function FlightsPage() {
     <>
       <PageHero
         title="International Flight Booking & Ticketing"
-        subtitle="IATA Certified Agency. Best wholesale fares across major global airlines with same-day electronic ticketing."
-        badge="IATA Certified"
+        subtitle="IATA Certified. Best wholesale fares across major global airlines with same-day electronic ticketing."
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Flights" }]}
       />
@@ -189,18 +189,22 @@ export default async function FlightsPage() {
                   {route.airline}
                 </p>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="size-3.5" />
-                    Seats Available
-                  </span>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <Link
                     href={`/inquire?service=flights&from=${encodeURIComponent(route.from)}&to=${encodeURIComponent(route.to)}&airline=${encodeURIComponent(route.airline)}`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-navy"
                   >
-                    <span>Instant Quote</span>
+                    <span>Inquire</span>
                     <ArrowRight className="size-3" />
                   </Link>
+
+                  <StripeFlightBookButton
+                    compact
+                    origin={route.from.match(/\(([^)]+)\)/)?.[1] || "ACC"}
+                    destination={route.iata || route.to.match(/\(([^)]+)\)/)?.[1] || "LHR"}
+                    airline={route.airline}
+                    price={parseInt(route.price.replace(/[^0-9]/g, ""), 10) || 850}
+                  />
                 </div>
               </div>
             </div>

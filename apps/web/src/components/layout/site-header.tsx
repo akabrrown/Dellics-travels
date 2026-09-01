@@ -20,10 +20,9 @@ import {
   User,
   Crown,
   LogOut,
-  Sparkles,
   ShieldCheck,
   MessageSquareQuote,
-
+  Wifi,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,6 +54,7 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "/visa": FileCheck2,
   "/corporate": Briefcase,
   "/diaspora": HeartHandshake,
+  "/esim": Wifi,
 };
 
 export function SiteHeader() {
@@ -378,7 +378,7 @@ export function SiteHeader() {
                     <SheetTitle className="text-left text-white font-display text-base font-bold">
                       Dellics Travels
                     </SheetTitle>
-                    <p className="text-[11px] text-white/70">IATA Certified Agency</p>
+                    <p className="text-[11px] text-white/70">IATA Certified</p>
                   </div>
                 </div>
               </SheetHeader>

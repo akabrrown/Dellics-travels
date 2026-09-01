@@ -49,7 +49,6 @@ export default function AboutPage() {
       <PageHero
         title="About Dellics Travels"
         subtitle="Ghana's premier travel management firm — organizing international itineraries with passion, certification, and personalized care."
-        badge="IATA Certified"
         image="/images/africa/accra-city-experience.jpg"
         breadcrumbs={[{ label: "About Us" }]}
       />

@@ -48,7 +48,6 @@ export default function TermsPage() {
       <PageHero
         title="Terms of Service & Booking Conditions"
         subtitle="Last Updated: August 2026 · Transparent terms governing your travel bookings, flight ticketing, and tour packages."
-        badge="Legal & Compliance"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Terms of Service" }]}
       />

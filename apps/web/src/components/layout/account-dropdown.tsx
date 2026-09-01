@@ -10,7 +10,7 @@ import {
   Compass,
   Crown,
   FileText,
-  Sparkles,
+  Headphones,
 } from "lucide-react";
 import {
   Popover,
@@ -123,7 +123,7 @@ export function AccountDropdown({ variant = "announcement", className }: Account
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-navy rounded-lg transition-colors"
               >
-                <Sparkles className="size-4 text-slate-400" />
+                <Headphones className="size-4 text-slate-400" />
                 <span>Custom Concierge Request</span>
               </Link>
             </div>

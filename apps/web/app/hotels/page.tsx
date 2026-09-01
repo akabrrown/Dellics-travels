@@ -93,8 +93,6 @@ export default function HotelsPage() {
       <PageHero
         title="Luxury Hotels & Curated Stays Worldwide"
         subtitle="Search live availability across 3.3+ million hotels, boutique Airbnbs, safari lodges, and private beach villas with best rate guarantee."
-
-        badge="Verified Global Stays"
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Airbnb" }]}
       />

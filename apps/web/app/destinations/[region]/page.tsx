@@ -46,7 +46,6 @@ export default async function RegionPage({ params }: RouteParams) {
       <PageHero
         title={`${data.name} Travel & Holiday Experiences`}
         subtitle={data.tagline}
-        badge={`Destinations in ${data.name}`}
         image={heroImage}
         breadcrumbs={[
           { label: "Destinations", href: "/destinations" },

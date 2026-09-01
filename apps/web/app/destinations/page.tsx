@@ -52,7 +52,6 @@ export default function DestinationsPage() {
       <PageHero
         title="Global Destinations Across Five Continents"
         subtitle="Where do you dream of going next? Discover our handpicked luxury holiday itineraries, flight routes, and local guided experiences."
-        badge="40+ World-Class Destinations"
         image="/images/africa/cape-town-and-table-mountain.jpg"
         breadcrumbs={[{ label: "Destinations" }]}
       />

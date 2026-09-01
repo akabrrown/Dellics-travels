@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Search, ArrowRightLeft, Calendar as CalendarIcon, Users, Sparkles } from "lucide-react";
+import { Plus, Trash2, Search, ArrowRightLeft, Calendar as CalendarIcon, Users, Plane, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PassengerSelector } from "./passenger-selector";
 import { AirportCombobox } from "@/components/ui/airport-combobox";
+import { FlightBookingModal } from "./flight-booking-modal";
 import type { PassengerCounts } from "@/lib/passengers";
 import type { TripType } from "@/lib/whatsapp";
 
@@ -35,6 +36,7 @@ export function FlightSearchWidget() {
   const [passengers, setPassengers] = useState<PassengerCounts>({ adults: 1, children: 0, infants: 0 });
   const [cabinClass, setCabinClass] = useState("Economy");
   const [error, setError] = useState<string | null>(null);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   function handleSwapAirports() {
     const temp = from;
@@ -287,14 +289,47 @@ export function FlightSearchWidget() {
         </p>
       )}
 
-      {/* Action CTA Button */}
-      <Button
-        type="submit"
-        className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover font-bold text-white shadow-md flex items-center justify-center gap-2 text-sm transition-all mt-1"
-      >
-        <Search className="size-4" />
-        <span>Search Flights & Lowest Fares</span>
-      </Button>
+      {/* Action CTA Buttons */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        <Button
+          type="button"
+          onClick={() => {
+            if (!from.trim() || !to.trim() || !departDate) {
+              setError("Please select departure airport, destination, and flight date to proceed.");
+              return;
+            }
+            setError(null);
+            setBookingModalOpen(true);
+          }}
+          className="h-12 rounded-xl bg-brand-orange hover:bg-brand-orange-hover font-bold text-white shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
+        >
+          <Plane className="size-4" />
+          <span>Book This Flight</span>
+          <ArrowRight className="size-4 ml-0.5" />
+        </Button>
+
+        <Button
+          type="submit"
+          variant="outline"
+          className="h-12 rounded-xl border-slate-300 text-navy hover:bg-slate-50 font-bold flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
+        >
+          <Search className="size-4" />
+          <span>Search All Schedules</span>
+        </Button>
+      </div>
+
+      <FlightBookingModal
+        isOpen={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
+        flight={{
+          origin: from.match(/\(([^)]+)\)/)?.[1] || from.slice(0, 3).toUpperCase() || "ACC",
+          destination: to.match(/\(([^)]+)\)/)?.[1] || to.slice(0, 3).toUpperCase() || "LHR",
+          departureDate: departDate,
+          returnDate: tripType === "roundtrip" ? returnDate : undefined,
+          cabinClass,
+          price: 850 * (passengers.adults || 1),
+        }}
+      />
     </form>
   );
 }

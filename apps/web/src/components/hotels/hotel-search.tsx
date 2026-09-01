@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { searchHotels, type Hotel } from "@/lib/hotels";
 import { hotelSearchSchema } from "@/lib/schemas";
+import { HotelGuestRoomSelector } from "@/components/hotels/hotel-guest-room-selector";
 
 type Status =
   | { state: "idle" }
@@ -62,14 +63,21 @@ export function HotelSearch() {
             <Label htmlFor="hotel-checkout">Check-out</Label>
             <Input id="hotel-checkout" type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <Label htmlFor="hotel-guests">Guests</Label>
-              <Input id="hotel-guests" type="number" min={1} max={16} value={guests} onChange={(e) => setGuests(Number(e.target.value))} />
-            </div>
-            <div>
-              <Label htmlFor="hotel-rooms">Rooms</Label>
-              <Input id="hotel-rooms" type="number" min={1} max={8} value={rooms} onChange={(e) => setRooms(Number(e.target.value))} />
+          <div>
+            <Label className="text-sm font-medium">Guests & Rooms</Label>
+            <div className="flex items-center h-10 mt-1">
+              <HotelGuestRoomSelector
+                value={{
+                  adults: guests,
+                  children: 0,
+                  rooms: rooms,
+                  roomType: "Standard",
+                }}
+                onChange={(next) => {
+                  setGuests(next.adults + next.children);
+                  setRooms(next.rooms);
+                }}
+              />
             </div>
           </div>
         </div>

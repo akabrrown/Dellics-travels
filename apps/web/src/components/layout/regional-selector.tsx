@@ -59,7 +59,7 @@ export function RegionalSelector({ variant = "announcement", className }: Region
           <span className="font-semibold tracking-wide uppercase">{language}</span>
           <span className="text-white/40">|</span>
           <span className="inline-flex items-center gap-1.5">
-            <CountryFlag countryCode={country.code} className="w-4 h-2.5 rounded-2xs" />
+            <CountryFlag key={`trigger-${country.code}`} countryCode={country.code} className="w-4 h-2.5 rounded-2xs" />
             <span className="font-semibold">{country.code}</span>
           </span>
           <span className="text-white/40">|</span>
@@ -122,7 +122,7 @@ export function RegionalSelector({ variant = "announcement", className }: Region
             </div>
             <div className="relative flex items-center">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
-                <CountryFlag countryCode={country.code} className="w-4 h-2.5 rounded-2xs" />
+                <CountryFlag key={`input-${country.code}`} countryCode={country.code} className="w-4 h-2.5 rounded-2xs" />
               </div>
               <select
                 id="select-country"

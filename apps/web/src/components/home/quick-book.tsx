@@ -16,12 +16,15 @@ import {
   Users,
   Key,
   ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FlightSearchWidget } from "@/components/flights/flight-search-widget";
+import { HotelGuestRoomSelector, type HotelGuestsRooms } from "@/components/hotels/hotel-guest-room-selector";
+import { buildViatorUrl } from "@/lib/tours";
 
 export function QuickBook() {
   const router = useRouter();
@@ -30,7 +33,12 @@ export function QuickBook() {
   const [hotelDestination, setHotelDestination] = useState("");
   const [hotelCheckIn, setHotelCheckIn] = useState("");
   const [hotelCheckOut, setHotelCheckOut] = useState("");
-  const [hotelGuests, setHotelGuests] = useState("2 Adults, 1 Room");
+  const [hotelGuestsData, setHotelGuestsData] = useState<HotelGuestsRooms>({
+    adults: 1,
+    children: 0,
+    rooms: 1,
+    roomType: "Economy",
+  });
 
   // Transfers State
   const [transferPickup, setTransferPickup] = useState("Kotoka International Airport (ACC)");
@@ -64,7 +72,11 @@ export function QuickBook() {
     if (hotelDestination) query.set("destination", hotelDestination);
     if (hotelCheckIn) query.set("checkIn", hotelCheckIn);
     if (hotelCheckOut) query.set("checkOut", hotelCheckOut);
-    if (hotelGuests) query.set("guests", hotelGuests);
+    const guestLabel = `${hotelGuestsData.adults} Adult${hotelGuestsData.adults > 1 ? "s" : ""}${hotelGuestsData.children > 0 ? `, ${hotelGuestsData.children} Child` : ""}, ${hotelGuestsData.rooms} Room`;
+    query.set("guests", guestLabel);
+    if (hotelGuestsData.roomType) {
+      query.set("roomType", hotelGuestsData.roomType);
+    }
     router.push(`/hotels${query.toString() ? `?${query.toString()}` : ""}`);
   }
 
@@ -92,6 +104,13 @@ export function QuickBook() {
 
   function handleTourSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const dest = tourDestination.trim() || "Tours and Activities";
+    // Process starts on Dellics Travels then deep-links to Viator verified partner booking
+    window.open(
+      buildViatorUrl(dest, tourMonth !== "Upcoming Season" ? tourMonth : undefined),
+      "_blank",
+      "noopener,noreferrer",
+    );
     const query = new URLSearchParams();
     if (tourDestination) query.set("destination", tourDestination);
     if (tourMonth) query.set("month", tourMonth);
@@ -117,64 +136,64 @@ export function QuickBook() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl rounded-2xl bg-white p-3 sm:p-4 shadow-xl border border-slate-100 ring-1 ring-black/5">
+    <div className="mx-auto w-full max-w-5xl rounded-3xl bg-white p-4 sm:p-5 shadow-2xl border border-slate-200/80 ring-1 ring-black/5 backdrop-blur-sm">
       <Tabs defaultValue="flights" className="w-full">
         {/* Compact Navigation Tabs Bar */}
-        <div className="flex justify-start border-b border-slate-100 pb-2 mb-3 overflow-x-auto no-scrollbar scroll-smooth">
-          <TabsList className="bg-slate-100/90 p-1 rounded-xl flex gap-1 h-auto min-w-max">
+        <div className="flex justify-start border-b border-slate-100 pb-2.5 mb-3.5 overflow-x-auto no-scrollbar scroll-smooth">
+          <TabsList className="bg-slate-100/90 p-1.5 rounded-2xl flex gap-1.5 h-auto min-w-max">
             <TabsTrigger
               value="flights"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Plane className="size-3.5" />
+              <Plane className="size-4" />
               <span>Flights</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="hotels"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Building2 className="size-3.5" />
+              <Building2 className="size-4" />
               <span>Hotels</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="transfers"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Car className="size-3.5" />
+              <Car className="size-4" />
               <span>Transfers</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="cars"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Key className="size-3.5" />
+              <Key className="size-4" />
               <span>Cars</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="tours"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Compass className="size-3.5" />
+              <Compass className="size-4" />
               <span>Tours</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="packages"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Globe2 className="size-3.5" />
+              <Globe2 className="size-4" />
               <span>Diaspora Packages</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="esim"
-              className="rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-xs transition-all shrink-0"
+              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-sm transition-all shrink-0 text-slate-700 hover:text-navy"
             >
-              <Wifi className="size-3.5" />
+              <Wifi className="size-4" />
               <span>eSIM</span>
             </TabsTrigger>
           </TabsList>
@@ -229,20 +248,15 @@ export function QuickBook() {
                 />
               </div>
               <div>
-                <Label htmlFor="hotel-guests" className="text-[11px] font-bold text-slate-700 mb-1 block">
+                <Label className="text-[11px] font-bold text-slate-700 mb-1 block">
                   Guests & Rooms
                 </Label>
-                <select
-                  id="hotel-guests"
-                  value={hotelGuests}
-                  onChange={(e) => setHotelGuests(e.target.value)}
-                  className="w-full h-10 rounded-xl bg-white border border-slate-200 px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
-                >
-                  <option value="1 Adult, 1 Room">1 Adult, 1 Room</option>
-                  <option value="2 Adults, 1 Room">2 Adults, 1 Room</option>
-                  <option value="2 Adults, 2 Children">2 Adults + Children</option>
-                  <option value="Family Suite (4+ Guests)">Family Suite (4+ Guests)</option>
-                </select>
+                <div className="flex items-center h-10">
+                  <HotelGuestRoomSelector
+                    value={hotelGuestsData}
+                    onChange={setHotelGuestsData}
+                  />
+                </div>
               </div>
             </div>
 
@@ -431,8 +445,8 @@ export function QuickBook() {
               type="submit"
               className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
             >
-              <Search className="size-4" />
-              <span>Explore Curated Tour Packages</span>
+              <span>Explore & Book on Viator</span>
+              <ExternalLink className="size-4" />
             </Button>
           </form>
         </TabsContent>

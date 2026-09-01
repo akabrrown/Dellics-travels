@@ -109,7 +109,6 @@ export default function DiasporaPage() {
       <PageHero
         title="Diaspora Homecoming & Heritage Tourism"
         subtitle="Return to your roots. Deeply meaningful, respectful, and transformative ancestral experiences across Ghana with licensed heritage historians."
-        badge="Beyond The Return Partner"
         image="/images/africa/cape-coast-castle.jpg"
         breadcrumbs={[{ label: "Diaspora Travel" }]}
       />

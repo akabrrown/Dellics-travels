@@ -1,4 +1,4 @@
-import { getJson } from "./api";
+import { getJson, postJson } from "./api";
 
 export interface FlightOffer {
   id: string;
@@ -77,4 +77,23 @@ export async function getLiveHomeDeals(origin: string = "ACC"): Promise<HomeDeal
     next: { revalidate: 3600 }, // Cache on Next.js server for 1 hour
   } as RequestInit);
   return res.data;
+}
+
+export async function checkoutFlightWithStripe(params: {
+  origin: string;
+  destination: string;
+  departureDate?: string;
+  returnDate?: string;
+  airline?: string;
+  price: number;
+  currency?: string;
+  email?: string;
+  customerName?: string;
+  passengerCount?: number;
+  cabinClass?: string;
+}): Promise<{ url: string; sessionId: string; bookingRef: string }> {
+  return postJson<{ url: string; sessionId: string; bookingRef: string }>(
+    "/payments/flights/stripe-checkout",
+    params,
+  );
 }

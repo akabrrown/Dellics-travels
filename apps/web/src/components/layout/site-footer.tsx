@@ -74,7 +74,7 @@ export function SiteFooter() {
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-white/75 max-w-md">
-              Dellics Travels LLC is an IATA Certified global luxury travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
+              Dellics Travels is an IATA Certified global luxury travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
             </p>
 
             <div className="flex flex-col gap-3 pt-2">
@@ -181,7 +181,7 @@ export function SiteFooter() {
 
         {/* Bottom Legal Bar */}
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-          <p>© {new Date().getFullYear()} Dellics Travels & Tours Ltd. All rights reserved. IATA Certified Agency.</p>
+          <p>© {new Date().getFullYear()} Dellics Travels & Tours Ltd. All rights reserved. IATA Certified.</p>
           <div className="flex items-center gap-6">
             {LEGAL.map((item) => (
               <Link

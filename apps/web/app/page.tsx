@@ -149,7 +149,7 @@ export default async function HomePage() {
       <HeroSlider slides={HERO_SLIDES} />
 
       {/* 2. Interactive Quick Booking Search Engine */}
-      <section className="relative z-30 -mt-14 sm:-mt-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-30 -mt-20 sm:-mt-24 lg:-mt-28 px-4 sm:px-6 lg:px-8">
         <QuickBook />
       </section>
 

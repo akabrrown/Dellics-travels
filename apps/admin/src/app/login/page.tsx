@@ -12,7 +12,6 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  Sparkles,
   ShieldAlert,
 } from "lucide-react";
 
@@ -167,7 +166,7 @@ export default function AdminLogin() {
               onClick={handleAutofill}
               className="text-xs text-[#F4740D] hover:underline flex items-center gap-1 font-semibold"
             >
-              <Sparkles className="size-3" />
+              <KeyRound className="size-3" />
               Autofill Credentials
             </button>
             <button

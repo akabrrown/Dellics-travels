@@ -1,7 +1,6 @@
 export interface HeroSlide {
   type: "image" | "video";
   src: string;
-  badge?: string;
   caption: string;
   subtitle: string;
   ctaText: string;
@@ -12,7 +11,6 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     type: "image",
     src: "/images/services/hotel-and-airbnb.jpg",
-    badge: "Verified Global Stays",
     caption: "Luxury Hotels and Private Stays Across 190+ Countries",
     subtitle: "From 5-star Dubai suites to beachfront apartments in Cape Town. Itemized room taxes with confirmed booking vouchers.",
     ctaText: "Browse Stays",
@@ -21,7 +19,6 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     type: "image",
     src: "/images/africa/serengeti-national-park.jpg",
-    badge: "Curated International Tours",
     caption: "Guided Safari Expeditions and Multi-Country Routes",
     subtitle: "Custom private itineraries across Serengeti, Maasai Mara, and South Africa led by licensed local guides.",
     ctaText: "View Itineraries",
@@ -30,7 +27,6 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     type: "image",
     src: "/images/services/corporate-travel-management.jpg",
-    badge: "IATA Certified Agency",
     caption: "Direct Airline Ticketing and Group Corporate Fares",
     subtitle: "Direct issuance on Emirates, Qatar Airways, Delta, and British Airways with zero third-party broker markups.",
     ctaText: "Request Flight Quote",
@@ -95,8 +91,8 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const WHY_CHOOSE_US = [
   {
-    title: "IATA Certified Agency",
-    description: "Official IATA Certified travel management agency. Your bookings and financial transactions are 100% safeguarded.",
+    title: "IATA Certified",
+    description: "Official IATA Certified travel management partner. Your bookings and financial transactions are 100% safeguarded.",
     icon: "shield",
   },
   {

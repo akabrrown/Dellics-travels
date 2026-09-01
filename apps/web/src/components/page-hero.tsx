@@ -11,7 +11,6 @@ interface BreadcrumbItem {
 interface PageHeroProps {
   title: string;
   subtitle?: string;
-  badge?: string;
   image?: string;
   breadcrumbs?: BreadcrumbItem[];
   className?: string;
@@ -21,7 +20,6 @@ interface PageHeroProps {
 export function PageHero({
   title,
   subtitle,
-  badge,
   image,
   breadcrumbs,
   className,
@@ -72,14 +70,6 @@ export function PageHero({
               </span>
             ))}
           </nav>
-        ) : null}
-
-        {/* Badge */}
-        {badge ? (
-          <div className="mb-4 inline-flex items-center gap-2 rounded-pill bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-brand-orange backdrop-blur-md border border-white/10">
-            <span className="size-1.5 rounded-full bg-brand-orange animate-pulse" />
-            {badge}
-          </div>
         ) : null}
 
         {/* Headline */}

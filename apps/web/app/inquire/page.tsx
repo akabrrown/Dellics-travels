@@ -42,7 +42,6 @@ export default function InquirePage() {
       <PageHero
         title="Design Your Custom Itinerary"
         subtitle="Tell us where you want to travel, your dates, and budget. Our senior travel specialists will craft a tailored proposal with flights, stays, and tours."
-        badge="Custom Trip Planner"
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Trip Inquiry" }]}
       />
