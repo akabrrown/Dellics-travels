@@ -10,19 +10,6 @@ const REQUEST_TIMEOUT_MS = 14_000;
 const DUBAI_REGION = 6053839;
 const PARIS_REGION = 2734;
 
-const LOCAL_HOTEL_PHOTOS = [
-  '/images/services/dubai-marina-apartment.jpg',
-  '/images/services/kempinski-hotel.jpg',
-  '/images/services/alisa-hotel-tema.jpg',
-  '/images/services/cape-coast-heritage-stay.jpg',
-  '/images/services/ghana-heritage-airbnb.jpg',
-  '/images/services/kenya-safari-lodge.jpg',
-  '/images/services/south-africa-cape-town-villa.jpg',
-  '/images/services/singapore-city-apartment.jpg',
-  '/images/services/zanzibar-beach-villa.jpg',
-  '/images/services/hotel-and-airbnb.jpg',
-];
-
 @Injectable()
 export class HotelsService {
   private readonly logger = new Logger(HotelsService.name);
@@ -34,7 +21,6 @@ export class HotelsService {
     this.assertDates(input);
 
     const today = new Date().toISOString().slice(0, 10);
-    // Normalize date to today if slightly behind UTC due to client timezone
     const checkIn = input.checkIn < today ? today : input.checkIn;
     const checkOut = input.checkOut <= checkIn
       ? new Date(new Date(checkIn).getTime() + 86400000 * 3).toISOString().slice(0, 10)
@@ -70,18 +56,16 @@ export class HotelsService {
       if (Array.isArray(rawHotels) && rawHotels.length > 0) {
         const topHotels = rawHotels.slice(0, 12);
         const enriched = await Promise.allSettled(
-          topHotels.map(async (h: any, idx: number) => {
+          topHotels.map(async (h: any) => {
             let info: any = null;
-            if (idx < 4) {
-              try {
-                const infoRes = await this.fetchJson(`${this.baseUrl}/hotel/info/`, {
-                  id: h.id,
-                  language: 'en',
-                });
-                info = infoRes?.data;
-              } catch {
-                // Ignore rate limits
-              }
+            try {
+              const infoRes = await this.fetchJson(`${this.baseUrl}/hotel/info/`, {
+                id: h.id,
+                language: 'en',
+              });
+              info = infoRes?.data;
+            } catch {
+              // Ignore individual info failure
             }
 
             const rateAmount = parseFloat(
@@ -92,29 +76,35 @@ export class HotelsService {
             const rateCurrency =
               h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code || 'USD';
 
-            const rawImages = (info?.images || [])
-              .map((img: any) =>
-                this.sanitizeImageUrl(typeof img === 'string' ? img : img?.url || img?.path || '')
-              )
-              .filter(Boolean);
-
-            const fallbackImage = LOCAL_HOTEL_PHOTOS[idx % LOCAL_HOTEL_PHOTOS.length];
-            const images = rawImages.length > 0 ? rawImages : [fallbackImage];
+            // Extract all real photos directly from RateHawk API
+            const apiImages: string[] = [];
+            if (Array.isArray(info?.images)) {
+              for (const img of info.images) {
+                const url = typeof img === 'string' ? img : img?.url || '';
+                if (url) apiImages.push(this.sanitizeImageUrl(url));
+              }
+            }
+            if (Array.isArray(info?.images_ext)) {
+              for (const img of info.images_ext) {
+                const url = typeof img === 'string' ? img : img?.url || '';
+                if (url && !apiImages.includes(url)) apiImages.push(this.sanitizeImageUrl(url));
+              }
+            }
 
             return {
               id: String(h.id || h.hid),
               name: String(info?.name || this.formatHotelName(h.id)),
-              rating: Number(info?.star_rating || (idx % 2 === 0 ? 5 : 4)),
-              address: String(info?.address || (isEurope ? 'Paris, France' : `${input.destination}, Verified District`)),
+              rating: Number(info?.star_rating || 4),
+              address: String(info?.address || (isEurope ? 'Paris, France' : `${input.destination}, UAE`)),
               city: String(info?.region?.name || input.destination || 'Dubai'),
               country: String(info?.region?.country_code || (isEurope ? 'FR' : 'AE')),
               price: Math.round(rateAmount),
               currency: rateCurrency,
-              images: images,
+              images: apiImages,
               amenities: this.extractAmenities(info?.amenity_groups),
               description: String(
                 info?.description ||
-                  `Live verified accommodation with direct RateHawk B2B instant confirmation.`
+                  `Live RateHawk accommodation in ${input.destination} with instant B2B confirmation.`
               ),
             } as HotelResult;
           })
@@ -125,7 +115,7 @@ export class HotelsService {
           .map((r) => r.value);
 
         if (validResults.length > 0) {
-          this.logger.log(`RateHawk sandbox returned ${validResults.length} live properties`);
+          this.logger.log(`RateHawk live API returned ${validResults.length} properties`);
           this.serpCache.set(cacheKey, { data: validResults, timestamp: Date.now() });
           return validResults;
         }
@@ -171,7 +161,6 @@ export class HotelsService {
   }
 
   private assertDates(input: HotelSearchInput): void {
-    // 2-day grace buffer for timezone differences between client local time and server UTC
     const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
     if (!input.checkIn || input.checkIn < twoDaysAgo) {
       throw new BadRequestException('checkIn date must be today or in the future');

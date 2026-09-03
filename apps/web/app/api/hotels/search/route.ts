@@ -10,22 +10,8 @@ const RATEHAWK_API_KEY =
 const REQUEST_TIMEOUT_MS = 14_000;
 
 // RateHawk Sandbox active test regions
-const DUBAI_REGION = 6053839; // 244 live properties in RateHawk sandbox
-const PARIS_REGION = 2734;    // 249 live properties in RateHawk sandbox
-
-// Local verified image library (100% free of external placeholders / Unsplash)
-const LOCAL_HOTEL_PHOTOS = [
-  "/images/services/dubai-marina-apartment.jpg",
-  "/images/services/kempinski-hotel.jpg",
-  "/images/services/alisa-hotel-tema.jpg",
-  "/images/services/cape-coast-heritage-stay.jpg",
-  "/images/services/ghana-heritage-airbnb.jpg",
-  "/images/services/kenya-safari-lodge.jpg",
-  "/images/services/south-africa-cape-town-villa.jpg",
-  "/images/services/singapore-city-apartment.jpg",
-  "/images/services/zanzibar-beach-villa.jpg",
-  "/images/services/hotel-and-airbnb.jpg",
-];
+const DUBAI_REGION = 6053839; // Live properties in RateHawk sandbox
+const PARIS_REGION = 2734;    // Live properties in RateHawk sandbox
 
 // In-memory cache for RateHawk live SERP responses (10 min TTL)
 const serpCache = new Map<string, { data: any[]; timestamp: number }>();
@@ -135,7 +121,6 @@ export async function POST(req: NextRequest) {
 
     let serpRes: any = null;
     try {
-      // Direct live SERP call to RateHawk Sandbox
       serpRes = await fetchRatehawk("/search/serp/region/", {
         checkin: checkIn,
         checkout: checkOut,
@@ -146,7 +131,6 @@ export async function POST(req: NextRequest) {
         currency: "USD",
       });
     } catch {
-      // If primary failed, try fallback
       if (regionId !== DUBAI_REGION) {
         serpRes = await fetchRatehawk("/search/serp/region/", {
           checkin: checkIn,
@@ -165,20 +149,17 @@ export async function POST(req: NextRequest) {
     if (Array.isArray(rawHotels) && rawHotels.length > 0) {
       const topHotels = rawHotels.slice(0, 12);
       
-      // Limit to first 4 hotel info calls to stay safely below the 10 req/min sandbox limit
       const enriched = await Promise.allSettled(
-        topHotels.map(async (h: any, idx: number) => {
+        topHotels.map(async (h: any) => {
           let info: any = null;
-          if (idx < 4) {
-            try {
-              const infoRes = await fetchRatehawk("/hotel/info/", {
-                id: h.id,
-                language: "en",
-              });
-              info = infoRes?.data;
-            } catch {
-              // Ignore rate limits gracefully
-            }
+          try {
+            const infoRes = await fetchRatehawk("/hotel/info/", {
+              id: h.id,
+              language: "en",
+            });
+            info = infoRes?.data;
+          } catch {
+            // Ignore individual info failure
           }
 
           const rateAmount = parseFloat(
@@ -190,30 +171,35 @@ export async function POST(req: NextRequest) {
             h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code ||
             "USD";
 
-          const rawImages = (info?.images || []).map((img: any) =>
-            sanitizeImageUrl(
-              typeof img === "string" ? img : img?.url || img?.path || ""
-            )
-          ).filter(Boolean);
-
-          // Fallback to verified local asset if sandbox doesn't provide image
-          const fallbackPhoto = LOCAL_HOTEL_PHOTOS[idx % LOCAL_HOTEL_PHOTOS.length];
-          const images = rawImages.length > 0 ? rawImages : [fallbackPhoto];
+          // Extract images directly from RateHawk API
+          const apiImages: string[] = [];
+          if (Array.isArray(info?.images)) {
+            for (const img of info.images) {
+              const url = typeof img === "string" ? img : img?.url || "";
+              if (url) apiImages.push(sanitizeImageUrl(url));
+            }
+          }
+          if (Array.isArray(info?.images_ext)) {
+            for (const img of info.images_ext) {
+              const url = typeof img === "string" ? img : img?.url || "";
+              if (url && !apiImages.includes(url)) apiImages.push(sanitizeImageUrl(url));
+            }
+          }
 
           return {
             id: String(h.id || h.hid),
             name: String(info?.name || formatHotelName(h.id)),
-            rating: Number(info?.star_rating || (idx % 2 === 0 ? 5 : 4)),
-            address: String(info?.address || (isEurope ? "Central Paris, France" : `${destination}, Verified District`)),
+            rating: Number(info?.star_rating || 4),
+            address: String(info?.address || (isEurope ? "Paris, France" : `${destination}, UAE`)),
             city: String(info?.region?.name || destination),
             country: String(info?.region?.country_code || (isEurope ? "FR" : "AE")),
             price: Math.round(rateAmount),
             currency: rateCurrency,
-            images: images,
+            images: apiImages,
             amenities: extractAmenities(info?.amenity_groups),
             description: String(
               info?.description ||
-                `Premium accommodation in ${destination} featuring luxury bedding, climate control, and RateHawk verified booking guarantee.`
+                `Live verified accommodation in ${destination} via direct RateHawk B2B partnership.`
             ),
           };
         })

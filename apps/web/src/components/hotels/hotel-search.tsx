@@ -445,7 +445,7 @@ export function HotelSearchResults({
                 ? rawImg
                     .replace("{size}", "1024x768")
                     .replace("%7Bsize%7D", "1024x768")
-                : "/images/services/hotel-and-airbnb.jpg";
+                : "";
 
               return (
                 <article
