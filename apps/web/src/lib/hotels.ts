@@ -115,12 +115,26 @@ const FALLBACK_HOTELS: Hotel[] = [
 
 export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {
   try {
-    const data = await postJson<Hotel[]>("/hotels/search", input);
-    if (Array.isArray(data) && data.length > 0) {
-      return data;
+    const res = await fetch("/api/hotels/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
     }
   } catch {
-    // Graceful fallback to verified curated hotels matching search
+    try {
+      const data = await postJson<Hotel[]>("/hotels/search", input);
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    } catch {
+      // ignore
+    }
   }
 
   const query = (input.destination || "").trim().toLowerCase();
