@@ -331,9 +331,10 @@ function HotelSearchForm() {
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
             {displayedHotels.map((hotel) => {
               const nightRate = Math.round(hotel.price / (nightsCount || 1)) || hotel.price;
-              const primaryImage =
-                hotel.images?.[0] ||
-                "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80";
+              const rawImg = hotel.images?.[0] || "";
+              const primaryImage = rawImg
+                ? rawImg.replace("{size}", "1024x768").replace("%7Bsize%7D", "1024x768")
+                : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80";
 
               return (
                 <article

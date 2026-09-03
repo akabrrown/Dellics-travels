@@ -7,6 +7,9 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.ratehawk.com" },
+      { protocol: "https", hostname: "cdn.worldota.net" },
+      { protocol: "https", hostname: "**.worldota.net" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "lmmhzqrulehhwgklkahw.supabase.co" },
       { protocol: "https", hostname: "gfypumkjomlvvpiiwdfq.supabase.co" },
     ],

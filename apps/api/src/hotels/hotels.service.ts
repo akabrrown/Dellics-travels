@@ -433,16 +433,21 @@ export class HotelsService {
   }
 
   private images(value: unknown): string[] {
+    const sanitize = (url: string): string => {
+      if (!url || typeof url !== 'string') return '';
+      return url.replace('{size}', '1024x768').replace('%7Bsize%7D', '1024x768');
+    };
+
     if (Array.isArray(value)) {
       return value
         .map((img) =>
-          typeof img === 'string' ? img : (img?.url ?? img?.path ?? ''),
+          sanitize(typeof img === 'string' ? img : (img?.url ?? img?.path ?? ''))
         )
         .filter(Boolean);
     }
-    if (typeof value === 'string') return [value];
+    if (typeof value === 'string') return [sanitize(value)];
     if (value && typeof (value as any).url === 'string')
-      return [(value as any).url];
+      return [sanitize((value as any).url)];
     return [];
   }
 }
