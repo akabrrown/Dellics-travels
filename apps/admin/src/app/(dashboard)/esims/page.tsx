@@ -41,7 +41,7 @@ export default function ESIMOrders() {
         setOrders(res.data);
       }
     } catch (err) {
-      console.error("Failed to load eSIM orders:", err);
+      console.warn("[eSIM] Live sync unavailable, using cached records:", err);
     } finally {
       setLoading(false);
     }
@@ -49,6 +49,14 @@ export default function ESIMOrders() {
 
   useEffect(() => {
     fetchOrders();
+
+    const handleDataRefresh = () => {
+      fetchOrders();
+    };
+    window.addEventListener("dellics:refresh-data", handleDataRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleDataRefresh);
+    };
   }, []);
 
   const filteredOrders = orders.filter((o) => {

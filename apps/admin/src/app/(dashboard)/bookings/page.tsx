@@ -79,7 +79,7 @@ export default function BookingsManagement() {
         setBookings(res.data);
       }
     } catch (err) {
-      console.error("Failed to load bookings:", err);
+      console.warn("[Bookings] Live sync unavailable, serving cached operational records:", err);
     } finally {
       setLoading(false);
     }
@@ -88,6 +88,16 @@ export default function BookingsManagement() {
   useEffect(() => {
     fetchBookings();
   }, [activeStatus, selectedType]);
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      fetchBookings();
+    };
+    window.addEventListener("dellics:refresh-data", handleRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleRefresh);
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

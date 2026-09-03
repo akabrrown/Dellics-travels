@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
         setInquiries(inquiriesRes.value.data.slice(0, 5));
       }
     } catch (err) {
-      console.error("Failed to load live admin dashboard:", err);
+      console.warn("[Dashboard] Live sync unavailable, using cached metrics:", err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -87,6 +87,14 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     fetchLiveDashboard();
+
+    const handleDataRefresh = () => {
+      fetchLiveDashboard();
+    };
+    window.addEventListener("dellics:refresh-data", handleDataRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleDataRefresh);
+    };
   }, []);
 
   const handleRefresh = () => {

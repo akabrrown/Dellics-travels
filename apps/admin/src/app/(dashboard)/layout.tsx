@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { useRole, AdminRole } from "@/lib/roles";
+import { BackendStatusBanner } from "@/components/backend-status-banner";
 
 interface SidebarCounts {
   heldBookings: number;
@@ -71,6 +72,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     fetchSidebarMetrics();
+
+    const handleRefresh = () => {
+      fetchSidebarMetrics();
+    };
+    window.addEventListener("dellics:refresh-data", handleRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleRefresh);
+    };
   }, [pathname]);
 
   const isActive = (href: string) => {
@@ -330,6 +339,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         </header>
+
+        {/* Backend Connectivity Status Banner (Displays when live API on port 3000 is offline) */}
+        <BackendStatusBanner />
 
         {/* Dynamic Page View Body */}
         <main className="flex-1 overflow-y-auto p-8">{children}</main>

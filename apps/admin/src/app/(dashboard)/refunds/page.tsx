@@ -38,7 +38,7 @@ export default function RefundQueue() {
         setRefunds(res.data);
       }
     } catch (err) {
-      console.error("Failed to load refunds:", err);
+      console.warn("[Refunds] Live sync unavailable, using cached records:", err);
     } finally {
       setLoading(false);
     }
@@ -46,6 +46,14 @@ export default function RefundQueue() {
 
   useEffect(() => {
     fetchRefunds();
+
+    const handleDataRefresh = () => {
+      fetchRefunds();
+    };
+    window.addEventListener("dellics:refresh-data", handleDataRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleDataRefresh);
+    };
   }, []);
 
   const filtered = refunds.filter((r) => {

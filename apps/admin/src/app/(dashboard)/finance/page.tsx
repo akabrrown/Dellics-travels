@@ -58,7 +58,7 @@ export default function FinanceReconciliation() {
         setStats(statsRes.value.data);
       }
     } catch (err) {
-      console.error("Failed to load finance data:", err);
+      console.warn("[Finance] Live sync unavailable, using cached records:", err);
     } finally {
       setLoading(false);
     }
@@ -66,6 +66,14 @@ export default function FinanceReconciliation() {
 
   useEffect(() => {
     fetchFinanceData();
+
+    const handleDataRefresh = () => {
+      fetchFinanceData();
+    };
+    window.addEventListener("dellics:refresh-data", handleDataRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleDataRefresh);
+    };
   }, []);
 
   const filteredTransactions = transactions.filter((tx) => {

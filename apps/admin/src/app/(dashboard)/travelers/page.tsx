@@ -44,7 +44,7 @@ export default function TravelersDirectory() {
         setUsers(res.data);
       }
     } catch (err) {
-      console.error("Failed to load travelers directory:", err);
+      console.warn("[Travelers] Live sync unavailable, using cached records:", err);
     } finally {
       setLoading(false);
     }
@@ -52,6 +52,14 @@ export default function TravelersDirectory() {
 
   useEffect(() => {
     fetchUsers();
+
+    const handleDataRefresh = () => {
+      fetchUsers();
+    };
+    window.addEventListener("dellics:refresh-data", handleDataRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleDataRefresh);
+    };
   }, []);
 
   const filteredUsers = users.filter((u) => {

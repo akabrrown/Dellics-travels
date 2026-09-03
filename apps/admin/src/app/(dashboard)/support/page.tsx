@@ -54,7 +54,7 @@ export default function SupportQueue() {
         setStats(statsRes.value.data);
       }
     } catch (err) {
-      console.error("Failed to load inquiries:", err);
+      console.warn("[Support] Live sync unavailable, using cached records:", err);
     } finally {
       setLoading(false);
     }
@@ -62,6 +62,14 @@ export default function SupportQueue() {
 
   useEffect(() => {
     fetchInquiries();
+
+    const handleDataRefresh = () => {
+      fetchInquiries();
+    };
+    window.addEventListener("dellics:refresh-data", handleDataRefresh);
+    return () => {
+      window.removeEventListener("dellics:refresh-data", handleDataRefresh);
+    };
   }, []);
 
   const filteredInquiries = inquiries.filter((item) => {
