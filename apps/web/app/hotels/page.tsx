@@ -91,16 +91,11 @@ export default function HotelsPage() {
   return (
     <>
       <PageHero
-        title="Luxury Hotels & Curated Stays Worldwide"
-        subtitle="Search live availability across 3.3+ million hotels, boutique Airbnbs, safari lodges, and private beach villas with best rate guarantee."
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Airbnb" }]}
-      />
-
-      {/* Live Hotel Search Engine Container */}
-      <section className="mx-auto -mt-14 max-w-6xl px-4 sm:px-6 lg:px-8 relative z-20">
+      >
         <HotelSearch />
-      </section>
+      </PageHero>
 
       {/* Curated Luxury Collections */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">

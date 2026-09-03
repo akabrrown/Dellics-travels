@@ -34,37 +34,37 @@ export function ViatorTourSearch() {
   };
 
   return (
-    <div className="rounded-3xl bg-white p-6 sm:p-8 shadow-xl border border-slate-200/80 mb-16">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div className="w-full max-w-5xl mx-auto rounded-3xl bg-white/85 backdrop-blur-xl p-4 sm:p-6 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-bold text-brand-orange">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/15 px-3 py-0.5 text-xs font-bold text-brand-orange">
             <Compass className="size-3.5" />
             <span>Viator Partner Integration · 300,000+ Experiences Worldwide</span>
           </div>
-          <h2 className="font-display text-2xl font-bold text-navy mt-2">
-            Find Any Global Tour, Excursion or Activity
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-navy mt-1.5">
+            Find Any Global Tour, Excursion or Day Trip
           </h2>
-          <p className="text-sm text-slate-600">
-            Start your search here on Dellics Travels — we connect you directly to verified Viator experiences with free cancellation.
+          <p className="text-xs sm:text-sm text-slate-600">
+            Search 300,000+ curated activities with instant booking and free cancellation.
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center gap-3">
+      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center gap-2.5">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
           <Input
             type="text"
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            placeholder="Enter any city or attraction (e.g. Dubai Desert Safari, Cape Town, Paris Louvre, Rome Colosseum)..."
-            className="h-12 pl-12 rounded-2xl bg-slate-50 border-slate-200 text-sm font-medium focus:bg-white"
+            placeholder="Search by city or attraction (e.g. Dubai Desert Safari, Cape Town, Paris Louvre, Rome Colosseum)..."
+            className="h-11 pl-10 rounded-xl bg-white/90 border-slate-200 text-xs sm:text-sm font-medium focus:bg-white shadow-2xs"
           />
         </div>
 
         <Button
           type="submit"
-          className="w-full sm:w-auto h-12 px-7 rounded-2xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-sm shadow-md flex items-center justify-center gap-2"
+          className="w-full sm:w-auto h-11 px-6 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
           <span>Search on Viator</span>
           <ExternalLink className="size-4" />

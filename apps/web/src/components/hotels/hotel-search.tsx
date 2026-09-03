@@ -48,23 +48,23 @@ export function HotelSearch() {
   }
 
   return (
-    <div className="space-y-8">
-      <form onSubmit={handleSubmit} className="rounded-card bg-white p-6 shadow-xl" aria-label="Hotel search">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="w-full max-w-5xl mx-auto space-y-8">
+      <form onSubmit={handleSubmit} className="rounded-3xl bg-white/85 backdrop-blur-xl p-4 sm:p-5 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left" aria-label="Hotel search">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <Label htmlFor="hotel-destination">Destination</Label>
-            <Input id="hotel-destination" placeholder="City or hotel name" value={destination} onChange={(e) => setDestination(e.target.value)} />
+            <Label htmlFor="hotel-destination" className="text-[11px] font-bold text-slate-700 mb-1 block">Destination</Label>
+            <Input id="hotel-destination" placeholder="City or hotel name" value={destination} onChange={(e) => setDestination(e.target.value)} className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs" />
           </div>
           <div>
-            <Label htmlFor="hotel-checkin">Check-in</Label>
-            <Input id="hotel-checkin" type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
+            <Label htmlFor="hotel-checkin" className="text-[11px] font-bold text-slate-700 mb-1 block">Check-in</Label>
+            <Input id="hotel-checkin" type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs" />
           </div>
           <div>
-            <Label htmlFor="hotel-checkout">Check-out</Label>
-            <Input id="hotel-checkout" type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
+            <Label htmlFor="hotel-checkout" className="text-[11px] font-bold text-slate-700 mb-1 block">Check-out</Label>
+            <Input id="hotel-checkout" type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs" />
           </div>
           <div>
-            <Label className="text-sm font-medium">Guests & Rooms</Label>
+            <Label className="text-[11px] font-bold text-slate-700 mb-1 block">Guests & Rooms</Label>
             <div className="flex items-center h-10 mt-1">
               <HotelGuestRoomSelector
                 value={{

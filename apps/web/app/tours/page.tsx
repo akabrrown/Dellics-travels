@@ -55,15 +55,14 @@ export default async function ToursPage() {
   return (
     <>
       <PageHero
-        title="Curated International Tour Packages"
-        subtitle="Experience world-class safari expeditions, luxury city breaks, and tropical beach retreats with all flights, stays, and transfers included."
         image="/images/africa/serengeti-national-park.jpg"
         breadcrumbs={[{ label: "Tours & Holidays" }]}
-      />
-
-      {/* Signature Tour Packages Grid & Viator Search */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+      >
         <ViatorTourSearch />
+      </PageHero>
+
+      {/* Signature Tour Packages Grid */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
 
         <SectionHeading
           eyebrow="Dellics Signature & Partner Experiences"

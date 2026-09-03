@@ -97,22 +97,22 @@ export function FlightSearchWidget() {
             setError(null);
           }}
         >
-          <TabsList className="bg-slate-100/90 p-1 rounded-full h-9">
+          <TabsList className="bg-white/60 backdrop-blur-md p-1 rounded-full h-9 border border-white/50 shadow-2xs">
             <TabsTrigger
               value="roundtrip"
-              className="rounded-full px-3 py-1 text-xs font-semibold data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
+              className="rounded-full px-3 py-1 text-xs font-semibold text-slate-700 hover:text-navy data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
             >
               Round Trip
             </TabsTrigger>
             <TabsTrigger
               value="oneway"
-              className="rounded-full px-3 py-1 text-xs font-semibold data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
+              className="rounded-full px-3 py-1 text-xs font-semibold text-slate-700 hover:text-navy data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
             >
               One Way
             </TabsTrigger>
             <TabsTrigger
               value="multicity"
-              className="rounded-full px-3 py-1 text-xs font-semibold data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
+              className="rounded-full px-3 py-1 text-xs font-semibold text-slate-700 hover:text-navy data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
             >
               Multi-City
             </TabsTrigger>
@@ -125,7 +125,7 @@ export function FlightSearchWidget() {
 
           {/* Cabin Class Selector */}
           <Select value={cabinClass} onValueChange={setCabinClass}>
-            <SelectTrigger className="h-9 px-3 rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 w-32 shadow-2xs">
+            <SelectTrigger className="h-9 px-3 rounded-full text-xs font-medium border-slate-200/80 bg-white/90 text-slate-700 w-32 shadow-2xs focus:bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -289,8 +289,8 @@ export function FlightSearchWidget() {
         </p>
       )}
 
-      {/* Action CTA Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+      {/* Primary Actions */}
+      <div className="pt-2">
         <Button
           type="button"
           onClick={() => {
@@ -301,20 +301,11 @@ export function FlightSearchWidget() {
             setError(null);
             setBookingModalOpen(true);
           }}
-          className="h-12 rounded-xl bg-brand-orange hover:bg-brand-orange-hover font-bold text-white shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
+          className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover font-bold text-white shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
         >
           <Plane className="size-4" />
           <span>Book This Flight</span>
           <ArrowRight className="size-4 ml-0.5" />
-        </Button>
-
-        <Button
-          type="submit"
-          variant="outline"
-          className="h-12 rounded-xl border-slate-300 text-navy hover:bg-slate-50 font-bold flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
-        >
-          <Search className="size-4" />
-          <span>Search All Schedules</span>
         </Button>
       </div>
 

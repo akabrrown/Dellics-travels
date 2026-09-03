@@ -11,6 +11,7 @@ import {
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
+import { TransferSearchWidget } from "@/components/transfers/transfer-search-widget";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -105,11 +106,11 @@ export default function TransfersPage() {
   return (
     <>
       <PageHero
-        title="Airport Transfers & Executive Transit"
-        subtitle="Punctual, stress-free transfers at Kotoka International Airport (ACC) and across Ghana with professional vetted drivers."
         image="/images/services/airport-transfer-services.jpg"
         breadcrumbs={[{ label: "Transfers" }]}
-      />
+      >
+        <TransferSearchWidget />
+      </PageHero>
 
       {/* Fleet Showcase */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">

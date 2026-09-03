@@ -137,16 +137,13 @@ export default async function FlightsPage() {
   return (
     <>
       <PageHero
-        title="International Flight Booking & Ticketing"
-        subtitle="IATA Certified. Best wholesale fares across major global airlines with same-day electronic ticketing."
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Flights" }]}
-      />
-
-      {/* Flight Search Engine Container */}
-      <section className="mx-auto -mt-14 max-w-5xl px-4 sm:px-6 lg:px-8 relative z-20">
-        <FlightSearchWidget />
-      </section>
+      >
+        <div className="mx-auto w-full max-w-5xl rounded-3xl bg-white/85 backdrop-blur-xl p-4 sm:p-5 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left">
+          <FlightSearchWidget />
+        </div>
+      </PageHero>
 
       {/* Popular Flight Routes Grid */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
