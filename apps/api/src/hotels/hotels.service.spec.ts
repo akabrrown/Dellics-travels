@@ -134,7 +134,7 @@ describe('HotelsService', () => {
     expect(init.body).not.toContain('test-key');
   });
 
-  it('returns verified fallback catalog when upstream fails', async () => {
+  it('returns empty array when upstream fails', async () => {
     fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
     const service = buildService();
     const result = await service.search({
@@ -144,7 +144,6 @@ describe('HotelsService', () => {
       guests: 2,
       rooms: 1,
     });
-    expect(result.length).toBeGreaterThan(0);
-    expect(result[0].city).toBe('Accra');
+    expect(result).toEqual([]);
   });
 });
