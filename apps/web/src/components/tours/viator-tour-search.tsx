@@ -39,7 +39,7 @@ export function ViatorTourSearch() {
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/15 px-3 py-0.5 text-xs font-bold text-brand-orange">
             <Compass className="size-3.5" />
-            <span>Viator Partner Integration · 300,000+ Experiences Worldwide</span>
+            <span>Global Experiences · 300,000+ Curated Tours Worldwide</span>
           </div>
           <h2 className="font-display text-xl sm:text-2xl font-bold text-navy mt-1.5">
             Find Any Global Tour, Excursion or Day Trip
@@ -66,7 +66,7 @@ export function ViatorTourSearch() {
           type="submit"
           className="w-full sm:w-auto h-11 px-6 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
-          <span>Search on Viator</span>
+          <span>Explore Tours</span>
           <ExternalLink className="size-4" />
         </Button>
       </form>

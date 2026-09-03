@@ -445,7 +445,7 @@ export function QuickBook() {
               type="submit"
               className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold shadow-md flex items-center justify-center gap-2 text-sm transition-all"
             >
-              <span>Explore & Book on Viator</span>
+              <span>Explore & Book Tours</span>
               <ExternalLink className="size-4" />
             </Button>
           </form>

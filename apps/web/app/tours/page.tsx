@@ -65,9 +65,9 @@ export default async function ToursPage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
 
         <SectionHeading
-          eyebrow="Dellics Signature & Partner Experiences"
+          eyebrow="Dellics Signature & Global Experiences"
           title="Curated Tour Packages & Day Escapes"
-          subtitle="Book Dellics Signature Tours directly on our website via Paystack (Mobile Money & Cards), or explore 300,000+ verified worldwide day-trips through our Viator partner integration."
+          subtitle="Book Dellics Signature Tours directly on our website via Paystack (Mobile Money & Cards), or explore 300,000+ verified worldwide day-trips through our global tour directory."
         />
 
         <TourList tours={tours} />

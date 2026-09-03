@@ -125,9 +125,9 @@ export function TourList({ tours }: TourListProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-navy px-2 py-1.5 transition-colors"
-                        title="View reviews and international dates on Viator partner"
+                        title="View itinerary and verified traveler reviews"
                       >
-                        <span>Viator</span>
+                        <span>View Itinerary</span>
                         <ExternalLink className="size-3" />
                       </a>
                     </>
@@ -146,7 +146,7 @@ export function TourList({ tours }: TourListProps) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-2.5 text-xs shadow-md transition-all active:scale-95"
                       >
-                        <span>Book on Viator</span>
+                        <span>Explore & Book</span>
                         <ExternalLink className="size-3.5" />
                       </a>
                     </>
