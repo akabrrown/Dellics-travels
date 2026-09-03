@@ -40,6 +40,7 @@ interface HotelConfirmationProps {
     total?: string;
     currency?: string;
     paymentStatus?: string;
+    specialRequests?: string;
   }>;
 }
 
@@ -71,6 +72,7 @@ export default async function HotelConfirmationPage({
   const total = params.total || "380";
   const currency = params.currency || "USD";
   const paymentStatus = params.paymentStatus || "PAID ONLINE";
+  const specialRequests = params.specialRequests || "";
 
   const qrData = `LPA:DELLICS-HOTEL-VOUCHER$REF:${reference}$HOTEL:${hotelName}$CHECKIN:${checkIn}$CHECKOUT:${checkOut}$ADULTS:${adults}$CHILDREN:${children}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
@@ -214,6 +216,17 @@ export default async function HotelConfirmationPage({
                   </strong>
                 </div>
               </div>
+
+              {specialRequests ? (
+                <div className="pt-2 border-t border-slate-200/60">
+                  <span className="text-slate-400 block font-medium">
+                    Special Requests & Family Traveling Preferences:
+                  </span>
+                  <span className="text-navy font-semibold text-[11px] block mt-0.5">
+                    {specialRequests}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             {/* QR Code Check-In Section */}
