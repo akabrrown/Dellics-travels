@@ -614,24 +614,21 @@ export class SearchService {
         city: 'London',
         iata: 'LHR',
         tag: 'Flight and Hotel',
-        image:
-          'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=600&auto=format&fit=crop',
+        image: '/images/services/plane.jpg',
         bannerText: 'London Gateway',
       },
       {
         city: 'Dubai',
         iata: 'DXB',
         tag: 'Limited Offer',
-        image:
-          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=600&auto=format&fit=crop',
+        image: '/images/middle-east/dubai-marina.jpg',
         bannerText: 'Dubai Luxury Stay',
       },
       {
         city: 'Paris',
         iata: 'CDG',
         tag: 'Top Value',
-        image:
-          'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=600&auto=format&fit=crop',
+        image: '/images/europe/paris-and-eiffel-tower.jpg',
         bannerText: 'Paris Romantic Getaway',
       },
     ];
@@ -640,29 +637,25 @@ export class SearchService {
       {
         name: 'London',
         iata: 'LHR',
-        image:
-          'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=600&auto=format&fit=crop',
+        image: '/images/services/plane.jpg',
         badge: 'Popular',
       },
       {
         name: 'Dubai',
         iata: 'DXB',
-        image:
-          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=600&auto=format&fit=crop',
+        image: '/images/middle-east/dubai-marina.jpg',
         badge: 'Trending',
       },
       {
         name: 'Paris',
         iata: 'CDG',
-        image:
-          'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=600&auto=format&fit=crop',
+        image: '/images/europe/paris-and-eiffel-tower.jpg',
         badge: 'Top Pick',
       },
       {
         name: 'New York',
         iata: 'JFK',
-        image:
-          'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop',
+        image: '/images/north-america/new-york-city.jpg',
         badge: 'Featured',
       },
     ];
@@ -729,8 +722,7 @@ export class SearchService {
               price: '$520',
               rawPrice: 520,
               tag: 'Flight and Hotel',
-              image:
-                'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=600&auto=format&fit=crop',
+              image: '/images/services/plane.jpg',
               endsIn: '4 hours · 3 left',
               freeCancel: true,
             },
@@ -742,8 +734,7 @@ export class SearchService {
               price: '$680',
               rawPrice: 680,
               tag: 'Limited Offer',
-              image:
-                'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=600&auto=format&fit=crop',
+              image: '/images/middle-east/dubai-marina.jpg',
               endsIn: '6 hours · 2 left',
               freeCancel: true,
             },
@@ -755,8 +746,7 @@ export class SearchService {
               price: '$490',
               rawPrice: 490,
               tag: 'Top Value',
-              image:
-                'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=600&auto=format&fit=crop',
+              image: '/images/europe/paris-and-eiffel-tower.jpg',
               endsIn: '2 hours · 5 left',
               freeCancel: true,
             },
@@ -767,8 +757,7 @@ export class SearchService {
               name: 'London',
               iata: 'LHR',
               price: '$520',
-              image:
-                'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=600&auto=format&fit=crop',
+              image: '/images/services/plane.jpg',
               badge: 'Popular',
             },
             {
@@ -776,8 +765,7 @@ export class SearchService {
               name: 'Dubai',
               iata: 'DXB',
               price: '$680',
-              image:
-                'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=600&auto=format&fit=crop',
+              image: '/images/middle-east/dubai-marina.jpg',
               badge: 'Trending',
             },
             {
@@ -785,8 +773,7 @@ export class SearchService {
               name: 'Paris',
               iata: 'CDG',
               price: '$490',
-              image:
-                'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=600&auto=format&fit=crop',
+              image: '/images/europe/paris-and-eiffel-tower.jpg',
               badge: 'Top Pick',
             },
             {
@@ -794,8 +781,7 @@ export class SearchService {
               name: 'New York',
               iata: 'JFK',
               price: '$750',
-              image:
-                'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop',
+              image: '/images/north-america/new-york-city.jpg',
               badge: 'Featured',
             },
           ],

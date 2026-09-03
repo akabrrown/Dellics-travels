@@ -175,7 +175,7 @@ export default function EsimPage() {
       <PageHero
         title="Instant Global eSIM Data Plans"
         subtitle="Connect seamlessly in 200+ countries with digital eSIM data. Zero plastic, zero roaming shock, instant QR activation."
-        image="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?q=80&w=1600&auto=format&fit=crop"
+        image="/images/services/travels.jpg"
         breadcrumbs={[{ label: "Services", href: "/services" }, { label: "eSIM Data Plans" }]}
       />
 

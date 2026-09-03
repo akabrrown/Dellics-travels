@@ -121,7 +121,7 @@ export const DELLICS_SIGNATURE_TOURS: TourPackage[] = [
     currency: "USD",
     duration: "5 Days / 4 Nights",
     badge: "Tropical Beach",
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=800&auto=format&fit=crop",
+    image: "/images/packages/zanzibar-beach.jpg",
     copy: "Pristine turquoise waters, historic Stone Town walking tours, aromatic organic spice plantation tastings, and private sunset catamaran sailing cruises.",
     includes: [
       "Beachfront 4-Star Resort Accommodation",
@@ -171,7 +171,7 @@ export const DELLICS_SIGNATURE_TOURS: TourPackage[] = [
     currency: "USD",
     duration: "5 Days / 4 Nights",
     badge: "European Romance",
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800&auto=format&fit=crop",
+    image: "/images/europe/paris-and-eiffel-tower.jpg",
     copy: "Priority entrance to the Louvre, Seine river dinner cruise at dusk, and a gourmet walking tour through Montmartre and Le Marais.",
     includes: [
       "Skip-the-Line Louvre Museum Tickets",

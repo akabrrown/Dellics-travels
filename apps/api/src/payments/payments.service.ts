@@ -197,7 +197,7 @@ export class PaymentsService {
                   name: flightTitle,
                   description: flightDesc,
                   images: [
-                    'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop',
+                    `${webUrl}/images/services/plane.jpg`,
                   ],
                 },
                 unit_amount: Math.round(opts.price * 100),
