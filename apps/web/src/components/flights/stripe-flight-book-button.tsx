@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
 import { Plane, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { FlightBookingModal } from "./flight-booking-modal";
 
 interface StripeFlightBookButtonProps {
   origin: string;
@@ -28,16 +28,28 @@ export function StripeFlightBookButton({
   className,
   compact = false,
 }: StripeFlightBookButtonProps) {
-  const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    const params = new URLSearchParams({
+      from: origin,
+      to: destination,
+      departDate: departureDate || "",
+      returnDate: returnDate || "",
+      cabinClass,
+      price: String(price),
+    });
+    router.push(`/flights/book?${params.toString()}`);
+  };
 
   return (
     <>
       {compact ? (
         <Button
           type="button"
-          onClick={() => setModalOpen(true)}
+          onClick={handleNavigate}
           size="sm"
-          className={`rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-8 px-4 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 ${className || ""}`}
+          className={`rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-8 px-4 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer ${className || ""}`}
         >
           <Plane className="size-3 text-white" />
           <span>Select Flight</span>
@@ -45,28 +57,14 @@ export function StripeFlightBookButton({
       ) : (
         <Button
           type="button"
-          onClick={() => setModalOpen(true)}
-          className={`rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-6 shadow-md transition-all active:scale-95 flex items-center gap-2 ${className || ""}`}
+          onClick={handleNavigate}
+          className={`rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-6 shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer ${className || ""}`}
         >
           <Plane className="size-4 text-white" />
           <span>Book Flight</span>
           <ArrowRight className="size-4 ml-1" />
         </Button>
       )}
-
-      <FlightBookingModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        flight={{
-          origin,
-          destination,
-          airline,
-          price,
-          departureDate,
-          returnDate,
-          cabinClass,
-        }}
-      />
     </>
   );
 }

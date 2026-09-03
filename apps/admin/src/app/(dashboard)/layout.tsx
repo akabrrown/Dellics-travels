@@ -160,7 +160,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative h-10 w-12 flex items-center justify-center shrink-0">
               <Image
-                src="/Logo.png"
+                src="/logo.jpeg"
                 alt="Dellics Travels"
                 fill
                 className="object-contain"

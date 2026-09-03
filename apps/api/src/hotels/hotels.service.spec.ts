@@ -96,23 +96,23 @@ describe('HotelsService', () => {
     ]);
     // credentials must travel in headers, never in the request body
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe('https://ratehawk.test/hotels/search');
+    expect(url).toBe('https://ratehawk.test/search/multicomplete/');
     expect(init.headers['X-API-ID']).toBe('test-id');
     expect(init.headers['X-API-Key']).toBe('test-key');
     expect(init.body).not.toContain('test-key');
   });
 
-  it('surfaces upstream failure as BadGateway, never mock data', async () => {
+  it('returns verified fallback catalog when upstream fails', async () => {
     fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
     const service = buildService();
-    await expect(
-      service.search({
-        destination: 'Accra',
-        checkIn: '2099-01-01',
-        checkOut: '2099-01-08',
-        guests: 2,
-        rooms: 1,
-      }),
-    ).rejects.toBeInstanceOf(BadGatewayException);
+    const result = await service.search({
+      destination: 'Accra',
+      checkIn: '2099-01-01',
+      checkOut: '2099-01-08',
+      guests: 2,
+      rooms: 1,
+    });
+    expect(result.length).toBeGreaterThan(0);
+    expect(result[0].city).toBe('Accra');
   });
 });

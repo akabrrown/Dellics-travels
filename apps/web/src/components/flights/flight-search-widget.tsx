@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Trash2, Search, ArrowRightLeft, Calendar as CalendarIcon, Users, Plane, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PassengerSelector } from "./passenger-selector";
 import { AirportCombobox } from "@/components/ui/airport-combobox";
-import { FlightBookingModal } from "./flight-booking-modal";
 import type { PassengerCounts } from "@/lib/passengers";
 import type { TripType } from "@/lib/whatsapp";
 
@@ -24,6 +24,7 @@ interface MultiCityLeg {
 }
 
 export function FlightSearchWidget() {
+  const router = useRouter();
   const [tripType, setTripType] = useState<TripType>("roundtrip");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -36,7 +37,6 @@ export function FlightSearchWidget() {
   const [passengers, setPassengers] = useState<PassengerCounts>({ adults: 1, children: 0, infants: 0 });
   const [cabinClass, setCabinClass] = useState("Economy");
   const [error, setError] = useState<string | null>(null);
-  const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   function handleSwapAirports() {
     const temp = from;
@@ -191,13 +191,13 @@ export function FlightSearchWidget() {
             <Label htmlFor="flight-depart" className="text-[11px] font-bold text-slate-700 mb-1 block">
               Departure Date
             </Label>
-            <Input
-              id="flight-depart"
-              type="date"
-              value={departDate}
-              onChange={(e) => setDepartDate(e.target.value)}
-              className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium shadow-2xs"
-            />
+              <Input
+                id="flight-depart"
+                type="date"
+                value={departDate}
+                onChange={(e) => setDepartDate(e.target.value)}
+                className="h-10 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 shadow-2xs"
+              />
           </div>
 
           {/* 4. Return Date (Only for Round Trip) */}
@@ -211,7 +211,7 @@ export function FlightSearchWidget() {
                 type="date"
                 value={returnDate}
                 onChange={(e) => setReturnDate(e.target.value)}
-                className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium shadow-2xs"
+                className="h-10 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 shadow-2xs"
               />
             </div>
           )}
@@ -263,7 +263,7 @@ export function FlightSearchWidget() {
                   type="date"
                   value={leg.departDate}
                   onChange={(e) => updateMultiCityLeg(index, { departDate: e.target.value })}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900"
                 />
               </div>
             </div>
@@ -299,7 +299,17 @@ export function FlightSearchWidget() {
               return;
             }
             setError(null);
-            setBookingModalOpen(true);
+            const params = new URLSearchParams({
+              from: from.trim(),
+              to: to.trim(),
+              departDate: departDate,
+              returnDate: tripType === "roundtrip" ? returnDate : "",
+              tripType: tripType,
+              cabinClass: cabinClass,
+              adults: String(passengers.adults || 1),
+              children: String(passengers.children || 0),
+            });
+            router.push(`/flights/book?${params.toString()}`);
           }}
           className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover font-bold text-white shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
         >
@@ -308,19 +318,6 @@ export function FlightSearchWidget() {
           <ArrowRight className="size-4 ml-0.5" />
         </Button>
       </div>
-
-      <FlightBookingModal
-        isOpen={bookingModalOpen}
-        onClose={() => setBookingModalOpen(false)}
-        flight={{
-          origin: from.match(/\(([^)]+)\)/)?.[1] || from.slice(0, 3).toUpperCase() || "ACC",
-          destination: to.match(/\(([^)]+)\)/)?.[1] || to.slice(0, 3).toUpperCase() || "LHR",
-          departureDate: departDate,
-          returnDate: tripType === "roundtrip" ? returnDate : undefined,
-          cabinClass,
-          price: 850 * (passengers.adults || 1),
-        }}
-      />
     </form>
   );
 }

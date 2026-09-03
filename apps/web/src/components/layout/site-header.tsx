@@ -97,7 +97,7 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-200",
+        "sticky top-0 z-30 transition-all duration-200",
         scrolled
           ? "bg-navy/95 backdrop-blur-md shadow-lg border-b border-white/10 py-1"
           : "bg-navy py-2",
@@ -112,7 +112,7 @@ export function SiteHeader() {
         >
           <div className="relative h-14 w-24 shrink-0 transition-transform group-hover:scale-105">
             <Image
-              src="/Logo.png"
+              src="/logo.jpeg"
               alt={`${SITE.name} logo`}
               fill
               className="object-contain"
@@ -366,7 +366,7 @@ export function SiteHeader() {
                 <div className="flex items-center gap-3">
                   <div className="relative h-12 w-20 shrink-0">
                     <Image
-                      src="/Logo.png"
+                      src="/logo.jpeg"
                       alt={SITE.name}
                       fill
                       className="object-contain"

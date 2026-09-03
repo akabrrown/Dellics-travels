@@ -114,7 +114,7 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
           role="dialog"
           aria-modal="true"
           aria-label={openItem.alt}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-navy-dark/95 backdrop-blur-md p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-navy-dark/95 backdrop-blur-md p-4"
           onClick={(event) => {
             if (event.target === event.currentTarget) close();
           }}

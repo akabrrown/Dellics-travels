@@ -123,7 +123,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
@@ -293,7 +293,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="e.g. Kwame Mensah"
-                  className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs font-medium focus:border-navy"
+                  className="w-full h-11 px-3 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-navy"
                 />
               </div>
 
@@ -306,7 +306,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="kwame@example.com"
-                    className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs font-medium focus:border-navy"
+                    className="w-full h-11 px-3 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-navy"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -317,7 +317,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+233 55 205 4174"
-                    className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs font-medium focus:border-navy"
+                    className="w-full h-11 px-3 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-navy"
                   />
                 </div>
               </div>
@@ -331,7 +331,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
                   placeholder="e.g. Vegetarian meals, child booster seat, wheelchair assistance"
-                  className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs font-medium focus:border-navy"
+                  className="w-full h-11 px-3 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-navy"
                 />
               </div>
 

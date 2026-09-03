@@ -55,7 +55,7 @@ export default function AdminLogin() {
         <div className="flex flex-col items-center text-center">
           <div className="relative h-16 w-24 flex items-center justify-center mb-4">
             <Image
-              src="/Logo.png"
+              src="/logo.jpeg"
               alt="Dellics Travels"
               fill
               className="object-contain"

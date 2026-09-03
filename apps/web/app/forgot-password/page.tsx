@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
               <Link href="/" aria-label="Dellics Travels Home">
                 <div className="relative h-14 w-20">
                   <Image
-                    src="/Logo.png"
+                    src="/logo.jpeg"
                     alt="Dellics Travels"
                     fill
                     className="object-contain"

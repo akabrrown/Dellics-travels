@@ -47,6 +47,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Universal Form Input Typography & Visibility */
+input, select, textarea {
+  color: #0f172a !important;
+  accent-color: #f4740d;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+input[type="date"], input[type="datetime-local"], input[type="time"] {
+  color: #0f172a !important;
+  color-scheme: light;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins), system-ui, sans-serif;
   letter-spacing: -0.02em;

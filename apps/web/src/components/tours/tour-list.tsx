@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
   MapPin,
@@ -15,19 +16,22 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TourPackage } from "@/lib/tours";
-import { TourBookingModal } from "./tour-booking-modal";
 
 interface TourListProps {
   tours: TourPackage[];
 }
 
 export function TourList({ tours }: TourListProps) {
-  const [selectedTour, setSelectedTour] = useState<TourPackage | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
 
   const handleBookWithPaystack = (tour: TourPackage) => {
-    setSelectedTour(tour);
-    setModalOpen(true);
+    const params = new URLSearchParams({
+      id: tour.id || "tour-01",
+      name: tour.name,
+      destination: tour.destination,
+      price: tour.price,
+    });
+    router.push(`/tours/book?${params.toString()}`);
   };
 
   return (
@@ -153,12 +157,6 @@ export function TourList({ tours }: TourListProps) {
           </article>
         ))}
       </div>
-
-      <TourBookingModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        tour={selectedTour}
-      />
     </>
   );
 }

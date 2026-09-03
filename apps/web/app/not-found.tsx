@@ -11,7 +11,7 @@ export default function NotFound() {
       <div className="relative z-10 max-w-md mx-auto space-y-6">
         <div className="size-20 rounded-3xl bg-white p-2 shadow-2xl border border-white/20 mx-auto flex items-center justify-center">
           <Image
-            src="/Logo.png"
+            src="/logo.jpeg"
             alt="Dellics Travels"
             width={72}
             height={72}

@@ -64,7 +64,7 @@ export function SiteFooter() {
             <Link href="/" className="inline-flex items-center group" aria-label="Dellics Travels Home">
               <div className="relative h-16 w-24 shrink-0 transition-transform group-hover:scale-105">
                 <Image
-                  src="/Logo.png"
+                  src="/logo.jpeg"
                   alt={`${SITE.name} logo`}
                   fill
                   className="object-contain"

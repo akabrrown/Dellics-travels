@@ -110,7 +110,7 @@ export default function OnboardingPage() {
         <Link href="/" className="inline-block">
           <div className="relative h-10 w-24">
             <Image
-              src="/Logo.png"
+              src="/logo.jpeg"
               alt="Dellics Travels"
               fill
               className="object-contain"
