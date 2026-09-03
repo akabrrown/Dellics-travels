@@ -4,7 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { HotelResult, HotelSearchInput } from './hotels.types';
+import { HotelResult, HotelRoomRate, HotelSearchInput } from './hotels.types';
 
 const REQUEST_TIMEOUT_MS = 14_000;
 
@@ -24,7 +24,11 @@ export class HotelsService {
       ? new Date(new Date(checkIn).getTime() + 86400000 * 3).toISOString().slice(0, 10)
       : input.checkOut;
 
-    const cacheKey = `${(input.destination || '').trim().toLowerCase()}_${checkIn}_${checkOut}_${input.guests || 2}`;
+    const adultsCount = input.adults || input.guests || 2;
+    const childrenCount = input.children || 0;
+    const childrenAges = Array.from({ length: childrenCount }, () => 7);
+
+    const cacheKey = `${(input.destination || '').trim().toLowerCase()}_${checkIn}_${checkOut}_${adultsCount}_${childrenCount}_${input.rooms || 1}`;
     const cached = this.serpCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < 10 * 60 * 1000) {
       return cached.data;
@@ -50,7 +54,7 @@ export class HotelsService {
           checkout: checkOut,
           residency: 'gb',
           language: 'en',
-          guests: [{ adults: input.guests || 2, children: [] }],
+          guests: [{ adults: adultsCount, children: childrenAges }],
           region_id: regionId,
           currency: 'USD',
         });
@@ -62,7 +66,7 @@ export class HotelsService {
           checkout: checkOut,
           residency: 'gb',
           language: 'en',
-          guests: [{ adults: input.guests || 2, children: [] }],
+          guests: [{ adults: adultsCount, children: childrenAges }],
           ids: hotelIds,
           currency: 'USD',
         });
@@ -92,7 +96,7 @@ export class HotelsService {
             const rateCurrency =
               h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code || 'USD';
 
-            // Extract all real photos directly from RateHawk API
+            // Extract real photos directly from RateHawk API
             const apiImages: string[] = [];
             if (Array.isArray(info?.images)) {
               for (const img of info.images) {
@@ -106,6 +110,35 @@ export class HotelsService {
                 if (url && !apiImages.includes(url)) apiImages.push(this.sanitizeImageUrl(url));
               }
             }
+
+            // Extract real live room rates from RateHawk SERP response
+            const liveRates: HotelRoomRate[] = (h.rates || []).map((r: any) => ({
+              matchHash: r.match_hash || '',
+              roomName: r.room_data_trans?.main_name || r.room_name || 'Standard Room',
+              meal:
+                r.meal === 'breakfast'
+                  ? 'Breakfast Included'
+                  : r.meal === 'all-inclusive'
+                  ? 'All Inclusive'
+                  : 'Room Only',
+              price: Math.round(
+                parseFloat(
+                  r.payment_options?.payment_types?.[0]?.amount ||
+                    r.daily_prices?.[0] ||
+                    '180'
+                )
+              ),
+              currency:
+                r.payment_options?.payment_types?.[0]?.currency_code || 'USD',
+              freeCancellationBefore:
+                r.payment_options?.payment_types?.[0]?.cancellation_penalties
+                  ?.free_cancellation_before || undefined,
+              beddingType:
+                r.room_data_trans?.bedding_type ||
+                r.amenities_data?.[0] ||
+                '1 Double Bed',
+              amenities: Array.isArray(r.amenities_data) ? r.amenities_data : [],
+            }));
 
             return {
               id: String(h.id || h.hid),
@@ -122,6 +155,7 @@ export class HotelsService {
                 info?.description ||
                   `Live RateHawk accommodation in ${input.destination} with instant B2B confirmation.`
               ),
+              rates: liveRates,
             } as HotelResult;
           })
         );

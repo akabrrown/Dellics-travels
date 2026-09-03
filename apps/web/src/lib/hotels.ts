@@ -1,6 +1,17 @@
 import { postJson } from "./api";
 import type { HotelSearchInput } from "./schemas";
 
+export interface HotelRoomRate {
+  matchHash: string;
+  roomName: string;
+  meal: string;
+  price: number;
+  currency: string;
+  freeCancellationBefore?: string;
+  beddingType?: string;
+  amenities?: string[];
+}
+
 // Must stay in sync with HotelResult in apps/api/src/hotels/hotels.types.ts
 export interface Hotel {
   id: string;
@@ -14,6 +25,7 @@ export interface Hotel {
   images: string[];
   amenities: string[];
   description: string;
+  rates?: HotelRoomRate[];
 }
 
 export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {

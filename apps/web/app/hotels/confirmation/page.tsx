@@ -27,9 +27,12 @@ interface HotelConfirmationProps {
     checkIn?: string;
     checkOut?: string;
     nights?: string;
+    adults?: string;
+    children?: string;
     guests?: string;
     rooms?: string;
     roomType?: string;
+    meal?: string;
     bedType?: string;
     name?: string;
     email?: string;
@@ -56,9 +59,11 @@ export default async function HotelConfirmationPage({
     params.checkOut ||
     new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10);
   const nights = params.nights || "5";
-  const guests = params.guests || "2";
+  const adults = params.adults || params.guests || "2";
+  const children = params.children || "0";
   const rooms = params.rooms || "1";
   const roomType = params.roomType || "Deluxe King Suite";
+  const meal = params.meal || "Breakfast Included";
   const bedType = params.bedType || "1 Extra-Large King Bed";
   const name = params.name || "Valued Guest";
   const email = params.email || "guest@example.com";
@@ -67,7 +72,7 @@ export default async function HotelConfirmationPage({
   const currency = params.currency || "USD";
   const paymentStatus = params.paymentStatus || "PAID ONLINE";
 
-  const qrData = `LPA:DELLICS-HOTEL-VOUCHER$REF:${reference}$HOTEL:${hotelName}$CHECKIN:${checkIn}$CHECKOUT:${checkOut}$GUESTS:${guests}`;
+  const qrData = `LPA:DELLICS-HOTEL-VOUCHER$REF:${reference}$HOTEL:${hotelName}$CHECKIN:${checkIn}$CHECKOUT:${checkOut}$ADULTS:${adults}$CHILDREN:${children}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
     qrData
   )}`;
@@ -154,19 +159,23 @@ export default async function HotelConfirmationPage({
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block font-medium">Guests</span>
+                <span className="text-slate-400 block font-medium">Travelers</span>
                 <strong className="text-navy text-sm font-bold block mt-0.5">
-                  {guests} Guests
+                  {adults} Adults{Number(children) > 0 ? `, ${children} Children` : ""}
                 </strong>
                 <span className="text-[10px] text-slate-500">Lead: {name}</span>
               </div>
             </div>
 
-            {/* Room Category & Amenities */}
+            {/* Room Category & Meal Inclusions */}
             <div className="rounded-2xl border border-slate-100 p-4 space-y-2 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-medium">Room Category:</span>
                 <span className="font-bold text-navy">{roomType}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 font-medium">Meal Plan:</span>
+                <span className="font-semibold text-emerald-600">{meal}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-medium">Bed Configuration:</span>

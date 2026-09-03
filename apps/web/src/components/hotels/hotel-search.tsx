@@ -10,15 +10,7 @@ import {
   Building2,
   MapPin,
   CheckCircle2,
-  Wifi,
-  Sparkles,
-  ShieldCheck,
-  Coffee,
-  Waves,
   SlidersHorizontal,
-  ChevronRight,
-  BedDouble,
-  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +37,8 @@ function HotelSearchFormInner({
       checkIn: string;
       checkOut: string;
       guests: number;
+      adults: number;
+      children: number;
       rooms: number;
     }
   ) => void;
@@ -62,7 +56,8 @@ function HotelSearchFormInner({
     searchParams.get("checkOut") ||
       new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10)
   );
-  const [guests, setGuests] = useState(2);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -73,7 +68,7 @@ function HotelSearchFormInner({
     const cIn = searchParams.get("checkIn") || checkIn;
     const cOut = searchParams.get("checkOut") || checkOut;
 
-    executeSearch(dest, cIn, cOut, guests, rooms, false);
+    executeSearch(dest, cIn, cOut, adults, children, rooms, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -81,17 +76,21 @@ function HotelSearchFormInner({
     dest: string,
     cIn: string,
     cOut: string,
-    gCount: number,
+    adultsCount: number,
+    childrenCount: number,
     rCount: number,
     scroll: boolean = true
   ) {
     const targetDest = dest.trim() || "Dubai";
+    const totalGuests = adultsCount + childrenCount;
 
     const parsed = hotelSearchSchema.safeParse({
       destination: targetDest,
       checkIn: cIn,
       checkOut: cOut,
-      guests: gCount,
+      guests: totalGuests,
+      adults: adultsCount,
+      children: childrenCount,
       rooms: rCount,
     });
 
@@ -108,7 +107,9 @@ function HotelSearchFormInner({
       destination: targetDest,
       checkIn: cIn,
       checkOut: cOut,
-      guests: gCount,
+      guests: totalGuests,
+      adults: adultsCount,
+      children: childrenCount,
       rooms: rCount,
     };
     onStatusChange({ state: "loading" }, meta);
@@ -142,7 +143,7 @@ function HotelSearchFormInner({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    executeSearch(destination, checkIn, checkOut, guests, rooms, true);
+    executeSearch(destination, checkIn, checkOut, adults, children, rooms, true);
   }
 
   return (
@@ -210,15 +211,17 @@ function HotelSearchFormInner({
           <div className="flex items-center h-11">
             <HotelGuestRoomSelector
               value={{
-                adults: guests,
-                children: 0,
-                rooms: rooms,
+                adults,
+                children,
+                rooms,
                 roomType: "Standard",
               }}
               onChange={(next) => {
-                setGuests(next.adults + next.children);
+                setAdults(next.adults);
+                setChildren(next.children);
                 setRooms(next.rooms);
               }}
+              showRoomType={false}
             />
           </div>
         </div>
@@ -233,26 +236,41 @@ function HotelSearchFormInner({
         </p>
       ) : null}
 
-      <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
-          <span>Direct B2B Wholesale Rates · 100% Guaranteed Room Availability</span>
+      <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
+        <div className="flex items-center gap-4 text-slate-500 text-xs font-medium">
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="size-3.5 text-emerald-600" />
+            RateHawk Wholesale Rates
+          </span>
+          <span className="hidden sm:inline-flex items-center gap-1.5">
+            <CheckCircle2 className="size-3.5 text-emerald-600" />
+            Instant B2B Confirmation
+          </span>
         </div>
 
         <Button
           type="submit"
           size="lg"
           disabled={isSearching}
-          className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 text-xs h-11 shadow-md cursor-pointer active:scale-95 transition-all"
+          className="w-full sm:w-auto px-8 h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
         >
-          {isSearching ? "Searching Live Inventory…" : "Search Stays & Suites"}
+          {isSearching ? (
+            <>
+              <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              <span>Checking Live Inventory...</span>
+            </>
+          ) : (
+            <>
+              <span>Search Stays & Suites</span>
+              <ArrowRight className="size-3.5" />
+            </>
+          )}
         </Button>
       </div>
     </form>
   );
 }
 
-/* ─── Search Form wrapped in Suspense (inside PageHero) ─── */
 export function HotelSearchForm({
   onStatusChange,
 }: {
@@ -263,6 +281,8 @@ export function HotelSearchForm({
       checkIn: string;
       checkOut: string;
       guests: number;
+      adults: number;
+      children: number;
       rooms: number;
     }
   ) => void;
@@ -271,7 +291,7 @@ export function HotelSearchForm({
     <Suspense
       fallback={
         <div className="rounded-3xl bg-white/85 p-6 text-center text-slate-500 text-xs font-semibold">
-          Loading Stays & Suites...
+          Loading Search Engine...
         </div>
       }
     >
@@ -286,14 +306,18 @@ export function HotelSearchResults({
   destination,
   checkIn,
   checkOut,
-  guests,
-  rooms,
+  guests = 2,
+  adults = 2,
+  children = 0,
+  rooms = 1,
 }: {
   status: Status;
   destination: string;
   checkIn: string;
   checkOut: string;
   guests: number;
+  adults?: number;
+  children?: number;
   rooms: number;
 }) {
   const [filterRating, setFilterRating] = useState<number | null>(null);
@@ -334,27 +358,28 @@ export function HotelSearchResults({
               </p>
             </div>
           </div>
+
           <div
             className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
             aria-busy="true"
-            aria-label="Loading verified hotels"
+            aria-label="Loading results"
           >
             {[0, 1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="overflow-hidden rounded-3xl bg-white border border-slate-200 shadow-xs"
+                className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
               >
-                <Skeleton className="h-52 w-full" />
+                <Skeleton className="h-56 w-full" />
                 <div className="space-y-3 p-5">
                   <div className="flex justify-between items-center">
-                    <Skeleton className="h-4 w-1/3" />
-                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/3 rounded-full" />
+                    <Skeleton className="h-4 w-16 rounded-full" />
                   </div>
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-6 w-3/4 rounded-lg" />
+                  <Skeleton className="h-3 w-1/2 rounded-md" />
                   <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
-                    <Skeleton className="h-6 w-1/3" />
-                    <Skeleton className="h-9 w-28 rounded-xl" />
+                    <Skeleton className="h-7 w-24 rounded-lg" />
+                    <Skeleton className="h-9 w-28 rounded-full" />
                   </div>
                 </div>
               </div>
@@ -387,7 +412,8 @@ export function HotelSearchResults({
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
                 {displayedHotels.length} verified properties found for{" "}
-                {nightsCount} nights · {guests} {guests === 1 ? "guest" : "guests"}
+                {nightsCount} nights · {adults} {adults === 1 ? "adult" : "adults"}
+                {children > 0 ? `, ${children} ${children === 1 ? "child" : "children"}` : ""} · {rooms} {rooms === 1 ? "room" : "rooms"}
               </p>
             </div>
 
@@ -418,7 +444,7 @@ export function HotelSearchResults({
                 }`}
               >
                 <Star className="size-3 fill-amber-400 text-amber-400" />
-                5-Star Only
+                5 Stars
               </button>
               <button
                 type="button"
@@ -476,8 +502,7 @@ export function HotelSearchResults({
                     <div className="absolute top-4 left-4 flex items-center gap-1 rounded-full bg-navy/90 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-white shadow-xs">
                       <Star className="size-3 fill-amber-400 text-amber-400" />
                       <span>
-                        {hotel.rating > 0 ? `${hotel.rating}.0` : "4.5"} Star
-                        Hotel
+                        {hotel.rating > 0 ? `${hotel.rating}.0` : "4.0"} Star Hotel
                       </span>
                     </div>
 
@@ -559,10 +584,14 @@ export function HotelSearchResults({
                           checkIn
                         )}&checkOut=${encodeURIComponent(
                           checkOut
-                        )}&guests=${guests}&rooms=${rooms}&price=${hotel.price}&currency=${
+                        )}&adults=${adults}&children=${children}&guests=${
+                          adults + children
+                        }&rooms=${rooms}&price=${hotel.price}&currency=${
                           hotel.currency || "USD"
                         }&rating=${hotel.rating}&image=${encodeURIComponent(
                           primaryImage || ""
+                        )}&rates=${encodeURIComponent(
+                          JSON.stringify(hotel.rates || [])
                         )}`}
                         className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs px-5 py-2.5 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer"
                       >
@@ -589,6 +618,8 @@ export function HotelSearchPage() {
     checkIn: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10),
     checkOut: new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10),
     guests: 2,
+    adults: 2,
+    children: 0,
     rooms: 1,
   });
 
@@ -600,6 +631,8 @@ export function HotelSearchPage() {
         checkIn: string;
         checkOut: string;
         guests: number;
+        adults: number;
+        children: number;
         rooms: number;
       }
     ) => {
@@ -618,6 +651,8 @@ export function HotelSearchPage() {
         checkIn={meta.checkIn}
         checkOut={meta.checkOut}
         guests={meta.guests}
+        adults={meta.adults}
+        children={meta.children}
         rooms={meta.rooms}
       />
     </>

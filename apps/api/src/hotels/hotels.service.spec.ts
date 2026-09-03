@@ -124,6 +124,18 @@ describe('HotelsService', () => {
         images: ['https://cdn.test/1.jpg'],
         amenities: ['WiFi', 'Pool'],
         description: 'Luxury hotel.',
+        rates: [
+          {
+            amenities: [],
+            beddingType: '1 Double Bed',
+            currency: 'USD',
+            freeCancellationBefore: undefined,
+            matchHash: '',
+            meal: 'Room Only',
+            price: 1540,
+            roomName: 'Standard Room',
+          },
+        ],
       },
     ]);
     // credentials must travel in headers, never in the request body

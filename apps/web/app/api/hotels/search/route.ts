@@ -99,9 +99,13 @@ export async function POST(req: NextRequest) {
     const checkOut = (!rawCheckOut || rawCheckOut <= checkIn)
       ? defaultCheckOut
       : rawCheckOut;
-    const guestsCount = Number(body.guests) || 2;
 
-    const cacheKey = `${destination.toLowerCase()}_${checkIn}_${checkOut}_${guestsCount}`;
+    const adultsCount = Number(body.adults) || Number(body.guests) || 2;
+    const childrenCount = Number(body.children) || 0;
+    const childrenAges = Array.from({ length: childrenCount }, () => 7);
+    const roomsCount = Number(body.rooms) || 1;
+
+    const cacheKey = `${destination.toLowerCase()}_${checkIn}_${checkOut}_${adultsCount}_${childrenCount}_${roomsCount}`;
     const cached = serpCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
       return NextResponse.json(cached.data);
@@ -132,7 +136,7 @@ export async function POST(req: NextRequest) {
           checkout: checkOut,
           residency: "gb",
           language: "en",
-          guests: [{ adults: guestsCount, children: [] }],
+          guests: [{ adults: adultsCount, children: childrenAges }],
           region_id: regionId,
           currency: "USD",
         });
@@ -147,7 +151,7 @@ export async function POST(req: NextRequest) {
           checkout: checkOut,
           residency: "gb",
           language: "en",
-          guests: [{ adults: guestsCount, children: [] }],
+          guests: [{ adults: adultsCount, children: childrenAges }],
           ids: hotelIds,
           currency: "USD",
         });
@@ -183,7 +187,7 @@ export async function POST(req: NextRequest) {
             h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code ||
             "USD";
 
-          // Extract images directly from RateHawk API
+          // Extract real photos directly from RateHawk API
           const apiImages: string[] = [];
           if (Array.isArray(info?.images)) {
             for (const img of info.images) {
@@ -197,6 +201,35 @@ export async function POST(req: NextRequest) {
               if (url && !apiImages.includes(url)) apiImages.push(sanitizeImageUrl(url));
             }
           }
+
+          // Extract real live room rates from RateHawk SERP response
+          const liveRates = (h.rates || []).map((r: any) => ({
+            matchHash: r.match_hash || "",
+            roomName: r.room_data_trans?.main_name || r.room_name || "Standard Room",
+            meal:
+              r.meal === "breakfast"
+                ? "Breakfast Included"
+                : r.meal === "all-inclusive"
+                ? "All Inclusive"
+                : "Room Only",
+            price: Math.round(
+              parseFloat(
+                r.payment_options?.payment_types?.[0]?.amount ||
+                  r.daily_prices?.[0] ||
+                  "180"
+              )
+            ),
+            currency:
+              r.payment_options?.payment_types?.[0]?.currency_code || "USD",
+            freeCancellationBefore:
+              r.payment_options?.payment_types?.[0]?.cancellation_penalties
+                ?.free_cancellation_before || undefined,
+            beddingType:
+              r.room_data_trans?.bedding_type ||
+              r.amenities_data?.[0] ||
+              "1 Double Bed",
+            amenities: Array.isArray(r.amenities_data) ? r.amenities_data : [],
+          }));
 
           return {
             id: String(h.id || h.hid),
@@ -213,6 +246,7 @@ export async function POST(req: NextRequest) {
               info?.description ||
                 `Live verified accommodation in ${destination} via direct RateHawk B2B partnership.`
             ),
+            rates: liveRates,
           };
         })
       );

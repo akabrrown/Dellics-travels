@@ -52,11 +52,24 @@ export default function HotelsPage() {
     checkIn: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10),
     checkOut: new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10),
     guests: 2,
+    adults: 2,
+    children: 0,
     rooms: 1,
   });
 
   const handleStatusChange = useCallback(
-    (newStatus: Status, newMeta: { destination: string; checkIn: string; checkOut: string; guests: number; rooms: number }) => {
+    (
+      newStatus: Status,
+      newMeta: {
+        destination: string;
+        checkIn: string;
+        checkOut: string;
+        guests: number;
+        adults: number;
+        children: number;
+        rooms: number;
+      }
+    ) => {
       setStatus(newStatus);
       setMeta(newMeta);
     },
@@ -79,6 +92,8 @@ export default function HotelsPage() {
         checkIn={meta.checkIn}
         checkOut={meta.checkOut}
         guests={meta.guests}
+        adults={meta.adults}
+        children={meta.children}
         rooms={meta.rooms}
       />
 

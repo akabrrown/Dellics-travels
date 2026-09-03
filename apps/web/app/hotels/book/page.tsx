@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   CreditCard,
   ArrowRight,
-  ArrowLeft,
   CheckCircle2,
   Loader2,
   Lock,
@@ -30,13 +29,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { toast } from "sonner";
+import type { HotelRoomRate } from "@/lib/hotels";
 
 function HotelBookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
 
-  // URL query params
+  // Search parameters from URL
   const hotelId = searchParams.get("id") || "astoria_apartments_7";
   const hotelName = searchParams.get("name") || "Astoria Luxury Suites";
   const location = searchParams.get("location") || "Downtown Central District, Dubai";
@@ -46,12 +46,31 @@ function HotelBookingContent() {
   const checkOut =
     searchParams.get("checkOut") ||
     new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10);
-  const guests = parseInt(searchParams.get("guests") || "2", 10) || 2;
+
+  const adults = parseInt(searchParams.get("adults") || "2", 10) || 2;
+  const children = parseInt(searchParams.get("children") || "0", 10) || 0;
+  const totalGuests = adults + children;
   const rooms = parseInt(searchParams.get("rooms") || "1", 10) || 1;
-  const rawPrice = searchParams.get("price") || "380";
+
+  const defaultPrice = parseFloat(searchParams.get("price") || "380") || 380;
   const currency = searchParams.get("currency") || "USD";
   const rating = parseFloat(searchParams.get("rating") || "4.5") || 4.5;
   const image = searchParams.get("image") || "";
+
+  // Parse live RateHawk room rates passed from search
+  const liveRates: HotelRoomRate[] = useMemo(() => {
+    const rawRates = searchParams.get("rates");
+    if (!rawRates) return [];
+    try {
+      const parsed = JSON.parse(rawRates);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch {
+      // Ignore JSON parse error
+    }
+    return [];
+  }, [searchParams]);
 
   // Calculated nights count
   const nightsCount = Math.max(
@@ -62,12 +81,39 @@ function HotelBookingContent() {
     )
   );
 
-  const totalPrice = parseFloat(rawPrice) || 380;
+  // Selected Room Rate State
+  const [selectedRateIndex, setSelectedRateIndex] = useState(0);
+
+  // Active room data derived from live rates or fallback
+  const activeRoom = useMemo(() => {
+    if (liveRates.length > 0 && liveRates[selectedRateIndex]) {
+      const r = liveRates[selectedRateIndex];
+      return {
+        name: r.roomName,
+        meal: r.meal,
+        bed: r.beddingType || "1 Extra-Large King Bed",
+        price: r.price,
+        cancellation: r.freeCancellationBefore
+          ? `Free cancellation before ${new Date(r.freeCancellationBefore).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+          : "Free cancellation (up to 48 hrs before check-in)",
+        amenities: r.amenities?.length ? r.amenities : ["WiFi", "Air Conditioning", "Ensuite Shower"],
+      };
+    }
+    return {
+      name: "Deluxe King Suite",
+      meal: "Breakfast Included",
+      bed: "1 Extra-Large King Bed",
+      price: defaultPrice,
+      cancellation: "Free cancellation (up to 48 hrs before check-in)",
+      amenities: ["WiFi", "Air Conditioning", "Ensuite Shower"],
+    };
+  }, [liveRates, selectedRateIndex, defaultPrice]);
+
+  const totalPrice = activeRoom.price * rooms;
   const nightlyRate = Math.round(totalPrice / nightsCount) || totalPrice;
 
   // Form State
-  const [roomType, setRoomType] = useState("Deluxe King Suite");
-  const [bedType, setBedType] = useState("1 Extra-Large King Bed");
+  const [bedType, setBedType] = useState(activeRoom.bed);
   const [paymentOption, setPaymentOption] = useState<"card" | "hotel">("card");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -75,6 +121,10 @@ function HotelBookingContent() {
   const [country, setCountry] = useState("Ghana");
   const [specialRequests, setSpecialRequests] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    setBedType(activeRoom.bed);
+  }, [activeRoom.bed]);
 
   useEffect(() => {
     if (user) {
@@ -103,10 +153,13 @@ function HotelBookingContent() {
         checkIn,
         checkOut,
         nights: String(nightsCount),
-        guests: String(guests),
+        adults: String(adults),
+        children: String(children),
+        guests: String(totalGuests),
         rooms: String(rooms),
-        roomType,
-        bedType,
+        roomType: activeRoom.name,
+        meal: activeRoom.meal,
+        bedType: bedType || activeRoom.bed,
         name: fullName,
         email,
         phone,
@@ -150,13 +203,13 @@ function HotelBookingContent() {
               Reserve Your Room
             </h1>
             <p className="text-sm text-slate-600 mt-1">
-              Guaranteed reservation with instant confirmation, 24/7 concierge, and zero hidden checkout fees.
+              Live inventory verified directly from RateHawk B2B global database.
             </p>
           </div>
           <div className="flex items-center gap-3 self-start md:self-auto">
             <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full shadow-xs">
               <CheckCircle2 className="size-4 text-emerald-600" />
-              Free Cancellation (up to 48 hrs)
+              {activeRoom.cancellation}
             </span>
           </div>
         </div>
@@ -200,80 +253,158 @@ function HotelBookingContent() {
                     <MapPin className="size-3 text-brand-orange shrink-0" />
                     {location}
                   </p>
+                  <p className="text-xs text-slate-500 font-semibold pt-1">
+                    Booking For:{" "}
+                    <span className="text-navy font-bold">
+                      {adults} {adults === 1 ? "Adult" : "Adults"}
+                      {children > 0 ? `, ${children} ${children === 1 ? "Child" : "Children"}` : ""}
+                    </span>{" "}
+                    ·{" "}
+                    <span className="text-navy font-bold">
+                      {rooms} {rooms === 1 ? "Room" : "Rooms"}
+                    </span>
+                  </p>
                 </div>
               </div>
 
-              {/* Room Category Selection */}
+              {/* Room Category Selection (Live RateHawk Inventory) */}
               <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-display text-base font-bold text-navy flex items-center gap-2">
-                    <BedDouble className="size-4 text-brand-orange" />
-                    1. Select Room Type & Bedding
-                  </h3>
+                  <div>
+                    <h3 className="font-display text-base font-bold text-navy flex items-center gap-2">
+                      <BedDouble className="size-4 text-brand-orange" />
+                      1. Available Rooms & Live Rates
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {liveRates.length > 0
+                        ? `${liveRates.length} live room rate options returned directly from RateHawk for this stay`
+                        : "Select your preferred room category for this accommodation"}
+                    </p>
+                  </div>
                   <span className="text-xs font-bold text-slate-400">Step 1 of 3</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  {[
-                    {
-                      name: "Deluxe King Suite",
-                      desc: "Spacious luxury room with city view, king bed, and ensuite rain shower.",
-                      badge: "Most Popular",
-                    },
-                    {
-                      name: "Executive Twin Room",
-                      desc: "Two twin beds, dedicated workspace, and executive lounge access.",
-                      badge: "Flexible",
-                    },
-                    {
-                      name: "Signature Penthouse Suite",
-                      desc: "Panoramic skyline views, separate living area, and complimentary breakfast.",
-                      badge: "VIP Stay",
-                    },
-                    {
-                      name: "Standard Double Room",
-                      desc: "Comfortable double bed, high-speed WiFi, and 24/7 room service.",
-                      badge: "Best Value",
-                    },
-                  ].map((r) => (
-                    <label
-                      key={r.name}
-                      onClick={() => setRoomType(r.name)}
-                      className={`relative flex flex-col justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer ${
-                        roomType === r.name
-                          ? "border-brand-orange bg-orange-50/20 shadow-xs"
-                          : "border-slate-200 hover:border-slate-300 bg-white"
-                      }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="font-bold text-sm text-navy">{r.name}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">
-                            {r.badge}
-                          </span>
+                {liveRates.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-3.5">
+                    {liveRates.map((rate, idx) => {
+                      const isSelected = selectedRateIndex === idx;
+                      return (
+                        <label
+                          key={`${rate.matchHash || idx}-${rate.roomName}`}
+                          onClick={() => setSelectedRateIndex(idx)}
+                          className={`relative flex flex-col sm:flex-row sm:items-center justify-between p-4.5 rounded-2xl border-2 transition-all cursor-pointer gap-4 ${
+                            isSelected
+                              ? "border-brand-orange bg-orange-50/25 shadow-xs"
+                              : "border-slate-200 hover:border-slate-300 bg-white"
+                          }`}
+                        >
+                          <div className="space-y-1.5 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-display font-bold text-sm text-navy">
+                                {rate.roomName}
+                              </span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md">
+                                {rate.meal}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 font-medium">
+                              {rate.beddingType || "1 Extra-Large Double Bed"} · Free High-Speed WiFi · Ensuite Bathroom
+                            </p>
+                            {rate.freeCancellationBefore ? (
+                              <span className="text-[11px] font-semibold text-emerald-600 block">
+                                ✓ Free cancellation before {new Date(rate.freeCancellationBefore).toLocaleDateString()}
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 shrink-0">
+                            <div className="text-right">
+                              <span className="font-display text-lg font-black text-brand-orange">
+                                ${rate.price.toLocaleString()}
+                              </span>
+                              <span className="text-[11px] font-semibold text-slate-400 block">
+                                {currency} total / {nightsCount} nights
+                              </span>
+                            </div>
+                            <input
+                              type="radio"
+                              name="liveRoomRateRadio"
+                              checked={isSelected}
+                              onChange={() => setSelectedRateIndex(idx)}
+                              className="accent-brand-orange mt-2 size-4"
+                            />
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {[
+                      {
+                        name: "Deluxe King Suite",
+                        desc: "Spacious luxury room with city view, king bed, and ensuite rain shower.",
+                        badge: "Most Popular",
+                        price: defaultPrice,
+                      },
+                      {
+                        name: "Executive Twin Room",
+                        desc: "Two twin beds, dedicated workspace, and executive lounge access.",
+                        badge: "Flexible",
+                        price: Math.round(defaultPrice * 1.1),
+                      },
+                      {
+                        name: "Signature Penthouse Suite",
+                        desc: "Panoramic skyline views, separate living area, and complimentary breakfast.",
+                        badge: "VIP Stay",
+                        price: Math.round(defaultPrice * 1.35),
+                      },
+                      {
+                        name: "Standard Double Room",
+                        desc: "Comfortable double bed, high-speed WiFi, and 24/7 room service.",
+                        badge: "Best Value",
+                        price: Math.round(defaultPrice * 0.9),
+                      },
+                    ].map((r, idx) => (
+                      <label
+                        key={r.name}
+                        onClick={() => setSelectedRateIndex(idx)}
+                        className={`relative flex flex-col justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                          selectedRateIndex === idx
+                            ? "border-brand-orange bg-orange-50/20 shadow-xs"
+                            : "border-slate-200 hover:border-slate-300 bg-white"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <span className="font-bold text-sm text-navy">{r.name}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">
+                              {r.badge}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 leading-relaxed">{r.desc}</p>
                         </div>
-                        <p className="text-xs text-slate-500 leading-relaxed">{r.desc}</p>
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
-                        <span className="flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
-                          <Check className="size-3" /> Breakfast Available
-                        </span>
-                        <input
-                          type="radio"
-                          name="roomTypeRadio"
-                          checked={roomType === r.name}
-                          onChange={() => setRoomType(r.name)}
-                          className="accent-brand-orange"
-                        />
-                      </div>
-                    </label>
-                  ))}
-                </div>
+                        <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                          <span className="font-bold text-brand-orange">
+                            ${r.price.toLocaleString()} USD
+                          </span>
+                          <input
+                            type="radio"
+                            name="roomTypeRadio"
+                            checked={selectedRateIndex === idx}
+                            onChange={() => setSelectedRateIndex(idx)}
+                            className="accent-brand-orange"
+                          />
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
 
                 {/* Bedding Choice */}
                 <div className="pt-3 border-t border-slate-100">
                   <label className="block text-xs font-bold text-navy mb-2">
-                    Preferred Bed Configuration
+                    Confirmed Bed Configuration
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                     {[
@@ -322,7 +453,7 @@ function HotelBookingContent() {
                       className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-medium text-navy placeholder:text-slate-400 focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy"
                     />
                     <span className="text-[10px] text-slate-400 mt-1 block">
-                      Must match government-issued passport / photo ID at check-in.
+                      Must match passport / government ID presented at check-in.
                     </span>
                   </div>
 
@@ -339,7 +470,7 @@ function HotelBookingContent() {
                       className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-medium text-navy placeholder:text-slate-400 focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy"
                     />
                     <span className="text-[10px] text-slate-400 mt-1 block">
-                      Booking voucher & check-in confirmation will be emailed here.
+                      Booking voucher & check-in QR code will be emailed here.
                     </span>
                   </div>
 
@@ -376,13 +507,13 @@ function HotelBookingContent() {
                   </label>
                   <textarea
                     rows={2}
-                    placeholder="e.g. Early check-in requested, high floor room, quiet side away from elevator..."
+                    placeholder="e.g. Traveling with children, early check-in requested, high floor room, quiet side away from elevator..."
                     value={specialRequests}
                     onChange={(e) => setSpecialRequests(e.target.value)}
                     className="w-full rounded-xl border border-slate-200 p-3 text-xs font-medium text-navy placeholder:text-slate-400 focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy resize-none"
                   />
                   <span className="text-[10px] text-slate-400 mt-1 block">
-                    Special requests are transmitted directly to the front desk management.
+                    Special requests are transmitted directly to hotel reception upon booking confirmation.
                   </span>
                 </div>
               </div>
@@ -491,18 +622,31 @@ function HotelBookingContent() {
                   </div>
                 </div>
 
-                {/* Room & Guest Meta */}
+                {/* Room & Guest Meta faithfully matching user choice */}
                 <div className="space-y-2 text-xs text-slate-600">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-400">Selected Room:</span>
                     <span className="font-bold text-navy text-right truncate max-w-[170px]">
-                      {roomType}
+                      {activeRoom.name}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-400">Guests & Rooms:</span>
+                    <span className="text-slate-400">Meal Plan:</span>
+                    <span className="font-semibold text-emerald-600 text-right">
+                      {activeRoom.meal}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400">Travelers:</span>
                     <span className="font-semibold text-navy">
-                      {guests} {guests === 1 ? "Guest" : "Guests"} · {rooms} {rooms === 1 ? "Room" : "Rooms"}
+                      {adults} {adults === 1 ? "Adult" : "Adults"}
+                      {children > 0 ? `, ${children} ${children === 1 ? "Child" : "Children"}` : ""}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400">Rooms:</span>
+                    <span className="font-semibold text-navy">
+                      {rooms} {rooms === 1 ? "Room" : "Rooms"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -515,10 +659,10 @@ function HotelBookingContent() {
                 <div className="pt-4 border-t border-slate-100 space-y-2.5 text-xs">
                   <div className="flex justify-between text-slate-600">
                     <span>
-                      ${nightlyRate.toLocaleString()} × {nightsCount} nights
+                      ${Math.round(totalPrice / nightsCount).toLocaleString()} × {nightsCount} nights
                     </span>
                     <span className="font-bold text-navy">
-                      ${(nightlyRate * nightsCount).toLocaleString()} USD
+                      ${totalPrice.toLocaleString()} {currency}
                     </span>
                   </div>
                   <div className="flex justify-between text-slate-600">
@@ -526,7 +670,7 @@ function HotelBookingContent() {
                     <span className="text-emerald-600 font-semibold">Included</span>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Booking Agency Fee</span>
+                    <span>Booking Agency Surcharge</span>
                     <span className="text-emerald-600 font-semibold">$0.00 (Free)</span>
                   </div>
                   <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
@@ -570,7 +714,7 @@ function HotelBookingContent() {
                     <span>RateHawk Direct B2B Confirmation</span>
                   </div>
                   <p className="text-[10px] text-slate-400">
-                    Your reservation details are transmitted via 256-bit encrypted SSL directly to hotel reception.
+                    Reservation details are transmitted via 256-bit encrypted SSL directly to hotel reception.
                   </p>
                 </div>
               </div>

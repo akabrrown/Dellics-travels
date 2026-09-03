@@ -27,6 +27,8 @@ export const hotelSearchSchema = z
     checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a check-out date"),
     guests: z.number().int().min(1).max(16),
     rooms: z.number().int().min(1).max(8),
+    adults: z.number().int().min(1).max(16).optional(),
+    children: z.number().int().min(0).max(10).optional(),
   })
   .refine((v) => v.checkOut > v.checkIn, {
     message: "Check-out must be after check-in",
