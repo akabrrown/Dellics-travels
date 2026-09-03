@@ -51,26 +51,58 @@ describe('HotelsService', () => {
   });
 
   it('normalizes upstream hotels into the public shape', async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        hotels: [
-          {
-            hotel_id: 'h1',
-            name: 'Marina Bay Grand',
-            stars: 5,
-            address: 'Dubai Marina',
-            city: 'Dubai',
-            country: 'UAE',
-            min_price: 1540,
-            currency: 'GHS',
-            photos: ['https://cdn.test/1.jpg'],
-            amenities: ['WiFi', 'Pool'],
-            description: 'Luxury hotel.',
-          },
-        ],
-      }),
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url.includes('/search/multicomplete/')) {
+        return {
+          ok: true,
+          json: async () => ({
+            data: {
+              regions: [{ id: 6053839, name: 'Dubai', country_code: 'AE' }],
+            },
+          }),
+        };
+      }
+      if (url.includes('/search/serp/region/')) {
+        return {
+          ok: true,
+          json: async () => ({
+            data: {
+              hotels: [
+                {
+                  id: 'h1',
+                  hid: 101,
+                  rates: [
+                    {
+                      payment_options: {
+                        payment_types: [{ amount: '1540', currency_code: 'USD' }],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          }),
+        };
+      }
+      if (url.includes('/hotel/info/')) {
+        return {
+          ok: true,
+          json: async () => ({
+            data: {
+              name: 'Marina Bay Grand',
+              star_rating: 5,
+              address: 'Dubai Marina',
+              region: { name: 'Dubai', country_code: 'UAE' },
+              images: ['https://cdn.test/1.jpg'],
+              amenity_groups: [{ amenities: ['WiFi', 'Pool'] }],
+              description: 'Luxury hotel.',
+            },
+          }),
+        };
+      }
+      return { ok: false, status: 404 };
     });
+
     const service = buildService();
     const result = await service.search({
       destination: 'Dubai',
@@ -88,7 +120,7 @@ describe('HotelsService', () => {
         city: 'Dubai',
         country: 'UAE',
         price: 1540,
-        currency: 'GHS',
+        currency: 'USD',
         images: ['https://cdn.test/1.jpg'],
         amenities: ['WiFi', 'Pool'],
         description: 'Luxury hotel.',
