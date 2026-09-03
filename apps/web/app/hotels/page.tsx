@@ -1,21 +1,22 @@
-import type { Metadata } from "next/types";
+"use client";
+
+import { useState, useCallback } from "react";
 import {
-  Building2,
-  ShieldCheck,
   CreditCard,
-  Headphones,
+  ShieldCheck,
   Sparkles,
+  Headphones,
 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
-import { HotelSearch } from "@/components/hotels/hotel-search";
+import { HotelSearchForm, HotelSearchResults } from "@/components/hotels/hotel-search";
 import { CtaBanner } from "@/components/cta-banner";
 
-export const metadata: Metadata = {
-  title: "Hotels & Stays Worldwide",
-  description:
-    "Search over 3.3 million verified luxury hotels, boutique apartments & beach resorts worldwide with live wholesale rates from RateHawk.",
-};
+type Status =
+  | { state: "idle" }
+  | { state: "loading" }
+  | { state: "error"; message: string }
+  | { state: "done"; hotels: any[] };
 
 const HOTEL_PERKS = [
   {
@@ -45,14 +46,41 @@ const HOTEL_PERKS = [
 ];
 
 export default function HotelsPage() {
+  const [status, setStatus] = useState<Status>({ state: "idle" });
+  const [meta, setMeta] = useState({
+    destination: "",
+    checkIn: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10),
+    checkOut: new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10),
+    guests: 2,
+    rooms: 1,
+  });
+
+  const handleStatusChange = useCallback(
+    (newStatus: Status, newMeta: { destination: string; checkIn: string; checkOut: string; guests: number; rooms: number }) => {
+      setStatus(newStatus);
+      setMeta(newMeta);
+    },
+    []
+  );
+
   return (
     <>
       <PageHero
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Stays" }]}
       >
-        <HotelSearch />
+        <HotelSearchForm onStatusChange={handleStatusChange} />
       </PageHero>
+
+      {/* Results render OUTSIDE the hero — no overflow clipping */}
+      <HotelSearchResults
+        status={status}
+        destination={meta.destination}
+        checkIn={meta.checkIn}
+        checkOut={meta.checkOut}
+        guests={meta.guests}
+        rooms={meta.rooms}
+      />
 
       {/* Verified Booking Perks Strip */}
       <section className="bg-slate-50 py-24 border-t border-slate-200/70">

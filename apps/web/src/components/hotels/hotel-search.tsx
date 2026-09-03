@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -34,11 +34,25 @@ type Status =
   | { state: "error"; message: string }
   | { state: "done"; hotels: Hotel[] };
 
-function HotelSearchForm() {
+/* ─── Search Form (renders inside hero) ─── */
+function HotelSearchFormInner({
+  onStatusChange,
+}: {
+  onStatusChange: (
+    status: Status,
+    meta: {
+      destination: string;
+      checkIn: string;
+      checkOut: string;
+      guests: number;
+      rooms: number;
+    }
+  ) => void;
+}) {
   const searchParams = useSearchParams();
 
   const [destination, setDestination] = useState(
-    searchParams.get("destination") || ""
+    searchParams.get("destination") || "Dubai"
   );
   const [checkIn, setCheckIn] = useState(
     searchParams.get("checkIn") ||
@@ -51,31 +65,30 @@ function HotelSearchForm() {
   const [guests, setGuests] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [fieldError, setFieldError] = useState<string | null>(null);
-  const [status, setStatus] = useState<Status>({ state: "idle" });
-  const [filterRating, setFilterRating] = useState<number | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Auto-search only if URL search parameter is provided
+  // Load initial results on mount or when searchParams change
   useEffect(() => {
-    const dest = searchParams.get("destination");
+    const dest = searchParams.get("destination") || destination || "Dubai";
     const cIn = searchParams.get("checkIn") || checkIn;
     const cOut = searchParams.get("checkOut") || checkOut;
 
-    if (dest && cIn && cOut) {
-      setDestination(dest);
-      executeSearch(dest, cIn, cOut, guests, rooms);
-    }
+    executeSearch(dest, cIn, cOut, guests, rooms, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, []);
 
   async function executeSearch(
     dest: string,
     cIn: string,
     cOut: string,
     gCount: number,
-    rCount: number
+    rCount: number,
+    scroll: boolean = true
   ) {
+    const targetDest = dest.trim() || "Dubai";
+
     const parsed = hotelSearchSchema.safeParse({
-      destination: dest,
+      destination: targetDest,
       checkIn: cIn,
       checkOut: cOut,
       guests: gCount,
@@ -83,30 +96,208 @@ function HotelSearchForm() {
     });
 
     if (!parsed.success) {
-      setFieldError(parsed.error.issues[0]?.message ?? "Please check your search details.");
+      setFieldError(
+        parsed.error.issues[0]?.message ?? "Please check your search details."
+      );
       return;
     }
 
     setFieldError(null);
-    setStatus({ state: "loading" });
+    setIsSearching(true);
+    const meta = {
+      destination: targetDest,
+      checkIn: cIn,
+      checkOut: cOut,
+      guests: gCount,
+      rooms: rCount,
+    };
+    onStatusChange({ state: "loading" }, meta);
+
+    if (scroll) {
+      setTimeout(() => {
+        document
+          .getElementById("hotel-results-section")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
 
     try {
       const hotels = await searchHotels(parsed.data);
-      setStatus({ state: "done", hotels });
+      onStatusChange({ state: "done", hotels }, meta);
     } catch (error) {
-      setStatus({
-        state: "error",
-        message: error instanceof Error ? error.message : "Hotel search failed. Please try again.",
-      });
+      onStatusChange(
+        {
+          state: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Hotel search failed. Please try again.",
+        },
+        meta
+      );
+    } finally {
+      setIsSearching(false);
     }
   }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    executeSearch(destination, checkIn, checkOut, guests, rooms);
+    executeSearch(destination, checkIn, checkOut, guests, rooms, true);
   }
 
-  // Calculate nights
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-3xl bg-white/95 backdrop-blur-xl p-5 sm:p-6 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left w-full max-w-6xl"
+      aria-label="Hotel search"
+    >
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <Label
+            htmlFor="hotel-destination"
+            className="text-[11px] font-bold text-slate-700 mb-1 block"
+          >
+            Destination or Hotel Name
+          </Label>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <Input
+              id="hotel-destination"
+              placeholder="e.g. Dubai, London, Accra, Paris, New York"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              className="pl-9 h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label
+            htmlFor="hotel-checkin"
+            className="text-[11px] font-bold text-slate-700 mb-1 block"
+          >
+            Check-in Date
+          </Label>
+          <Input
+            id="hotel-checkin"
+            type="date"
+            value={checkIn}
+            onChange={(e) => setCheckIn(e.target.value)}
+            className="h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
+          />
+        </div>
+
+        <div>
+          <Label
+            htmlFor="hotel-checkout"
+            className="text-[11px] font-bold text-slate-700 mb-1 block"
+          >
+            Check-out Date
+          </Label>
+          <Input
+            id="hotel-checkout"
+            type="date"
+            value={checkOut}
+            onChange={(e) => setCheckOut(e.target.value)}
+            className="h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
+          />
+        </div>
+
+        <div>
+          <Label className="text-[11px] font-bold text-slate-700 mb-1 block">
+            Guests & Rooms
+          </Label>
+          <div className="flex items-center h-11">
+            <HotelGuestRoomSelector
+              value={{
+                adults: guests,
+                children: 0,
+                rooms: rooms,
+                roomType: "Standard",
+              }}
+              onChange={(next) => {
+                setGuests(next.adults + next.children);
+                setRooms(next.rooms);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {fieldError ? (
+        <p
+          role="alert"
+          className="mt-3 rounded-xl bg-rose-50 border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-700"
+        >
+          {fieldError}
+        </p>
+      ) : null}
+
+      <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+          <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
+          <span>Direct B2B Wholesale Rates · 100% Guaranteed Room Availability</span>
+        </div>
+
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSearching}
+          className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 text-xs h-11 shadow-md cursor-pointer active:scale-95 transition-all"
+        >
+          {isSearching ? "Searching Live Inventory…" : "Search Stays & Suites"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/* ─── Search Form wrapped in Suspense (inside PageHero) ─── */
+export function HotelSearchForm({
+  onStatusChange,
+}: {
+  onStatusChange: (
+    status: Status,
+    meta: {
+      destination: string;
+      checkIn: string;
+      checkOut: string;
+      guests: number;
+      rooms: number;
+    }
+  ) => void;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="rounded-3xl bg-white/85 p-6 text-center text-slate-500 text-xs font-semibold">
+          Loading Stays & Suites...
+        </div>
+      }
+    >
+      <HotelSearchFormInner onStatusChange={onStatusChange} />
+    </Suspense>
+  );
+}
+
+/* ─── Results Section (renders OUTSIDE the hero) ─── */
+export function HotelSearchResults({
+  status,
+  destination,
+  checkIn,
+  checkOut,
+  guests,
+  rooms,
+}: {
+  status: Status;
+  destination: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  rooms: number;
+}) {
+  const [filterRating, setFilterRating] = useState<number | null>(null);
+
   const calculateNights = (inDate: string, outDate: string) => {
     if (!inDate || !outDate) return 5;
     const diff = new Date(outDate).getTime() - new Date(inDate).getTime();
@@ -116,146 +307,59 @@ function HotelSearchForm() {
 
   const nightsCount = calculateNights(checkIn, checkOut);
 
-  // Filtered hotels
   const displayedHotels =
     status.state === "done"
-      ? status.hotels.filter((h) => (filterRating ? h.rating >= filterRating : true))
+      ? status.hotels.filter((h) =>
+          filterRating ? h.rating >= filterRating : true
+        )
       : [];
 
+  const targetCity = destination || "Dubai";
+
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-8">
-      {/* Search Input Card */}
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-3xl bg-white/95 backdrop-blur-xl p-5 sm:p-6 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left"
-        aria-label="Hotel search"
-      >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <Label
-              htmlFor="hotel-destination"
-              className="text-[11px] font-bold text-slate-700 mb-1 block"
-            >
-              Destination or Hotel Name
-            </Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-              <Input
-                id="hotel-destination"
-                placeholder="e.g. Dubai, London, Accra, Paris, New York"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="pl-9 h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label
-              htmlFor="hotel-checkin"
-              className="text-[11px] font-bold text-slate-700 mb-1 block"
-            >
-              Check-in Date
-            </Label>
-            <Input
-              id="hotel-checkin"
-              type="date"
-              value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
-              className="h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
-            />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="hotel-checkout"
-              className="text-[11px] font-bold text-slate-700 mb-1 block"
-            >
-              Check-out Date
-            </Label>
-            <Input
-              id="hotel-checkout"
-              type="date"
-              value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
-              className="h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
-            />
-          </div>
-
-          <div>
-            <Label className="text-[11px] font-bold text-slate-700 mb-1 block">
-              Guests & Rooms
-            </Label>
-            <div className="flex items-center h-11">
-              <HotelGuestRoomSelector
-                value={{
-                  adults: guests,
-                  children: 0,
-                  rooms: rooms,
-                  roomType: "Standard",
-                }}
-                onChange={(next) => {
-                  setGuests(next.adults + next.children);
-                  setRooms(next.rooms);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {fieldError ? (
-          <p
-            role="alert"
-            className="mt-3 rounded-xl bg-rose-50 border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-700"
-          >
-            {fieldError}
-          </p>
-        ) : null}
-
-        <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
-            <span>Direct B2B Wholesale Rates · 100% Guaranteed Room Availability</span>
-          </div>
-
-          <Button
-            type="submit"
-            size="lg"
-            disabled={status.state === "loading"}
-            className="rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 text-xs h-11 shadow-md cursor-pointer active:scale-95 transition-all"
-          >
-            {status.state === "loading" ? "Searching Live Inventory…" : "Search Stays & Suites"}
-          </Button>
-        </div>
-      </form>
-
+    <section
+      id="hotel-results-section"
+      className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 scroll-mt-6"
+    >
       {/* Loading Skeletons */}
-      {status.state === "loading" ? (
-        <div
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-          aria-busy="true"
-          aria-label="Loading verified hotels"
-        >
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="overflow-hidden rounded-3xl bg-white border border-slate-200 shadow-xs"
-            >
-              <Skeleton className="h-52 w-full" />
-              <div className="space-y-3 p-5">
-                <div className="flex justify-between items-center">
-                  <Skeleton className="h-4 w-1/3" />
-                  <Skeleton className="h-4 w-1/4" />
-                </div>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
-                  <Skeleton className="h-6 w-1/3" />
-                  <Skeleton className="h-9 w-28 rounded-xl" />
+      {status.state === "loading" || status.state === "idle" ? (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+            <div>
+              <h2 className="font-display text-xl font-bold text-navy">
+                Checking Live Rates in {targetCity}...
+              </h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Querying direct RateHawk wholesale inventory
+              </p>
+            </div>
+          </div>
+          <div
+            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            aria-busy="true"
+            aria-label="Loading verified hotels"
+          >
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="overflow-hidden rounded-3xl bg-white border border-slate-200 shadow-xs"
+              >
+                <Skeleton className="h-52 w-full" />
+                <div className="space-y-3 p-5">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+                    <Skeleton className="h-6 w-1/3" />
+                    <Skeleton className="h-9 w-28 rounded-xl" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -265,7 +369,9 @@ function HotelSearchForm() {
           role="alert"
           className="rounded-3xl bg-rose-50 border border-rose-200 p-8 text-center"
         >
-          <p className="font-bold text-rose-800 text-base">Unable to load hotel availability</p>
+          <p className="font-bold text-rose-800 text-base">
+            Unable to load hotel availability
+          </p>
           <p className="mt-1 text-xs text-rose-600">{status.message}</p>
         </div>
       ) : null}
@@ -277,10 +383,11 @@ function HotelSearchForm() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
             <div>
               <h2 className="font-display text-xl font-bold text-navy">
-                Available Stays in {destination}
+                Available Stays in {targetCity}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                {displayedHotels.length} verified properties found for {nightsCount} nights · {guests} {guests === 1 ? "guest" : "guests"}
+                {displayedHotels.length} verified properties found for{" "}
+                {nightsCount} nights · {guests} {guests === 1 ? "guest" : "guests"}
               </p>
             </div>
 
@@ -331,11 +438,14 @@ function HotelSearchForm() {
           {/* Hotel Property Grid */}
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
             {displayedHotels.map((hotel) => {
-              const nightRate = Math.round(hotel.price / (nightsCount || 1)) || hotel.price;
+              const nightRate =
+                Math.round(hotel.price / (nightsCount || 1)) || hotel.price;
               const rawImg = hotel.images?.[0] || "";
               const primaryImage = rawImg
-                ? rawImg.replace("{size}", "1024x768").replace("%7Bsize%7D", "1024x768")
-                : "";
+                ? rawImg
+                    .replace("{size}", "1024x768")
+                    .replace("%7Bsize%7D", "1024x768")
+                : "/images/services/hotel-and-airbnb.jpg";
 
               return (
                 <article
@@ -355,7 +465,9 @@ function HotelSearchForm() {
                     ) : (
                       <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
                         <Building2 className="size-12 opacity-40 text-white" />
-                        <span className="text-[11px] font-semibold text-white/60">RateHawk Verified Property</span>
+                        <span className="text-[11px] font-semibold text-white/60">
+                          RateHawk Verified Property
+                        </span>
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent pointer-events-none" />
@@ -363,7 +475,10 @@ function HotelSearchForm() {
                     {/* Star Rating Badge */}
                     <div className="absolute top-4 left-4 flex items-center gap-1 rounded-full bg-navy/90 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-white shadow-xs">
                       <Star className="size-3 fill-amber-400 text-amber-400" />
-                      <span>{hotel.rating > 0 ? `${hotel.rating}.0` : "4.5"} Star Hotel</span>
+                      <span>
+                        {hotel.rating > 0 ? `${hotel.rating}.0` : "4.5"} Star
+                        Hotel
+                      </span>
                     </div>
 
                     {/* RateHawk Verified Badge */}
@@ -374,7 +489,11 @@ function HotelSearchForm() {
                     {/* Location Badge bottom left */}
                     <div className="absolute bottom-3 left-4 right-4 flex items-center gap-1.5 text-xs font-medium text-white/95 line-clamp-1">
                       <MapPin className="size-3.5 text-brand-orange shrink-0" />
-                      <span>{[hotel.address, hotel.city, hotel.country].filter(Boolean).join(", ")}</span>
+                      <span>
+                        {[hotel.address, hotel.city, hotel.country]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </span>
                     </div>
                   </div>
 
@@ -392,17 +511,18 @@ function HotelSearchForm() {
 
                       {/* Amenities Chips */}
                       <div className="mt-3 flex flex-wrap gap-1.5">
-                        {(hotel.amenities?.length ? hotel.amenities.slice(0, 3) : ["Free WiFi", "Swimming Pool", "Breakfast"]).map(
-                          (amenity) => (
-                            <span
-                              key={amenity}
-                              className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 flex items-center gap-1"
-                            >
-                              <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
-                              <span>{amenity}</span>
-                            </span>
-                          )
-                        )}
+                        {(hotel.amenities?.length
+                          ? hotel.amenities.slice(0, 3)
+                          : ["Free WiFi", "Swimming Pool", "Breakfast"]
+                        ).map((amenity) => (
+                          <span
+                            key={amenity}
+                            className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 flex items-center gap-1"
+                          >
+                            <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
+                            <span>{amenity}</span>
+                          </span>
+                        ))}
                       </div>
                     </div>
 
@@ -421,12 +541,23 @@ function HotelSearchForm() {
                           </span>
                         </div>
                         <span className="text-[10px] text-slate-400 block font-medium">
-                          ${hotel.price.toLocaleString()} total for {nightsCount} nights
+                          ${hotel.price.toLocaleString()} total for {nightsCount}{" "}
+                          nights
                         </span>
                       </div>
 
                       <Link
-                        href={`/inquire?service=hotels&hotel=${encodeURIComponent(hotel.name)}&location=${encodeURIComponent([hotel.address, hotel.city, hotel.country].filter(Boolean).join(", "))}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&guests=${guests}&rooms=${rooms}&price=${hotel.price}`}
+                        href={`/inquire?service=hotels&hotel=${encodeURIComponent(
+                          hotel.name
+                        )}&location=${encodeURIComponent(
+                          [hotel.address, hotel.city, hotel.country]
+                            .filter(Boolean)
+                            .join(", ")
+                        )}&checkIn=${encodeURIComponent(
+                          checkIn
+                        )}&checkOut=${encodeURIComponent(
+                          checkOut
+                        )}&guests=${guests}&rooms=${rooms}&price=${hotel.price}`}
                         className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs px-5 py-2.5 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer"
                       >
                         <span>Reserve Room</span>
@@ -440,20 +571,53 @@ function HotelSearchForm() {
           </div>
         </div>
       )}
-    </div>
+    </section>
+  );
+}
+
+/* ─── Full page composition (form + results) ─── */
+export function HotelSearchPage() {
+  const [status, setStatus] = useState<Status>({ state: "idle" });
+  const [meta, setMeta] = useState({
+    destination: "Dubai",
+    checkIn: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10),
+    checkOut: new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10),
+    guests: 2,
+    rooms: 1,
+  });
+
+  const handleStatusChange = useCallback(
+    (
+      newStatus: Status,
+      newMeta: {
+        destination: string;
+        checkIn: string;
+        checkOut: string;
+        guests: number;
+        rooms: number;
+      }
+    ) => {
+      setStatus(newStatus);
+      setMeta(newMeta);
+    },
+    []
+  );
+
+  return (
+    <>
+      <HotelSearchForm onStatusChange={handleStatusChange} />
+      <HotelSearchResults
+        status={status}
+        destination={meta.destination}
+        checkIn={meta.checkIn}
+        checkOut={meta.checkOut}
+        guests={meta.guests}
+        rooms={meta.rooms}
+      />
+    </>
   );
 }
 
 export function HotelSearch() {
-  return (
-    <Suspense
-      fallback={
-        <div className="rounded-3xl bg-white/85 p-6 text-center text-slate-500 text-xs font-semibold">
-          Loading Stays & Suites...
-        </div>
-      }
-    >
-      <HotelSearchForm />
-    </Suspense>
-  );
+  return <HotelSearchPage />;
 }
