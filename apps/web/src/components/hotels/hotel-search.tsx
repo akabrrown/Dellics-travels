@@ -335,7 +335,7 @@ function HotelSearchForm() {
               const rawImg = hotel.images?.[0] || "";
               const primaryImage = rawImg
                 ? rawImg.replace("{size}", "1024x768").replace("%7Bsize%7D", "1024x768")
-                : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80";
+                : "";
 
               return (
                 <article
@@ -343,15 +343,22 @@ function HotelSearchForm() {
                   className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-left"
                 >
                   {/* Photo Hero with Badges */}
-                  <div className="relative h-56 w-full overflow-hidden bg-slate-100">
-                    <Image
-                      src={primaryImage}
-                      alt={hotel.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" />
+                  <div className="relative h-56 w-full overflow-hidden bg-slate-900 flex items-center justify-center">
+                    {primaryImage ? (
+                      <Image
+                        src={primaryImage}
+                        alt={hotel.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                        <Building2 className="size-12 opacity-40 text-white" />
+                        <span className="text-[11px] font-semibold text-white/60">RateHawk Verified Property</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent pointer-events-none" />
 
                     {/* Star Rating Badge */}
                     <div className="absolute top-4 left-4 flex items-center gap-1 rounded-full bg-navy/90 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-white shadow-xs">

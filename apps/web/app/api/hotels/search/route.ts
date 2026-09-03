@@ -9,13 +9,6 @@ const RATEHAWK_API_KEY =
 
 const REQUEST_TIMEOUT_MS = 14_000;
 
-const DEFAULT_HOTEL_PHOTOS = [
-  "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
-];
-
 async function fetchRatehawk(endpoint: string, payload: unknown) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -64,7 +57,7 @@ function formatHotelName(id: string): string {
 
 function extractAmenities(amenityGroups?: any[]): string[] {
   if (!Array.isArray(amenityGroups)) {
-    return ["Free High-Speed WiFi", "Air Conditioning", "24/7 Front Desk"];
+    return [];
   }
   const list: string[] = [];
   for (const group of amenityGroups) {
@@ -78,15 +71,17 @@ function extractAmenities(amenityGroups?: any[]): string[] {
     }
     if (list.length >= 6) break;
   }
-  return list.length > 0
-    ? list
-    : ["Free High-Speed WiFi", "Air Conditioning", "24/7 Front Desk"];
+  return list;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const destination = (body.destination || "Dubai").trim();
+    const destination = (body.destination || "").trim();
+    if (!destination) {
+      return NextResponse.json([]);
+    }
+
     const checkIn =
       body.checkIn ||
       new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10);
@@ -145,7 +140,7 @@ export async function POST(req: NextRequest) {
             const rateAmount = parseFloat(
               h.rates?.[0]?.payment_options?.payment_types?.[0]?.amount ||
                 h.rates?.[0]?.daily_prices?.[0] ||
-                "180"
+                "0"
             );
             const rateCurrency =
               h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code ||
@@ -157,26 +152,20 @@ export async function POST(req: NextRequest) {
               )
             );
 
-            const images =
-              rawImages.filter(Boolean).length > 0
-                ? rawImages.filter(Boolean)
-                : DEFAULT_HOTEL_PHOTOS;
+            const images = rawImages.filter(Boolean);
 
             return {
               id: String(h.id || h.hid),
               name: String(info?.name || formatHotelName(h.id)),
-              rating: Number(info?.star_rating || 4),
-              address: String(info?.address || `${destination}`),
+              rating: Number(info?.star_rating || 0),
+              address: String(info?.address || ""),
               city: String(info?.region?.name || destination),
-              country: String(info?.region?.country_code || "International"),
+              country: String(info?.region?.country_code || ""),
               price: Math.round(rateAmount),
               currency: rateCurrency,
               images: images,
               amenities: extractAmenities(info?.amenity_groups),
-              description: String(
-                info?.description ||
-                  `Premium stay in ${destination} with instant RateHawk confirmation and flexible cancellation.`
-              ),
+              description: String(info?.description || ""),
             };
           } catch {
             return null;
@@ -191,9 +180,7 @@ export async function POST(req: NextRequest) {
         )
         .map((r) => r.value);
 
-      if (validHotels.length > 0) {
-        return NextResponse.json(validHotels);
-      }
+      return NextResponse.json(validHotels);
     }
 
     return NextResponse.json([]);

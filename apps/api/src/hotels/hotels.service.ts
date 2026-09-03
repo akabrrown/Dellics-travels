@@ -8,13 +8,6 @@ import { HotelResult, HotelSearchInput } from './hotels.types';
 
 const REQUEST_TIMEOUT_MS = 14_000;
 
-const DEFAULT_HOTEL_PHOTOS = [
-  'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
-];
-
 @Injectable()
 export class HotelsService {
   private readonly logger = new Logger(HotelsService.name);
@@ -74,7 +67,7 @@ export class HotelsService {
               const rateAmount = parseFloat(
                 h.rates?.[0]?.payment_options?.payment_types?.[0]?.amount ||
                 h.rates?.[0]?.daily_prices?.[0] ||
-                '180'
+                '0'
               );
               const rateCurrency =
                 h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code || 'USD';
@@ -83,25 +76,20 @@ export class HotelsService {
                 this.sanitizeImageUrl(typeof img === 'string' ? img : img?.url || img?.path || '')
               );
 
-              const images = rawImages.filter(Boolean).length > 0
-                ? rawImages.filter(Boolean)
-                : DEFAULT_HOTEL_PHOTOS;
+              const images = rawImages.filter(Boolean);
 
               return {
                 id: String(h.id || h.hid),
                 name: String(info?.name || this.formatHotelName(h.id)),
-                rating: Number(info?.star_rating || 4),
-                address: String(info?.address || `${input.destination}`),
+                rating: Number(info?.star_rating || 0),
+                address: String(info?.address || ''),
                 city: String(info?.region?.name || input.destination),
-                country: String(info?.region?.country_code || 'International'),
+                country: String(info?.region?.country_code || ''),
                 price: Math.round(rateAmount),
                 currency: rateCurrency,
                 images: images,
                 amenities: this.extractAmenities(info?.amenity_groups),
-                description: String(
-                  info?.description ||
-                  `Premium stay in ${input.destination} with instant RateHawk confirmation and flexible cancellation.`
-                ),
+                description: String(info?.description || ''),
               } as HotelResult;
             } catch {
               return null;
