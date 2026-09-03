@@ -229,6 +229,28 @@ function getDynamicBedOptions(
   ];
 }
 
+function formatCancellationDate(isoDateStr?: string): string {
+  if (!isoDateStr) return "";
+  try {
+    const datePart = isoDateStr.split("T")[0] || isoDateStr;
+    const parts = datePart.split("-");
+    if (parts.length >= 3) {
+      const year = parts[0];
+      const monthNum = parseInt(parts[1] || "1", 10);
+      const dayNum = parseInt(parts[2] || "1", 10);
+      const monthNames = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
+      const monthStr = monthNames[monthNum - 1] || "Jan";
+      return `${monthStr} ${dayNum}, ${year}`;
+    }
+  } catch {
+    // fallback
+  }
+  return isoDateStr;
+}
+
 function HotelBookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -292,7 +314,7 @@ function HotelBookingContent() {
         bed: r.beddingType || "1 Extra-Large King Bed",
         price: r.price,
         cancellation: r.freeCancellationBefore
-          ? `Free cancellation before ${new Date(r.freeCancellationBefore).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+          ? `Free cancellation before ${formatCancellationDate(r.freeCancellationBefore)}`
           : "Free cancellation (up to 48 hrs before check-in)",
         amenities: r.amenities?.length ? r.amenities : ["WiFi", "Air Conditioning", "Ensuite Shower"],
       };
@@ -458,7 +480,7 @@ function HotelBookingContent() {
             </p>
           </div>
           <div className="flex items-center gap-3 self-start md:self-auto">
-            <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full shadow-xs">
+            <span suppressHydrationWarning className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full shadow-xs">
               <CheckCircle2 className="size-4 text-emerald-600" />
               {activeRoom.cancellation}
             </span>
@@ -584,8 +606,8 @@ function HotelBookingContent() {
                               {rate.beddingType || "1 Extra-Large Double Bed"} · Free High-Speed WiFi · Ensuite Bathroom
                             </p>
                             {rate.freeCancellationBefore ? (
-                              <span className="text-[11px] font-semibold text-emerald-600 block">
-                                ✓ Free cancellation before {new Date(rate.freeCancellationBefore).toLocaleDateString()}
+                              <span suppressHydrationWarning className="text-[11px] font-semibold text-emerald-600 block">
+                                ✓ Free cancellation before {formatCancellationDate(rate.freeCancellationBefore)}
                               </span>
                             ) : null}
                           </div>
