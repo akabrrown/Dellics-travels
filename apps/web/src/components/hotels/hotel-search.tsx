@@ -38,7 +38,7 @@ function HotelSearchForm() {
   const searchParams = useSearchParams();
 
   const [destination, setDestination] = useState(
-    searchParams.get("destination") || "Dubai"
+    searchParams.get("destination") || ""
   );
   const [checkIn, setCheckIn] = useState(
     searchParams.get("checkIn") ||
@@ -54,13 +54,14 @@ function HotelSearchForm() {
   const [status, setStatus] = useState<Status>({ state: "idle" });
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
-  // Auto-search on initial load or searchParam change
+  // Auto-search only if URL search parameter is provided
   useEffect(() => {
-    const dest = searchParams.get("destination") || destination;
+    const dest = searchParams.get("destination");
     const cIn = searchParams.get("checkIn") || checkIn;
     const cOut = searchParams.get("checkOut") || checkOut;
 
     if (dest && cIn && cOut) {
+      setDestination(dest);
       executeSearch(dest, cIn, cOut, guests, rooms);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
