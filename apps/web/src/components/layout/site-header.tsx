@@ -123,9 +123,9 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        {/* Desktop Navigation with Icons */}
+        {/* Desktop Navigation Floating Island */}
         <nav
-          className="hidden items-center gap-1.5 lg:flex"
+          className="hidden items-center gap-0.5 rounded-full bg-white/[0.07] border border-white/10 p-1 backdrop-blur-md shadow-xs lg:flex"
           aria-label="Main Navigation"
         >
           {NAV_ITEMS.map((item) => {
@@ -135,15 +135,22 @@ export function SiteHeader() {
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
-                      "group flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 data-[state=open]:bg-white/15 data-[state=open]:text-white transition-all outline-none",
+                      "group flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs xl:text-[13px] font-semibold text-white/85 hover:text-white hover:bg-white/10 data-[state=open]:bg-white/15 data-[state=open]:text-white transition-all outline-none",
                       pathname.startsWith(item.href) &&
-                        "text-brand-orange bg-white/10 font-semibold",
+                        "text-brand-orange bg-white/15 font-bold shadow-xs",
                     )}
                   >
-                    <Icon className="size-4 text-brand-orange/90 group-hover:text-brand-orange transition-colors" />
+                    <Icon
+                      className={cn(
+                        "size-3.5 transition-colors",
+                        pathname.startsWith(item.href)
+                          ? "text-brand-orange"
+                          : "text-brand-orange/80 group-hover:text-brand-orange",
+                      )}
+                    />
                     <span>{item.label}</span>
                     <ChevronDown
-                      className="size-3.5 opacity-75 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                      className="size-3 opacity-65 transition-transform duration-200 group-data-[state=open]:rotate-180"
                       aria-hidden
                     />
                   </button>
@@ -190,14 +197,14 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all group",
+                  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs xl:text-[13px] font-semibold text-white/85 hover:text-white hover:bg-white/10 transition-all group",
                   pathname === item.href &&
-                    "text-brand-orange bg-white/10 font-semibold",
+                    "text-brand-orange bg-white/15 font-bold shadow-xs",
                 )}
               >
                 <Icon
                   className={cn(
-                    "size-4 transition-colors",
+                    "size-3.5 transition-colors",
                     pathname === item.href
                       ? "text-brand-orange"
                       : "text-brand-orange/80 group-hover:text-brand-orange",
@@ -209,159 +216,169 @@ export function SiteHeader() {
           })}
         </nav>
 
-        {/* Action Group: Dynamic Login / User Profile & Inquire CTA */}
-        <div className="hidden items-center gap-3 lg:flex">
-          {user ? (
-            /* Logged In User Popover */
-            <Popover open={userDropdownOpen} onOpenChange={setUserDropdownOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  className="flex items-center gap-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 px-3.5 py-1.5 text-sm font-semibold text-white transition-all outline-none"
-                  aria-label="User Account Menu"
-                >
-                  <div className="size-7 rounded-full bg-brand-orange flex items-center justify-center text-white text-xs font-bold shadow-xs">
-                    {userInitial}
-                  </div>
-                  <span className="max-w-[120px] truncate">{userFirstName}</span>
-                  <ChevronDown className="size-3.5 text-white/70" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                sideOffset={8}
-                className="w-64 p-2 bg-white rounded-2xl shadow-2xl border border-slate-100 ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-200"
-              >
-                {/* User Header */}
-                <div className="p-3 bg-slate-50 rounded-xl mb-2 border border-slate-100">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center text-sm shadow-xs">
+        {/* Action Dock: Unified User/Login & Inquire CTA */}
+        <div className="hidden items-center lg:flex">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/[0.08] border border-white/15 p-1 pl-2.5 backdrop-blur-md shadow-xs">
+            {user ? (
+              /* Logged In User Popover */
+              <Popover open={userDropdownOpen} onOpenChange={setUserDropdownOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className="flex items-center gap-2 rounded-full py-1 pr-2 text-xs font-semibold text-white hover:text-white/90 transition-all outline-none group"
+                    aria-label="User Account Menu"
+                  >
+                    <div className="size-7 rounded-full bg-brand-orange flex items-center justify-center text-white text-xs font-bold shadow-xs ring-2 ring-white/10 group-hover:ring-white/25 transition-all">
                       {userInitial}
                     </div>
-                    <div className="overflow-hidden">
-                      <p className="text-xs font-bold text-navy truncate">
-                        {user.fullName}
-                      </p>
-                      <p className="text-[11px] text-slate-500 truncate">
-                        {user.email}
-                      </p>
+                    <span className="max-w-[110px] truncate text-white font-medium">{userFirstName}</span>
+                    <ChevronDown className="size-3 text-white/70 group-hover:text-white transition-colors" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={8}
+                  className="w-64 p-2 bg-white rounded-2xl shadow-2xl border border-slate-100 ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-200"
+                >
+                  {/* User Header */}
+                  <div className="p-3 bg-slate-50 rounded-xl mb-2 border border-slate-100">
+                    <div className="flex items-center gap-2.5">
+                      <div className="size-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                        {userInitial}
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-xs font-bold text-navy truncate">
+                          {user.fullName}
+                        </p>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-2.5 flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 w-fit">
+                      <ShieldCheck className="size-3" />
+                      <span>Verified Account</span>
                     </div>
                   </div>
-                  <div className="mt-2.5 flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 w-fit">
-                    <ShieldCheck className="size-3" />
-                    <span>Verified Account</span>
+
+                  {/* Account Actions */}
+                  <div className="space-y-1">
+                    <Link
+                      href="/profile"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
+                    >
+                      <User className="size-4 text-brand-orange" />
+                      <span>My Profile & Account</span>
+                    </Link>
+
+                    <Link
+                      href="/profile?tab=trips"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
+                    >
+                      <Plane className="size-4 text-brand-orange" />
+                      <span>My Trips & Itineraries</span>
+                    </Link>
+
+                    <Link
+                      href="/profile?tab=membership"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-amber-600 rounded-lg transition-colors"
+                    >
+                      <Crown className="size-4 text-amber-500" />
+                      <span>Voyager Club Rewards</span>
+                    </Link>
+
+                    <Link
+                      href="/inquire"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
+                    >
+                      <MessageSquareQuote className="size-4 text-brand-orange" />
+                      <span>Submit Travel Inquiry</span>
+                    </Link>
+
+                    <a
+                      href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am logged in as ${user.fullName} (${user.email}) and need concierge support.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600 rounded-lg transition-colors"
+                    >
+                      <PhoneCall className="size-4 text-emerald-600" />
+                      <span>WhatsApp Concierge</span>
+                    </a>
+
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border-t border-slate-100 mt-1"
+                    >
+                      <LogOut className="size-4" />
+                      <span>Sign Out</span>
+                    </button>
                   </div>
-                </div>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              /* Logged Out Login Link */
+              <Link
+                href="/signin"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/10 transition-all",
+                  pathname === "/signin" &&
+                    "text-brand-orange bg-white/15 font-bold",
+                )}
+              >
+                <User className="size-3.5 text-brand-orange" />
+                <span>Login</span>
+              </Link>
+            )}
 
-                {/* Account Actions */}
-                <div className="space-y-1">
-                  <Link
-                    href="/profile"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
-                  >
-                    <User className="size-4 text-brand-orange" />
-                    <span>My Profile & Account</span>
-                  </Link>
+            {/* Micro-Divider */}
+            <div className="h-4 w-px bg-white/20" aria-hidden="true" />
 
-                  <Link
-                    href="/profile?tab=trips"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
-                  >
-                    <Plane className="size-4 text-brand-orange" />
-                    <span>My Trips & Itineraries</span>
-                  </Link>
-
-                  <Link
-                    href="/profile?tab=membership"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-amber-600 rounded-lg transition-colors"
-                  >
-                    <Crown className="size-4 text-amber-500" />
-                    <span>Voyager Club Rewards</span>
-                  </Link>
-
-                  <Link
-                    href="/inquire"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-orange rounded-lg transition-colors"
-                  >
-                    <MessageSquareQuote className="size-4 text-brand-orange" />
-                    <span>Submit Travel Inquiry</span>
-                  </Link>
-
-                  <a
-                    href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hello Dellics Travels, I am logged in as ${user.fullName} (${user.email}) and need concierge support.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600 rounded-lg transition-colors"
-                  >
-                    <PhoneCall className="size-4 text-emerald-600" />
-                    <span>WhatsApp Concierge</span>
-                  </a>
-
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border-t border-slate-100 mt-1"
-                  >
-                    <LogOut className="size-4" />
-                    <span>Sign Out</span>
-                  </button>
-                </div>
-
-              </PopoverContent>
-            </Popover>
-          ) : (
-            /* Logged Out Login Link */
-            <Link
-              href="/signin"
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all border border-white/15",
-                pathname === "/signin" &&
-                  "text-brand-orange bg-white/10 font-semibold border-brand-orange/40",
-              )}
+            {/* Primary CTA */}
+            <Button
+              asChild
+              className="rounded-full bg-gradient-to-r from-brand-orange to-amber-500 hover:from-brand-orange-hover hover:to-amber-600 text-white shadow-sm hover:shadow-brand-orange/20 font-bold text-xs px-4 py-1.5 h-8 transition-all group"
             >
-              <User className="size-4 text-brand-orange" />
-              <span>Login</span>
-            </Link>
-          )}
-
-          <Button
-            asChild
-            className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white shadow-md hover:shadow-lg font-semibold px-6"
-          >
-            <Link href="/inquire">Inquire Now</Link>
-          </Button>
+              <Link href="/inquire" className="flex items-center gap-1.5">
+                <span>Inquire Now</span>
+                <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Mobile Navigation Trigger */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <a
-            href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex size-9 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
-            aria-label="WhatsApp Concierge"
-          >
-            <PhoneCall className="size-4" />
-          </a>
-
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/10"
-                aria-label="Open navigation menu"
-              >
-                <Menu className="size-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-[85vw] max-w-sm overflow-y-auto bg-navy text-white p-6 border-l border-white/10"
+        {/* Mobile Navigation Capsule */}
+        <div className="flex items-center lg:hidden">
+          <div className="flex items-center gap-1 rounded-full bg-white/[0.08] border border-white/15 p-1 backdrop-blur-md">
+            <a
+              href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hello Dellics Travels, I would like to inquire about your travel services.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex size-8 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+              aria-label="WhatsApp Concierge"
+              title="WhatsApp Concierge"
             >
+              <PhoneCall className="size-3.5" />
+            </a>
+
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-full text-white hover:bg-white/10 hover:text-brand-orange transition-colors"
+                  aria-label="Open navigation menu"
+                >
+                  <Menu className="size-4.5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="w-[85vw] max-w-sm overflow-y-auto bg-navy text-white p-6 border-l border-white/10"
+              >
               <SheetHeader className="border-b border-white/10 pb-4 text-left">
                 <div className="flex items-center gap-3">
                   <div className="relative h-12 w-20 shrink-0">
@@ -543,6 +560,8 @@ export function SiteHeader() {
           </Sheet>
         </div>
       </div>
-    </header>
-  );
+    </div>
+  </header>
+);
 }
+
