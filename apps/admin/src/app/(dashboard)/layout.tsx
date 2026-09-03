@@ -25,6 +25,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
+import { useRole, AdminRole } from "@/lib/roles";
 
 interface SidebarCounts {
   heldBookings: number;
@@ -77,30 +78,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return pathname.startsWith(href);
   };
 
+  const { activeRole, allRoles, switchRole, checkPermission } = useRole();
+
   const navGroups = [
     {
       group: "Core",
       items: [
-        { label: "Dashboard", href: "/", icon: LayoutDashboard },
+        { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
         {
           label: "Bookings",
           href: "/bookings",
           icon: CalendarCheck,
+          permission: "bookings.view",
           badge: counts.heldBookings > 0 ? `${counts.heldBookings} held` : undefined,
           badgeColor: "bg-amber-100 text-amber-800",
         },
-        { label: "Travelers", href: "/travelers", icon: Users },
+        { label: "Travelers", href: "/travelers", icon: Users, permission: "travelers.view" },
       ],
     },
     {
       group: "Content & Commerce",
       items: [
-        { label: "Destinations & Packages", href: "/content", icon: Package },
-        { label: "Promotions & Deals", href: "/promotions", icon: Tag },
+        { label: "Destinations & Packages", href: "/content", icon: Package, permission: "content.view" },
+        { label: "Promotions & Deals", href: "/promotions", icon: Tag, permission: "promotions.manage" },
         {
           label: "eSIM Orders",
           href: "/esims",
           icon: Smartphone,
+          permission: "esims.view",
           badge: counts.activeEsims > 0 ? `${counts.activeEsims}` : undefined,
           badgeColor: "bg-blue-100 text-blue-800",
         },
@@ -113,6 +118,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           label: "Refund Queue",
           href: "/refunds",
           icon: RotateCcw,
+          permission: "refunds.view",
           badge: counts.pendingRefunds > 0 ? `${counts.pendingRefunds} pending` : undefined,
           badgeColor: "bg-rose-100 text-rose-800",
         },
@@ -120,36 +126,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           label: "Support Tickets",
           href: "/support",
           icon: Headphones,
+          permission: "support.view",
           badge: counts.openInquiries > 0 ? `${counts.openInquiries} open` : undefined,
           badgeColor: "bg-blue-100 text-blue-800",
         },
-        { label: "Reviews Moderation", href: "/reviews", icon: Star },
+        { label: "Reviews Moderation", href: "/reviews", icon: Star, permission: "reviews.manage" },
       ],
     },
     {
       group: "Finance & System",
       items: [
-        { label: "Finance & Reconciliation", href: "/finance", icon: CreditCard },
+        { label: "Finance & Reconciliation", href: "/finance", icon: CreditCard, permission: "finance.view" },
         {
           label: "Supplier Health",
           href: "/health",
           icon: Activity,
+          permission: "health.view",
           badge: "All Online",
           badgeColor: "bg-emerald-100 text-emerald-800",
         },
-        { label: "Analytics & Reports", href: "/analytics", icon: BarChart3 },
+        { label: "Analytics & Reports", href: "/analytics", icon: BarChart3, permission: "analytics.view" },
       ],
     },
     {
       group: "Administration",
       items: [
-        { label: "Membership & Rewards", href: "/membership", icon: ShieldCheck },
-        { label: "Roles & Team", href: "/team", icon: Users },
-        { label: "Audit Log", href: "/audit", icon: FileText },
-        { label: "Settings", href: "/settings", icon: Sliders },
+        { label: "Membership & Rewards", href: "/membership", icon: ShieldCheck, permission: "membership.manage" },
+        { label: "Roles & Team", href: "/team", icon: Users, permission: "team.view" },
+        { label: "Audit Log", href: "/audit", icon: FileText, permission: "audit.view" },
+        { label: "Settings", href: "/settings", icon: Sliders, permission: "settings.manage" },
       ],
     },
   ];
+
+  // Filter navigation groups based on active role permissions
+  const filteredNavGroups = navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => checkPermission(item.permission)),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
@@ -179,7 +195,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation Items */}
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-5 scrollbar-thin scrollbar-thumb-white/10">
-          {navGroups.map((group) => (
+          {filteredNavGroups.map((group) => (
             <div key={group.group}>
               <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                 {group.group}
@@ -222,27 +238,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        {/* Admin Role Identity Strip */}
-        <div className="p-3.5 border-t border-white/10 bg-black/15 flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="size-9 rounded-full bg-[#F4740D] flex items-center justify-center font-bold text-xs text-white shadow-sm ring-2 ring-white/20 shrink-0">
-              OA
+        {/* Admin Role Identity Strip & Live Role Switcher */}
+        <div className="p-3.5 border-t border-white/10 bg-black/25 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="size-8 rounded-full bg-[#F4740D] flex items-center justify-center font-bold text-xs text-white shadow-xs shrink-0">
+                {activeRole.title.charAt(0)}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-white truncate">{activeRole.title}</p>
+                <p className="text-[10px] text-slate-300 truncate">
+                  {activeRole.isCustom ? "Custom Role" : "System Role"}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Ops Admin</p>
-              <p className="text-[11px] text-emerald-400 font-medium flex items-center gap-1 truncate">
-                <span className="size-1.5 rounded-full bg-emerald-400 inline-block" />
-                Super Admin Scope
-              </p>
-            </div>
+            <Link
+              href="/login"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              title="Log Out"
+            >
+              <LogOut className="size-3.5" />
+            </Link>
           </div>
-          <Link
-            href="/login"
-            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-            title="Log Out"
-          >
-            <LogOut className="size-4" />
-          </Link>
+
+          {/* Quick Role Switcher Selector */}
+          <div className="pt-1">
+            <label className="text-[9px] uppercase font-bold text-slate-400 block mb-1">
+              Active Role Simulator:
+            </label>
+            <select
+              value={activeRole.id}
+              onChange={(e) => switchRole(e.target.value)}
+              className="w-full bg-white/10 text-white border border-white/20 rounded-lg px-2 py-1.5 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-brand-orange"
+            >
+              {allRoles.map((r: AdminRole) => (
+                <option key={r.id} value={r.id} className="bg-slate-900 text-white">
+                  {r.title} {r.isCustom ? "(Custom)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </aside>
 
@@ -262,9 +297,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             />
           </div>
 
-          {/* Quick Actions & Live Gateway Status */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+          {/* Quick Actions, Role Badge & Live Gateway Status */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Active Role Indicator Pill */}
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${activeRole.badgeColor}`}>
+              <ShieldCheck className="size-3.5" />
+              <span>{activeRole.title}</span>
+            </div>
+
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Gateways Operational</span>
             </div>

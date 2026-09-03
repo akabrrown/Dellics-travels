@@ -190,20 +190,30 @@ export async function getTours(params?: {
   featured?: boolean;
   destination?: string;
 }): Promise<TourPackage[]> {
-  try {
-    const query = new URLSearchParams();
-    if (params?.featured) query.set("featured", "true");
-    if (params?.destination) query.set("destination", params.destination);
+  const query = new URLSearchParams();
+  if (params?.featured) query.set("featured", "true");
+  if (params?.destination) query.set("destination", params.destination);
+  const qs = query.toString() ? `?${query.toString()}` : "";
 
-    const path = `/search/tours${query.toString() ? `?${query.toString()}` : ""}`;
-    const res = await getJson<ToursResponse>(path, {
-      next: { revalidate: 3600 },
+  try {
+    const res = await getJson<ToursResponse>(`/tours${qs}`, {
+      next: { revalidate: 60 },
     } as RequestInit);
     if (res?.data && res.data.length > 0) {
       return res.data;
     }
-    return DELLICS_SIGNATURE_TOURS;
   } catch {
-    return DELLICS_SIGNATURE_TOURS;
+    // Fall back to /search/tours if /tours unavailable
+    try {
+      const res = await getJson<ToursResponse>(`/search/tours${qs}`, {
+        next: { revalidate: 60 },
+      } as RequestInit);
+      if (res?.data && res.data.length > 0) {
+        return res.data;
+      }
+    } catch {
+      // Return curated signature tours
+    }
   }
+  return DELLICS_SIGNATURE_TOURS;
 }

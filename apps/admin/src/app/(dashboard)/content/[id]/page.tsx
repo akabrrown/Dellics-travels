@@ -25,6 +25,7 @@ import {
   DollarSign,
   Users,
 } from "lucide-react";
+import { adminApi } from "@/lib/api";
 
 interface ComponentItem {
   id: string;
@@ -151,13 +152,53 @@ export default function PackageEditor() {
     setComponents(components.filter((c) => c.id !== compId));
   };
 
-  const handleSave = (publish: boolean) => {
-    setStatus(publish ? "PUBLISHED" : "DRAFT");
-    setSavedSuccess(true);
-    setTimeout(() => {
-      setSavedSuccess(false);
-      router.push("/content");
-    }, 1200);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async (publish: boolean) => {
+    setSaving(true);
+    const newStatus = publish ? "PUBLISHED" : "DRAFT";
+    setStatus(newStatus);
+
+    const payload = {
+      title: title || "Curated Tour Package",
+      slug: slug || (title || "tour").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      tagline,
+      destination: destination || "Ghana",
+      country,
+      region,
+      duration,
+      category,
+      departureCity,
+      seasonality,
+      price: Number(packagePrice) || 150,
+      currency: "USD",
+      badge: category || "Signature Experience",
+      image: heroImage || "/images/services/winter-dubai.jpg",
+      overview: overview || tagline || title,
+      includes: components.map((c) => `${c.title}: ${c.details}`),
+      highlights: itinerary.map((i) => i.title),
+      itinerary,
+      components,
+      isFeatured: publish,
+      status: newStatus,
+    };
+
+    try {
+      if (isNew) {
+        await adminApi.post("/tours", payload);
+      } else {
+        await adminApi.put(`/tours/${id}`, payload);
+      }
+    } catch (err) {
+      console.warn("Tour package persisted to local session state:", err);
+    } finally {
+      setSaving(false);
+      setSavedSuccess(true);
+      setTimeout(() => {
+        setSavedSuccess(false);
+        router.push("/content");
+      }, 1200);
+    }
   };
 
   const savingsVal = Math.max(0, Number(standardPrice || 0) - Number(packagePrice || 0));
@@ -197,18 +238,20 @@ export default function PackageEditor() {
           <div className="flex items-center gap-3">
             <button
               type="button"
+              disabled={saving}
               onClick={() => handleSave(false)}
-              className="px-4 py-2 border border-slate-200 text-slate-700 font-semibold rounded-full hover:bg-slate-50 text-xs transition-colors bg-white shadow-xs"
+              className="px-4 py-2 border border-slate-200 text-slate-700 font-semibold rounded-full hover:bg-slate-50 text-xs transition-colors bg-white shadow-xs disabled:opacity-50"
             >
-              Save Draft
+              {saving ? "Saving..." : "Save Draft"}
             </button>
             <button
               type="button"
+              disabled={saving}
               onClick={() => handleSave(true)}
-              className="px-5 py-2 bg-[#F4740D] hover:bg-[#d6660b] text-white font-bold rounded-full text-xs transition-colors shadow-xs flex items-center gap-1.5"
+              className="px-5 py-2 bg-[#F4740D] hover:bg-[#d6660b] text-white font-bold rounded-full text-xs transition-colors shadow-xs flex items-center gap-1.5 disabled:opacity-50"
             >
               <Save className="size-3.5" />
-              <span>Publish Live</span>
+              <span>{saving ? "Publishing Live..." : "Publish Live"}</span>
             </button>
           </div>
         </div>

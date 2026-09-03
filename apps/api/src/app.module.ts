@@ -13,6 +13,8 @@ import { PaymentsModule } from './payments/payments.module';
 import { EsimModule } from './esim/esim.module';
 import { HotelsModule } from './hotels/hotels.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
+import { ToursModule } from './tours/tours.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { InquiriesModule } from './inquiries/inquiries.module';
     EsimModule,
     HotelsModule,
     InquiriesModule,
+    ToursModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

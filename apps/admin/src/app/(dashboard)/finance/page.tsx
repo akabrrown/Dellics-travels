@@ -11,6 +11,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
+import { RoleGuard } from "@/components/role-guard";
 
 interface PaymentTransaction {
   id: string;
@@ -78,7 +79,8 @@ export default function FinanceReconciliation() {
   });
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-12">
+    <RoleGuard permission="finance.view" moduleName="Finance & Reconciliation">
+      <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -241,5 +243,6 @@ export default function FinanceReconciliation() {
         </div>
       </div>
     </div>
+  </RoleGuard>
   );
 }
