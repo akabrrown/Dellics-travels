@@ -9,10 +9,6 @@ const RATEHAWK_API_KEY =
 
 const REQUEST_TIMEOUT_MS = 14_000;
 
-// RateHawk Sandbox active test regions
-const DUBAI_REGION = 6053839; // Live properties in RateHawk sandbox
-const PARIS_REGION = 2734;    // Live properties in RateHawk sandbox
-
 // In-memory cache for RateHawk live SERP responses (10 min TTL)
 const serpCache = new Map<string, { data: any[]; timestamp: number }>();
 const CACHE_TTL_MS = 10 * 60 * 1000;
@@ -86,7 +82,11 @@ function extractAmenities(amenityGroups?: any[]): string[] {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const destination = (body.destination || "Dubai").trim();
+    const destination = (body.destination || "").trim();
+
+    if (!destination) {
+      return NextResponse.json([]);
+    }
 
     const today = new Date().toISOString().slice(0, 10);
     const rawCheckIn = body.checkIn || "";
@@ -101,46 +101,58 @@ export async function POST(req: NextRequest) {
       : rawCheckOut;
     const guestsCount = Number(body.guests) || 2;
 
-    const destLower = destination.toLowerCase();
-
-    // Select target region in RateHawk Sandbox
-    const isEurope =
-      destLower.includes("paris") ||
-      destLower.includes("france") ||
-      destLower.includes("london") ||
-      destLower.includes("uk") ||
-      destLower.includes("europe");
-
-    const regionId = isEurope ? PARIS_REGION : DUBAI_REGION;
-
-    const cacheKey = `${regionId}_${checkIn}_${checkOut}_${guestsCount}`;
+    const cacheKey = `${destination.toLowerCase()}_${checkIn}_${checkOut}_${guestsCount}`;
     const cached = serpCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
       return NextResponse.json(cached.data);
     }
 
-    let serpRes: any = null;
+    // Step 1: Dynamically resolve destination via RateHawk Multicomplete API
+    let multi: any = null;
     try {
-      serpRes = await fetchRatehawk("/search/serp/region/", {
-        checkin: checkIn,
-        checkout: checkOut,
-        residency: "gb",
+      multi = await fetchRatehawk("/search/multicomplete/", {
+        query: destination,
         language: "en",
-        guests: [{ adults: guestsCount, children: [] }],
-        region_id: regionId,
-        currency: "USD",
       });
     } catch {
-      if (regionId !== DUBAI_REGION) {
+      // Ignore multicomplete failure
+    }
+
+    const regions = multi?.data?.regions || [];
+    const multiHotels = multi?.data?.hotels || [];
+    const regionId = regions[0]?.id || multiHotels[0]?.region_id;
+
+    let serpRes: any = null;
+
+    // Step 2: Query live SERP based on RateHawk's resolved region or hotel IDs
+    if (regionId) {
+      try {
         serpRes = await fetchRatehawk("/search/serp/region/", {
           checkin: checkIn,
           checkout: checkOut,
           residency: "gb",
           language: "en",
           guests: [{ adults: guestsCount, children: [] }],
-          region_id: DUBAI_REGION,
+          region_id: regionId,
           currency: "USD",
         });
+      } catch {
+        // Fall through
+      }
+    } else if (multiHotels.length > 0) {
+      const hotelIds = multiHotels.map((h: any) => h.id).slice(0, 10);
+      try {
+        serpRes = await fetchRatehawk("/search/serp/hotels/", {
+          checkin: checkIn,
+          checkout: checkOut,
+          residency: "gb",
+          language: "en",
+          guests: [{ adults: guestsCount, children: [] }],
+          ids: hotelIds,
+          currency: "USD",
+        });
+      } catch {
+        // Fall through
       }
     }
 
@@ -190,9 +202,9 @@ export async function POST(req: NextRequest) {
             id: String(h.id || h.hid),
             name: String(info?.name || formatHotelName(h.id)),
             rating: Number(info?.star_rating || 4),
-            address: String(info?.address || (isEurope ? "Paris, France" : `${destination}, UAE`)),
+            address: String(info?.address || `${destination} Central`),
             city: String(info?.region?.name || destination),
-            country: String(info?.region?.country_code || (isEurope ? "FR" : "AE")),
+            country: String(info?.region?.country_code || "International"),
             price: Math.round(rateAmount),
             currency: rateCurrency,
             images: apiImages,

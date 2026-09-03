@@ -7,8 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { HotelResult, HotelSearchInput } from './hotels.types';
 
 const REQUEST_TIMEOUT_MS = 14_000;
-const DUBAI_REGION = 6053839;
-const PARIS_REGION = 2734;
 
 @Injectable()
 export class HotelsService {
@@ -26,33 +24,51 @@ export class HotelsService {
       ? new Date(new Date(checkIn).getTime() + 86400000 * 3).toISOString().slice(0, 10)
       : input.checkOut;
 
-    const destLower = (input.destination || 'Dubai').toLowerCase();
-    const isEurope =
-      destLower.includes('paris') ||
-      destLower.includes('france') ||
-      destLower.includes('london') ||
-      destLower.includes('uk') ||
-      destLower.includes('europe');
-
-    const regionId = isEurope ? PARIS_REGION : DUBAI_REGION;
-    const cacheKey = `${regionId}_${checkIn}_${checkOut}_${input.guests || 2}`;
+    const cacheKey = `${(input.destination || '').trim().toLowerCase()}_${checkIn}_${checkOut}_${input.guests || 2}`;
     const cached = this.serpCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < 10 * 60 * 1000) {
       return cached.data;
     }
 
     try {
-      const serpBody = await this.fetchJson(`${this.baseUrl}/search/serp/region/`, {
-        checkin: checkIn,
-        checkout: checkOut,
-        residency: 'gb',
+      // Step 1: Dynamically resolve destination via RateHawk Multicomplete API
+      const multi = await this.fetchJson(`${this.baseUrl}/search/multicomplete/`, {
+        query: input.destination,
         language: 'en',
-        guests: [{ adults: input.guests || 2, children: [] }],
-        region_id: regionId,
-        currency: 'USD',
       });
 
-      const rawHotels = serpBody?.data?.hotels ?? [];
+      const regions = multi?.data?.regions || [];
+      const multiHotels = multi?.data?.hotels || [];
+      const regionId = regions[0]?.id || multiHotels[0]?.region_id;
+
+      let rawHotels: any[] = [];
+
+      // Step 2: Query live SERP based on RateHawk's resolved region or hotel IDs
+      if (regionId) {
+        const serpBody = await this.fetchJson(`${this.baseUrl}/search/serp/region/`, {
+          checkin: checkIn,
+          checkout: checkOut,
+          residency: 'gb',
+          language: 'en',
+          guests: [{ adults: input.guests || 2, children: [] }],
+          region_id: regionId,
+          currency: 'USD',
+        });
+        rawHotels = serpBody?.data?.hotels ?? [];
+      } else if (multiHotels.length > 0) {
+        const hotelIds = multiHotels.map((h: any) => h.id).slice(0, 10);
+        const serpBody = await this.fetchJson(`${this.baseUrl}/search/serp/hotels/`, {
+          checkin: checkIn,
+          checkout: checkOut,
+          residency: 'gb',
+          language: 'en',
+          guests: [{ adults: input.guests || 2, children: [] }],
+          ids: hotelIds,
+          currency: 'USD',
+        });
+        rawHotels = serpBody?.data?.hotels ?? [];
+      }
+
       if (Array.isArray(rawHotels) && rawHotels.length > 0) {
         const topHotels = rawHotels.slice(0, 12);
         const enriched = await Promise.allSettled(
@@ -65,7 +81,7 @@ export class HotelsService {
               });
               info = infoRes?.data;
             } catch {
-              // Ignore individual info failure
+              // Ignore individual info rate limit or failure
             }
 
             const rateAmount = parseFloat(
@@ -95,9 +111,9 @@ export class HotelsService {
               id: String(h.id || h.hid),
               name: String(info?.name || this.formatHotelName(h.id)),
               rating: Number(info?.star_rating || 4),
-              address: String(info?.address || (isEurope ? 'Paris, France' : `${input.destination}, UAE`)),
-              city: String(info?.region?.name || input.destination || 'Dubai'),
-              country: String(info?.region?.country_code || (isEurope ? 'FR' : 'AE')),
+              address: String(info?.address || `${input.destination} Central`),
+              city: String(info?.region?.name || input.destination),
+              country: String(info?.region?.country_code || 'International'),
               price: Math.round(rateAmount),
               currency: rateCurrency,
               images: apiImages,
@@ -115,7 +131,7 @@ export class HotelsService {
           .map((r) => r.value);
 
         if (validResults.length > 0) {
-          this.logger.log(`RateHawk live API returned ${validResults.length} properties`);
+          this.logger.log(`RateHawk live API returned ${validResults.length} properties for ${input.destination}`);
           this.serpCache.set(cacheKey, { data: validResults, timestamp: Date.now() });
           return validResults;
         }

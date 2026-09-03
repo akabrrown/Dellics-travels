@@ -128,7 +128,7 @@ describe('HotelsService', () => {
     ]);
     // credentials must travel in headers, never in the request body
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe('https://ratehawk.test/search/serp/region/');
+    expect(url).toBe('https://ratehawk.test/search/multicomplete/');
     expect(init.headers['X-API-ID']).toBe('test-id');
     expect(init.headers['X-API-Key']).toBe('test-key');
     expect(init.body).not.toContain('test-key');
