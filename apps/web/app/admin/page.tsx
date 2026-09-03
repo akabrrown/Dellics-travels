@@ -42,7 +42,7 @@ export default function AdminPage() {
 
         <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
           <a
-            href={process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3000"}
+            href={process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3002"}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-[#F4740D] hover:bg-[#d6660b] text-white font-bold px-8 py-3 text-sm shadow-lg transition-all"

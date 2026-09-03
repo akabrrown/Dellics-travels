@@ -79,6 +79,8 @@ export default function HotelsPage() {
   return (
     <>
       <PageHero
+        title="Verified Hotels, Resorts & Global Stays"
+        subtitle="Access negotiated wholesale rates across 3.3+ million properties worldwide with guaranteed zero hidden city fees."
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Stays" }]}
       >

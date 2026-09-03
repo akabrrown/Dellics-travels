@@ -55,6 +55,8 @@ export default async function ToursPage() {
   return (
     <>
       <PageHero
+        title="Curated Tours & Safari Holiday Packages"
+        subtitle="Discover breathtaking safaris, luxury beach retreats, and cultural heritage itineraries across Africa and the world."
         image="/images/africa/serengeti-national-park.jpg"
         breadcrumbs={[{ label: "Tours & Holidays" }]}
       >

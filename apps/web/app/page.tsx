@@ -147,7 +147,21 @@ export default async function HomePage() {
     <>
       {/* 1. Cinematic Hero Slider with Transparent Booking Engine */}
       <HeroSlider slides={HERO_SLIDES}>
-        <QuickBook />
+        <div className="w-full flex flex-col items-center text-center">
+          <div className="mb-3 sm:mb-5 max-w-3xl">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-md px-3.5 py-1 text-xs font-semibold text-white uppercase tracking-wider mb-2 border border-white/20 shadow-xs">
+              <span className="size-1.5 rounded-full bg-brand-orange animate-pulse" />
+              IATA Accredited Agency
+            </span>
+            <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
+              Explore The World With Confidence
+            </h1>
+            <p className="mt-1.5 text-xs sm:text-sm text-white/90 max-w-xl mx-auto font-light drop-shadow">
+              Flights, verified luxury stays, bespoke safari tours, and international connectivity under one trusted booking roof.
+            </p>
+          </div>
+          <QuickBook />
+        </div>
       </HeroSlider>
 
       {/* 3. Core Services Grid */}

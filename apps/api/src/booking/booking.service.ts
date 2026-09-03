@@ -180,13 +180,21 @@ export class BookingService {
    * Validates and processes Paystack booking webhook events
    */
   async handlePaystackWebhook(signature: string, payload: Buffer | string | any) {
+    if (!signature || !this.paystackSecretKey) {
+      this.logger.warn('Paystack webhook received without valid signature or secret key');
+      throw new HttpException('Invalid webhook signature', HttpStatus.BAD_REQUEST);
+    }
+
     const rawBody = typeof payload === 'string' ? payload : Buffer.isBuffer(payload) ? payload.toString('utf8') : JSON.stringify(payload);
     const hash = crypto
       .createHmac('sha512', this.paystackSecretKey)
       .update(rawBody)
       .digest('hex');
 
-    if (hash !== signature && signature !== 'skip-for-testing') {
+    const hashBuf = Buffer.from(hash, 'utf8');
+    const sigBuf = Buffer.from(signature, 'utf8');
+
+    if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
       this.logger.warn('Paystack webhook signature verification failed');
       throw new HttpException('Invalid webhook signature', HttpStatus.BAD_REQUEST);
     }

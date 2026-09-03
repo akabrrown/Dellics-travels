@@ -88,7 +88,9 @@ export class AuthController {
             pointsBalance: u.points_balance,
             nationality: u.nationality,
             homeAirport: u.home_airport,
-            passportNumber: u.passport_number,
+            passportNumber: u.passport_number
+              ? `${u.passport_number.slice(0, 2)}****${u.passport_number.slice(-2)}`
+              : null,
             passportExpiry: u.passport_expiry,
             passportCountry: u.passport_country,
             onboardingCompleted: u.onboarding_completed,

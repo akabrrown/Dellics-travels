@@ -321,7 +321,10 @@ export class PaymentsService {
       .update(bodyStr)
       .digest('hex');
 
-    if (hash !== signature) {
+    const hashBuf = Buffer.from(hash, 'utf8');
+    const sigBuf = Buffer.from(signature, 'utf8');
+
+    if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
       this.logger.warn('Invalid Paystack webhook signature');
       throw new BadRequestException('Invalid signature');
     }

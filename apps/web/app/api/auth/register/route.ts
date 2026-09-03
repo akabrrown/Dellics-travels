@@ -54,27 +54,23 @@ export async function POST(req: Request) {
       where: { email: email.trim().toLowerCase() },
     });
 
-    let dbUser;
     if (existing) {
-      dbUser = await prisma.user.update({
-        where: { id: existing.id },
-        data: {
-          name: fullName?.trim() || existing.name,
-          phone: phone?.trim() || existing.phone,
-        },
-      });
-    } else {
-      dbUser = await prisma.user.create({
-        data: {
-          id: supabaseUserId || undefined,
-          email: email.trim().toLowerCase(),
-          name: fullName?.trim() || email.split("@")[0],
-          phone: phone?.trim() || null,
-          role: "USER",
-          membership_tier: "EXPLORER",
-        },
-      });
+      return NextResponse.json(
+        { error: "An account with this email address already exists. Please sign in." },
+        { status: 409 },
+      );
     }
+
+    const dbUser = await prisma.user.create({
+      data: {
+        id: supabaseUserId || undefined,
+        email: email.trim().toLowerCase(),
+        name: fullName?.trim() || email.split("@")[0],
+        phone: phone?.trim() || null,
+        role: "USER",
+        membership_tier: "EXPLORER",
+      },
+    });
 
     return NextResponse.json({
       success: true,

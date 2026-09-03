@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class WebhooksService {
@@ -10,6 +11,23 @@ export class WebhooksService {
    * Processes verified Paystack webhook payloads
    */
   async handlePaystackWebhook(signature: string, event: any) {
+    const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+    if (paystackSecret && signature) {
+      const rawBody = typeof event === 'string' ? event : JSON.stringify(event);
+      const hash = crypto
+        .createHmac('sha512', paystackSecret)
+        .update(rawBody)
+        .digest('hex');
+
+      const hashBuf = Buffer.from(hash, 'utf8');
+      const sigBuf = Buffer.from(signature, 'utf8');
+
+      if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
+        this.logger.warn('Paystack webhook signature verification failed in WebhooksService');
+        throw new BadRequestException('Invalid signature');
+      }
+    }
+
     const eventType = event.event || event.type;
     this.logger.log(`Received Webhook event: ${eventType}`);
 

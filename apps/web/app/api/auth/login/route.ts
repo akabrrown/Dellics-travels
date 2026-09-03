@@ -38,8 +38,8 @@ export async function POST(req: Request) {
 
     if (!dbUser) {
       return NextResponse.json(
-        { error: "No account found with this email address. Please create an account." },
-        { status: 404 },
+        { error: "Invalid email or password" },
+        { status: 401 },
       );
     }
 
@@ -53,12 +53,22 @@ export async function POST(req: Request) {
           email: cleanEmail,
           password,
         });
-        if (!error && data?.user) {
-          session = data.session;
-          authUser = data.user;
+
+        if (error || !data?.user) {
+          return NextResponse.json(
+            { error: "Invalid email or password" },
+            { status: 401 },
+          );
         }
+
+        session = data.session;
+        authUser = data.user;
       } catch (err) {
         console.error("Supabase auth verification:", err);
+        return NextResponse.json(
+          { error: "Authentication service temporarily unavailable" },
+          { status: 503 },
+        );
       }
     }
 

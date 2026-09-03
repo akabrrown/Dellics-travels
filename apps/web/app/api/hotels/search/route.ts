@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 const RATEHAWK_BASE_URL =
   process.env.RATEHAWK_BASE_URL || "https://api-sandbox.ratehawk.com/api/b2b/v3";
 const RATEHAWK_API_ID =
-  process.env.RATEHAWK_API_ID || process.env.RATEHAWK_KEY_ID || "494";
+  process.env.RATEHAWK_API_ID || process.env.RATEHAWK_KEY_ID || "";
 const RATEHAWK_API_KEY =
-  process.env.RATEHAWK_API_KEY || "2ecbeeb9-cc38-4b7e-a415-94300adff21f";
+  process.env.RATEHAWK_API_KEY || "";
 
 const REQUEST_TIMEOUT_MS = 14_000;
 
@@ -14,6 +14,9 @@ const serpCache = new Map<string, { data: any[]; timestamp: number }>();
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
 async function fetchRatehawk(endpoint: string, payload: unknown) {
+  if (!RATEHAWK_API_KEY || !RATEHAWK_API_ID) {
+    throw new Error("RateHawk API credentials not configured");
+  }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   const basicAuth = Buffer.from(

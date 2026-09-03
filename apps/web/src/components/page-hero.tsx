@@ -81,19 +81,35 @@ export function PageHero({
           </nav>
         ) : null}
 
-        {/* Text is only rendered if not in feature hero mode */}
-        {!isFeatureHero && title ? (
-          <>
-            <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-sm">
+        {/* Page Heading & Subtitle */}
+        {title && !hideText ? (
+          <div className={cn(children ? "mb-3 sm:mb-5" : "")}>
+            <h1
+              className={cn(
+                "font-display font-extrabold tracking-tight text-white drop-shadow-sm",
+                children
+                  ? "text-2xl sm:text-3xl lg:text-4xl"
+                  : "text-3xl sm:text-5xl lg:text-6xl",
+              )}
+            >
               {title}
             </h1>
 
             {subtitle ? (
-              <p className="mx-auto mt-4 max-w-2xl text-base sm:text-lg text-white/80 leading-relaxed font-light">
+              <p
+                className={cn(
+                  "mx-auto text-white/85 leading-relaxed font-light",
+                  children
+                    ? "mt-1.5 max-w-2xl text-xs sm:text-sm"
+                    : "mt-4 max-w-2xl text-base sm:text-lg",
+                )}
+              >
                 {subtitle}
               </p>
             ) : null}
-          </>
+          </div>
+        ) : title && hideText ? (
+          <h1 className="sr-only">{title}</h1>
         ) : null}
 
         {children ? <div className="w-full mt-2 flex justify-center">{children}</div> : null}
