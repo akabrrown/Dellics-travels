@@ -15,4 +15,9 @@ export class WebhooksController {
     const signature = paystackSig || stripeSig || '';
     return this.webhooksService.handlePaystackWebhook(signature, body);
   }
+
+  @Post('airalo')
+  async handleAiraloWebhook(@Body() body: any) {
+    return this.webhooksService.handleAiraloWebhook(body);
+  }
 }

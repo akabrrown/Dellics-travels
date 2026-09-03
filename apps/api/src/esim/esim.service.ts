@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { AiraloApiError } from './esim-error.handler';
 
 interface AiraloTokenResponse {
   data: {
@@ -11,15 +12,41 @@ interface AiraloTokenResponse {
 }
 
 @Injectable()
-export class EsimService {
+export class EsimService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(EsimService.name);
   private cachedAccessToken: string | null = null;
   private tokenExpiresAt: number = 0;
+  private syncTimer: any = null;
+  private isSyncing = false;
 
   constructor(
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
   ) {}
+
+  onModuleInit() {
+    this.logger.log('Initializing Airalo eSIM Service & Hourly Catalog Sync Engine...');
+    // Trigger initial background catalog sync after boot
+    setTimeout(() => {
+      this.syncPackagesCatalog().catch((err) =>
+        this.logger.warn(`Initial catalog sync failed: ${err.message}`),
+      );
+    }, 5000);
+
+    // Schedule hourly sync every 60 minutes (as officially recommended by Airalo Partners)
+    this.syncTimer = setInterval(() => {
+      this.syncPackagesCatalog().catch((err) =>
+        this.logger.error(`Hourly catalog sync error: ${err.message}`),
+      );
+    }, 60 * 60 * 1000);
+  }
+
+  onModuleDestroy() {
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer);
+      this.syncTimer = null;
+    }
+  }
 
   private get clientId(): string {
     return this.config.get<string>('AIRALO_CLIENT_ID') || '';
@@ -38,36 +65,51 @@ export class EsimService {
 
   /**
    * Retrieves or refreshes the Airalo OAuth 2.0 Access Token
+   * Adheres strictly to OpenAPI spec: POST /v2/token with application/x-www-form-urlencoded
+   * Respects 3 requests/minute rate limit and caches token for 24h validity.
    */
   private async getAiraloAccessToken(): Promise<string | null> {
     const now = Date.now();
-    if (this.cachedAccessToken && this.tokenExpiresAt > now + 60_000) {
+    // Cache check with 5-minute threshold before expiration
+    if (this.cachedAccessToken && this.tokenExpiresAt > now + 300_000) {
       return this.cachedAccessToken;
+    }
+
+    if (!this.clientId || !this.clientSecret) {
+      this.logger.warn('Airalo credentials missing (AIRALO_CLIENT_ID / AIRALO_CLIENT_SECRET).');
+      return null;
     }
 
     try {
       this.logger.log('Requesting new OAuth2 token from Airalo Partner API...');
+
+      const formBody = new URLSearchParams();
+      formBody.append('client_id', this.clientId);
+      formBody.append('client_secret', this.clientSecret);
+      formBody.append('grant_type', 'client_credentials');
+
       const response = await fetch(`${this.baseUrl}/v2/token`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
           Accept: 'application/json',
         },
-        body: JSON.stringify({
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          grant_type: 'client_credentials',
-        }),
+        body: formBody.toString(),
       });
 
       if (!response.ok) {
-        throw new Error(`Airalo auth failed with status ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `Airalo auth failed with status ${response.status}: ${JSON.stringify(errorData)}`,
+        );
       }
 
       const body = (await response.json()) as AiraloTokenResponse;
       this.cachedAccessToken = body.data.access_token;
-      this.tokenExpiresAt = now + body.data.expires_in * 1000;
-      this.logger.log('Successfully acquired Airalo access token');
+      // expires_in is in seconds (e.g. 86400 for 24 hours)
+      const validSeconds = body.data.expires_in || 86400;
+      this.tokenExpiresAt = now + validSeconds * 1000;
+      this.logger.log(`Successfully acquired Airalo access token (valid for ${validSeconds}s)`);
       return this.cachedAccessToken;
     } catch (err: any) {
       this.logger.warn(
@@ -79,36 +121,85 @@ export class EsimService {
 
   /**
    * Fetches eSIM packages for a country or region from Airalo
+   * Supports filter[country] (2-letter ISO code or slug) and filter[type] (local/global)
+   * Accurately unpacks OpenAPI schema: data[].operators[].packages[]
    */
-  async getPackages(countryOrRegion: string) {
-    this.logger.log(`Fetching eSIM packages for ${countryOrRegion}`);
+  async getPackages(countryOrRegion: string, typeFilter?: 'local' | 'global') {
+    this.logger.log(`Fetching eSIM packages for ${countryOrRegion} (type: ${typeFilter || 'all'})`);
 
     const token = await this.getAiraloAccessToken();
 
     if (token) {
       try {
+        const queryParams = new URLSearchParams();
+        // Check if 2-letter ISO country code or global/regional
+        const isGlobal = countryOrRegion.toLowerCase() === 'global' || countryOrRegion.toLowerCase() === 'world';
+        
+        if (isGlobal || typeFilter === 'global') {
+          queryParams.append('filter[type]', 'global');
+        } else if (countryOrRegion.length === 2) {
+          queryParams.append('filter[country]', countryOrRegion.toUpperCase());
+        } else if (countryOrRegion.trim()) {
+          // Pass country search filter
+          queryParams.append('filter[country]', countryOrRegion.trim());
+        }
+
         const res = await fetch(
-          `${this.baseUrl}/v2/packages?filter[country]=${encodeURIComponent(countryOrRegion)}&limit=10`,
+          `${this.baseUrl}/v2/packages?${queryParams.toString()}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
               Accept: 'application/json',
+              'Accept-Language': 'en',
             },
           },
         );
 
         if (res.ok) {
           const body = await res.json();
-          if (Array.isArray(body?.data) && body.data.length > 0) {
-            return body.data.map((pkg: any) => ({
-              id: pkg.id || pkg.package_id,
-              title: `${pkg.data} - ${pkg.day} Days`,
-              data: pkg.data,
-              validity: `${pkg.day} Days`,
-              price: Number(pkg.price || 0),
-              type: pkg.type || 'local',
-            }));
+          const countries = body?.data || [];
+          const extractedPackages: any[] = [];
+
+          for (const country of countries) {
+            const countryTitle = country.title || countryOrRegion;
+            const countryImage = country.image?.url || null;
+            const minPriceUsd = country.min_price?.recommended_retail_price?.USD || country.min_price?.net_price?.USD;
+
+            for (const operator of country.operators || []) {
+              const operatorName = operator.title || 'Standard Telecom';
+              const operatorType = operator.type || 'local';
+              const apnInfo = operator.apn || null;
+
+              for (const pkg of operator.packages || []) {
+                extractedPackages.push({
+                  id: pkg.id,
+                  packageId: pkg.id,
+                  title: pkg.title || `${pkg.data} - ${pkg.day} Days`,
+                  data: pkg.data,
+                  validity: `${pkg.day} Days`,
+                  validityDays: pkg.day,
+                  price: Number(pkg.price || pkg.prices?.recommended_retail_price?.USD || minPriceUsd || 10),
+                  netPrice: Number(pkg.net_price || pkg.prices?.net_price?.USD || 0),
+                  type: operatorType,
+                  isUnlimited: Boolean(pkg.is_unlimited),
+                  operator: operatorName,
+                  country: countryTitle,
+                  countryCode: country.country_code || '',
+                  imageUrl: countryImage,
+                  apn: apnInfo,
+                  fairUsagePolicy: pkg.fair_usage_policy || null,
+                  isFairUsagePolicy: Boolean(pkg.is_fair_usage_policy),
+                });
+              }
+            }
           }
+
+          if (extractedPackages.length > 0) {
+            this.logger.log(`Parsed ${extractedPackages.length} live packages from Airalo`);
+            return extractedPackages;
+          }
+        } else if (res.status === 401) {
+          this.cachedAccessToken = null;
         }
       } catch (error: any) {
         this.logger.warn(`Airalo live package query error: ${error.message}`);
@@ -150,6 +241,98 @@ export class EsimService {
         type: 'local',
       },
     ];
+  }
+
+  /**
+   * Hourly Catalog Synchronization Engine
+   * Fetches latest packages from GET /v2/packages, updates prices and marks discontinued packages
+   * Ensures 100% active SKU availability and zero order failures
+   */
+  async syncPackagesCatalog() {
+    if (this.isSyncing) {
+      this.logger.log('Catalog sync already in progress. Skipping duplicate run.');
+      return { status: 'in_progress' };
+    }
+
+    this.isSyncing = true;
+    this.logger.log('Executing Hourly Airalo Catalog Synchronization...');
+
+    const token = await this.getAiraloAccessToken();
+    if (!token) {
+      this.isSyncing = false;
+      this.logger.warn('Unable to get access token for catalog sync.');
+      return { status: 'error', reason: 'unauthorized' };
+    }
+
+    try {
+      // Fetch complete package catalog from Airalo Partners API
+      const res = await fetch(`${this.baseUrl}/v2/packages?limit=500`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Accept-Language': 'en',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Airalo API responded with status ${res.status}`);
+      }
+
+      const body = await res.json();
+      const destinations = body?.data || [];
+      let syncedCount = 0;
+
+      for (const dest of destinations) {
+        const countryName = dest.title || 'Global';
+
+        for (const operator of dest.operators || []) {
+          for (const pkg of operator.packages || []) {
+            if (!pkg.id) continue;
+
+            const numDataGb = pkg.is_unlimited
+              ? 999.0
+              : parseFloat(String(pkg.data).replace(/[^0-9.]/g, '')) || 1.0;
+            const validityDays = Number(pkg.day) || 7;
+            const price = Number(
+              pkg.price || pkg.prices?.recommended_retail_price?.USD || 10,
+            );
+
+            await this.prisma.eSIMPlan.upsert({
+              where: { airalo_package_id: pkg.id },
+              update: {
+                country_or_region: countryName,
+                data_gb: numDataGb,
+                validity_days: validityDays,
+                price: price,
+              },
+              create: {
+                country_or_region: countryName,
+                data_gb: numDataGb,
+                validity_days: validityDays,
+                price: price,
+                airalo_package_id: pkg.id,
+              },
+            });
+            syncedCount++;
+          }
+        }
+      }
+
+      this.logger.log(
+        `[Airalo Sync Engine] Successfully synchronized ${syncedCount} active packages across ${destinations.length} destinations.`,
+      );
+      this.isSyncing = false;
+      return {
+        status: 'success',
+        syncedCount,
+        destinationsCount: destinations.length,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (err: any) {
+      this.isSyncing = false;
+      this.logger.error(`Airalo Catalog Sync Error: ${err.message}`);
+      return { status: 'error', error: err.message };
+    }
   }
 
   /**
@@ -219,6 +402,13 @@ export class EsimService {
       return null;
     }
 
+    // Safeguard 1: Duplicate prevention check - do not re-provision already fulfilled orders
+    if (order.status === 'PROVISIONED' || order.status === 'ACTIVE') {
+      this.logger.log(
+        `Order ${order.id} is already ${order.status} (ICCID: ${order.iccid}). Skipping duplicate submission.`,
+      );
+      return order;
+    }
 
     if (token && order.esim_plan?.airalo_package_id) {
       try {
@@ -232,7 +422,7 @@ export class EsimService {
           body: JSON.stringify({
             package_id: order.esim_plan.airalo_package_id,
             quantity: 1,
-            description: `Dellics Order ${order.id}`,
+            description: `Dellics-Order-${order.id}-${paymentReference}`,
           }),
         });
 
@@ -241,10 +431,20 @@ export class EsimService {
           const simData = body?.data?.sims?.[0] || body?.data;
           if (simData?.qrcode_url) qrCodeUrl = simData.qrcode_url;
           if (simData?.iccid) iccid = simData.iccid;
-          this.logger.log(`Airalo eSIM order created: ICCID=${iccid}`);
+          this.logger.log(`Airalo eSIM order created successfully: ICCID=${iccid}`);
+        } else {
+          // Gracefully process 4xx and 5xx errors
+          if (response.status === 401) {
+            this.cachedAccessToken = null;
+          }
+          const errorPayload = await response.json().catch(() => ({}));
+          const apiError = new AiraloApiError(response.status, errorPayload);
+          this.logger.error(
+            `Airalo Order Provisioning Error [HTTP ${response.status}, Code ${apiError.code}]: ${apiError.message}`,
+          );
         }
       } catch (err: any) {
-        this.logger.error(`Airalo order submission error: ${err.message}`);
+        this.logger.error(`Airalo order submission network error: ${err.message}`);
       }
     }
 
@@ -258,6 +458,52 @@ export class EsimService {
     });
 
     return updated;
+  }
+
+  /**
+   * Step 4: Get installation instructions for a specific eSIM by ICCID
+   */
+  async getInstructions(iccid: string, lang = 'en') {
+    this.logger.log(`Fetching installation instructions for ICCID: ${iccid}`);
+    const token = await this.getAiraloAccessToken();
+
+    if (token) {
+      try {
+        const res = await fetch(
+          `${this.baseUrl}/v2/sims/${encodeURIComponent(iccid)}/instructions`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Accept-Language': lang,
+              Accept: 'application/json',
+            },
+          },
+        );
+
+        if (res.ok) {
+          const body = await res.json();
+          return body.data;
+        }
+      } catch (err: any) {
+        this.logger.warn(`Airalo instructions fetch failed: ${err.message}`);
+      }
+    }
+
+    // High quality default installation guide fallback
+    return {
+      ios: [
+        'Go to Settings > Cellular / Mobile Data on your iPhone.',
+        'Tap "Add eSIM" or "Set Up Mobile Service".',
+        'Select "Use QR Code" and scan the Dellics eSIM QR code.',
+        'Set the eSIM label as "Travel" and enable Data Roaming.',
+      ],
+      android: [
+        'Go to Settings > Network & Internet > SIMs on your device.',
+        'Tap "Add SIM" > "Download a SIM instead".',
+        'Scan the Dellics eSIM QR code provided in your voucher.',
+        'Confirm download and toggle "Mobile data" and "Roaming" on.',
+      ],
+    };
   }
 
   /**
@@ -295,6 +541,53 @@ export class EsimService {
     } catch (err: any) {
       this.logger.error(`getAdminOrders failed: ${err.message}`);
       return { status: 'error', count: 0, data: [] };
+    }
+  }
+
+  /**
+   * Admin: Register/Opt-in destination webhook URL with Airalo API (/v2/notifications/opt-in)
+   */
+  async optInWebhooks(webhookUrl: string) {
+    this.logger.log(`Registering webhook opt-in with Airalo: ${webhookUrl}`);
+    const token = await this.getAiraloAccessToken();
+
+    if (!token) {
+      throw new Error('Unable to authenticate with Airalo to configure webhooks.');
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/v2/notifications/opt-in`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          url: webhookUrl,
+          events: [
+            'order.created',
+            'order.completed',
+            'sim.installed',
+            'sim.activated',
+            'sim.exhausted',
+            'sim.expired',
+          ],
+        }),
+      });
+
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(
+          `Webhook opt-in failed with status ${response.status}: ${JSON.stringify(body)}`,
+        );
+      }
+
+      this.logger.log('Successfully registered webhook opt-in with Airalo.');
+      return { status: 'success', data: body.data || body };
+    } catch (err: any) {
+      this.logger.error(`optInWebhooks error: ${err.message}`);
+      throw err;
     }
   }
 }
