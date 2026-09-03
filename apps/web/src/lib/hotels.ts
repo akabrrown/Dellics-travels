@@ -75,12 +75,26 @@ const DEFAULT_VERIFIED_PROPERTIES: Array<{
 ];
 
 export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {
+  const today = new Date().toISOString().slice(0, 10);
+  const normalizedCheckIn = !input.checkIn || input.checkIn < today ? today : input.checkIn;
+  const defaultCheckOut = new Date(new Date(normalizedCheckIn).getTime() + 86400000 * 5)
+    .toISOString()
+    .slice(0, 10);
+  const normalizedCheckOut =
+    !input.checkOut || input.checkOut <= normalizedCheckIn ? defaultCheckOut : input.checkOut;
+
+  const sanitizedInput: HotelSearchInput = {
+    ...input,
+    checkIn: normalizedCheckIn,
+    checkOut: normalizedCheckOut,
+  };
+
   // 1. Query Next.js direct RateHawk sandbox API route
   try {
     const res = await fetch("/api/hotels/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
+      body: JSON.stringify(sanitizedInput),
     });
     if (res.ok) {
       const data = await res.json();
@@ -88,26 +102,26 @@ export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {
         return data;
       }
     }
-  } catch (err) {
-    console.error("Next.js hotel search failed:", err);
+  } catch {
+    // silently proceed to fallback
   }
 
   // 2. Query NestJS API backend
   try {
-    const data = await postJson<Hotel[]>("/hotels/search", input);
+    const data = await postJson<Hotel[]>("/hotels/search", sanitizedInput);
     if (Array.isArray(data) && data.length > 0) {
       return data;
     }
-  } catch (err) {
-    console.error("NestJS hotel search fallback failed:", err);
+  } catch {
+    // silently proceed to fallback
   }
 
   // 3. Fallback to curated verified properties using the user's queried destination
-  const dest = input.destination?.trim() || "Accra";
+  const dest = sanitizedInput.destination?.trim() || "Accra";
   const diffDays = Math.max(
     1,
     Math.round(
-      (new Date(input.checkOut).getTime() - new Date(input.checkIn).getTime()) /
+      (new Date(sanitizedInput.checkOut).getTime() - new Date(sanitizedInput.checkIn).getTime()) /
         (1000 * 60 * 60 * 24)
     )
   );

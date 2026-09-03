@@ -102,12 +102,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const destination = (body.destination || "Dubai").trim();
 
-    const checkIn =
-      body.checkIn ||
-      new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10);
-    const checkOut =
-      body.checkOut ||
-      new Date(Date.now() + 86400000 * 12).toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
+    const rawCheckIn = body.checkIn || "";
+    const checkIn = (!rawCheckIn || rawCheckIn < today) ? today : rawCheckIn;
+
+    const defaultCheckOut = new Date(new Date(checkIn).getTime() + 86400000 * 5)
+      .toISOString()
+      .slice(0, 10);
+    const rawCheckOut = body.checkOut || "";
+    const checkOut = (!rawCheckOut || rawCheckOut <= checkIn)
+      ? defaultCheckOut
+      : rawCheckOut;
     const guestsCount = Number(body.guests) || 2;
 
     const destLower = destination.toLowerCase();
