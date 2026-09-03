@@ -547,7 +547,9 @@ export function HotelSearchResults({
                       </div>
 
                       <Link
-                        href={`/inquire?service=hotels&hotel=${encodeURIComponent(
+                        href={`/hotels/book?id=${encodeURIComponent(
+                          hotel.id
+                        )}&name=${encodeURIComponent(
                           hotel.name
                         )}&location=${encodeURIComponent(
                           [hotel.address, hotel.city, hotel.country]
@@ -557,7 +559,11 @@ export function HotelSearchResults({
                           checkIn
                         )}&checkOut=${encodeURIComponent(
                           checkOut
-                        )}&guests=${guests}&rooms=${rooms}&price=${hotel.price}`}
+                        )}&guests=${guests}&rooms=${rooms}&price=${hotel.price}&currency=${
+                          hotel.currency || "USD"
+                        }&rating=${hotel.rating}&image=${encodeURIComponent(
+                          primaryImage || ""
+                        )}`}
                         className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs px-5 py-2.5 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer"
                       >
                         <span>Reserve Room</span>
