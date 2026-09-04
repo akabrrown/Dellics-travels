@@ -45,8 +45,9 @@ export async function POST(req: Request) {
     }
 
     // 2. Direct password verification if password_hash exists in database
-    if (dbUser.password_hash) {
-      const isValid = verifyPassword(password, dbUser.password_hash);
+    const userRecord = dbUser as typeof dbUser & { password_hash?: string | null };
+    if (userRecord.password_hash) {
+      const isValid = verifyPassword(password, userRecord.password_hash);
       if (!isValid) {
         return NextResponse.json(
           { error: "Invalid email or password" },
