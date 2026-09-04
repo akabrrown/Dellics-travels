@@ -41,6 +41,16 @@ export class BookingController {
     return this.bookingService.getAdminRefunds();
   }
 
+  @Get('admin/analytics')
+  async getAdminAnalytics(@Query('range') range?: string) {
+    return this.bookingService.getAdminAnalytics(range);
+  }
+
+  @Post('admin/create-offline')
+  async createOfflineBooking(@Body() body: any) {
+    return this.bookingService.createOfflineBooking(body);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('payment-intent')
   async createPaymentIntent(@Body() body: any) {

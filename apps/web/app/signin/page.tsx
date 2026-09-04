@@ -118,7 +118,7 @@ function SignInContent() {
         </div>
 
         <div className="relative z-10 text-xs text-white/50">
-          © {new Date().getFullYear()} Dellics Travels & Tours Ltd.
+          © {new Date().getFullYear()} Dellics Travels. All rights reserved.
         </div>
       </div>
 

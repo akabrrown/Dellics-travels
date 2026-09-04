@@ -18,4 +18,9 @@ export class AppController {
       timestamp: new Date().toISOString(),
     };
   }
+
+  @Get('health/suppliers')
+  async getSuppliersHealth() {
+    return this.appService.getSuppliersHealth();
+  }
 }

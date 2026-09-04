@@ -26,6 +26,7 @@ import {
   AdminRole,
   PermissionDefinition,
 } from "@/lib/roles";
+import { adminApi } from "@/lib/api";
 
 interface TeamMember {
   id: string;
@@ -88,13 +89,15 @@ const COLOR_OPTIONS = [
 export default function RolesAndTeam() {
   const { activeRole, allRoles, switchRole } = useRole();
   const [activeTab, setActiveTab] = useState<"MEMBERS" | "MATRIX" | "BUILDER">("MEMBERS");
-  const [members, setMembers] = useState<TeamMember[]>(INITIAL_MEMBERS);
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(true);
 
   // Invite Modal
   const [inviteModal, setInviteModal] = useState(false);
   const [inviteName, setInviteName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRoleId, setInviteRoleId] = useState("customer_service");
+  const [inviteSubmitting, setInviteSubmitting] = useState(false);
 
   // Custom Role Builder State
   const [roleTitle, setRoleTitle] = useState("");
@@ -105,6 +108,25 @@ export default function RolesAndTeam() {
 
   // Role Re-assignment
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+
+  // Load team members from live API
+  const fetchMembers = async () => {
+    try {
+      setLoadingMembers(true);
+      const res = await adminApi.get<{ data: TeamMember[] }>("/roles/team/members");
+      if (res && res.data) {
+        setMembers(res.data);
+      }
+    } catch (err: any) {
+      console.warn("Could not fetch team members:", err.message);
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
   // Categories for grouping permissions
   const categories: Array<PermissionDefinition["category"]> = [
@@ -132,7 +154,7 @@ export default function RolesAndTeam() {
     setSelectedPermissions(updated);
   };
 
-  const handleCreateCustomRole = (e: React.FormEvent) => {
+  const handleCreateCustomRole = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roleTitle.trim()) return;
 
@@ -141,13 +163,20 @@ export default function RolesAndTeam() {
       .replace(/[^a-z0-9]+/g, "_")
       .replace(/(^_|_$)/g, "");
 
-    saveCustomRole({
+    const newRole = {
       id,
       title: roleTitle.trim(),
       description: roleDescription.trim() || "Custom administrative role.",
       badgeColor: selectedColor,
       permissions: selectedPermissions,
-    });
+    };
+
+    saveCustomRole(newRole);
+    try {
+      await adminApi.post("/roles", newRole);
+    } catch {
+      // Local storage fallback handled by saveCustomRole
+    }
 
     setBuilderSuccess(true);
     setTimeout(() => {
@@ -159,9 +188,14 @@ export default function RolesAndTeam() {
     }, 1000);
   };
 
-  const handleDeleteRole = (roleId: string, roleTitle: string) => {
+  const handleDeleteRole = async (roleId: string, roleTitle: string) => {
     if (confirm(`Are you sure you want to delete custom role "${roleTitle}"? Any assigned members will be moved to Customer Service.`)) {
       deleteCustomRole(roleId);
+      try {
+        await adminApi.delete(`/roles/${roleId}`);
+      } catch {
+        // Fallback
+      }
       // Reassign local state members if any had this role
       setMembers((prev) =>
         prev.map((m) => (m.roleId === roleId ? { ...m, roleId: "customer_service" } : m))
@@ -169,31 +203,45 @@ export default function RolesAndTeam() {
     }
   };
 
-  const handleInvite = (e: React.FormEvent) => {
+  const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteName.trim() || !inviteEmail.trim()) return;
 
-    const newMember: TeamMember = {
-      id: `ADM-00${members.length + 1}`,
-      name: inviteName.trim(),
-      email: inviteEmail.trim(),
-      roleId: inviteRoleId,
-      status: "Invited",
-      totpEnrolled: true,
-      lastLogin: "Invited just now",
-    };
+    try {
+      setInviteSubmitting(true);
+      const res = await adminApi.post<{ data: TeamMember }>("/roles/team/invite", {
+        name: inviteName.trim(),
+        email: inviteEmail.trim(),
+        roleId: inviteRoleId,
+      });
 
-    setMembers([...members, newMember]);
-    setInviteName("");
-    setInviteEmail("");
-    setInviteModal(false);
+      if (res && res.data) {
+        setMembers((prev) => [...prev, res.data]);
+      } else {
+        fetchMembers();
+      }
+
+      setInviteName("");
+      setInviteEmail("");
+      setInviteModal(false);
+    } catch (err: any) {
+      alert(`Invite failed: ${err.message}`);
+    } finally {
+      setInviteSubmitting(false);
+    }
   };
 
-  const handleUpdateMemberRole = (memberId: string, newRoleId: string) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === memberId ? { ...m, roleId: newRoleId } : m))
-    );
-    setEditingMemberId(null);
+  const handleUpdateMemberRole = async (memberId: string, newRoleId: string) => {
+    try {
+      await adminApi.patch(`/roles/team/${memberId}/role`, { roleId: newRoleId });
+      setMembers((prev) =>
+        prev.map((m) => (m.id === memberId ? { ...m, roleId: newRoleId } : m))
+      );
+    } catch (err: any) {
+      alert(`Role update failed: ${err.message}`);
+    } finally {
+      setEditingMemberId(null);
+    }
   };
 
   const getRoleById = (id: string): AdminRole => {

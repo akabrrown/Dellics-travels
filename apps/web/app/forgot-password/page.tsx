@@ -23,8 +23,22 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      // Simulate password reset dispatch
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setError(data.error || "Failed to send reset link. Please try again.");
+        setLoading(false);
+        return;
+      }
+
       setSent(true);
       setLoading(false);
     } catch (err: any) {
@@ -72,7 +86,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="relative z-10 text-xs text-white/50">
-          © {new Date().getFullYear()} Dellics Travels & Tours Ltd.
+          © {new Date().getFullYear()} Dellics Travels. All rights reserved.
         </div>
       </div>
 

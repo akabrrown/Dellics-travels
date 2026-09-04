@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createClient } from "@supabase/supabase-js";
+import { hashPassword } from "@/lib/password";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
 
     // 1. Try Supabase Auth API if anon key is available
     let supabaseUserId: string | null = null;
-    if (supabaseAnonKey && password) {
+    if (supabaseAnonKey && !supabaseAnonKey.includes("placeholder") && password) {
       try {
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
         const { data: sbData, error: sbError } = await supabase.auth.signUp({
@@ -61,12 +62,15 @@ export async function POST(req: Request) {
       );
     }
 
+    const passwordHash = password ? hashPassword(password) : null;
+
     const dbUser = await prisma.user.create({
       data: {
         id: supabaseUserId || undefined,
         email: email.trim().toLowerCase(),
         name: fullName?.trim() || email.split("@")[0],
         phone: phone?.trim() || null,
+        password_hash: passwordHash,
         role: "USER",
         membership_tier: "EXPLORER",
       },

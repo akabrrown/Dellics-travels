@@ -47,7 +47,12 @@ const COMPANY_LINKS = [
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (pathname === "/signin" || pathname === "/signup" || pathname === "/forgot-password") {
+  if (
+    pathname === "/signin" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password"
+  ) {
     return null;
   }
 
@@ -73,9 +78,14 @@ export function SiteFooter() {
 
               </div>
             </Link>
-            <p className="text-sm leading-relaxed text-white/75 max-w-md">
-              Dellics Travels is an IATA Certified global luxury travel management agency. We organize international flight tickets, corporate itineraries, visa advisory, and curated vacation packages across 5 continents.
-            </p>
+            <div className="space-y-2 text-sm leading-relaxed text-white/75 max-w-md">
+              <p>
+                Dellics Travels is an IATA Certified, global luxury travel management company.
+              </p>
+              <p>
+                We organize international flight tickets, tour &amp; holidays packages, Corporate travel, Travel Itineraries, Visa advisory.
+              </p>
+            </div>
 
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex items-start gap-3 text-xs text-white/80">
@@ -181,7 +191,7 @@ export function SiteFooter() {
 
         {/* Bottom Legal Bar */}
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-          <p>© {new Date().getFullYear()} Dellics Travels & Tours Ltd. All rights reserved. IATA Certified.</p>
+          <p>© {new Date().getFullYear()} Dellics Travels. All rights reserved.</p>
           <div className="flex items-center gap-6">
             {LEGAL.map((item) => (
               <Link

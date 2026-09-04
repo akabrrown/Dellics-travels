@@ -1,9 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TrendingUp,
   Download,
+  Users,
+  CheckCircle2,
+  DollarSign,
+  Calendar,
+  RefreshCw,
+  XCircle,
 } from "lucide-react";
 import {
   AreaChart,
@@ -14,30 +20,79 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { adminApi } from "@/lib/api";
 
-const REVENUE_DATA = [
-  { month: "Jan", revenue: 420000, bookings: 780 },
-  { month: "Feb", revenue: 490000, bookings: 890 },
-  { month: "Mar", revenue: 560000, bookings: 1020 },
-  { month: "Apr", revenue: 610000, bookings: 1140 },
-  { month: "May", revenue: 580000, bookings: 1080 },
-  { month: "Jun", revenue: 690000, bookings: 1290 },
-  { month: "Jul", revenue: 780000, bookings: 1450 },
-  { month: "Aug", revenue: 842000, bookings: 1610 },
-];
-
-const FUNNEL_DATA = [
-  { stage: "1. Search / Discovery", visitors: 48200, conversion: "100%" },
-  { stage: "2. Trip & Room Detail", visitors: 21400, conversion: "44.4%" },
-  { stage: "3. Checkout / Passenger Form", visitors: 6850, conversion: "32.0%" },
-  { stage: "4. Paid & Confirmed", visitors: 4210, conversion: "61.5%" },
-];
+interface AnalyticsData {
+  summary: {
+    totalRevenueGHS: number;
+    completedBookings: number;
+    avgBookingValue: number;
+    totalTravelers: number;
+    currency: string;
+  };
+  revenueData: Array<{ month: string; revenue: number; bookings: number }>;
+  funnelData: Array<{ stage: string; visitors: number; conversion: string }>;
+}
 
 export default function AnalyticsReports() {
   const [range, setRange] = useState("Last 30 Days");
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await adminApi.get<{ data: AnalyticsData }>(
+        `/booking/admin/analytics?range=${encodeURIComponent(range)}`
+      );
+      if (res && res.data) {
+        setData(res.data);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to load live analytics.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [range]);
+
+  const exportCSV = () => {
+    if (!data) return;
+    const rows = [
+      ["Month", "Revenue (GHS)", "Bookings Count"],
+      ...data.revenueData.map((r) => [r.month, r.revenue.toString(), r.bookings.toString()]),
+      [],
+      ["Funnel Stage", "Visitors", "Conversion Rate"],
+      ...data.funnelData.map((f) => [f.stage, f.visitors.toString(), f.conversion]),
+    ];
+    const csvContent =
+      "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `dellics-analytics-${range.toLowerCase().replace(/\s+/g, "-")}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const revenueData = data?.revenueData || [];
+  const funnelData = data?.funnelData || [];
+  const summary = data?.summary || {
+    totalRevenueGHS: 0,
+    completedBookings: 0,
+    avgBookingValue: 0,
+    totalTravelers: 0,
+    currency: "GHS",
+  };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -45,7 +100,7 @@ export default function AnalyticsReports() {
             Analytics & Conversion Reports
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Revenue tracking, booking funnel conversion, and traveler acquisition metrics.
+            Real-time live revenue tracking, booking funnel conversion, and traveler acquisition metrics.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -59,12 +114,30 @@ export default function AnalyticsReports() {
             <option>Year to Date</option>
             <option>All Time</option>
           </select>
-          <button className="px-4 py-2 rounded-full bg-[#0A0060] hover:bg-[#140882] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs">
+          <button
+            onClick={exportCSV}
+            disabled={!data || loading}
+            className="px-4 py-2 rounded-full bg-[#0A0060] hover:bg-[#140882] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+          >
             <Download className="size-3.5" />
             <span>Export CSV</span>
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+          <XCircle className="size-4 text-rose-600 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {loading && !data && (
+        <div className="py-20 text-center text-xs text-slate-500 flex flex-col items-center justify-center gap-3">
+          <RefreshCw className="size-6 animate-spin text-[#0A0060]" />
+          <span>Aggregating live transaction and booking funnel metrics...</span>
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -74,14 +147,14 @@ export default function AnalyticsReports() {
           </p>
           <div className="mt-3 flex items-baseline justify-between">
             <p className="font-display text-2xl font-extrabold text-[#0A0060]">
-              GHS 842,000
+              {summary.currency} {summary.totalRevenueGHS.toLocaleString()}
             </p>
             <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5">
               <TrendingUp className="size-3" />
-              +14.2%
+              Live
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">vs preceding 30 days</p>
+          <p className="text-[11px] text-slate-400 mt-1">Settled Paystack & offline</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
@@ -90,14 +163,14 @@ export default function AnalyticsReports() {
           </p>
           <div className="mt-3 flex items-baseline justify-between">
             <p className="font-display text-2xl font-extrabold text-slate-900">
-              1,610
+              {summary.completedBookings.toLocaleString()}
             </p>
             <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5">
-              <TrendingUp className="size-3" />
-              +8.6%
+              <CheckCircle2 className="size-3" />
+              Verified
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Tickets & hotel vouchers</p>
+          <p className="text-[11px] text-slate-400 mt-1">Confirmed tickets & vouchers</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
@@ -106,143 +179,127 @@ export default function AnalyticsReports() {
           </p>
           <div className="mt-3 flex items-baseline justify-between">
             <p className="font-display text-2xl font-extrabold text-slate-900">
-              GHS 522.98
+              {summary.currency} {summary.avgBookingValue.toLocaleString()}
             </p>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5">
-              <TrendingUp className="size-3" />
-              +3.1%
+            <span className="text-xs font-bold text-slate-500 flex items-center gap-0.5">
+              <DollarSign className="size-3" />
+              Per Order
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Across all product lines</p>
+          <p className="text-[11px] text-slate-400 mt-1">Across flights, stays & packages</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Active Travelers
+            Registered Travelers
           </p>
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="font-display text-2xl font-extrabold text-slate-900">
-              8,492
+            <p className="font-display text-2xl font-extrabold text-[#F4740D]">
+              {summary.totalTravelers.toLocaleString()}
             </p>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5">
-              <TrendingUp className="size-3" />
-              +24%
+            <span className="text-xs font-bold text-blue-600 flex items-center gap-0.5">
+              <Users className="size-3" />
+              CRM
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Registered mobile & web</p>
+          <p className="text-[11px] text-slate-400 mt-1">Traveler accounts created</p>
         </div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left 2 Cols: Revenue Growth Curve */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <h3 className="font-display text-sm font-bold text-slate-900">
-                Monthly Revenue & Ticket Volume
-              </h3>
-              <p className="text-[11px] text-slate-500">
-                Gross sales volume in GHS across 2026
-              </p>
-            </div>
-            <div className="flex items-center gap-4 text-xs font-semibold">
-              <div className="flex items-center gap-1.5 text-slate-600">
-                <span className="size-2.5 rounded-full bg-[#0A0060]" />
-                <span>Gross Revenue (GHS)</span>
-              </div>
-            </div>
+      {/* Revenue Trend Chart */}
+      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h2 className="font-display text-base font-bold text-slate-900">
+              Monthly Revenue Performance
+            </h2>
+            <p className="text-xs text-slate-500">
+              Live settlement amounts processed through Paystack Cards, MoMo, and Direct Cash
+            </p>
           </div>
-
-          <div className="h-72 w-full pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={REVENUE_DATA}>
-                <defs>
-                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0A0060" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#0A0060" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#64748b" }} />
-                <YAxis
-                  tick={{ fontSize: 11, fill: "#64748b" }}
-                  tickFormatter={(val) => `GHS ${(val / 1000).toFixed(0)}k`}
-                />
-                <Tooltip
-                  formatter={(value) => [
-                    `GHS ${Number(value ?? 0).toLocaleString()}`,
-                    "Revenue",
-                  ]}
-                  contentStyle={{
-                    borderRadius: 12,
-                    fontSize: 12,
-                    borderColor: "#e2e8f0",
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#0A0060"
-                  strokeWidth={2.5}
-                  fillOpacity={1}
-                  fill="url(#colorRev)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#0A0060]/5 text-[#0A0060] self-start sm:self-auto">
+            Currency: {summary.currency}
+          </span>
         </div>
 
-        {/* Right Col: Conversion Funnel (Search -> Detail -> Checkout -> Paid) */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-display text-sm font-bold text-slate-900">
-              Booking Conversion Funnel
-            </h3>
-            <p className="text-[11px] text-slate-500">
-              Mirroring mobile app S08 → S20 → S26 → S27 steps
-            </p>
-          </div>
+        <div className="h-72 w-full pt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#0A0060" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#0A0060" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+              <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} tickLine={false} />
+              <YAxis
+                stroke="#94A3B8"
+                fontSize={11}
+                tickLine={false}
+                tickFormatter={(value) => `${value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#0A0060",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  fontSize: "12px",
+                }}
+                formatter={(value: any) => [`${summary.currency} ${Number(value).toLocaleString()}`, "Revenue"]}
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#0A0060"
+                strokeWidth={2.5}
+                fillOpacity={1}
+                fill="url(#colorRevenue)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-          <div className="space-y-4 pt-2">
-            {FUNNEL_DATA.map((step, idx) => (
-              <div key={step.stage} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-800">
-                  <span>{step.stage}</span>
-                  <span className="font-mono text-slate-500">
-                    {step.visitors.toLocaleString()}
+      {/* Booking Funnel */}
+      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div>
+          <h2 className="font-display text-base font-bold text-slate-900">
+            Booking Pipeline & Conversion Funnel
+          </h2>
+          <p className="text-xs text-slate-500">
+            Conversion efficiency from initial flight & hotel search down to confirmed issuance
+          </p>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          {funnelData.map((item, index) => (
+            <div
+              key={item.stage}
+              className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+            >
+              <div className="flex items-center gap-3">
+                <span className="size-6 rounded-full bg-[#0A0060] text-white text-[11px] font-bold flex items-center justify-center shrink-0">
+                  {index + 1}
+                </span>
+                <span className="font-bold text-xs text-slate-900">{item.stage}</span>
+              </div>
+
+              <div className="flex items-center gap-6">
+                <div className="text-right">
+                  <p className="font-display font-extrabold text-xs text-slate-900">
+                    {item.visitors.toLocaleString()}
+                  </p>
+                  <p className="text-[10px] text-slate-400">Events / Records</p>
+                </div>
+                <div className="w-20 text-right">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">
+                    {item.conversion}
                   </span>
                 </div>
-                <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#0A0060] to-[#F4740D] rounded-full transition-all duration-500"
-                    style={{
-                      width: `${(step.visitors / FUNNEL_DATA[0].visitors) * 100}%`,
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between text-[10px] text-slate-400">
-                  <span>Step Retention: {step.conversion}</span>
-                  {idx > 0 && (
-                    <span className="text-amber-600 font-medium">
-                      {(
-                        (step.visitors / FUNNEL_DATA[idx - 1].visitors) *
-                        100
-                      ).toFixed(1)}
-                      % pass-through
-                    </span>
-                  )}
-                </div>
               </div>
-            ))}
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
-            <p className="font-bold text-slate-800">End-to-End Conversion Rate</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              8.73% of search sessions convert to completed payments (benchmark: 6.2%).
-            </p>
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

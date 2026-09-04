@@ -72,14 +72,16 @@ model User {
   passport_expiry      String?
   passport_country     String?
   onboarding_completed Boolean        @default(false)
+  password_hash        String?
 
-  trips         Trip[]
-  memberships   Membership[]
-  rewards       RewardsLedger[]
-  price_alerts  PriceAlert[]
-  fare_freezes  FareFreeze[]
-  reviews       Review[]
-  esim_orders   ESIMOrder[]
+  trips                 Trip[]
+  memberships           Membership[]
+  rewards               RewardsLedger[]
+  price_alerts          PriceAlert[]
+  fare_freezes          FareFreeze[]
+  reviews               Review[]
+  esim_orders           ESIMOrder[]
+  password_reset_tokens PasswordResetToken[]
 
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
@@ -265,4 +267,18 @@ model TourPackage {
 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  email      String
+  token_hash String    @unique
+  expires_at DateTime
+  used_at    DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([email])
+  @@index([token_hash])
 }

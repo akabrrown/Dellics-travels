@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
+import { HotelsService } from '../hotels/hotels.service';
 
 @Injectable()
 export class SearchService {
@@ -29,16 +30,19 @@ export class SearchService {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly prisma: PrismaService,
+    private readonly hotelsService: HotelsService,
   ) {}
 
-  async searchFlights(query: any) {
-    const fxPortApiKey =
-      this.configService.get<string>('FXPORT_API_KEY') ||
-      'fxp_live_503bf984466b274916bb6d3e5ecd527e';
-    const fxPortSecret =
-      this.configService.get<string>('FXPORT_WEBHOOK_SECRET') ||
-      'whsec_38296e9a0b931fe38e1c34585b7fa8b9';
+  private formatDuration(isoDuration?: string): string {
+    if (!isoDuration) return '7h 00m';
+    const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+    if (!match) return isoDuration;
+    const hours = match[1] ? `${match[1]}h` : '0h';
+    const mins = match[2] ? ` ${match[2]}m` : '';
+    return `${hours}${mins}`.trim();
+  }
 
+  async searchFlights(query: any) {
     const origin = (query.origin || 'ACC').toUpperCase().slice(0, 3);
     const destination = (query.destination || 'LHR').toUpperCase().slice(0, 3);
     const cabinClass = (query.cabinClass || 'Economy').toLowerCase();
@@ -47,112 +51,118 @@ export class SearchService {
     today.setDate(today.getDate() + 30);
     const dateStr = query.date || today.toISOString().split('T')[0];
 
-    const fxHeaders = {
-      Authorization: `Bearer ${fxPortApiKey}`,
-      'X-FXPORT-KEY': fxPortApiKey,
-      'X-Webhook-Secret': fxPortSecret,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    const cacheKey = `flights_${origin}_${destination}_${dateStr}_${cabinClass}_${adults}`;
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
 
-    try {
-      // 1. Query FX-Port live flight gateway
-      const fxPortResponse = await firstValueFrom(
-        this.httpService.post(
-          'https://api.fx-port.com/v1/flights/search',
-          {
-            origin,
-            destination,
-            departureDate: dateStr,
-            passengers: adults,
-            cabinClass,
-          },
-          { headers: fxHeaders, timeout: 4000 },
-        ),
-      ).catch(() => null);
+    // Query FX-Port live GDS flight aggregator API
+    const fxPortApiKey =
+      this.configService.get<string>('FXPORT_API_KEY') ||
+      'fxp_live_503bf984466b274916bb6d3e5ecd527e';
+    const fxPortSecret = this.configService.get<string>('FXPORT_WEBHOOK_SECRET');
 
-      if (
-        fxPortResponse?.data?.data &&
-        Array.isArray(fxPortResponse.data.data) &&
-        fxPortResponse.data.data.length > 0
-      ) {
-        return {
-          status: 'success',
-          provider: 'fx-port',
-          data: fxPortResponse.data.data,
+    if (fxPortApiKey) {
+      try {
+        const fxHeaders: Record<string, string> = {
+          Authorization: `Bearer ${fxPortApiKey}`,
+          'X-FXPORT-KEY': fxPortApiKey,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
         };
-      }
-    } catch (e: any) {
-      this.logger.warn(`FX-Port direct gateway offline or unreachable: ${e.message}`);
-    }
+        if (fxPortSecret) {
+          fxHeaders['X-Webhook-Secret'] = fxPortSecret;
+        }
 
-    // 2. High-availability FX-Port GDS calibrated flight schedule
-    const flightCatalog = this.generateFxPortFlights(
-      origin,
-      destination,
-      dateStr,
-      cabinClass,
-    );
+        const fxPortPayload = {
+          origin,
+          destination,
+          departure_date: dateStr,
+          cabin_class: cabinClass,
+          passengers: {
+            adults: Math.max(1, adults),
+            children: parseInt(query.children || '0', 10),
+            infants: 0,
+          },
+        };
+
+        const fxPortResponse = await firstValueFrom(
+          this.httpService.post(
+            'https://api.fx-port.com/api/v1/get_flights',
+            fxPortPayload,
+            {
+              headers: fxHeaders,
+              timeout: 14000,
+            },
+          ),
+        );
+
+        const suppliers = fxPortResponse.data?.suppliers || [];
+        const allOffers: any[] = [];
+        for (const supplier of suppliers) {
+          if (Array.isArray(supplier?.results?.offers)) {
+            allOffers.push(...supplier.results.offers);
+          }
+        }
+
+        if (allOffers.length > 0) {
+          const formattedOffers = allOffers.slice(0, 20).map((offer: any) => {
+            const itin = offer.itinerary?.[0];
+            const firstSeg = itin?.segments?.[0];
+            const lastSeg = itin?.segments?.[itin?.segments?.length - 1];
+            const price =
+              offer.pricing?.basePrice ||
+              offer.pricing?.finalPrice ||
+              offer.pricing?.b2bPrice ||
+              0;
+            const currency = offer.pricing?.supplierCurrency || 'USD';
+            const airline =
+              firstSeg?.flight?.carrierName ||
+              offer.validatingAirline?.[0]?.name ||
+              'Scheduled Airline';
+            const iataCode =
+              firstSeg?.flight?.carrierCode ||
+              offer.validatingAirline?.[0]?.code ||
+              'FL';
+
+            return {
+              id: offer.id,
+              origin: firstSeg?.departure?.airportCode || origin,
+              destination: lastSeg?.arrival?.airportCode || destination,
+              price: Math.round(price),
+              currency,
+              airline,
+              iataCode,
+              airlineLogo: firstSeg?.flight?.carrierLogoUrl || null,
+              departureTime: firstSeg?.departure?.datetime || null,
+              arrivalTime: lastSeg?.arrival?.datetime || null,
+              duration: this.formatDuration(itin?.duration),
+              stops: itin?.stops ?? Math.max(0, (itin?.segments?.length || 1) - 1),
+              cabinClass:
+                firstSeg?.cabin ||
+                cabinClass.charAt(0).toUpperCase() + cabinClass.slice(1),
+            };
+          });
+
+          const result = {
+            status: 'success',
+            provider: 'fx-port',
+            data: formattedOffers,
+          };
+          this.setCached(cacheKey, result);
+          return result;
+        }
+      } catch (err: any) {
+        this.logger.warn(
+          `FX-Port live flight search failed for ${origin}->${destination}: ${err.response?.data?.detail || err.message}`,
+        );
+      }
+    }
 
     return {
       status: 'success',
       provider: 'fx-port',
-      data: flightCatalog,
+      data: [],
     };
-  }
-
-  private generateFxPortFlights(
-    origin: string,
-    destination: string,
-    dateStr: string,
-    cabinClass: string = 'economy',
-  ) {
-    const airlines = [
-      { name: 'Emirates', iata: 'EK', multiplier: 1.1, baseDuration: '6h 45m', stops: 0 },
-      { name: 'Qatar Airways', iata: 'QR', multiplier: 1.05, baseDuration: '7h 15m', stops: 1 },
-      { name: 'British Airways', iata: 'BA', multiplier: 1.15, baseDuration: '6h 30m', stops: 0 },
-      { name: 'KLM Royal Dutch Airlines', iata: 'KL', multiplier: 1.0, baseDuration: '7h 00m', stops: 1 },
-      { name: 'Delta Air Lines', iata: 'DL', multiplier: 1.2, baseDuration: '10h 30m', stops: 0 },
-      { name: 'Ethiopian Airlines', iata: 'ET', multiplier: 0.85, baseDuration: '8h 20m', stops: 1 },
-    ];
-
-    const baseFares: Record<string, number> = {
-      LHR: 850,
-      JFK: 1100,
-      DXB: 780,
-      CDG: 820,
-      AMS: 810,
-      IST: 740,
-      FRA: 840,
-      CPT: 620,
-      LOS: 280,
-      NBO: 580,
-    };
-
-    const cabinMultiplier =
-      cabinClass === 'business' ? 2.8 : cabinClass === 'first' ? 4.5 : 1.0;
-    const basePrice = (baseFares[destination] || 750) * cabinMultiplier;
-
-    return airlines.map((airline, i) => {
-      const price = Math.round(basePrice * airline.multiplier);
-      const depHour = 8 + i * 2;
-      const depTime = `${dateStr}T${depHour.toString().padStart(2, '0')}:30:00Z`;
-
-      return {
-        id: `fxp_${origin}_${destination}_${airline.iata}_${i}`,
-        origin,
-        destination,
-        price,
-        currency: 'USD',
-        airline: airline.name,
-        iataCode: airline.iata,
-        departureTime: depTime,
-        arrivalTime: `${dateStr}T${(depHour + 7).toString().padStart(2, '0')}:00:00Z`,
-        duration: airline.baseDuration,
-        stops: airline.stops,
-        cabinClass: cabinClass.charAt(0).toUpperCase() + cabinClass.slice(1),
-      };
-    });
   }
 
   async getExploreData(query: any) {
@@ -437,71 +447,72 @@ export class SearchService {
       (d) => d.iata !== origin,
     );
 
-    const fxFares: Record<string, number> = {
-      LHR: 850,
-      JFK: 1100,
-      CDG: 820,
-      DXB: 780,
-      HND: 1250,
-      NBO: 580,
-      JNB: 620,
-      CPT: 640,
-      LOS: 280,
-      AMS: 810,
-      FRA: 840,
-      IST: 740,
-      YYZ: 1080,
-      SYD: 1650,
-      SIN: 1150,
-      BKK: 920,
-    };
+    const targetDest = (
+      destParam ||
+      filteredDestinations[0]?.iata ||
+      'LHR'
+    ).toUpperCase();
 
     try {
-      const mapDestinations = filteredDestinations.map((dest) => {
-        const price = fxFares[dest.iata] || 750;
-        return {
-          id: dest.id,
-          name: dest.name,
-          lat: dest.lat,
-          lng: dest.lng,
-          routeId: dest.iata,
-          price: `$${Math.round(price)}`,
-          rawPrice: price,
-        };
-      });
-
-      const validDest = mapDestinations.find((d) => d.rawPrice < 9999);
-      const baseFare = validDest?.rawPrice || 750;
-
+      // Query live Duffel flight offers for target destination across the comparison dates
       const datePromises = dateStrs.map(async (d, index) => {
-        const finalPrice =
-          baseFare * (index === 0 ? 1 : index === 1 ? 0.94 : 1.12);
-        return {
-          id: `d${index + 1}`,
-          label: new Date(d).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          }),
-          rawPrice: finalPrice,
-          price: `$${Math.round(finalPrice)}`,
-        };
+        try {
+          const flightRes = await this.searchFlights({
+            origin,
+            destination: targetDest,
+            date: d,
+            adults: 1,
+          });
+          const lowestOffer = flightRes.data?.[0];
+          const rawPrice = lowestOffer ? lowestOffer.price : null;
+          return {
+            id: `d${index + 1}`,
+            label: new Date(d).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            }),
+            rawPrice,
+            price: rawPrice ? `$${Math.round(rawPrice)}` : 'Check Fare',
+            airline: lowestOffer?.airline || null,
+          };
+        } catch {
+          return {
+            id: `d${index + 1}`,
+            label: new Date(d).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            }),
+            rawPrice: null,
+            price: 'Check Fare',
+            airline: null,
+          };
+        }
       });
 
       const datesData = await Promise.all(datePromises);
-      const basePrice = datesData[0]?.rawPrice || 750;
+      const validPrices = datesData.filter(
+        (d) => d.rawPrice !== null && (d.rawPrice as number) > 0,
+      );
+      const basePrice = (validPrices[0]?.rawPrice as number) || 0;
+
       const formattedDates = datesData.map((d) => {
         let trend = 'flat';
-        let action = 'Good Deal';
-        let message = 'Prices are stable for this date';
+        let action = 'Check Live Fare';
+        let message = 'Real-time GDS flight pricing';
 
-        if (d.rawPrice > 0 && d.rawPrice < basePrice * 0.95) {
-          trend = 'down';
-          action = 'Buy Now';
-          message = 'Lower than usual for this route';
-        } else if (d.rawPrice > basePrice * 1.05) {
-          trend = 'up';
-          action = 'Wait to Buy';
-          message = 'Expected to drop later';
+        if (d.rawPrice && basePrice > 0) {
+          if ((d.rawPrice as number) < basePrice * 0.95) {
+            trend = 'down';
+            action = 'Buy Now';
+            message = 'Lower than usual for this route';
+          } else if ((d.rawPrice as number) > basePrice * 1.05) {
+            trend = 'up';
+            action = 'Wait to Buy';
+            message = 'Higher than usual for this route';
+          } else {
+            action = 'Good Deal';
+            message = 'Prices are stable for this date';
+          }
         }
 
         return {
@@ -511,6 +522,20 @@ export class SearchService {
           trend,
           action,
           message,
+        };
+      });
+
+      const mapDestinations = filteredDestinations.map((dest) => {
+        const isTarget = dest.iata === targetDest;
+        const targetPrice = isTarget && basePrice > 0 ? basePrice : null;
+        return {
+          id: dest.id,
+          name: dest.name,
+          lat: dest.lat,
+          lng: dest.lng,
+          routeId: dest.iata,
+          price: targetPrice ? `$${Math.round(targetPrice)}` : 'Live Rates',
+          rawPrice: targetPrice || 0,
         };
       });
 
@@ -528,63 +553,15 @@ export class SearchService {
       this.setCached(cacheKey, result);
       return result;
     } catch (error: any) {
-      this.logger.error(
-        'FX-Port explore data failed, returning cached dataset',
-        error.message,
-      );
+      this.logger.error(`Live explore data failed: ${error.message}`);
       return {
-        status: 'fallback',
+        status: 'error',
         provider: 'fx-port',
         origin,
         interest,
         data: {
-          destinations: [
-            {
-              id: '1',
-              name: 'London',
-              lat: 51.5074,
-              lng: -0.1278,
-              routeId: 'LHR',
-              price: '$520',
-              rawPrice: 520,
-            },
-            {
-              id: '2',
-              name: 'Dubai',
-              lat: 25.2048,
-              lng: 55.2708,
-              routeId: 'DXB',
-              price: '$680',
-              rawPrice: 680,
-            },
-            {
-              id: '3',
-              name: 'Paris',
-              lat: 48.8566,
-              lng: 2.3522,
-              routeId: 'CDG',
-              price: '$490',
-              rawPrice: 490,
-            },
-          ],
-          dates: [
-            {
-              id: 'd1',
-              label: 'Oct 15',
-              price: '$520',
-              trend: 'flat',
-              action: 'Good Deal',
-              message: 'Prices are stable',
-            },
-            {
-              id: 'd2',
-              label: 'Oct 16',
-              price: '$480',
-              trend: 'down',
-              action: 'Buy Now',
-              message: 'Lower than usual',
-            },
-          ],
+          destinations: [],
+          dates: [],
         },
       };
     }
@@ -601,26 +578,18 @@ export class SearchService {
     today.setDate(today.getDate() + 30);
     const dateStr = today.toISOString().split('T')[0];
 
-    const fxDealFares: Record<string, number> = {
-      LHR: 850,
-      DXB: 780,
-      CDG: 820,
-      JFK: 1100,
-    };
-
-    // Target routes for homepage deals and trending
     const dealTargets = [
       {
         city: 'London',
         iata: 'LHR',
-        tag: 'Flight and Hotel',
+        tag: 'Flight & Hotel',
         image: '/images/services/plane.jpg',
         bannerText: 'London Gateway',
       },
       {
         city: 'Dubai',
         iata: 'DXB',
-        tag: 'Limited Offer',
+        tag: 'Featured',
         image: '/images/middle-east/dubai-marina.jpg',
         bannerText: 'Dubai Luxury Stay',
       },
@@ -631,65 +600,63 @@ export class SearchService {
         image: '/images/europe/paris-and-eiffel-tower.jpg',
         bannerText: 'Paris Romantic Getaway',
       },
-    ];
-
-    const trendingTargets = [
       {
-        name: 'London',
-        iata: 'LHR',
-        image: '/images/services/plane.jpg',
-        badge: 'Popular',
-      },
-      {
-        name: 'Dubai',
-        iata: 'DXB',
-        image: '/images/middle-east/dubai-marina.jpg',
-        badge: 'Trending',
-      },
-      {
-        name: 'Paris',
-        iata: 'CDG',
-        image: '/images/europe/paris-and-eiffel-tower.jpg',
-        badge: 'Top Pick',
-      },
-      {
-        name: 'New York',
+        city: 'New York',
         iata: 'JFK',
+        tag: 'Popular',
         image: '/images/north-america/new-york-city.jpg',
-        badge: 'Featured',
+        bannerText: 'New York City Break',
       },
     ];
 
     try {
-      // Fetch live deal fares from FX-Port
-      const deals = dealTargets.map((target) => {
-        const p = fxDealFares[target.iata] || 650;
-        return {
-          id: `deal_${target.iata}`,
-          destination: target.city,
-          iata: target.iata,
-          title: target.bannerText,
-          price: `$${Math.round(p)}`,
-          rawPrice: p,
-          tag: target.tag,
-          image: target.image,
-          endsIn: '4 hours · 3 left',
-          freeCancel: true,
-        };
-      });
+      const deals: any[] = [];
+      const trending: any[] = [];
 
-      // Fetch live trending fares from FX-Port
-      const trending = trendingTargets.map((target) => {
-        const p = fxDealFares[target.iata] || 600;
-        return {
-          id: `trend_${target.iata}`,
-          name: target.name,
-          iata: target.iata,
-          price: `$${Math.round(p)}`,
-          image: target.image,
-          badge: target.badge,
-        };
-      });
+      const targetResults = await Promise.allSettled(
+        dealTargets.map(async (target) => {
+          const flightsRes = await this.searchFlights({
+            origin,
+            destination: target.iata,
+            date: dateStr,
+            adults: 1,
+          });
+          const bestOffer = flightsRes.data?.[0];
+          return { target, bestOffer };
+        }),
+      );
+
+      for (const res of targetResults) {
+        if (res.status === 'fulfilled' && res.value.bestOffer) {
+          const { target, bestOffer } = res.value;
+          const p = bestOffer.price;
+          deals.push({
+            id: `deal_${target.iata}`,
+            destination: target.city,
+            iata: target.iata,
+            title: target.bannerText,
+            price: `$${Math.round(p)}`,
+            rawPrice: p,
+            currency: bestOffer.currency || 'USD',
+            tag: target.tag,
+            image: target.image,
+            airline: bestOffer.airline,
+            endsIn: 'Limited Live Inventory',
+            freeCancel: true,
+          });
+
+          trending.push({
+            id: `trend_${target.iata}`,
+            name: target.city,
+            iata: target.iata,
+            price: `$${Math.round(p)}`,
+            currency: bestOffer.currency || 'USD',
+            image: target.image,
+            badge: target.tag,
+            airline: bestOffer.airline,
+          });
+        }
+      }
 
       const result = {
         status: 'success',
@@ -704,199 +671,60 @@ export class SearchService {
       this.setCached(cacheKey, result);
       return result;
     } catch (error: any) {
-      this.logger.error(
-        'FX-Port home deals failed, returning fallback dataset',
-        error.message,
-      );
+      this.logger.error(`Live home deals failed: ${error.message}`);
       return {
-        status: 'fallback',
+        status: 'error',
         provider: 'fx-port',
         origin,
         data: {
-          deals: [
-            {
-              id: 'deal_LHR',
-              destination: 'London',
-              iata: 'LHR',
-              title: 'London Gateway',
-              price: '$520',
-              rawPrice: 520,
-              tag: 'Flight and Hotel',
-              image: '/images/services/plane.jpg',
-              endsIn: '4 hours · 3 left',
-              freeCancel: true,
-            },
-            {
-              id: 'deal_DXB',
-              destination: 'Dubai',
-              iata: 'DXB',
-              title: 'Dubai Luxury Stay',
-              price: '$680',
-              rawPrice: 680,
-              tag: 'Limited Offer',
-              image: '/images/middle-east/dubai-marina.jpg',
-              endsIn: '6 hours · 2 left',
-              freeCancel: true,
-            },
-            {
-              id: 'deal_CDG',
-              destination: 'Paris',
-              iata: 'CDG',
-              title: 'Paris Getaway',
-              price: '$490',
-              rawPrice: 490,
-              tag: 'Top Value',
-              image: '/images/europe/paris-and-eiffel-tower.jpg',
-              endsIn: '2 hours · 5 left',
-              freeCancel: true,
-            },
-          ],
-          trending: [
-            {
-              id: 'trend_LHR',
-              name: 'London',
-              iata: 'LHR',
-              price: '$520',
-              image: '/images/services/plane.jpg',
-              badge: 'Popular',
-            },
-            {
-              id: 'trend_DXB',
-              name: 'Dubai',
-              iata: 'DXB',
-              price: '$680',
-              image: '/images/middle-east/dubai-marina.jpg',
-              badge: 'Trending',
-            },
-            {
-              id: 'trend_CDG',
-              name: 'Paris',
-              iata: 'CDG',
-              price: '$490',
-              image: '/images/europe/paris-and-eiffel-tower.jpg',
-              badge: 'Top Pick',
-            },
-            {
-              id: 'trend_JFK',
-              name: 'New York',
-              iata: 'JFK',
-              price: '$750',
-              image: '/images/north-america/new-york-city.jpg',
-              badge: 'Featured',
-            },
-          ],
+          deals: [],
+          trending: [],
         },
       };
     }
   }
 
   async searchHotels(query: any) {
-    const ratehawkId =
-      this.configService.get<string>('RATEHAWK_API_ID') ||
-      this.configService.get<string>('RATEHAWK_KEY_ID');
-    const ratehawkKey = this.configService.get<string>('RATEHAWK_API_KEY');
-    const rawBase =
-      this.configService.get<string>('RATEHAWK_BASE_URL') ||
-      'https://api-sandbox.ratehawk.com/api/b2b/v3';
-    const ratehawkBase = rawBase.replace(/\/$/, '').includes('/api/b2b/v3')
-      ? rawBase.replace(/\/$/, '')
-      : `${rawBase.replace(/\/$/, '')}/api/b2b/v3`;
+    const destination = (query.destination || query.city || 'London').trim();
+    const today = new Date();
+    today.setDate(today.getDate() + 14);
+    const checkIn = query.checkIn || today.toISOString().split('T')[0];
 
-    if (!ratehawkId || !ratehawkKey) {
-      this.logger.warn('RATEHAWK credentials not configured.');
-      return { status: 'success', provider: 'ratehawk', data: [] };
-    }
+    const defaultCheckout = new Date(
+      new Date(checkIn).getTime() + 86400000 * (parseInt(query.nights, 10) || 3),
+    )
+      .toISOString()
+      .split('T')[0];
+    const checkOut = query.checkOut || defaultCheckout;
 
-    const destination = query.destination || 'London';
-    const authHeader = `Basic ${Buffer.from(`${ratehawkId}:${ratehawkKey}`).toString('base64')}`;
+    const adults =
+      parseInt(query.adults, 10) || parseInt(query.guests, 10) || 2;
+    const rooms = parseInt(query.rooms, 10) || 1;
+    const children = parseInt(query.children, 10) || 0;
 
     try {
-      // Step 1: Multicomplete to get Region ID
-      const multiRes = await firstValueFrom(
-        this.httpService.post(
-          `${ratehawkBase}/search/multicomplete/`,
-          { query: destination, language: 'en' },
-          {
-            headers: {
-              Authorization: authHeader,
-              'Content-Type': 'application/json',
-            },
-          },
-        ),
-      );
-
-      const regions = multiRes.data?.data?.regions || [];
-      if (regions.length === 0) {
-        this.logger.warn(`RateHawk: No region found for "${destination}"`);
-        return { status: 'success', provider: 'ratehawk', data: [] };
-      }
-
-      const regionId = regions[0].id;
-
-      // Step 2: Search SERP by Region
-      const today = new Date();
-      today.setDate(today.getDate() + 14);
-      const checkin = today.toISOString().split('T')[0];
-
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + (parseInt(query.nights) || 3));
-      const checkout = tomorrow.toISOString().split('T')[0];
-
-      const serpRes = await firstValueFrom(
-        this.httpService.post(
-          `${ratehawkBase}/search/serp/region/`,
-          {
-            checkin,
-            checkout,
-            residency: 'gb',
-            language: 'en',
-            guests: [{ adults: parseInt(query.adults) || 2, children: [] }],
-            region_id: regionId,
-            currency: 'USD',
-          },
-          {
-            headers: {
-              Authorization: authHeader,
-              'Content-Type': 'application/json',
-            },
-          },
-        ),
-      );
-
-      const hotels = serpRes.data?.data?.hotels || [];
-
-      if (hotels.length === 0) {
-        return { status: 'success', provider: 'ratehawk', data: [] };
-      }
-
-      const mapped = hotels.slice(0, 10).map((hotel: any) => {
-        const minPrice = hotel.rates?.[0]?.daily_prices?.[0] || 150;
-
-        return {
-          id: hotel.id,
-          name: hotel.name || 'RateHawk Hotel',
-          location: destination,
-          rating: hotel.star_rating || 4.0,
-          reviewCount: 150,
-          pricePerNight: Math.round(parseFloat(minPrice)),
-          currency: 'USD',
-          photoReference: null,
-          website: null,
-        };
+      const hotels = await this.hotelsService.search({
+        destination,
+        checkIn,
+        checkOut,
+        adults,
+        guests: adults,
+        rooms,
+        children,
       });
 
       return {
         status: 'success',
         provider: 'ratehawk',
-        data: mapped,
+        data: hotels || [],
       };
     } catch (error: any) {
-      const detail = error.response?.data;
-      this.logger.error(
-        'RateHawk hotel search failed',
-        detail || error.message,
-      );
-      return { status: 'error', provider: 'ratehawk', data: [], message: error.message };
+      this.logger.error(`RateHawk live hotel search failed: ${error.message}`);
+      return {
+        status: 'success',
+        provider: 'ratehawk',
+        data: [],
+      };
     }
   }
 
@@ -913,6 +741,12 @@ export class SearchService {
       return { status: 'success', provider: 'dellics-bundler', data: [] };
     }
 
+    const nights = parseInt(query.nights, 10) || 3;
+    const hotelPricePerNight = hotel.price || 0;
+    const rawTotal = flight.price + hotelPricePerNight * nights;
+    const bundleDiscount = 0.95;
+    const totalPrice = Math.round(rawTotal * bundleDiscount);
+
     return {
       status: 'success',
       provider: 'dellics-bundler',
@@ -921,10 +755,11 @@ export class SearchService {
           id: `pkg_${flight.id}_${hotel.id}`,
           flight,
           hotel,
-          nights: parseInt(query.nights) || 3,
-          totalPrice:
-            flight.price + hotel.pricePerNight * (parseInt(query.nights) || 3),
-          currency: flight.currency || 'USD',
+          nights,
+          originalPrice: Math.round(rawTotal),
+          totalPrice,
+          currency: flight.currency || hotel.currency || 'USD',
+          savingsPercentage: 5,
         },
       ],
     };
@@ -1137,217 +972,14 @@ export class SearchService {
         }
       }
     } catch (err: any) {
-      this.logger.warn(`TourPackage DB lookup error: ${err.message}. Serving catalog dataset.`);
-    }
-
-    // Curated catalog fallback
-    const catalog = [
-      {
-        id: 'tour-ct-01',
-        name: '5 Nights in Cape Town Luxury Experience',
-        slug: 'cape-town-luxury-experience',
-        destination: 'Cape Town, South Africa',
-        price: '$1,899',
-        rawPrice: 1899,
-        currency: 'USD',
-        duration: '6 Days / 5 Nights',
-        badge: 'Most Popular',
-        image: '/images/africa/cape-town-and-table-mountain.jpg',
-        copy: 'Discover the Mother City where adventure meets luxury! From Table Mountain cableway and Cape Point penguin encounters to world-class shopping at V&A Waterfront.',
-        includes: [
-          'Table Mountain Cableway Ticket',
-          'Cape Point & Boulders Beach',
-          'Penguin Colony Sanctuary',
-          'V&A Waterfront Shopping Tour',
-          '4-Star Luxury Accommodation',
-          'Daily Gourmet Breakfast',
-          'Return Airport Transfers',
-        ],
-        highlights: ['Table Mountain', 'Cape Point', 'Boulders Beach', 'V&A Waterfront'],
-        isFeatured: true,
-      },
-      {
-        id: 'tour-sv-02',
-        name: 'Safari Valley Eco Resort Full Day Escape',
-        slug: 'safari-valley-eco-resort',
-        destination: 'Okere Hills, Ghana',
-        price: '$150',
-        rawPrice: 150,
-        currency: 'USD',
-        duration: 'Full Day Tour',
-        badge: 'Ghana Luxury',
-        image: '/images/services/day-tip-to-safari-valley.jpg',
-        copy: "Ghana's premier luxury eco-retreat escape. Experience pure nature, exotic wildlife encounters, kayaking, and outdoor dining in the tranquil Okere Hills.",
-        includes: [
-          'Resort Entrance & Conservation Fee',
-          'Buffet Gourmet Lunch',
-          'Swimming Pool & Kayaking Access',
-          'Guided Wildlife Encounter',
-          'Professional Tour Host',
-          'Round-trip AC Transport from Accra',
-        ],
-        highlights: ['Wildlife Encounters', 'Gourmet Buffet', 'Eco Kayaking', 'Guided Forest Trails'],
-        isFeatured: true,
-      },
-      {
-        id: 'tour-dxb-03',
-        name: 'Winter in Dubai Luxury Holiday',
-        slug: 'winter-in-dubai-luxury',
-        destination: 'Dubai, United Arab Emirates',
-        price: '$1,890',
-        rawPrice: 1890,
-        currency: 'USD',
-        duration: '7 Days / 6 Nights',
-        badge: 'Bestseller',
-        image: '/images/services/winter-dubai.jpg',
-        copy: 'Experience the ultimate Arabian luxury escape! Includes Emirates flights, Dubai Mall shopping, desert dune bashing safari with BBQ dinner, and Marina yacht cruise.',
-        includes: [
-          'Return Emirates Flights from Accra',
-          'Guided Luxury Shopping Tours',
-          'Desert Dune Safari with BBQ Dinner',
-          '4-Star Hotel Accommodation',
-          'Airport Transfers in Executive AC Van',
-          'Dubai Tourist Visa & Tourism Tax',
-        ],
-        highlights: ['Emirates Flights', 'Burj Khalifa', 'Desert Safari BBQ', 'Marina Yacht Cruise'],
-        isFeatured: true,
-      },
-      {
-        id: 'tour-kruger-04',
-        name: 'Feel South Africa & Kruger Safari',
-        slug: 'feel-south-africa-kruger',
-        destination: 'Johannesburg & Kruger, South Africa',
-        price: '$1,450',
-        rawPrice: 1450,
-        currency: 'USD',
-        duration: '5 Days / 4 Nights',
-        badge: 'Wildlife Adventure',
-        image: '/images/services/south-africa.jpg',
-        copy: 'Explore the soul of South Africa! From the vibrant heartbeat of Johannesburg and Soweto heritage to thrilling Big 5 game drives in Kruger National Park.',
-        includes: [
-          'Return Flights to Johannesburg',
-          'Guided Daily Breakfast',
-          'Return Airport Transfers',
-          '4-Star Hotel Stay in Sandton',
-          'Full Day Big 5 Safari Game Drive',
-          '24/7 On-ground Travel Host',
-        ],
-        highlights: ['Big 5 Kruger Game Drive', 'Soweto Nelson Mandela Sanctuary', 'Sandton City Tour'],
-        isFeatured: false,
-      },
-      {
-        id: 'tour-dxb-nbo-05',
-        name: 'Dubai & Nairobi Dual-City Mix',
-        slug: 'dubai-nairobi-dual-city',
-        destination: 'Dubai (UAE) & Nairobi (Kenya)',
-        price: '$1,750',
-        rawPrice: 1750,
-        currency: 'USD',
-        duration: '10 Days / 9 Nights',
-        badge: 'Dual City',
-        image: '/images/services/kenya-fun.jpg',
-        copy: "The ultimate dual-city vacation! Experience the futuristic glamor of Dubai skyscrapers followed by the wild beauty of Nairobi's national park and giraffe sanctuary.",
-        includes: [
-          'Multi-destination Flights (ACC-DXB-NBO-ACC)',
-          'All Airport & Intercity Transfers',
-          'Top-rated 4-Star Stays in Both Cities',
-          'Daily Breakfast Buffets',
-          'Nairobi Giraffe Centre & Safari Drive',
-          'Dubai City Tour & Desert Safari',
-        ],
-        highlights: ['Dubai Marina & Malls', 'Giraffe Centre Nairobi', 'Multi-city Flights Included'],
-        isFeatured: false,
-      },
-      {
-        id: 'tour-dxb-fam-06',
-        name: 'Summer in Dubai Family Special',
-        slug: 'summer-in-dubai-family-special',
-        destination: 'Dubai, United Arab Emirates',
-        price: '$1,790',
-        rawPrice: 1790,
-        currency: 'USD',
-        duration: '6 Days / 5 Nights',
-        badge: 'Family Special',
-        image: '/images/services/dubai-fun.jpg',
-        copy: 'Create lifelong memories with the whole family in Dubai! Waterparks, underwater aquariums, luxury desert camps, and tax-free shopping malls.',
-        includes: [
-          'Emirates Return Flights',
-          'Atlantis Aquaventure Waterpark',
-          'Dubai Miracle Garden & Global Village',
-          'Executive Hotel Accommodation',
-          'Private Family Airport Transfers',
-          'Desert Safari & Falcon Show',
-        ],
-        highlights: ['Atlantis Aquaventure', 'Underwater Aquarium', 'Private Family Transfers'],
-        isFeatured: false,
-      },
-      {
-        id: 'tour-znz-07',
-        name: 'Zanzibar Island & Stone Town Tropical Tour',
-        slug: 'zanzibar-island-stone-town',
-        destination: 'Zanzibar & Tanzania',
-        price: '$1,850',
-        rawPrice: 1850,
-        currency: 'USD',
-        duration: '5 Days / 4 Nights',
-        badge: 'Tropical Paradise',
-        image: '/images/services/zanzibar-beach-fun.jpg',
-        copy: 'Sink your toes into the powdery white sands of Nungwi Beach. Explore ancient Stone Town alleyways, fragrant spice farms, and crystal clear coral snorkeling reefs.',
-        includes: [
-          'Beachfront Luxury Resort Stay',
-          'Prison Island & Giant Tortoises Tour',
-          'Spice Farm Guided Expedition',
-          'Stone Town UNESCO Heritage Walk',
-          'Return Airport Transfers',
-          'Daily Breakfast & Seafood Dinner',
-        ],
-        highlights: ['Nungwi Beach', 'Prison Island Tortoises', 'Stone Town Heritage Walk'],
-        isFeatured: false,
-      },
-      {
-        id: 'tour-kenya-08',
-        name: 'Kenya Wildlife & Amboseli Kilimanjaro Safari',
-        slug: 'kenya-wildlife-amboseli-kilimanjaro',
-        destination: 'Kenya & Maasai Mara',
-        price: '$1,950',
-        rawPrice: 1950,
-        currency: 'USD',
-        duration: '6 Days / 5 Nights',
-        badge: 'Big 5 Safari',
-        image: '/images/services/kenya-safari-adventure.jpg',
-        copy: 'Witness majestic elephant herds against the snow-capped backdrop of Mount Kilimanjaro in Amboseli and the legendary predators of the Maasai Mara.',
-        includes: [
-          'Custom 4x4 Safari Land Cruiser with Pop-up Roof',
-          'Park Entry & Conservation Fees',
-          'Luxury Safari Tented Camp Stays',
-          'Full Board Gourmet Meals on Safari',
-          'Experienced Professional Naturalist Guide',
-          'Return Domestic Transfers',
-        ],
-        highlights: ['Kilimanjaro Views', 'Big 5 Predators', '4x4 Pop-up Roof Land Cruiser'],
-        isFeatured: false,
-      },
-    ];
-
-    let filtered = catalog;
-    if (query.featured === 'true' || query.featured === true) {
-      filtered = catalog.filter((t) => t.isFeatured);
-    }
-    if (query.destination) {
-      const d = query.destination.toLowerCase();
-      filtered = filtered.filter((t) => t.destination.toLowerCase().includes(d));
+      this.logger.warn(`TourPackage DB lookup error: ${err.message}`);
     }
 
     return {
       status: 'success',
-      provider: 'viator',
-      count: filtered.length,
-      data: filtered.map((t) => ({
-        ...t,
-        viatorUrl:
-          (t as any).viatorUrl ||
-          `https://www.viator.com/search/${encodeURIComponent(t.destination || 'Tours')}?sortType=featured`,
-      })),
+      provider: 'database',
+      count: 0,
+      data: [],
     };
   }
 
@@ -1371,11 +1003,16 @@ export class SearchService {
             count: dbReviews.length,
             data: dbReviews.map((r: any) => ({
               id: r.id,
-              name: r.user ? `${r.user.first_name || ''} ${r.user.last_name || ''}`.trim() || 'Verified Traveler' : 'Verified Traveler',
+              name: r.user
+                ? `${r.user.first_name || ''} ${r.user.last_name || ''}`.trim() ||
+                  'Verified Traveler'
+                : 'Verified Traveler',
               role: 'Verified Client',
               location: 'Accra / International',
               destination: 'Curated Itinerary',
-              quote: r.text || 'Exceptional personalized service from the Dellics team.',
+              quote:
+                r.text ||
+                'Exceptional personalized service from the Dellics team.',
               rating: r.rating || 5,
               avatar: '/images/services/photo-10-2026-07-22-15-35-17.jpg',
             })),
@@ -1383,48 +1020,14 @@ export class SearchService {
         }
       }
     } catch (err: any) {
-      this.logger.warn(`Reviews DB lookup error: ${err.message}. Serving verified testimonials.`);
+      this.logger.warn(`Reviews DB lookup error: ${err.message}`);
     }
-
-    // Verified traveler testimonials
-    const testimonials = [
-      {
-        id: 'rev-01',
-        name: 'Dr. Kwabena Mensah',
-        role: 'Medical Director',
-        location: 'Accra, Ghana',
-        destination: 'Dubai 7-Day Luxury Tour',
-        quote: 'Dellics Travels handled our family vacation to Dubai flawlessly. From Emirates flight reservations to private desert safari and Marina yacht cruise, every detail was 5-star perfection.',
-        rating: 5,
-        avatar: '/images/services/photo-10-2026-07-22-15-35-17.jpg',
-      },
-      {
-        id: 'rev-02',
-        name: 'Afia Osei-Bonsu',
-        role: 'Fintech Executive',
-        location: 'London, UK (Diaspora)',
-        destination: 'Ghana Heritage & Cape Coast Tour',
-        quote: 'As someone visiting Ghana from the UK with friends, Dellics gave us the most authentic cultural immersion. The VIP airport protocol and Safari Valley trip made our Year of Return experience unforgettable.',
-        rating: 5,
-        avatar: '/images/services/photo-12-2026-07-22-15-35-17.jpg',
-      },
-      {
-        id: 'rev-03',
-        name: 'Emmanuel Tetteh',
-        role: 'Corporate Operations Lead',
-        location: 'Tema, Ghana',
-        destination: 'South Africa Cape Town Package',
-        quote: 'Our company annual executive retreat in Cape Town was planned from scratch by Dellics. Flawless flight connections, stunning Table Mountain views, and top-tier hospitality. Highly recommended!',
-        rating: 5,
-        avatar: '/images/services/photo-14-2026-07-22-15-35-17.jpg',
-      },
-    ];
 
     return {
       status: 'success',
-      provider: 'verified-proof',
-      count: testimonials.length,
-      data: testimonials,
+      provider: 'database',
+      count: 0,
+      data: [],
     };
   }
 }

@@ -231,7 +231,7 @@ export class PaymentsService {
     }
 
     // Direct Stripe payment gateway redirect URL
-    const checkoutUrl = `${webUrl}/flights/confirmation?bookingRef=${bookingRef}&origin=${encodeURIComponent(opts.origin)}&dest=${encodeURIComponent(opts.destination)}&airline=${encodeURIComponent(opts.airline || 'Emirates')}&price=${opts.price}&currency=${currency.toUpperCase()}&date=${encodeURIComponent(opts.departureDate)}&method=stripe`;
+    const checkoutUrl = `${webUrl}/flights/confirmation?bookingRef=${bookingRef}&origin=${encodeURIComponent(opts.origin)}&dest=${encodeURIComponent(opts.destination)}&airline=${encodeURIComponent(opts.airline || 'Airline')}&price=${opts.price}&currency=${currency.toUpperCase()}&date=${encodeURIComponent(opts.departureDate)}&method=stripe`;
 
     return {
       status: 'success',

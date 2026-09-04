@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createClient } from "@supabase/supabase-js";
+import { verifyPassword } from "@/lib/password";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -43,10 +44,21 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. If Supabase Auth is available, verify password with Supabase
+    // 2. Direct password verification if password_hash exists in database
+    if (dbUser.password_hash) {
+      const isValid = verifyPassword(password, dbUser.password_hash);
+      if (!isValid) {
+        return NextResponse.json(
+          { error: "Invalid email or password" },
+          { status: 401 },
+        );
+      }
+    }
+
+    // 3. If Supabase Auth is available, verify password with Supabase
     let session = null;
     let authUser = null;
-    if (supabaseAnonKey && supabaseAnonKey !== "placeholder") {
+    if (supabaseAnonKey && !supabaseAnonKey.includes("placeholder")) {
       try {
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
         const { data, error } = await supabase.auth.signInWithPassword({

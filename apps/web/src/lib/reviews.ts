@@ -34,7 +34,7 @@ export async function getFeaturedReviews(): Promise<ReviewItem[]> {
         location: "Accra, Ghana",
         destination: "Dubai 7-Day Luxury Tour",
         quote: "Dellics Travels handled our family vacation to Dubai flawlessly. From Emirates flight reservations to private desert safari and Marina yacht cruise, every detail was 5-star perfection.",
-        rating: 5,
+        rating: 4.5,
         avatar: "/images/services/photo-10-2026-07-22-15-35-17.jpg",
       },
       {
@@ -44,7 +44,7 @@ export async function getFeaturedReviews(): Promise<ReviewItem[]> {
         location: "London, UK (Diaspora)",
         destination: "Ghana Heritage & Cape Coast Tour",
         quote: "As someone visiting Ghana from the UK with friends, Dellics gave us the most authentic cultural immersion. The VIP airport protocol and Safari Valley trip made our Year of Return experience unforgettable.",
-        rating: 5,
+        rating: 4.5,
         avatar: "/images/services/photo-12-2026-07-22-15-35-17.jpg",
       },
       {
@@ -54,7 +54,7 @@ export async function getFeaturedReviews(): Promise<ReviewItem[]> {
         location: "Tema, Ghana",
         destination: "South Africa Cape Town Package",
         quote: "Our company annual executive retreat in Cape Town was planned from scratch by Dellics. Flawless flight connections, stunning Table Mountain views, and top-tier hospitality. Highly recommended!",
-        rating: 5,
+        rating: 4.0,
         avatar: "/images/services/photo-14-2026-07-22-15-35-17.jpg",
       },
     ];

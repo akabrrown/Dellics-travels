@@ -44,7 +44,7 @@ export const HERO_SLIDES: HeroSlide[] = [
 
 export const HOME_STATS = [
   { value: "5,000+", label: "Delighted Travelers", description: "" },
-  { value: "40+", label: "Global Destinations", description: "Over 5 Continents" },
+  { value: "100+", label: "Global Destinations", description: "" },
   { value: "99.4%", label: "Visa Approval Rate", description: "Expert Document Prep" },
   { value: "24/7", label: "VIP Travel Concierge", description: "Dedicated Client Support" },
 ];
@@ -66,7 +66,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "Accra, Ghana",
     destination: "Dubai 7-Day Luxury Tour",
     quote: "Dellics Travels handled our family vacation to Dubai flawlessly. From Emirates flight reservations to private desert safari and Marina yacht cruise, every detail was 5-star perfection.",
-    rating: 5,
+    rating: 4.5,
     avatar: "/images/services/photo-10-2026-07-22-15-35-17.jpg",
   },
   {
@@ -75,7 +75,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "London, UK (Diaspora)",
     destination: "Ghana Heritage & Cape Coast Tour",
     quote: "As someone visiting Ghana from the UK with friends, Dellics gave us the most authentic cultural immersion. The VIP airport protocol and Safari Valley trip made our Year of Return experience unforgettable.",
-    rating: 5,
+    rating: 4.5,
     avatar: "/images/services/photo-12-2026-07-22-15-35-17.jpg",
   },
   {
@@ -84,7 +84,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "Tema, Ghana",
     destination: "South Africa Cape Town Package",
     quote: "Our company annual executive retreat in Cape Town was planned from scratch by Dellics. Flawless flight connections, stunning Table Mountain views, and top-tier hospitality. Highly recommended!",
-    rating: 5,
+    rating: 4.0,
     avatar: "/images/services/photo-14-2026-07-22-15-35-17.jpg",
   },
 ];

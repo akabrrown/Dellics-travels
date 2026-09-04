@@ -7,7 +7,12 @@ import { RegionalSelector } from "@/components/layout/regional-selector";
 
 export function AnnouncementBar() {
   const pathname = usePathname();
-  if (pathname === "/signin" || pathname === "/signup" || pathname === "/forgot-password") {
+  if (
+    pathname === "/signin" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password"
+  ) {
     return null;
   }
 

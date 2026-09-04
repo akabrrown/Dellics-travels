@@ -84,7 +84,8 @@ export function SiteHeader() {
   if (
     pathname === "/signin" ||
     pathname === "/signup" ||
-    pathname === "/forgot-password"
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password"
   ) {
     return null;
   }

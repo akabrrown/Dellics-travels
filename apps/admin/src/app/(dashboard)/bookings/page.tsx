@@ -104,34 +104,36 @@ export default function BookingsManagement() {
     fetchBookings();
   };
 
-  const handleCreateOffline = (e: React.FormEvent) => {
+  const handleCreateOffline = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!offlineTraveler || !offlineAmount) return;
 
-    const newRec: BookingRecord = {
-      id: `BK-${Date.now().toString().slice(-6)}`,
-      travelerName: offlineTraveler,
-      travelerEmail: offlineEmail || "walkin.traveler@dellicstravels.com",
-      type: offlineType,
-      tripTitle: offlineTitle || `${offlineType} Reservation`,
-      amount: Number(offlineAmount) || 0,
-      currency: "GHS",
-      status: "CONFIRMED",
-      paymentStatus: "SETTLED",
-      paymentReference: `OFFLINE-${offlinePayment}-${Date.now().toString().slice(-4)}`,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      const res = await adminApi.post<{ data: any }>("/booking/admin/create-offline", {
+        travelerName: offlineTraveler.trim(),
+        travelerEmail: offlineEmail?.trim() || `walkin.${Date.now()}@dellicstravels.com`,
+        type: offlineType,
+        tripTitle: offlineTitle || `${offlineType} Reservation`,
+        amount: Number(offlineAmount) || 0,
+        currency: "GHS",
+        paymentMethod: offlinePayment,
+      });
 
-    setBookings([newRec, ...bookings]);
-    setOfflineSuccess(true);
-    setTimeout(() => {
-      setOfflineSuccess(false);
-      setOfflineModal(false);
-      setOfflineTraveler("");
-      setOfflineEmail("");
-      setOfflineAmount("");
-      setOfflineTitle("");
-    }, 1200);
+      if (res && res.data) {
+        fetchBookings();
+      }
+      setOfflineSuccess(true);
+      setTimeout(() => {
+        setOfflineSuccess(false);
+        setOfflineModal(false);
+        setOfflineTraveler("");
+        setOfflineEmail("");
+        setOfflineAmount("");
+        setOfflineTitle("");
+      }, 1200);
+    } catch (err: any) {
+      alert(`Offline booking creation failed: ${err.message}`);
+    }
   };
 
   const getProductIcon = (type: string) => {

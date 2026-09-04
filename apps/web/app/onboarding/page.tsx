@@ -497,7 +497,7 @@ export default function OnboardingPage() {
 
       {/* Footer Branding */}
       <div className="text-center text-xs text-white/40">
-        Dellics Travels & Tours Ltd. · IATA Certified
+        © {new Date().getFullYear()} Dellics Travels. All rights reserved.
       </div>
     </div>
   );

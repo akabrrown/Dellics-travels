@@ -149,10 +149,6 @@ export default async function HomePage() {
       <HeroSlider slides={HERO_SLIDES}>
         <div className="w-full flex flex-col items-center text-center">
           <div className="mb-3 sm:mb-5 max-w-3xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-md px-3.5 py-1 text-xs font-semibold text-white uppercase tracking-wider mb-2 border border-white/20 shadow-xs">
-              <span className="size-1.5 rounded-full bg-brand-orange animate-pulse" />
-              IATA Accredited Agency
-            </span>
             <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
               Explore The World With Confidence
             </h1>
@@ -428,10 +424,29 @@ export default async function HomePage() {
                 className="flex flex-col justify-between rounded-3xl bg-white p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-shadow"
               >
                 <div>
-                  <div className="flex items-center gap-1 text-amber-400 mb-4">
-                    {Array.from({ length: review.rating || 5 }).map((_, i) => (
-                      <Star key={i} className="size-4 fill-current" />
-                    ))}
+                  <div className="flex items-center gap-1.5 mb-4">
+                    <div className="flex items-center gap-0.5 text-amber-400">
+                      {[1, 2, 3, 4, 5].map((starIndex) => {
+                        const r = Number(review.rating) || 5;
+                        if (r >= starIndex) {
+                          return <Star key={starIndex} className="size-4 fill-current text-amber-400" />;
+                        } else if (r >= starIndex - 0.5) {
+                          return (
+                            <span key={starIndex} className="relative inline-block size-4">
+                              <Star className="absolute inset-0 size-4 text-slate-200 fill-slate-200" />
+                              <span className="absolute inset-0 w-1/2 overflow-hidden">
+                                <Star className="size-4 text-amber-400 fill-current" />
+                              </span>
+                            </span>
+                          );
+                        } else {
+                          return <Star key={starIndex} className="size-4 text-slate-200 fill-slate-200" />;
+                        }
+                      })}
+                    </div>
+                    <span className="text-xs font-bold text-slate-700 ml-1 font-mono">
+                      {(Number(review.rating) || 5).toFixed(1)}
+                    </span>
                   </div>
                   <p className="text-sm leading-relaxed text-slate-700 italic">
                     &quot;{review.quote}&quot;

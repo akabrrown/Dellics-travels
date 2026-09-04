@@ -15,6 +15,7 @@ import { HotelsModule } from './hotels/hotels.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
 import { ToursModule } from './tours/tours.module';
 import { RolesModule } from './roles/roles.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RolesModule } from './roles/roles.module';
     InquiriesModule,
     ToursModule,
     RolesModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

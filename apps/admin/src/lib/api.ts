@@ -1,5 +1,4 @@
 import { ADMIN_CONFIG } from "./config";
-import { getOfflineFallback } from "./offline-data";
 
 export class AdminApiError extends Error {
   constructor(
@@ -14,8 +13,7 @@ export class AdminApiError extends Error {
 }
 
 export interface AdminRequestOptions extends RequestInit {
-  strict?: boolean; // When true, disables offline fallback and throws directly
-  fallback?: unknown;
+  strict?: boolean;
 }
 
 // Global listener & state for API backend connectivity
@@ -50,7 +48,7 @@ export function getBackendOnlineStatus() {
 export async function checkBackendHealth(): Promise<boolean> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
     const res = await fetch(`${ADMIN_CONFIG.apiUrl}/health`, {
       method: "GET",
       signal: controller.signal,
@@ -80,7 +78,6 @@ async function request<T>(
     ...(options.headers || {}),
   };
 
-  const method = (options.method || "GET").toUpperCase();
   let res: Response;
 
   try {
@@ -88,41 +85,11 @@ async function request<T>(
       ...options,
       headers,
     });
-    // Successful HTTP reach
     setBackendOnlineStatus(true);
   } catch {
-    // Connection refused / network error (API is offline or unreachable)
     setBackendOnlineStatus(false);
-
-    // If this is a read request (GET) and not forced strict, return realistic demo data
-    if (method === "GET" && !options.strict) {
-      const fallback = options.fallback ?? getOfflineFallback(path);
-      if (fallback !== undefined) {
-        if (typeof window !== "undefined") {
-          console.info(
-            `[Dellics Admin] Live API backend (${ADMIN_CONFIG.apiUrl}) is offline. Serving offline demonstration record for: ${path}`
-          );
-        }
-        return fallback as T;
-      }
-    }
-
-    // For offline mutation simulations (POST/PUT/DELETE) in dev mode
-    if (method !== "GET" && !options.strict) {
-      if (typeof window !== "undefined") {
-        console.info(
-          `[Dellics Admin] Live API backend (${ADMIN_CONFIG.apiUrl}) is offline. Simulating local mutation success for: ${path}`
-        );
-      }
-      return {
-        status: "success",
-        offlineSimulated: true,
-        message: "Simulated offline success",
-      } as unknown as T;
-    }
-
     throw new AdminApiError(
-      "Network error: Unable to reach Dellics API backend at " + ADMIN_CONFIG.apiUrl,
+      `Unable to reach Dellics API backend at ${ADMIN_CONFIG.apiUrl}. Ensure apps/api is running.`,
       0,
       null,
       true

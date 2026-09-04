@@ -4,9 +4,10 @@ import { SearchService } from './search.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '../prisma/prisma.module';
+import { HotelsModule } from '../hotels/hotels.module';
 
 @Module({
-  imports: [HttpModule, ConfigModule, PrismaModule],
+  imports: [HttpModule, ConfigModule, PrismaModule, HotelsModule],
   controllers: [SearchController],
   providers: [SearchService],
 })
