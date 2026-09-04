@@ -30,6 +30,16 @@ export interface AuthProfile {
   id: string;
   email: string;
   fullName: string;
+  username?: string;
+  bio?: string;
+  publicProfile?: boolean;
+  visitedCountries?: string[];
+  badges?: string[];
+  socialLinks?: {
+    twitter?: string;
+    instagram?: string;
+    linkedin?: string;
+  };
   phone?: string;
   avatarUrl?: string;
   role?: string;
@@ -69,6 +79,7 @@ interface AuthContextType {
     phone?: string,
   ) => Promise<{ error?: string }>;
   updateProfile: (data: Partial<AuthProfile>) => Promise<void>;
+  addBooking: (booking: UserBooking) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -96,13 +107,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       id: sbUser.id,
       email: sbUser.email || "",
       fullName,
+      username: meta.username || sbUser.email?.split("@")[0]?.replace(/[^a-zA-Z0-9_]/g, "_") || "traveler",
+      bio: meta.bio || "Global explorer traveling the world with Dellics Travels.",
+      publicProfile: meta.public_profile ?? true,
+      visitedCountries: meta.visited_countries || ["Ghana", "United Kingdom", "United Arab Emirates"],
+      badges: meta.badges || ["Founding Member", "Passport Verified", "First Flight Booked"],
+      socialLinks: meta.social_links || {
+        twitter: "",
+        instagram: "",
+        linkedin: "",
+      },
       phone: meta.phone || sbUser.phone || "",
       avatarUrl: meta.avatar_url || "",
       role: meta.role || "traveler",
       membershipTier: meta.membership_tier || "EXPLORER",
       pointsBalance: meta.points_balance !== undefined ? meta.points_balance : 500,
-      nationality: meta.nationality || "",
-      homeAirport: meta.home_airport || "",
+      nationality: meta.nationality || "Ghana",
+      homeAirport: meta.home_airport || "ACC - Kotoka International",
       seatPreference: meta.seat_preference || "Window",
       mealPreference: meta.meal_preference || "Standard / No Restriction",
       emergencyContact: meta.emergency_contact || "",
@@ -141,23 +162,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               id: u.id,
               email: u.email,
               fullName: u.name,
+              username: u.username || prev?.username || u.email?.split("@")[0] || "traveler",
+              bio: u.bio || prev?.bio || "Global explorer traveling the world with Dellics Travels.",
+              publicProfile: u.public_profile ?? prev?.publicProfile ?? true,
+              visitedCountries: u.visited_countries || prev?.visitedCountries || ["Ghana", "United Kingdom", "United Arab Emirates"],
+              badges: u.badges || prev?.badges || ["Founding Member", "Passport Verified", "First Flight Booked"],
+              socialLinks: u.social_links || prev?.socialLinks || { twitter: "", instagram: "", linkedin: "" },
               phone: u.phone || prev?.phone || "",
               role: u.role,
               membershipTier: u.membership_tier,
               pointsBalance: u.points_balance,
-              nationality: u.nationality || prev?.nationality || "",
-              homeAirport: u.home_airport || prev?.homeAirport || "",
+              nationality: u.nationality || prev?.nationality || "Ghana",
+              homeAirport: u.home_airport || prev?.homeAirport || "ACC - Kotoka International",
               seatPreference: u.seat_preference || prev?.seatPreference || "Window",
               mealPreference: u.meal_preference || prev?.mealPreference || "Standard / No Restriction",
               emergencyContact: u.emergency_contact || prev?.emergencyContact || "",
               emergencyPhone: u.emergency_phone || prev?.emergencyPhone || "",
               passportNumber: u.passport_number || prev?.passportNumber || "",
               passportExpiry: u.passport_expiry || prev?.passportExpiry || "",
-              passportCountry: u.passport_country || prev?.passportCountry || "",
+              passportCountry: u.passport_country || prev?.passportCountry || "Ghana",
               onboardingCompleted: u.onboarding_completed,
               savedTravelers: prev?.savedTravelers || [],
               savedFavorites: prev?.savedFavorites || [],
-              bookings: prev?.bookings || [],
+              bookings: prev?.bookings && prev.bookings.length > 0 ? prev.bookings : (u.trips || []),
               currency: prev?.currency || "GHS",
               notificationPreferences: prev?.notificationPreferences || {
                 whatsapp: true,
@@ -234,8 +261,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
 
-    // 3. Listen to Auth State Changes safely
+    // 3. Multi-Tab Realtime Sync & Auth State Listeners
+    let realtimeChannel: BroadcastChannel | null = null;
     try {
+      if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+        realtimeChannel = new BroadcastChannel("dellics_profile_realtime");
+        realtimeChannel.onmessage = (event) => {
+          if (event.data?.type === "PROFILE_UPDATED" && event.data?.profile) {
+            setUser(event.data.profile);
+          } else if (event.data?.type === "SIGNED_OUT") {
+            setUser(null);
+          }
+        };
+      }
+
+      const handleStorage = (e: StorageEvent) => {
+        if (e.key === LOCAL_STORAGE_KEY) {
+          if (e.newValue) {
+            try {
+              setUser(JSON.parse(e.newValue));
+            } catch {}
+          } else {
+            setUser(null);
+          }
+        }
+      };
+      window.addEventListener("storage", handleStorage);
+
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, newSession) => {
@@ -255,6 +307,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return () => {
         subscription.unsubscribe();
+        window.removeEventListener("storage", handleStorage);
+        if (realtimeChannel) {
+          realtimeChannel.close();
+        }
       };
     } catch {
       // Fallback
@@ -273,25 +329,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const activeEmail =
       data.email || user?.email || supabaseUser?.email || session?.user?.email || cachedUser?.email;
 
-    setUser((prev) => {
-      const base: AuthProfile = prev || cachedUser || {
-        id: activeId || "temp",
-        email: activeEmail || "",
-        fullName: data.fullName || "Traveler",
-        role: "traveler",
-        membershipTier: "EXPLORER",
-        pointsBalance: 500,
-        currency: "GHS",
-      };
-      const updated: AuthProfile = {
-        ...base,
-        ...data,
-      };
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
+    const base: AuthProfile = user || cachedUser || {
+      id: activeId || "temp",
+      email: activeEmail || "",
+      fullName: data.fullName || "Traveler",
+      username: data.username || "traveler",
+      role: "traveler",
+      membershipTier: "EXPLORER",
+      pointsBalance: 500,
+      currency: "GHS",
+    };
+
+    const updated: AuthProfile = {
+      ...base,
+      ...data,
+    };
+
+    setUser(updated);
+
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+        const bc = new BroadcastChannel("dellics_profile_realtime");
+        bc.postMessage({ type: "PROFILE_UPDATED", profile: updated });
+        bc.close();
+      }
+    } catch {}
 
     // Sync to Supabase PostgreSQL database via server route
     try {
@@ -302,20 +365,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           body: JSON.stringify({
             id: activeId,
             email: activeEmail,
-            fullName: data.fullName,
-            phone: data.phone,
-            nationality: data.nationality,
-            homeAirport: data.homeAirport,
-            seatPreference: data.seatPreference,
-            mealPreference: data.mealPreference,
-            emergencyContact: data.emergencyContact,
-            emergencyPhone: data.emergencyPhone,
-            passportNumber: data.passportNumber,
-            passportExpiry: data.passportExpiry,
-            passportCountry: data.passportCountry,
-            pointsBalance: data.pointsBalance,
-            membershipTier: data.membershipTier,
-            onboardingCompleted: data.onboardingCompleted,
+            fullName: updated.fullName,
+            username: updated.username,
+            bio: updated.bio,
+            publicProfile: updated.publicProfile,
+            visitedCountries: updated.visitedCountries,
+            badges: updated.badges,
+            socialLinks: updated.socialLinks,
+            phone: updated.phone,
+            nationality: updated.nationality,
+            homeAirport: updated.homeAirport,
+            seatPreference: updated.seatPreference,
+            mealPreference: updated.mealPreference,
+            emergencyContact: updated.emergencyContact,
+            emergencyPhone: updated.emergencyPhone,
+            passportNumber: updated.passportNumber,
+            passportExpiry: updated.passportExpiry,
+            passportCountry: updated.passportCountry,
+            pointsBalance: updated.pointsBalance,
+            membershipTier: updated.membershipTier,
+            onboardingCompleted: updated.onboardingCompleted,
           }),
         });
       }
@@ -327,28 +396,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await supabase.auth.updateUser({
         data: {
-          full_name: data.fullName,
-          phone: data.phone,
-          nationality: data.nationality,
-          home_airport: data.homeAirport,
-          seat_preference: data.seatPreference,
-          meal_preference: data.mealPreference,
-          emergency_contact: data.emergencyContact,
-          emergency_phone: data.emergencyPhone,
-          passport_number: data.passportNumber,
-          passport_expiry: data.passportExpiry,
-          passport_country: data.passportCountry,
-          saved_travelers: data.savedTravelers,
-          saved_favorites: data.savedFavorites,
-          bookings: data.bookings,
-          currency: data.currency,
-          notification_preferences: data.notificationPreferences,
-          onboarding_completed: data.onboardingCompleted,
+          full_name: updated.fullName,
+          username: updated.username,
+          bio: updated.bio,
+          public_profile: updated.publicProfile,
+          visited_countries: updated.visitedCountries,
+          badges: updated.badges,
+          social_links: updated.socialLinks,
+          phone: updated.phone,
+          nationality: updated.nationality,
+          home_airport: updated.homeAirport,
+          seat_preference: updated.seatPreference,
+          meal_preference: updated.mealPreference,
+          emergency_contact: updated.emergencyContact,
+          emergency_phone: updated.emergencyPhone,
+          passport_number: updated.passportNumber,
+          passport_expiry: updated.passportExpiry,
+          passport_country: updated.passportCountry,
+          saved_travelers: updated.savedTravelers,
+          saved_favorites: updated.savedFavorites,
+          bookings: updated.bookings,
+          currency: updated.currency,
+          notification_preferences: updated.notificationPreferences,
+          onboarding_completed: updated.onboardingCompleted,
         },
       });
     } catch {
       // Offline / fallback storage intact
     }
+  };
+
+  const addBooking = async (booking: UserBooking) => {
+    const currentBookings = user?.bookings || [];
+    const exists = currentBookings.some((b) => b.id === booking.id);
+    const updatedBookings = exists
+      ? currentBookings.map((b) => (b.id === booking.id ? booking : b))
+      : [booking, ...currentBookings];
+
+    const currentPoints = user?.pointsBalance ?? 500;
+    const newPoints = currentPoints + 150;
+    const newTier =
+      newPoints >= 10000 ? "ELITE" : newPoints >= 2500 ? "VOYAGER" : (user?.membershipTier || "EXPLORER");
+
+    await updateProfile({
+      bookings: updatedBookings,
+      pointsBalance: newPoints,
+      membershipTier: newTier,
+    });
   };
 
   const signIn = async (email: string, password: string) => {
@@ -516,6 +610,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       try {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
+        if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+          const bc = new BroadcastChannel("dellics_profile_realtime");
+          bc.postMessage({ type: "SIGNED_OUT" });
+          bc.close();
+        }
       } catch {}
     }
   };
@@ -530,6 +629,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         updateProfile,
+        addBooking,
         signOut,
       }}
     >

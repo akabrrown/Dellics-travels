@@ -1,4 +1,4 @@
-export interface TourPackageDto {
+export class TourPackageDto {
   id?: string;
   title: string;
   slug?: string;

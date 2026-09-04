@@ -25,7 +25,7 @@ export interface AdminTeamMember {
   lastActive: string;
 }
 
-export interface CreateRoleDto {
+export class CreateRoleDto {
   id?: string;
   title: string;
   description: string;
@@ -33,7 +33,7 @@ export interface CreateRoleDto {
   permissions: Record<string, boolean>;
 }
 
-export interface InviteTeamMemberDto {
+export class InviteTeamMemberDto {
   name: string;
   email: string;
   roleId: string;

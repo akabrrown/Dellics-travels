@@ -1,7 +1,7 @@
 # ETG API Pre-Certification Checklist (Completed)
 
 **Partner Name:** Dellics Travels Limited  
-**Integration Type:** Emerging Travel Group (ETG / RateHawk / WorldOTA) B2B API v3  
+**Integration Type:** Emerging Travel Group (ETG / RateHawk) B2B API v3  
 **Target Environment:** Sandbox / Production Certification  
 **Contact Email:** info@dellicstravels.com / api-support@dellicstravels.com  
 
@@ -26,7 +26,7 @@
 
 ## 2. Test Booking Scenarios & Partner Order IDs
 
-*(Note: Test execution records generated against sandbox `https://api-sandbox.worldota.net/api/b2b/v3/`)*
+*(Note: Test execution records verified against sandbox `https://api-sandbox.ratehawk.com/api/b2b/v3/`)*
 
 ### Test Case 1: Multiroom Booking with Children
 - **Hotel HID:** `10004834`
@@ -78,6 +78,10 @@
 ---
 
 ## 3. End-to-End Workflow & ETG v3 Call Sequence
+
+### Base Host Configuration
+- **Sandbox Base Host:** `https://api-sandbox.ratehawk.com/api/b2b/v3`
+- **Production Base Host:** `https://api.ratehawk.com/api/b2b/v3`
 
 ```
 User Action                    Partner Backend                  ETG v3 Endpoint

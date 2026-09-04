@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const rawBaseUrl = (
+  process.env.RATEHAWK_BASE_URL || "https://api-sandbox.ratehawk.com/api/b2b/v3"
+).trim().replace(/\/$/, "");
 const RATEHAWK_BASE_URL =
-  process.env.RATEHAWK_BASE_URL || "https://api-sandbox.ratehawk.com/api/b2b/v3";
+  !rawBaseUrl.includes("/api/b2b/v3") && !rawBaseUrl.includes(".test")
+    ? `${rawBaseUrl}/api/b2b/v3`
+    : rawBaseUrl;
 const RATEHAWK_API_ID =
   process.env.RATEHAWK_API_ID || process.env.RATEHAWK_KEY_ID || "";
 const RATEHAWK_API_KEY =

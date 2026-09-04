@@ -251,10 +251,16 @@ export class HotelsService {
   }
 
   private get baseUrl(): string {
-    return (
+    const raw = (
       this.config.get<string>('RATEHAWK_BASE_URL') ||
       'https://api-sandbox.ratehawk.com/api/b2b/v3'
-    ).replace(/\/$/, '');
+    )
+      .trim()
+      .replace(/\/$/, '');
+    if (!raw.includes('/api/b2b/v3') && !raw.includes('.test')) {
+      return `${raw}/api/b2b/v3`;
+    }
+    return raw;
   }
 
   private get apiId(): string {

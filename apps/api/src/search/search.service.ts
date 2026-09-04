@@ -791,8 +791,16 @@ export class SearchService {
   }
 
   async searchHotels(query: any) {
-    const ratehawkId = this.configService.get<string>('RATEHAWK_KEY_ID');
+    const ratehawkId =
+      this.configService.get<string>('RATEHAWK_API_ID') ||
+      this.configService.get<string>('RATEHAWK_KEY_ID');
     const ratehawkKey = this.configService.get<string>('RATEHAWK_API_KEY');
+    const rawBase =
+      this.configService.get<string>('RATEHAWK_BASE_URL') ||
+      'https://api-sandbox.ratehawk.com/api/b2b/v3';
+    const ratehawkBase = rawBase.replace(/\/$/, '').includes('/api/b2b/v3')
+      ? rawBase.replace(/\/$/, '')
+      : `${rawBase.replace(/\/$/, '')}/api/b2b/v3`;
 
     if (!ratehawkId || !ratehawkKey) {
       this.logger.warn('RATEHAWK credentials not configured.');
@@ -806,7 +814,7 @@ export class SearchService {
       // Step 1: Multicomplete to get Region ID
       const multiRes = await firstValueFrom(
         this.httpService.post(
-          'https://api-sandbox.worldota.net/api/b2b/v3/search/multicomplete/',
+          `${ratehawkBase}/search/multicomplete/`,
           { query: destination, language: 'en' },
           {
             headers: {
@@ -836,7 +844,7 @@ export class SearchService {
 
       const serpRes = await firstValueFrom(
         this.httpService.post(
-          'https://api-sandbox.worldota.net/api/b2b/v3/search/serp/region/',
+          `${ratehawkBase}/search/serp/region/`,
           {
             checkin,
             checkout,
@@ -928,8 +936,16 @@ export class SearchService {
 
     // If type=hotel, use RateHawk multicomplete
     if (query.type === 'hotel') {
-      const ratehawkId = this.configService.get<string>('RATEHAWK_KEY_ID');
+      const ratehawkId =
+        this.configService.get<string>('RATEHAWK_API_ID') ||
+        this.configService.get<string>('RATEHAWK_KEY_ID');
       const ratehawkKey = this.configService.get<string>('RATEHAWK_API_KEY');
+      const rawBase =
+        this.configService.get<string>('RATEHAWK_BASE_URL') ||
+        'https://api-sandbox.ratehawk.com/api/b2b/v3';
+      const ratehawkBase = rawBase.replace(/\/$/, '').includes('/api/b2b/v3')
+        ? rawBase.replace(/\/$/, '')
+        : `${rawBase.replace(/\/$/, '')}/api/b2b/v3`;
 
       if (!ratehawkId || !ratehawkKey) {
         return { status: 'success', provider: 'ratehawk', data: [] };
@@ -939,7 +955,7 @@ export class SearchService {
       try {
         const response = await firstValueFrom(
           this.httpService.post(
-            'https://api-sandbox.worldota.net/api/b2b/v3/search/multicomplete/',
+            `${ratehawkBase}/search/multicomplete/`,
             { query: q, language: 'en' },
             {
               headers: {
