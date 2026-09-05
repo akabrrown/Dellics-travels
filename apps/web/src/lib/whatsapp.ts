@@ -59,3 +59,25 @@ export function composeFlightMessage(input: FlightMessageInput): string {
 export function buildWhatsAppLink(message: string): string {
   return `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
+
+export interface HotelMessageInput {
+  destination: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  rooms?: number;
+}
+
+export function composeHotelMessage(input: HotelMessageInput): string {
+  const lines = [
+    `Hello ${SITE.name}! I would like to inquire about hotel availability and luxury stays.`,
+    "",
+    `Destination: ${input.destination}`,
+    `Check-in: ${formatDate(input.checkIn)}`,
+    `Check-out: ${formatDate(input.checkOut)}`,
+    `Guests: ${input.guests} (${input.rooms || 1} room${(input.rooms || 1) > 1 ? "s" : ""})`,
+    "",
+    "Please share confirmed available properties, special corporate rates, and booking vouchers. Thank you!",
+  ];
+  return lines.join("\n");
+}

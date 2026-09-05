@@ -11,6 +11,8 @@ import {
   MapPin,
   CheckCircle2,
   SlidersHorizontal,
+  ShieldCheck,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { searchHotels, type Hotel } from "@/lib/hotels";
 import { hotelSearchSchema } from "@/lib/schemas";
 import { HotelGuestRoomSelector } from "@/components/hotels/hotel-guest-room-selector";
+import { buildWhatsAppLink, composeHotelMessage } from "@/lib/whatsapp";
 
 type Status =
   | { state: "idle" }
@@ -169,6 +172,35 @@ function HotelSearchFormInner({
               onChange={(e) => setDestination(e.target.value)}
               className="pl-9 h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
             />
+          </div>
+          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              Test Stays:
+            </span>
+            {[
+              { label: "Dubai, UAE", query: "Dubai" },
+              { label: "Paris, France", query: "Paris" },
+              { label: "Los Angeles, USA", query: "Los Angeles" },
+            ].map((chip) => {
+              const active = destination.toLowerCase().includes(chip.query.toLowerCase());
+              return (
+                <button
+                  key={chip.query}
+                  type="button"
+                  onClick={() => {
+                    setDestination(chip.query);
+                    executeSearch(chip.query, checkIn, checkOut, adults, children, rooms, true);
+                  }}
+                  className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium transition-all cursor-pointer ${
+                    active
+                      ? "bg-navy text-white shadow-xs font-semibold"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -461,149 +493,211 @@ export function HotelSearchResults({
             </div>
           </div>
 
-          {/* Hotel Property Grid */}
-          <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-            {displayedHotels.map((hotel) => {
-              const nightRate =
-                Math.round(hotel.price / (nightsCount || 1)) || hotel.price;
-              const rawImg = hotel.images?.[0] || "";
-              const primaryImage = rawImg
-                ? rawImg
-                    .replace("{size}", "1024x768")
-                    .replace("%7Bsize%7D", "1024x768")
-                : "";
+          {/* Hotel Property Grid or Luxury Concierge Fallback */}
+          {displayedHotels.length === 0 ? (
+            <div className="rounded-3xl bg-gradient-to-b from-slate-900 via-navy-dark to-[#0A1128] text-white p-8 sm:p-12 text-center border border-white/10 shadow-2xl relative overflow-hidden">
+              <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+                <div className="inline-flex items-center gap-2 rounded-full bg-brand-orange/20 border border-brand-orange/30 px-3.5 py-1 text-xs font-bold text-brand-orange">
+                  <ShieldCheck className="size-3.5" />
+                  <span>IATA Certified Luxury Concierge</span>
+                </div>
 
-              return (
-                <article
-                  key={hotel.id}
-                  className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-left"
-                >
-                  {/* Photo Hero with Badges */}
-                  <div className="relative h-56 w-full overflow-hidden bg-slate-900 flex items-center justify-center">
-                    {primaryImage ? (
-                      <Image
-                        src={primaryImage}
-                        alt={hotel.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
-                        <Building2 className="size-12 opacity-40 text-white" />
-                        <span className="text-[11px] font-semibold text-white/60">
-                          RateHawk Verified Property
-                        </span>
-                      </div>
+                <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                  Contracted Stays & Direct Rates in {targetCity}
+                </h3>
+
+                <p className="text-sm text-white/80 leading-relaxed">
+                  While our automated RateHawk Sandbox currently serves instant test bookings in <strong className="text-white font-semibold">Dubai, Paris, and Los Angeles</strong>, Dellics Travels holds contracted direct GDS wholesale rates for verified 5-star hotels, serviced suites, and private resorts in <strong className="text-white font-semibold">{targetCity}</strong>.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  <a
+                    href={buildWhatsAppLink(
+                      composeHotelMessage({
+                        destination: targetCity,
+                        checkIn,
+                        checkOut,
+                        guests: adults + children,
+                        rooms,
+                      })
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent pointer-events-none" />
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-6 py-3.5 shadow-lg transition-all active:scale-95 cursor-pointer"
+                  >
+                    <MessageSquare className="size-4" />
+                    <span>Inquire via WhatsApp Concierge</span>
+                  </a>
 
-                    {/* Star Rating Badge */}
-                    <div className="absolute top-4 left-4 flex items-center gap-1 rounded-full bg-navy/90 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-white shadow-xs">
-                      <Star className="size-3 fill-amber-400 text-amber-400" />
-                      <span>
-                        {hotel.rating > 0 ? `${hotel.rating}.0` : "4.0"} Star Hotel
-                      </span>
-                    </div>
+                  <Link
+                    href={`/inquire?type=hotel&destination=${encodeURIComponent(targetCity)}`}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 font-bold text-xs px-6 py-3.5 transition-all cursor-pointer"
+                  >
+                    <span>Submit Custom Inquiry</span>
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                </div>
 
-                    {/* RateHawk Verified Badge */}
-                    <span className="absolute top-4 right-4 rounded-full bg-emerald-500/90 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
-                      Instant Confirmation
-                    </span>
-
-                    {/* Location Badge bottom left */}
-                    <div className="absolute bottom-3 left-4 right-4 flex items-center gap-1.5 text-xs font-medium text-white/95 line-clamp-1">
-                      <MapPin className="size-3.5 text-brand-orange shrink-0" />
-                      <span>
-                        {[hotel.address, hotel.city, hotel.country]
-                          .filter(Boolean)
-                          .join(", ")}
-                      </span>
-                    </div>
+                <div className="pt-6 border-t border-white/10 text-xs text-white/60">
+                  <p className="font-semibold text-white/80 mb-3">
+                    Explore live instant RateHawk inventory in active sandbox test destinations:
+                  </p>
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    {[
+                      { city: "Dubai", label: "Dubai, UAE (244+ Stays)" },
+                      { city: "Paris", label: "Paris, France (249+ Stays)" },
+                      { city: "Los Angeles", label: "Los Angeles, USA (246+ Stays)" },
+                    ].map((item) => (
+                      <Link
+                        key={item.city}
+                        href={`/hotels?destination=${encodeURIComponent(item.city)}`}
+                        className="rounded-full bg-white/10 hover:bg-brand-orange hover:text-white px-3.5 py-1 text-xs font-medium transition-colors border border-white/15 text-white/90"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
                   </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+              {displayedHotels.map((hotel) => {
+                const nightRate =
+                  Math.round(hotel.price / (nightsCount || 1)) || hotel.price;
+                const rawImg = hotel.images?.[0] || "";
+                const primaryImage = rawImg
+                  ? rawImg
+                      .replace("{size}", "1024x768")
+                      .replace("%7Bsize%7D", "1024x768")
+                  : "";
 
-                  {/* Body Details */}
-                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-                    <div>
-                      <h3 className="font-display text-lg font-bold text-navy line-clamp-1 group-hover:text-brand-orange transition-colors">
-                        {hotel.name}
-                      </h3>
-
-                      <p className="mt-1 text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                        {hotel.description ||
-                          `Luxury accommodation in ${hotel.city} offering modern suites, curated hospitality, and premium comfort.`}
-                      </p>
-
-                      {/* Amenities Chips */}
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {(hotel.amenities?.length
-                          ? hotel.amenities.slice(0, 3)
-                          : ["Free WiFi", "Swimming Pool", "Breakfast"]
-                        ).map((amenity) => (
-                          <span
-                            key={amenity}
-                            className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 flex items-center gap-1"
-                          >
-                            <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
-                            <span>{amenity}</span>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Pricing & CTA footer */}
-                    <div className="pt-4 border-t border-slate-100 flex items-end justify-between gap-3">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-                          From per night
-                        </span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="font-display text-xl sm:text-2xl font-black text-brand-orange">
-                            ${nightRate.toLocaleString()}
-                          </span>
-                          <span className="text-xs font-semibold text-slate-500">
-                            {hotel.currency || "USD"}
+                return (
+                  <article
+                    key={hotel.id}
+                    className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-left"
+                  >
+                    {/* Photo Hero with Badges */}
+                    <div className="relative h-56 w-full overflow-hidden bg-slate-900 flex items-center justify-center">
+                      {primaryImage ? (
+                        <Image
+                          src={primaryImage}
+                          alt={hotel.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                          <Building2 className="size-12 opacity-40 text-white" />
+                          <span className="text-[11px] font-semibold text-white/60">
+                            RateHawk Verified Property
                           </span>
                         </div>
-                        <span className="text-[10px] text-slate-400 block font-medium">
-                          ${hotel.price.toLocaleString()} total for {nightsCount}{" "}
-                          nights
-                        </span>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent pointer-events-none" />
+
+                      {/* Floating Star Rating Badge */}
+                      <div className="absolute top-3.5 left-3.5 flex items-center gap-1 rounded-full bg-white/95 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-navy shadow-md">
+                        <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                        <span>{hotel.rating.toFixed(1)}</span>
                       </div>
 
-                      <Link
-                        href={`/hotels/book?id=${encodeURIComponent(
-                          hotel.id
-                        )}&name=${encodeURIComponent(
-                          hotel.name
-                        )}&location=${encodeURIComponent(
-                          [hotel.address, hotel.city, hotel.country]
-                            .filter(Boolean)
-                            .join(", ")
-                        )}&checkIn=${encodeURIComponent(
-                          checkIn
-                        )}&checkOut=${encodeURIComponent(
-                          checkOut
-                        )}&adults=${adults}&children=${children}&guests=${
-                          adults + children
-                        }&rooms=${rooms}&price=${hotel.price}&currency=${
-                          hotel.currency || "USD"
-                        }&rating=${hotel.rating}&image=${encodeURIComponent(
-                          primaryImage || ""
-                        )}&rates=${encodeURIComponent(
-                          JSON.stringify(hotel.rates || [])
-                        )}`}
-                        className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs px-5 py-2.5 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer"
-                      >
-                        <span>Reserve Room</span>
-                        <ArrowRight className="size-3.5" />
-                      </Link>
+                      {/* Live Supplier Badge */}
+                      <div className="absolute top-3.5 right-3.5 rounded-full bg-emerald-500/90 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
+                        RateHawk Direct
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+
+                    {/* Content Section */}
+                    <div className="flex flex-1 flex-col justify-between p-6">
+                      <div>
+                        {/* City & Address */}
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-1">
+                          <MapPin className="size-3.5 text-brand-orange shrink-0" />
+                          <span className="truncate">
+                            {hotel.city || hotel.address}
+                            {hotel.country ? `, ${hotel.country}` : ""}
+                          </span>
+                        </div>
+
+                        {/* Hotel Name */}
+                        <h3 className="font-display text-lg font-bold text-slate-900 group-hover:text-brand-orange transition-colors line-clamp-1">
+                          {hotel.name}
+                        </h3>
+
+                        {/* Top Amenities Pills */}
+                        {hotel.amenities && hotel.amenities.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-1.5">
+                            {hotel.amenities.slice(0, 3).map((amenity, i) => (
+                              <span
+                                key={i}
+                                className="inline-flex items-center gap-1 rounded-md bg-slate-50 border border-slate-200/80 px-2 py-0.5 text-[10px] font-medium text-slate-600"
+                              >
+                                <CheckCircle2 className="size-2.5 text-emerald-600" />
+                                {amenity}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Description excerpt */}
+                        <p className="mt-3 text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                          {hotel.description}
+                        </p>
+                      </div>
+
+                      {/* Price & CTA Footer */}
+                      <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                        <div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="font-display text-xl sm:text-2xl font-black text-brand-orange">
+                              ${nightRate.toLocaleString()}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-500">
+                              {hotel.currency || "USD"}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 block font-medium">
+                            ${hotel.price.toLocaleString()} total for {nightsCount}{" "}
+                            nights
+                          </span>
+                        </div>
+
+                        <Link
+                          href={`/hotels/book?id=${encodeURIComponent(
+                            hotel.id
+                          )}&name=${encodeURIComponent(
+                            hotel.name
+                          )}&location=${encodeURIComponent(
+                            [hotel.address, hotel.city, hotel.country]
+                              .filter(Boolean)
+                              .join(", ")
+                          )}&checkIn=${encodeURIComponent(
+                            checkIn
+                          )}&checkOut=${encodeURIComponent(
+                            checkOut
+                          )}&adults=${adults}&children=${children}&guests=${
+                            adults + children
+                          }&rooms=${rooms}&price=${hotel.price}&currency=${
+                            hotel.currency || "USD"
+                          }&rating=${hotel.rating}&image=${encodeURIComponent(
+                            primaryImage || ""
+                          )}&rates=${encodeURIComponent(
+                            JSON.stringify(hotel.rates || [])
+                          )}`}
+                          className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs px-5 py-2.5 shadow-sm transition-transform active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer"
+                        >
+                          <span>Reserve Room</span>
+                          <ArrowRight className="size-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </section>

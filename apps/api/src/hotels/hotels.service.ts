@@ -36,14 +36,35 @@ export class HotelsService {
 
     try {
       // Step 1: Dynamically resolve destination via RateHawk Multicomplete API
+      const searchDest = (input.destination || '').trim();
+      const cleanCity = searchDest.split(',')[0].trim();
+
+      const isSandbox = (this.baseUrl || '').includes('api-sandbox.ratehawk.com');
+      let sandboxRegionId: number | null = null;
+      if (isSandbox) {
+        const lower = searchDest.toLowerCase();
+        if (lower.includes('dubai') || lower.includes('uae') || lower.includes('dxb')) {
+          sandboxRegionId = 6053839; // Dubai, UAE
+        } else if (lower.includes('paris') || lower.includes('france') || lower.includes('cdg')) {
+          sandboxRegionId = 2734; // Paris, France
+        } else if (
+          lower.includes('los angeles') ||
+          lower.includes('hollywood') ||
+          lower.includes('lax') ||
+          lower.includes('california')
+        ) {
+          sandboxRegionId = 2011; // Los Angeles, USA
+        }
+      }
+
       const multi = await this.fetchJson(`${this.baseUrl}/search/multicomplete/`, {
-        query: input.destination,
+        query: cleanCity || searchDest,
         language: 'en',
       });
 
       const regions = multi?.data?.regions || [];
       const multiHotels = multi?.data?.hotels || [];
-      const regionId = regions[0]?.id || multiHotels[0]?.region_id;
+      const regionId = regions[0]?.id || multiHotels[0]?.region_id || sandboxRegionId;
 
       let rawHotels: any[] = [];
 
