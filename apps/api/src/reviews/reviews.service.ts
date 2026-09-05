@@ -1,5 +1,6 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../cache/cache.service';
 
 export interface ReviewItem {
   id: string;
@@ -18,17 +19,29 @@ export interface ReviewItem {
 @Injectable()
 export class ReviewsService {
   private readonly logger = new Logger(ReviewsService.name);
+  private readonly cache: CacheService;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() injectedCache?: CacheService,
+  ) {
+    this.cache = injectedCache || new CacheService({ maxEntries: 200, defaultTtlMs: 2 * 60 * 1000 });
+  }
 
   /**
-   * Admin view: get all reviews with status filtering and search
+   * Admin view: get all reviews with status filtering and search (cached with 2m TTL)
    */
   async getAllReviews(params?: { status?: string; search?: string }): Promise<{
     status: string;
     count: number;
     data: ReviewItem[];
   }> {
+    const cacheKey = `reviews:all:${params?.status || 'ALL'}:${params?.search || ''}`;
+    const cached = this.cache.get<{ status: string; count: number; data: ReviewItem[] }>(cacheKey);
+    if (cached) {
+      this.logger.debug(`[Cache HIT] Serving cached reviews for key: ${cacheKey}`);
+      return cached;
+    }
     try {
       const dbReviews = await this.prisma.review.findMany({
         orderBy: { created_at: 'desc' },
@@ -74,11 +87,14 @@ export class ReviewsService {
         );
       }
 
-      return {
+      const result = {
         status: 'success',
         count: items.length,
         data: items,
       };
+
+      this.cache.set(cacheKey, result, 2 * 60 * 1000);
+      return result;
     } catch (err: any) {
       this.logger.error(`getAllReviews failed: ${err.message}`);
       return { status: 'error', count: 0, data: [] };
@@ -87,6 +103,7 @@ export class ReviewsService {
 
   /**
    * Moderate review status: APPROVED, FLAGGED, PENDING
+   * Automatically invalidates review caches to guarantee consistency
    */
   async moderateReview(id: string, status: 'APPROVED' | 'FLAGGED' | 'PENDING'): Promise<{
     status: string;
@@ -111,6 +128,10 @@ export class ReviewsService {
         },
       });
 
+      // Invalidate all review cache keys
+      const purged = this.cache.invalidatePrefix('reviews:');
+      this.logger.log(`[Cache INVALIDATION] Purged ${purged} review cache entries after moderating review ${id}`);
+
       return {
         status: 'success',
         message: `Review marked as ${status}.`,
@@ -123,18 +144,28 @@ export class ReviewsService {
   }
 
   /**
-   * Public: get approved high-rating reviews for website social proof
+   * Public: get approved high-rating reviews for website social proof (cached with 10m TTL)
    */
   async getFeaturedReviews(): Promise<{
     status: string;
     count: number;
     data: ReviewItem[];
   }> {
+    const cacheKey = 'reviews:featured';
+    const cached = this.cache.get<{ status: string; count: number; data: ReviewItem[] }>(cacheKey);
+    if (cached) {
+      this.logger.debug(`[Cache HIT] Serving cached featured reviews`);
+      return cached;
+    }
+
     const res = await this.getAllReviews({ status: 'APPROVED' });
-    return {
+    const result = {
       status: 'success',
       count: res.data.length,
       data: res.data.slice(0, 6),
     };
+
+    this.cache.set(cacheKey, result, 10 * 60 * 1000);
+    return result;
   }
 }

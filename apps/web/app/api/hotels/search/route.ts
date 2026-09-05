@@ -12,11 +12,16 @@ const RATEHAWK_API_ID =
 const RATEHAWK_API_KEY =
   process.env.RATEHAWK_API_KEY || "";
 
-const REQUEST_TIMEOUT_MS = 14_000;
+import { LruTtlCache } from "@/lib/cache";
 
-// In-memory cache for RateHawk live SERP responses (10 min TTL)
-const serpCache = new Map<string, { data: any[]; timestamp: number }>();
+const REQUEST_TIMEOUT_MS = 14_000;
 const CACHE_TTL_MS = 10 * 60 * 1000;
+
+// Bounded LRU + TTL in-memory cache for RateHawk live SERP responses (max 500 entries, 10m TTL)
+const serpCache = new LruTtlCache<any[]>({
+  maxEntries: 500,
+  defaultTtlMs: CACHE_TTL_MS,
+});
 
 async function fetchRatehawk(endpoint: string, payload: unknown) {
   if (!RATEHAWK_API_KEY || !RATEHAWK_API_ID) {
@@ -113,10 +118,10 @@ export async function POST(req: NextRequest) {
     const childrenAges = Array.from({ length: childrenCount }, () => 7);
     const roomsCount = Number(body.rooms) || 1;
 
-    const cacheKey = `${destination.toLowerCase()}_${checkIn}_${checkOut}_${adultsCount}_${childrenCount}_${roomsCount}`;
+    const cacheKey = `hotels:${destination.toLowerCase()}_${checkIn}_${checkOut}_${adultsCount}_${childrenCount}_${roomsCount}`;
     const cached = serpCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return NextResponse.json(cached.data);
+    if (cached) {
+      return NextResponse.json(cached);
     }
 
     // Step 1: Dynamically resolve destination via RateHawk Multicomplete API
@@ -289,7 +294,7 @@ export async function POST(req: NextRequest) {
         .map((r) => r.value);
 
       if (validHotels.length > 0) {
-        serpCache.set(cacheKey, { data: validHotels, timestamp: Date.now() });
+        serpCache.set(cacheKey, validHotels);
         return NextResponse.json(validHotels);
       }
     }

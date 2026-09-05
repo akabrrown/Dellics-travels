@@ -1,37 +1,41 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { HotelsService } from '../hotels/hotels.service';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class SearchService {
   private readonly logger = new Logger(SearchService.name);
-  private readonly cache = new Map<string, { timestamp: number; data: any }>();
+  private readonly cache: CacheService;
   private readonly CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes in-memory cache TTL
-
-  private getCached(key: string) {
-    const cached = this.cache.get(key);
-    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL_MS) {
-      this.logger.debug(
-        `[Cache HIT] Serving cached flight response for key: ${key}`,
-      );
-      return cached.data;
-    }
-    return null;
-  }
-
-  private setCached(key: string, data: any) {
-    this.cache.set(key, { timestamp: Date.now(), data });
-  }
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly prisma: PrismaService,
     private readonly hotelsService: HotelsService,
-  ) {}
+    @Optional() injectedCache?: CacheService,
+  ) {
+    this.cache = injectedCache || new CacheService({ maxEntries: 1000, defaultTtlMs: this.CACHE_TTL_MS });
+  }
+
+  private getCached(key: string) {
+    const cached = this.cache.get(key);
+    if (cached !== undefined && cached !== null) {
+      this.logger.debug(
+        `[Cache HIT] Serving cached flight response for key: ${key}`,
+      );
+      return cached;
+    }
+    return null;
+  }
+
+  private setCached(key: string, data: any, ttlMs?: number) {
+    this.cache.set(key, data, ttlMs ?? this.CACHE_TTL_MS);
+  }
 
   private formatDuration(isoDuration?: string): string {
     if (!isoDuration) return '7h 00m';

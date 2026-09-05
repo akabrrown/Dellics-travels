@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CacheService } from './cache/cache.service';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -22,6 +23,7 @@ describe('AppController', () => {
           provide: AppService,
           useValue: mockAppService,
         },
+        CacheService,
       ],
     }).compile();
 
@@ -38,6 +40,14 @@ describe('AppController', () => {
       expect(health.status).toBe('ok');
       expect(health.service).toBe('dellics-api');
       expect(health.timestamp).toBeDefined();
+    });
+
+    it('should return cache health metrics', () => {
+      const cacheHealth = appController.getCacheHealth();
+      expect(cacheHealth.status).toBe('ok');
+      expect(cacheHealth.service).toBe('dellics-api-cache');
+      expect(cacheHealth.metrics).toBeDefined();
+      expect(cacheHealth.metrics.maxCapacity).toBeGreaterThan(0);
     });
   });
 });

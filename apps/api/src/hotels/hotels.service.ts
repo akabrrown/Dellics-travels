@@ -2,18 +2,26 @@ import {
   BadRequestException,
   Injectable,
   Logger,
+  Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HotelResult, HotelRoomRate, HotelSearchInput } from './hotels.types';
+import { CacheService } from '../cache/cache.service';
 
 const REQUEST_TIMEOUT_MS = 14_000;
+const HOTEL_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 @Injectable()
 export class HotelsService {
   private readonly logger = new Logger(HotelsService.name);
-  private readonly serpCache = new Map<string, { data: HotelResult[]; timestamp: number }>();
+  private readonly cache: CacheService;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    @Optional() injectedCache?: CacheService,
+  ) {
+    this.cache = injectedCache || new CacheService({ maxEntries: 500, defaultTtlMs: HOTEL_CACHE_TTL_MS });
+  }
 
   async search(input: HotelSearchInput): Promise<HotelResult[]> {
     this.assertDates(input);
@@ -28,10 +36,11 @@ export class HotelsService {
     const childrenCount = input.children || 0;
     const childrenAges = Array.from({ length: childrenCount }, () => 7);
 
-    const cacheKey = `${(input.destination || '').trim().toLowerCase()}_${checkIn}_${checkOut}_${adultsCount}_${childrenCount}_${input.rooms || 1}`;
-    const cached = this.serpCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < 10 * 60 * 1000) {
-      return cached.data;
+    const cacheKey = `hotels:${(input.destination || '').trim().toLowerCase()}:${checkIn}:${checkOut}:${adultsCount}:${childrenCount}:${input.rooms || 1}`;
+    const cached = this.cache.get<HotelResult[]>(cacheKey);
+    if (cached) {
+      this.logger.debug(`[Cache HIT] Serving cached hotel SERP for key: ${cacheKey}`);
+      return cached;
     }
 
     try {
@@ -187,7 +196,7 @@ export class HotelsService {
 
         if (validResults.length > 0) {
           this.logger.log(`RateHawk live API returned ${validResults.length} properties for ${input.destination}`);
-          this.serpCache.set(cacheKey, { data: validResults, timestamp: Date.now() });
+          this.cache.set(cacheKey, validResults, HOTEL_CACHE_TTL_MS);
           return validResults;
         }
       }

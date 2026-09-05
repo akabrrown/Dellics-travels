@@ -16,6 +16,7 @@ import { InquiriesModule } from './inquiries/inquiries.module';
 import { ToursModule } from './tours/tours.module';
 import { RolesModule } from './roles/roles.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReviewsModule } from './reviews/reviews.module';
       isGlobal: true,
     }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
+    CacheModule,
     PrismaModule,
     AuthModule,
     SearchModule,
