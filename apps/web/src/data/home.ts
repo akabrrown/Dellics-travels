@@ -1,13 +1,23 @@
 export interface HeroSlide {
   type: "image" | "video";
   src: string;
-  caption: string;
-  subtitle: string;
-  ctaText: string;
-  ctaHref: string;
+  poster?: string;
+  caption?: string;
+  subtitle?: string;
+  ctaText?: string;
+  ctaHref?: string;
 }
 
 export const HERO_SLIDES: HeroSlide[] = [
+  {
+    type: "video",
+    src: "/videos/Dellics_Travels_to43m0.mp4",
+    poster: "/images/services/hotel-and-airbnb.jpg",
+    caption: "Dellics Travels — IATA Certified Global Luxury Travel Management",
+    subtitle: "Worldwide flight ticketing, bespoke holiday packages, corporate travel, visa advisory, and VIP concierge.",
+    ctaText: "Explore Services",
+    ctaHref: "#services",
+  },
   {
     type: "image",
     src: "/images/services/hotel-and-airbnb.jpg",
@@ -39,6 +49,42 @@ export const HERO_SLIDES: HeroSlide[] = [
     subtitle: "Reliable Kotoka International (ACC) meet-and-greet with vetted air-conditioned executive sedans and SUVs.",
     ctaText: "Book Airport Transfer",
     ctaHref: "/transfers",
+  },
+];
+
+export const FLIGHT_HERO_SLIDES: HeroSlide[] = [
+  {
+    type: "video",
+    src: "/videos/Affordable_Flight_Booking_om36kr.mp4",
+    poster: "/images/services/plane.jpg",
+    caption: "Affordable Global Airline Tickets & Direct Fares",
+    subtitle: "IATA Certified airline ticketing across 500+ global carriers with zero hidden fees and instant PNR issuance.",
+    ctaText: "Search Flights",
+    ctaHref: "#search",
+  },
+  {
+    type: "image",
+    src: "/images/services/plane.jpg",
+    caption: "Direct Airline Ticketing and Group Corporate Fares",
+    subtitle: "Direct issuance on Emirates, Qatar Airways, Delta, and British Airways with zero broker markups.",
+    ctaText: "Explore Routes",
+    ctaHref: "#routes",
+  },
+  {
+    type: "image",
+    src: "/images/middle-east/burj-khalifa.jpg",
+    caption: "Premier Long-Haul & Regional Flight Routes",
+    subtitle: "Exclusive contracted fares to Dubai, London, New York, Johannesburg, and Amsterdam.",
+    ctaText: "View Popular Routes",
+    ctaHref: "#routes",
+  },
+  {
+    type: "image",
+    src: "/images/europe/paris-and-eiffel-tower.jpg",
+    caption: "Seamless European & Transatlantic Connections",
+    subtitle: "Round-trip executive and economy fares with verified baggage allowances.",
+    ctaText: "Book Flights",
+    ctaHref: "#search",
   },
 ];
 

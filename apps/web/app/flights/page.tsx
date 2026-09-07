@@ -10,13 +10,14 @@ import {
   ArrowRight,
   HelpCircle,
 } from "lucide-react";
-import { PageHero } from "@/components/page-hero";
+import { HeroSlider } from "@/components/home/hero-slider";
 import { SectionHeading } from "@/components/section-heading";
 import { FlightSearchWidget } from "@/components/flights/flight-search-widget";
 import { StripeFlightBookButton } from "@/components/flights/stripe-flight-book-button";
 import { CtaBanner } from "@/components/cta-banner";
 import { SITE } from "@/lib/site";
 import { getLiveHomeDeals } from "@/lib/flights";
+import { FLIGHT_HERO_SLIDES } from "@/data/home";
 
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
@@ -136,14 +137,14 @@ export default async function FlightsPage() {
 
   return (
     <>
-      <PageHero
-        image="/images/services/plane.jpg"
+      <HeroSlider
+        slides={FLIGHT_HERO_SLIDES}
         breadcrumbs={[{ label: "Flights" }]}
       >
         <div className="mx-auto w-full max-w-5xl rounded-3xl bg-white/85 backdrop-blur-xl p-4 sm:p-5 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left">
           <FlightSearchWidget />
         </div>
-      </PageHero>
+      </HeroSlider>
 
       {/* Popular Flight Routes Grid */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
