@@ -10,9 +10,18 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
+    const dbUrl =
+      process.env.DATABASE_URL ||
+      'postgresql://postgres.gfypumkjomlvvpiiwdfq:X2tCgmfP5yGSP0d0@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true';
+
     super({
-      datasourceUrl: process.env.DATABASE_URL,
-    } as any);
+      datasources: {
+        db: {
+          url: dbUrl,
+        },
+      },
+      log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+    });
   }
 
   async onModuleInit() {
