@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { ZohoService } from '../zoho/zoho.service';
 import { CreateInquiryDto } from './dto/create-inquiry.dto';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -12,6 +13,7 @@ export class InquiriesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly zohoService: ZohoService,
   ) {}
 
   async create(dto: CreateInquiryDto): Promise<{ received: true }> {
@@ -38,8 +40,40 @@ export class InquiriesService {
       },
     });
 
-    await this.notify(record.id, dto);
+    // Notify via email and sync to Zoho CRM in parallel
+    await Promise.allSettled([
+      this.notify(record.id, dto),
+      this.syncToZoho(record.id, dto, payload),
+    ]);
+
     return { received: true }; // opaque ack — never echo stored data back
+  }
+
+  private async syncToZoho(
+    id: string,
+    dto: CreateInquiryDto,
+    payload?: Record<string, any>,
+  ): Promise<void> {
+    try {
+      let description = `Type: ${dto.kind}\nSubmission ID: ${id}\nMessage: ${dto.message}`;
+      if (payload) {
+        if (payload.destination) description += `\nDestination: ${payload.destination}`;
+        if (payload.travelDate) description += `\nTravel Date: ${payload.travelDate}`;
+        if (payload.travelers) description += `\nTravelers: ${payload.travelers}`;
+      }
+
+      await this.zohoService.createLead({
+        firstName: dto.name,
+        email: dto.email,
+        phone: dto.phone,
+        leadSource: `Dellics Website (${dto.kind})`,
+        description,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Inquiry ${id} persisted but Zoho CRM sync failed: ${(error as Error).message}`,
+      );
+    }
   }
 
   private async notify(id: string, dto: CreateInquiryDto): Promise<void> {

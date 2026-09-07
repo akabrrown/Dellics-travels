@@ -17,6 +17,7 @@ import { ToursModule } from './tours/tours.module';
 import { RolesModule } from './roles/roles.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CacheModule } from './cache/cache.module';
+import { ZohoModule } from './zoho/zoho.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CacheModule } from './cache/cache.module';
     ToursModule,
     RolesModule,
     ReviewsModule,
+    ZohoModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
