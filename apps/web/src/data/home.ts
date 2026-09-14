@@ -128,25 +128,3 @@ export const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-export const WHY_CHOOSE_US = [
-  {
-    title: "IATA Certified",
-    description: "Official IATA Certified travel management partner. Your bookings and financial transactions are 100% safeguarded.",
-    icon: "shield",
-  },
-  {
-    title: "Direct Wholesale Rates",
-    description: "Direct partnerships with RateHawk, Amadeus, and top global airlines ensure you never pay inflated middleman fees.",
-    icon: "sparkles",
-  },
-  {
-    title: "Dedicated 24/7 Human Concierge",
-    description: "No automated bots or unanswered emails. Reach certified travel specialists on WhatsApp within minutes around the clock.",
-    icon: "headset",
-  },
-  {
-    title: "End-to-End Travel Logistics",
-    description: "We handle flights, stays, airport transfers, visa document advisory, travel insurance, and curated sightseeing under one roof.",
-    icon: "globe",
-  },
-];

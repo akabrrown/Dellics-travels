@@ -16,7 +16,7 @@ import { QuickBook } from "@/components/home/quick-book";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
 import { Button } from "@/components/ui/button";
-import { HERO_SLIDES, WHY_CHOOSE_US } from "@/data/home";
+import { HERO_SLIDES } from "@/data/home";
 import { getLiveHomeDeals } from "@/lib/flights";
 import { getTours } from "@/lib/tours";
 import { getFeaturedReviews } from "@/lib/reviews";
@@ -357,35 +357,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* 7. Why Choose Us / Trust Pillars */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
-        <SectionHeading
-          eyebrow="The Dellics Standard"
-          title="Why Discerning Travelers Choose Us"
-          subtitle="We combine international industry accreditation with attentive personalized concierge care."
-        />
-
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {WHY_CHOOSE_US.map((item, idx) => (
-            <div
-              key={item.title}
-              className="rounded-3xl bg-white p-6 border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-brand-orange/30"
-            >
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-sunrise-light text-brand-orange font-bold text-lg mb-4">
-                0{idx + 1}
-              </div>
-              <h3 className="font-display text-base font-bold text-navy mb-2">
-                {item.title}
-              </h3>
-              <p className="text-xs leading-relaxed text-slate-600">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* 8. Traveler Reviews & Testimonials */}
       <section className="bg-slate-50 py-24 border-t border-slate-200/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
