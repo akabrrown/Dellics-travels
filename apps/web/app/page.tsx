@@ -16,7 +16,7 @@ import { QuickBook } from "@/components/home/quick-book";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
 import { Button } from "@/components/ui/button";
-import { HERO_SLIDES, HOME_STATS, WHY_CHOOSE_US } from "@/data/home";
+import { HERO_SLIDES, WHY_CHOOSE_US } from "@/data/home";
 import { getLiveHomeDeals } from "@/lib/flights";
 import { getTours } from "@/lib/tours";
 import { getFeaturedReviews } from "@/lib/reviews";
@@ -228,29 +228,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. Verified Statistics & Trust Strip */}
-      <section className="relative overflow-hidden bg-navy-dark py-20 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-brand-orange/15 via-transparent to-transparent pointer-events-none" />
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
-            {HOME_STATS.map((stat) => (
-              <div key={stat.label} className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <p className="font-display text-4xl sm:text-5xl font-extrabold text-brand-orange">
-                  {stat.value}
-                </p>
-                <p className="mt-2 text-base font-semibold text-white">
-                  {stat.label}
-                </p>
-                <p className="mt-0.5 text-xs text-white/60">
-                  {stat.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Featured Destinations Showcase */}
+            {/* 5. Featured Destinations Showcase */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
           <SectionHeading
