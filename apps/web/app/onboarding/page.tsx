@@ -16,6 +16,7 @@ import {
   MapPin,
   Crown,
   FileText,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AirportCombobox } from "@/components/ui/airport-combobox";
@@ -40,13 +41,14 @@ export default function OnboardingPage() {
   const [seatPreference, setSeatPreference] = useState("Window");
   const [mealPreference, setMealPreference] = useState("Standard / No Restriction");
 
-  // Step 3: Passport & Emergency Contact (Optional)
+  // Step 3: Passport & Emergency Contact
   const [passportNumber, setPassportNumber] = useState("");
   const [passportExpiry, setPassportExpiry] = useState("");
   const [emergencyContact, setEmergencyContact] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
 
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -63,7 +65,85 @@ export default function OnboardingPage() {
     }
   }, [user]);
 
+  const handleStep1Continue = () => {
+    if (!fullName.trim()) {
+      setError("Please enter your full name as it appears on your passport / ID.");
+      toast.error("Full name is required.");
+      return;
+    }
+    if (!phone.trim()) {
+      setError("Please enter your WhatsApp / phone number.");
+      toast.error("Phone number is required.");
+      return;
+    }
+    if (!nationality) {
+      setError("Please select your country of residence / nationality.");
+      toast.error("Nationality is required.");
+      return;
+    }
+
+    setError("");
+    updateProfile({
+      fullName: fullName.trim(),
+      phone: phone.trim(),
+      nationality,
+      id: user?.id,
+      email: user?.email,
+    });
+    setStep(2);
+  };
+
+  const handleStep2Continue = () => {
+    if (!homeAirport || !homeAirport.trim()) {
+      setError("Please select your primary departure airport.");
+      toast.error("Departure airport is required.");
+      return;
+    }
+    if (!seatPreference) {
+      setError("Please select your seating preference.");
+      toast.error("Seating preference is required.");
+      return;
+    }
+    if (!mealPreference) {
+      setError("Please select your in-flight meal option.");
+      toast.error("Meal option is required.");
+      return;
+    }
+
+    setError("");
+    updateProfile({
+      homeAirport,
+      seatPreference,
+      mealPreference,
+      id: user?.id,
+      email: user?.email,
+    });
+    setStep(3);
+  };
+
   const handleFinishOnboarding = async () => {
+    if (!passportNumber.trim()) {
+      setError("Please enter your passport number.");
+      toast.error("Passport number is required.");
+      return;
+    }
+    if (!passportExpiry) {
+      setError("Please enter your passport expiry date.");
+      toast.error("Passport expiry date is required.");
+      return;
+    }
+    if (!emergencyContact.trim()) {
+      setError("Please enter your emergency contact person's name.");
+      toast.error("Emergency contact name is required.");
+      return;
+    }
+    if (!emergencyPhone.trim()) {
+      setError("Please enter your emergency contact phone number.");
+      toast.error("Emergency contact phone is required.");
+      return;
+    }
+
+    setError("");
     setSaving(true);
     try {
       await updateProfile({
@@ -145,12 +225,22 @@ export default function OnboardingPage() {
       {/* Main Card Container */}
       <div className="max-w-2xl mx-auto w-full my-6">
         <div className="bg-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-100">
+          {error && (
+            <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2.5">
+              <AlertCircle className="size-4 text-rose-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Required Field Missing</p>
+                <p className="mt-0.5 text-rose-700">{error}</p>
+              </div>
+            </div>
+          )}
+
           {/* STEP 1: Contact & Legal Name */}
           {step === 1 && (
             <div className="space-y-5">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange">
-                  Step 1 · Passenger Details
+                  Step 1 · Passenger Details (All Fields Required)
                 </span>
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
                   Primary contact and passenger name
@@ -163,13 +253,16 @@ export default function OnboardingPage() {
               <div className="space-y-3.5 pt-1">
                 <div>
                   <label htmlFor="input-fullname" className="text-xs font-semibold text-slate-700 block mb-1">
-                    Full Name (as on ID / Passport)
+                    Full Name (as on ID / Passport) *
                   </label>
                   <input
                     id="input-fullname"
                     type="text"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    onChange={(e) => {
+                      setFullName(e.target.value);
+                      setError("");
+                    }}
                     placeholder="e.g. Kwame Mensah"
                     required
                     className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
@@ -178,24 +271,28 @@ export default function OnboardingPage() {
 
                 <div>
                   <label htmlFor="input-phone" className="text-xs font-semibold text-slate-700 block mb-1">
-                    WhatsApp & Phone Number
+                    WhatsApp &amp; Phone Number *
                   </label>
                   <input
                     id="input-phone"
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      setError("");
+                    }}
                     placeholder="+233 55 205 4174"
+                    required
                     className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                   />
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Used for flight disruption notices and WhatsApp e-ticket delivery.
+                    Required for flight disruption notices and WhatsApp e-ticket delivery.
                   </p>
                 </div>
 
                 <div>
                   <label htmlFor="select-nationality" className="text-xs font-semibold text-slate-700 block mb-1">
-                    Country of Residence / Nationality
+                    Country of Residence / Nationality *
                   </label>
                   <div className="relative flex items-center">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
@@ -204,9 +301,11 @@ export default function OnboardingPage() {
                     <select
                       id="select-nationality"
                       value={nationality}
+                      required
                       onChange={(e) => {
                         const nextNat = e.target.value;
                         setNationality(nextNat);
+                        setError("");
                         updateProfile({ nationality: nextNat, id: user?.id, email: user?.email });
                       }}
                       className="w-full h-10 pl-9 pr-3.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
@@ -224,16 +323,7 @@ export default function OnboardingPage() {
               <div className="flex justify-end pt-3 border-t border-slate-100">
                 <Button
                   type="button"
-                  onClick={() => {
-                    updateProfile({
-                      fullName: fullName.trim(),
-                      phone: phone.trim(),
-                      nationality,
-                      id: user?.id,
-                      email: user?.email,
-                    });
-                    setStep(2);
-                  }}
+                  onClick={handleStep1Continue}
                   className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
                 >
                   <span>Continue</span>
@@ -248,7 +338,7 @@ export default function OnboardingPage() {
             <div className="space-y-5">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange">
-                  Step 2 · Travel Preferences
+                  Step 2 · Travel Preferences (All Fields Required)
                 </span>
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
                   Default airport and seating preferences
@@ -261,12 +351,13 @@ export default function OnboardingPage() {
               <div className="space-y-3.5 pt-1">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Primary Departure Airport
+                    Primary Departure Airport *
                   </label>
                   <AirportCombobox
                     value={homeAirport}
                     onChange={(nextAirport) => {
                       setHomeAirport(nextAirport);
+                      setError("");
                       updateProfile({ homeAirport: nextAirport, id: user?.id, email: user?.email });
                     }}
                     placeholder="Search international airport or city..."
@@ -279,14 +370,16 @@ export default function OnboardingPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <div>
                     <label htmlFor="select-seat" className="text-xs font-semibold text-slate-700 block mb-1">
-                      Seat Preference
+                      Seat Preference *
                     </label>
                     <select
                       id="select-seat"
                       value={seatPreference}
+                      required
                       onChange={(e) => {
                         const nextSeat = e.target.value;
                         setSeatPreference(nextSeat);
+                        setError("");
                         updateProfile({ seatPreference: nextSeat, id: user?.id, email: user?.email });
                       }}
                       className="w-full h-10 px-3 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
@@ -299,14 +392,16 @@ export default function OnboardingPage() {
 
                   <div>
                     <label htmlFor="select-meal" className="text-xs font-semibold text-slate-700 block mb-1">
-                      In-Flight Meal Option
+                      In-Flight Meal Option *
                     </label>
                     <select
                       id="select-meal"
                       value={mealPreference}
+                      required
                       onChange={(e) => {
                         const nextMeal = e.target.value;
                         setMealPreference(nextMeal);
+                        setError("");
                         updateProfile({ mealPreference: nextMeal, id: user?.id, email: user?.email });
                       }}
                       className="w-full h-10 px-3 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
@@ -325,64 +420,39 @@ export default function OnboardingPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setStep(1)}
+                  onClick={() => {
+                    setError("");
+                    setStep(1);
+                  }}
                   className="rounded-lg text-xs font-semibold h-10 px-4 gap-1 border-slate-300"
                 >
                   <ArrowLeft className="size-3.5" />
                   <span>Back</span>
                 </Button>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => {
-                      updateProfile({
-                        homeAirport,
-                        seatPreference,
-                        mealPreference,
-                        id: user?.id,
-                        email: user?.email,
-                      });
-                      setStep(3);
-                    }}
-                    className="text-xs text-slate-500 hover:text-slate-900 font-semibold"
-                  >
-                    Skip
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      updateProfile({
-                        homeAirport,
-                        seatPreference,
-                        mealPreference,
-                        id: user?.id,
-                        email: user?.email,
-                      });
-                      setStep(3);
-                    }}
-                    className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
-                  >
-                    <span>Continue</span>
-                    <ArrowRight className="size-3.5" />
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  onClick={handleStep2Continue}
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs h-10 px-6 gap-1.5"
+                >
+                  <span>Continue</span>
+                  <ArrowRight className="size-3.5" />
+                </Button>
               </div>
             </div>
           )}
 
-          {/* STEP 3: Passport & Security (Optional) */}
+          {/* STEP 3: Passport & Emergency Contact */}
           {step === 3 && (
             <div className="space-y-5">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange">
-                  Step 3 · Travel Documents (Optional)
+                  Step 3 · Travel Documents &amp; Emergency Contact (All Fields Required)
                 </span>
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
-                  Passport information & emergency contact
+                  Passport information &amp; emergency contact
                 </h2>
                 <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  Save your passport number securely for fast-track booking. You can also skip this and add it later.
+                  Save your passport credentials and emergency contact details for verified passenger manifest compliance.
                 </p>
               </div>
 
@@ -390,13 +460,17 @@ export default function OnboardingPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label htmlFor="input-passport" className="text-xs font-semibold text-slate-700 block mb-1">
-                      Passport Number (Optional)
+                      Passport Number *
                     </label>
                     <input
                       id="input-passport"
                       type="text"
+                      required
                       value={passportNumber}
-                      onChange={(e) => setPassportNumber(e.target.value)}
+                      onChange={(e) => {
+                        setPassportNumber(e.target.value);
+                        setError("");
+                      }}
                       placeholder="e.g. G1234567"
                       className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                     />
@@ -404,13 +478,17 @@ export default function OnboardingPage() {
 
                   <div>
                     <label htmlFor="input-expiry" className="text-xs font-semibold text-slate-700 block mb-1">
-                      Passport Expiry Date
+                      Passport Expiry Date *
                     </label>
                     <input
                       id="input-expiry"
                       type="date"
+                      required
                       value={passportExpiry}
-                      onChange={(e) => setPassportExpiry(e.target.value)}
+                      onChange={(e) => {
+                        setPassportExpiry(e.target.value);
+                        setError("");
+                      }}
                       className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                     />
                   </div>
@@ -418,31 +496,39 @@ export default function OnboardingPage() {
 
                 <div className="border-t border-slate-100 pt-3">
                   <span className="text-xs font-bold text-slate-700 block mb-2">
-                    Emergency Contact (Optional)
+                    Emergency Contact *
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label htmlFor="input-em-name" className="text-[11px] font-medium text-slate-600 block mb-1">
-                        Contact Person
+                        Contact Person Name *
                       </label>
                       <input
                         id="input-em-name"
                         type="text"
+                        required
                         value={emergencyContact}
-                        onChange={(e) => setEmergencyContact(e.target.value)}
+                        onChange={(e) => {
+                          setEmergencyContact(e.target.value);
+                          setError("");
+                        }}
                         placeholder="e.g. Next of kin / Spouse"
                         className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                       />
                     </div>
                     <div>
                       <label htmlFor="input-em-phone" className="text-[11px] font-medium text-slate-600 block mb-1">
-                        Emergency Phone
+                        Emergency Contact Phone *
                       </label>
                       <input
                         id="input-em-phone"
                         type="tel"
+                        required
                         value={emergencyPhone}
-                        onChange={(e) => setEmergencyPhone(e.target.value)}
+                        onChange={(e) => {
+                          setEmergencyPhone(e.target.value);
+                          setError("");
+                        }}
                         placeholder="+233 24 000 0000"
                         className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-xs font-medium focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy"
                       />
@@ -468,7 +554,10 @@ export default function OnboardingPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setStep(2)}
+                  onClick={() => {
+                    setError("");
+                    setStep(2);
+                  }}
                   className="rounded-lg text-xs font-semibold h-10 px-4 gap-1 border-slate-300"
                 >
                   <ArrowLeft className="size-3.5" />
@@ -484,7 +573,7 @@ export default function OnboardingPage() {
                     <span>Saving...</span>
                   ) : (
                     <>
-                      <span>Save and view profile</span>
+                      <span>Complete &amp; Save Profile</span>
                       <CheckCircle2 className="size-3.5" />
                     </>
                   )}

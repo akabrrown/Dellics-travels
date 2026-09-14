@@ -39,7 +39,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!fullName || !email || !phone || !password || !confirmPassword) {
       setError("Please complete all required fields.");
       return;
     }
@@ -251,7 +251,7 @@ export default function SignUpPage() {
                 htmlFor="signup-phone"
                 className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
               >
-                Phone / WhatsApp Number
+                Phone / WhatsApp Number *
               </label>
               <div className="relative">
                 <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />

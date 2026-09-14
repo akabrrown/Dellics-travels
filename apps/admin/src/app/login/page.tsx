@@ -105,7 +105,7 @@ export default function AdminLogin() {
         <form onSubmit={handleSignIn} className="space-y-4">
           <div>
             <label className="block text-xs font-bold uppercase text-slate-400 mb-1.5">
-              Admin Email Address
+              Admin Email Address *
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-500" />
@@ -122,7 +122,7 @@ export default function AdminLogin() {
 
           <div>
             <label className="block text-xs font-bold uppercase text-slate-400 mb-1.5">
-              Password
+              Password *
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-500" />
@@ -147,7 +147,7 @@ export default function AdminLogin() {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold uppercase text-slate-400">
-                2FA Authenticator Code
+                2FA Authenticator Code *
               </label>
               <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                 <ShieldCheck className="size-3" />
