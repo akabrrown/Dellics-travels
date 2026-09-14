@@ -26,7 +26,14 @@ export class PrismaService
   }
 
   async onModuleInit() {
-    await this.$connect();
+    try {
+      await this.$connect();
+    } catch (err) {
+      console.warn(
+        '[PrismaService] Deferred database connection warning during onModuleInit:',
+        err instanceof Error ? err.message : err,
+      );
+    }
   }
 
   async onModuleDestroy() {
