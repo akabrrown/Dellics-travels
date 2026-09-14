@@ -13,7 +13,9 @@ import {
   Eye,
   EyeOff,
   ShieldAlert,
+  UserCheck,
 } from "lucide-react";
+import { loginAdminAccount } from "@/lib/auth";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -24,34 +26,50 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid administrative email address.");
+      return;
+    }
     if (!totp || totp.length < 6) {
       setError("Please enter your 6-digit TOTP authenticator code.");
       return;
     }
+
     setError("");
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const res = await loginAdminAccount(email, password, totp);
+      if (!res.success) {
+        setError(res.error || "Authentication failed. Check your credentials.");
+        setLoading(false);
+        return;
+      }
+
+      setTimeout(() => {
+        router.push("/");
+      }, 400);
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred during login.");
       setLoading(false);
-      router.push("/");
-    }, 600);
+    }
   };
 
-  const handleAutofill = () => {
-    setEmail("ops@dellicstravels.com");
+  const handleSelectAccount = (accountEmail: string) => {
+    setEmail(accountEmail);
     setPassword("AdminSec#2026!");
     setTotp("849201");
+    setError("");
   };
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden">
-      {/* Background Gradients */}
       <div className="absolute -left-40 -top-40 size-96 rounded-full bg-[#0A0060]/50 blur-3xl" />
-      <div className="absolute -right-40 -bottom-40 size-96 rounded-full bg-brand-orange/20 blur-3xl" />
+      <div className="absolute -right-40 -bottom-40 size-96 rounded-full bg-[#F4740D]/20 blur-3xl" />
 
       <div className="w-full max-w-md p-8 bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl space-y-6 relative z-10">
-        {/* Brand Header */}
         <div className="flex flex-col items-center text-center">
           <div className="relative h-16 w-24 flex items-center justify-center mb-4">
             <Image
@@ -70,11 +88,10 @@ export default function AdminLogin() {
           </p>
         </div>
 
-        {/* Security Notice: No Sign-Up */}
         <div className="p-3 bg-slate-800/80 border border-slate-700/70 rounded-2xl text-[11px] text-slate-300 flex items-start gap-2.5">
           <ShieldAlert className="size-4 text-[#F4740D] shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <strong>Restricted Access:</strong> Public sign up is disabled. Administrative accounts are provisioned exclusively by Infrastructure Engineering.
+            <strong>Restricted Access:</strong> Protected by Enterprise Role-Based Access Control (RBAC). Log in with your authorized operations credentials.
           </p>
         </div>
 
@@ -159,25 +176,67 @@ export default function AdminLogin() {
             <span>{loading ? "Authenticating Session…" : "Enter Operations Portal"}</span>
             <ArrowRight className="size-4" />
           </button>
+        </form>
 
-          <div className="flex items-center justify-between pt-2">
+        <div className="pt-2 border-t border-slate-800">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+            <UserCheck className="size-3 text-[#F4740D]" />
+            <span>Select Staff Role Profile:</span>
+          </p>
+          <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"
-              onClick={handleAutofill}
-              className="text-xs text-[#F4740D] hover:underline flex items-center gap-1 font-semibold"
+              onClick={() => handleSelectAccount("ops@dellicstravels.com")}
+              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
+                email === "ops@dellicstravels.com"
+                  ? "bg-purple-950/40 border-purple-600 text-purple-200"
+                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
+              )}
             >
-              <KeyRound className="size-3" />
-              Autofill Credentials
+              <span className="font-bold block text-white">Master Admin</span>
+              <span className="text-[10px] text-slate-400">Full System Access</span>
             </button>
+
             <button
               type="button"
-              onClick={() => alert("Security notification dispatched to Infrastructure Lead.")}
-              className="text-xs text-slate-400 hover:text-white hover:underline"
+              onClick={() => handleSelectAccount("akosua.m@dellicstravels.com")}
+              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
+                email === "akosua.m@dellicstravels.com"
+                  ? "bg-blue-950/40 border-blue-600 text-blue-200"
+                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
+              )}
             >
-              Reset 2FA Token
+              <span className="font-bold block text-white">Supervisor</span>
+              <span className="text-[10px] text-slate-400">Content & Bookings</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectAccount("emmanuel.t@dellicstravels.com")}
+              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
+                email === "emmanuel.t@dellicstravels.com"
+                  ? "bg-emerald-950/40 border-emerald-600 text-emerald-200"
+                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
+              )}
+            >
+              <span className="font-bold block text-white">Customer Service</span>
+              <span className="text-[10px] text-slate-400">Support & eSIMs</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectAccount("abena.f@dellicstravels.com")}
+              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
+                email === "abena.f@dellicstravels.com"
+                  ? "bg-amber-950/40 border-amber-600 text-amber-200"
+                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
+              )}
+            >
+              <span className="font-bold block text-white">Finance Team</span>
+              <span className="text-[10px] text-slate-400">Ledger & Refunds</span>
             </button>
           </div>
-        </form>
+        </div>
       </div>
 
       <p className="text-[11px] text-slate-500 mt-6 text-center">

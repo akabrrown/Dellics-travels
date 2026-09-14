@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/role-guard";
 "use client";
 
 import React, { useState } from "react";
@@ -11,6 +12,7 @@ export default function AuditLog() {
   const [actionFilter, setActionFilter] = useState("ALL");
 
   return (
+    <RoleGuard permission="audit.view" moduleName="Audit Log">
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -116,5 +118,6 @@ export default function AuditLog() {
         </table>
       </div>
     </div>
+    </RoleGuard>
   );
 }

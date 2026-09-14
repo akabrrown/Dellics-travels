@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/role-guard";
 "use client";
 
 import React, { useState } from "react";
@@ -18,6 +19,7 @@ export default function MembershipConfig() {
   };
 
   return (
+    <RoleGuard permission="membership.manage" moduleName="Membership & Voyager Club">
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -314,5 +316,6 @@ export default function MembershipConfig() {
         </div>
       </div>
     </div>
+    </RoleGuard>
   );
 }

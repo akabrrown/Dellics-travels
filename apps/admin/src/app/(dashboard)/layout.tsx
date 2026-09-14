@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -24,9 +24,11 @@ import {
   Bell,
   LogOut,
   Target,
+  Lock,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { useRole, AdminRole } from "@/lib/roles";
+import { isAuthenticated, getAdminSession, clearAdminSession, AdminUserSession } from "@/lib/auth";
 import { BackendStatusBanner } from "@/components/backend-status-banner";
 
 interface SidebarCounts {
@@ -37,7 +39,10 @@ interface SidebarCounts {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const pathname = usePathname();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [session, setSession] = useState<AdminUserSession | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [counts, setCounts] = useState<SidebarCounts>({
     heldBookings: 0,
@@ -46,7 +51,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     activeEsims: 0,
   });
 
+  const { activeRole, allRoles, switchRole, checkPermission } = useRole();
+
+  // 1. Enforce Authentication Gate
   useEffect(() => {
+    const checkAuth = () => {
+      if (!isAuthenticated()) {
+        router.push("/login");
+        return;
+      }
+      setSession(getAdminSession());
+      setAuthChecked(true);
+    };
+
+    checkAuth();
+    window.addEventListener("dellics_auth_changed", checkAuth);
+    return () => {
+      window.removeEventListener("dellics_auth_changed", checkAuth);
+    };
+  }, [router, pathname]);
+
+  // 2. Fetch Live Sidebar Operational Metrics
+  useEffect(() => {
+    if (!authChecked) return;
+
     const fetchSidebarMetrics = async () => {
       try {
         const [overviewRes, refundsRes, inquiriesRes, esimRes] = await Promise.allSettled([
@@ -67,8 +95,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           openInquiries: inquiries,
           activeEsims: esims,
         });
-      } catch (err) {
-        // Silently preserve clean states
+      } catch {
+        // Silently preserve clean fallback states
       }
     };
 
@@ -81,14 +109,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => {
       window.removeEventListener("dellics:refresh-data", handleRefresh);
     };
-  }, [pathname]);
+  }, [pathname, authChecked]);
+
+  const handleSignOut = () => {
+    clearAdminSession();
+    router.push("/login");
+  };
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
-
-  const { activeRole, allRoles, switchRole, checkPermission } = useRole();
 
   const navGroups = [
     {
@@ -170,13 +201,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     },
   ];
 
-  // Filter navigation groups based on active role permissions
+  // Filter navigation groups based strictly on active role permissions
   const filteredNavGroups = navGroups
     .map((group) => ({
       ...group,
       items: group.items.filter((item) => checkPermission(item.permission)),
     }))
     .filter((group) => group.items.length > 0);
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white space-y-4">
+        <div className="size-12 rounded-full border-2 border-[#F4740D] border-t-transparent animate-spin" />
+        <p className="text-xs font-semibold text-slate-400">Verifying authorized security session...</p>
+      </div>
+    );
+  }
+
+  const isMasterAdmin = activeRole.id === "master_admin";
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
@@ -195,9 +237,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div>
               <span className="font-display font-bold text-base tracking-tight text-white block leading-tight group-hover:text-brand-orange transition-colors">
-                Dellics <span className="text-brand-orange">Travels</span>
+                Dellics <span className="text-[#F4740D]">Travels</span>
               </span>
-              <span className="text-[10px] font-semibold text-brand-orange block uppercase tracking-widest">
+              <span className="text-[10px] font-semibold text-[#F4740D] block uppercase tracking-widest">
                 Ops Control Center
               </span>
             </div>
@@ -249,46 +291,48 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        {/* Admin Role Identity Strip & Live Role Switcher */}
+        {/* Admin Role Identity Strip & Profile */}
         <div className="p-3.5 border-t border-white/10 bg-black/25 flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="size-8 rounded-full bg-[#F4740D] flex items-center justify-center font-bold text-xs text-white shadow-xs shrink-0">
-                {activeRole.title.charAt(0)}
+                {session?.name ? session.name.charAt(0) : activeRole.title.charAt(0)}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white truncate">{activeRole.title}</p>
-                <p className="text-[10px] text-slate-300 truncate">
-                  {activeRole.isCustom ? "Custom Role" : "System Role"}
+                <p className="text-xs font-bold text-white truncate">{session?.name || "Ops User"}</p>
+                <p className="text-[10px] text-slate-300 truncate font-mono">
+                  {activeRole.title}
                 </p>
               </div>
             </div>
-            <Link
-              href="/login"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-              title="Log Out"
+            <button
+              onClick={handleSignOut}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors"
+              title="Sign Out"
             >
               <LogOut className="size-3.5" />
-            </Link>
+            </button>
           </div>
 
-          {/* Quick Role Switcher Selector */}
-          <div className="pt-1">
-            <label className="text-[9px] uppercase font-bold text-slate-400 block mb-1">
-              Active Role Simulator:
-            </label>
-            <select
-              value={activeRole.id}
-              onChange={(e) => switchRole(e.target.value)}
-              className="w-full bg-white/10 text-white border border-white/20 rounded-lg px-2 py-1.5 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-brand-orange"
-            >
-              {allRoles.map((r: AdminRole) => (
-                <option key={r.id} value={r.id} className="bg-slate-900 text-white">
-                  {r.title} {r.isCustom ? "(Custom)" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Role Switcher (Visible exclusively for Master Admin testing) */}
+          {isMasterAdmin && (
+            <div className="pt-1">
+              <label className="text-[9px] uppercase font-bold text-slate-400 block mb-1">
+                Role View Simulator (Master Only):
+              </label>
+              <select
+                value={activeRole.id}
+                onChange={(e) => switchRole(e.target.value)}
+                className="w-full bg-white/10 text-white border border-white/20 rounded-lg px-2 py-1 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-brand-orange"
+              >
+                {allRoles.map((r: AdminRole) => (
+                  <option key={r.id} value={r.id} className="bg-slate-900 text-white">
+                    {r.title} {r.isCustom ? "(Custom)" : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -308,9 +352,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             />
           </div>
 
-          {/* Quick Actions, Role Badge & Live Gateway Status */}
+          {/* Quick Actions, Role Badge & Gateway Status */}
           <div className="flex items-center gap-3 sm:gap-4">
-            {/* Active Role Indicator Pill */}
             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${activeRole.badgeColor}`}>
               <ShieldCheck className="size-3.5" />
               <span>{activeRole.title}</span>
@@ -321,28 +364,39 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span>Gateways Operational</span>
             </div>
 
-            <Link
-              href="/support"
-              className="p-2 rounded-full text-slate-500 hover:text-[#0A0060] hover:bg-slate-100 transition-colors relative"
-            >
-              <Bell className="size-4" />
-              {counts.openInquiries > 0 && (
-                <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#F4740D]" />
-              )}
-            </Link>
+            {checkPermission("support.view") && (
+              <Link
+                href="/support"
+                className="p-2 rounded-full text-slate-500 hover:text-[#0A0060] hover:bg-slate-100 transition-colors relative"
+              >
+                <Bell className="size-4" />
+                {counts.openInquiries > 0 && (
+                  <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#F4740D]" />
+                )}
+              </Link>
+            )}
 
             <div className="h-6 w-px bg-slate-200" />
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="text-right hidden md:block">
-                <p className="text-xs font-bold text-slate-900">Tema Head Office</p>
-                <p className="text-[10px] text-slate-400 font-mono">Devtraco Comm 25</p>
+                <p className="text-xs font-bold text-slate-900">{session?.name || "Kwabena Osei"}</p>
+                <p className="text-[10px] text-slate-400 font-mono">{session?.email || "ops@dellicstravels.com"}</p>
               </div>
+
+              <button
+                onClick={handleSignOut}
+                className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                title="Sign Out"
+              >
+                <LogOut className="size-3" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </button>
             </div>
           </div>
         </header>
 
-        {/* Backend Connectivity Status Banner (Displays when live API on port 3000 is offline) */}
+        {/* Backend Connectivity Status Banner */}
         <BackendStatusBanner />
 
         {/* Dynamic Page View Body */}

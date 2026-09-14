@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/role-guard";
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -93,6 +94,7 @@ export default function SupplierHealth() {
   };
 
   return (
+    <RoleGuard permission="health.view" moduleName="Supplier Health">
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -200,5 +202,6 @@ export default function SupplierHealth() {
         ))}
       </div>
     </div>
+    </RoleGuard>
   );
 }

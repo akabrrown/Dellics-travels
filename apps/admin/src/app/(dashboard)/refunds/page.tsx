@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/role-guard";
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -66,6 +67,7 @@ export default function RefundQueue() {
   });
 
   return (
+    <RoleGuard permission="refunds.view" moduleName="Refund Queue">
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -208,5 +210,6 @@ export default function RefundQueue() {
         </div>
       </div>
     </div>
+    </RoleGuard>
   );
 }

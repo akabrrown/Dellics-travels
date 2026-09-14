@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/role-guard";
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -102,6 +103,7 @@ export default function ReviewsModeration() {
   };
 
   return (
+    <RoleGuard permission="reviews.manage" moduleName="Reviews Moderation">
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -243,5 +245,6 @@ export default function ReviewsModeration() {
         ))}
       </div>
     </div>
+    </RoleGuard>
   );
 }

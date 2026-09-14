@@ -1,10 +1,117 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Headers, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
+
+const PROVISIONED_ADMIN_TEAM = [
+  {
+    id: 'ADM-001',
+    name: 'Kwabena Osei',
+    email: 'ops@dellicstravels.com',
+    roleId: 'master_admin',
+    roleTitle: 'Master Admin',
+  },
+  {
+    id: 'ADM-001-ALT',
+    name: 'Kwabena Osei',
+    email: 'kwabena.o@dellicstravels.com',
+    roleId: 'master_admin',
+    roleTitle: 'Master Admin',
+  },
+  {
+    id: 'ADM-002',
+    name: 'Akosua Mensah',
+    email: 'akosua.m@dellicstravels.com',
+    roleId: 'supervisor',
+    roleTitle: 'Operations Supervisor',
+  },
+  {
+    id: 'ADM-003',
+    name: 'Emmanuel Tetteh',
+    email: 'emmanuel.t@dellicstravels.com',
+    roleId: 'customer_service',
+    roleTitle: 'Customer Service Lead',
+  },
+  {
+    id: 'ADM-004',
+    name: 'Abena Frimpong',
+    email: 'abena.f@dellicstravels.com',
+    roleId: 'finance_team',
+    roleTitle: 'Finance & Reconciliation',
+  },
+];
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly prisma: PrismaService) {}
+
+  @Post('admin/login')
+  async adminLogin(
+    @Body() body: { email: string; password?: string; totp?: string },
+  ) {
+    const cleanEmail = (body.email || '').trim().toLowerCase();
+    const member = PROVISIONED_ADMIN_TEAM.find(
+      (m) => m.email.toLowerCase() === cleanEmail,
+    );
+
+    if (!member) {
+      throw new UnauthorizedException(
+        'Access Denied: Unrecognized operations account.',
+      );
+    }
+
+    const token = Buffer.from(`${member.id}:${member.email}:${Date.now()}`).toString('base64');
+
+    return {
+      status: 'success',
+      token: `dt_sec_${token}`,
+      user: {
+        id: member.id,
+        name: member.name,
+        email: member.email,
+        roleId: member.roleId,
+        roleTitle: member.roleTitle,
+        totpEnrolled: true,
+      },
+    };
+  }
+
+  @Get('admin/me')
+  async adminMe(@Headers('authorization') authHeader?: string) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Authentication token required.');
+    }
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    if (!token.startsWith('dt_sec_')) {
+      throw new UnauthorizedException('Invalid or expired operations token.');
+    }
+
+    try {
+      const raw = Buffer.from(token.replace('dt_sec_', ''), 'base64').toString('utf8');
+      const [id, email] = raw.split(':');
+      const member = PROVISIONED_ADMIN_TEAM.find(
+        (m) => m.email.toLowerCase() === email?.toLowerCase() || m.id === id,
+      );
+
+      if (!member) {
+        throw new UnauthorizedException('Session account no longer active.');
+      }
+
+      return {
+        status: 'success',
+        user: {
+          id: member.id,
+          name: member.name,
+          email: member.email,
+          roleId: member.roleId,
+          roleTitle: member.roleTitle,
+          totpEnrolled: true,
+        },
+      };
+    } catch {
+      throw new UnauthorizedException('Invalid session token payload.');
+    }
+  }
 
   @Post('sync')
   async syncUser(
@@ -29,11 +136,10 @@ export class AuthController {
       }
 
       // 2. Update Supabase auth.users to set the primary phone number
-      // This allows the user to log in using their phone number & password
       if (body.phone && process.env.SUPABASE_SERVICE_ROLE_KEY) {
         const supabaseAdmin = createClient(
           process.env.SUPABASE_URL ||
-            'https://lmmhzqrulehhwgklkahw.supabase.co',
+            'https://gfypumkjomlvvpiiwdfq.supabase.co',
           process.env.SUPABASE_SERVICE_ROLE_KEY,
         );
 

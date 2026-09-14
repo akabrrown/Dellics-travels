@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/role-guard";
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -148,6 +149,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
+    <RoleGuard permission="dashboard.view" moduleName="Executive Dashboard">
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Page Title & Status Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -423,5 +425,6 @@ export default function AdminDashboardPage() {
         </section>
       </div>
     </div>
+    </RoleGuard>
   );
 }
