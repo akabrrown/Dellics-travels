@@ -11,11 +11,6 @@
     "seed": "tsx prisma/seed.ts",
     "clean:users": "tsx prisma/reset-users.ts"
   },
-
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
-
   "dependencies": {
     "@prisma/client": "^6.3.1"
   },
