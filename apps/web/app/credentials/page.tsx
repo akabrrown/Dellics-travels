@@ -14,6 +14,14 @@ export const metadata: Metadata = {
 
 const CREDENTIALS = [
   {
+    badge: "Official Regulatory Body",
+    name: "Ghana Tourism Authority (GTA)",
+    id: "Licensed Travel Operator",
+    logo: "/badges/gta.png",
+    copy: "Officially licensed and regulated by the Ministry of Tourism, Arts and Culture under the Ghana Tourism Authority. 100% compliant with national tourism regulations.",
+    guarantee: "Official state-licensed tour and travel operations.",
+  },
+  {
     badge: "Official Aviation Certification",
     name: "IATA Certified",
     id: "Certified Travel Agency",
@@ -50,7 +58,7 @@ const CREDENTIALS = [
     badge: "GDS Travel Network",
     name: "Travelport",
     id: "Distribution Partner",
-    logo: "/badges/travelport.jpg",
+    logo: "/badges/travel-port.png",
     copy: "Leading distribution system powering direct multi-leg flight ticketing, hotel reservations, and ancillary airline baggage add-ons.",
     guarantee: "Unrestricted access to regional African and transatlantic routes.",
   },
@@ -58,7 +66,7 @@ const CREDENTIALS = [
     badge: "Experiences Platform",
     name: "Viator Travel Agents",
     id: "Official Partner",
-    logo: "/badges/viator.png",
+    logo: "/badges/viator-travel-agents.png",
     copy: "World leader in curated destination excursions, museum fast-track tickets, and private guided excursions in over 2,500 cities.",
     guarantee: "Pre-screened English-speaking local tour guides.",
   },
@@ -66,7 +74,7 @@ const CREDENTIALS = [
     badge: "Group Tour Management",
     name: "WeTravel",
     id: "Group Logistics",
-    logo: "/badges/wetravel.png",
+    logo: "/badges/we-travel.png",
     copy: "Specialized group retreat logistics and payment management platform for family delegations and corporate retreats.",
     guarantee: "Flexible split payments for group tour members.",
   },

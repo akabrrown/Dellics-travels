@@ -178,7 +178,8 @@ export function AccreditationsModal({
                       alt={badge.alt}
                       width={100}
                       height={48}
-                      className="max-h-12 max-w-full object-contain"
+                      className="max-h-12 max-w-full object-contain h-auto w-auto"
+                      style={{ width: "auto", height: "auto" }}
                     />
                   </div>
                   <div className="min-w-0 flex-1">

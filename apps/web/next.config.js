@@ -5,6 +5,9 @@ const nextConfig = {
     minimumCacheTTL: 31536000,
     dangerouslyAllowSVG: true,
     remotePatterns: [
+      { protocol: "https", hostname: "flagcdn.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "**.ratehawk.com" },
       { protocol: "https", hostname: "cdn.worldota.net" },
       { protocol: "https", hostname: "**.worldota.net" },

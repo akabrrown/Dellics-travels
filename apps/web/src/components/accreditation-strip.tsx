@@ -47,6 +47,7 @@ export function AccreditationStrip() {
                   width={120}
                   height={48}
                   className="h-8 w-auto object-contain filter grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                  style={{ width: "auto", height: "auto" }}
                 />
               </button>
             ))}
