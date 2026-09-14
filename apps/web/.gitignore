@@ -1,38 +1,71 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ==============================================================================
+# SECURITY & SECRETS PROTECTION (STRICT)
+# ==============================================================================
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
+# Ignore all environment & secret files across all extensions/prefixes
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!.env.*.example
 
-# testing
-/coverage
-/playwright-report
-/test-results
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
+# Secret keys, certs, tokens & service accounts
 *.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.keystore
+id_rsa*
+id_ed25519*
+service-account*.json
+credentials*.json
+token*.json
+*secret*
+!*secret*.ts
+!*secret*.js
+!*secret*.md
 
-# debug
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build Outputs & Bundles
+.next/
+out/
+build/
+dist/
+.expo/
+.expo-shared/
+*.tsbuildinfo
+
+# Turbo & Monorepo Caches
+.turbo/
+
+# Logs & Diagnostics
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-.env*
-!.env.example
+# Testing & Coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# OS & Temp Files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+*~
+supabase/.temp/
+Api integrations.txt
+Dellics-travels-main/
