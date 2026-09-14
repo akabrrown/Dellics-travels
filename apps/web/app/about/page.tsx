@@ -36,13 +36,6 @@ const DRIVERS = [
   },
 ];
 
-const STATS = [
-  { value: "5,000+", label: "Delighted Travelers", sub: "" },
-  { value: "100+", label: "Destinations", sub: "" },
-  { value: "99.4%", label: "Visa Success", sub: "Consular Advisory" },
-  { value: "24/7", label: "Live Concierge", sub: "Round-the-Clock Assistance" },
-];
-
 export default function AboutPage() {
   return (
     <>
@@ -151,29 +144,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Stats Counter Strip */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
-          {STATS.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-3xl bg-white p-6 border border-slate-200/80 shadow-sm"
-            >
-              <p className="font-display text-4xl sm:text-5xl font-extrabold text-brand-orange">
-                {stat.value}
-              </p>
-              <p className="mt-2 text-sm font-bold text-navy">
-                {stat.label}
-              </p>
-              <p className="text-xs text-slate-500">
-                {stat.sub}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Accreditation Strip */}
+            {/* Accreditation Strip */}
       <section className="bg-slate-50 py-16 border-y border-slate-200/70">
         <AccreditationStrip />
       </section>

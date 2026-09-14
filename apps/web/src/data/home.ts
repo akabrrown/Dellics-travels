@@ -88,13 +88,6 @@ export const FLIGHT_HERO_SLIDES: HeroSlide[] = [
   },
 ];
 
-export const HOME_STATS = [
-  { value: "5,000+", label: "Delighted Travelers", description: "" },
-  { value: "100+", label: "Global Destinations", description: "" },
-  { value: "99.4%", label: "Visa Approval Rate", description: "Expert Document Prep" },
-  { value: "24/7", label: "VIP Travel Concierge", description: "Dedicated Client Support" },
-];
-
 export interface Testimonial {
   name: string;
   role: string;
