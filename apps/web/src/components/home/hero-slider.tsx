@@ -119,7 +119,7 @@ export function HeroSlider({
     <section
       ref={containerRef}
       className={cn(
-        "relative min-h-[460px] sm:min-h-[500px] lg:min-h-[540px] w-full overflow-hidden bg-navy-dark flex items-center justify-center",
+        "relative min-h-[520px] sm:min-h-[540px] lg:min-h-[580px] w-full overflow-hidden bg-navy-dark flex items-center justify-center",
         className
       )}
       aria-label="Featured Travel Experiences"
@@ -181,7 +181,7 @@ export function HeroSlider({
       })}
 
       {/* Hero Content Layer */}
-      <div className="relative z-20 w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col items-center justify-center">
+      <div className="relative z-20 w-full mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col items-center justify-center">
         {/* Optional Breadcrumbs */}
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav

@@ -37,12 +37,12 @@ export function PassengerSelector({ value, onChange }: PassengerSelectorProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-9 px-3 rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 flex items-center gap-1.5">
+        <Button variant="outline" className="h-9 w-full sm:w-auto px-3 rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 flex items-center justify-between sm:justify-start gap-1.5 truncate">
           <Users className="size-3.5 text-slate-500" aria-hidden />
           <span>{formatPassengers(value)}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72" align="start">
+      <PopoverContent className="w-[calc(100vw-2rem)] max-w-xs sm:w-72" align="start">
         {GROUPS.map((group) => (
           <div key={group.key} className="flex items-center justify-between py-2">
             <div>

@@ -136,14 +136,14 @@ export function QuickBook() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl rounded-3xl bg-white/85 backdrop-blur-xl p-3.5 sm:p-4.5 shadow-2xl border border-white/60 ring-1 ring-black/5">
+    <div className="mx-auto w-full max-w-5xl rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-xl p-2.5 sm:p-4.5 shadow-2xl border border-white/60 ring-1 ring-black/5 overflow-hidden">
       <Tabs defaultValue="flights" className="w-full">
         {/* Compact Navigation Tabs Bar */}
-        <div className="flex justify-start border-b border-white/40 pb-2.5 mb-3.5 overflow-x-auto no-scrollbar scroll-smooth">
-          <TabsList className="bg-white/60 backdrop-blur-md p-1.5 rounded-2xl flex gap-1.5 h-auto min-w-max border border-white/50 shadow-2xs">
+        <div className="flex justify-start border-b border-white/40 pb-2 mb-3 overflow-x-auto no-scrollbar scroll-smooth -mx-1 px-1 sm:mx-0 sm:px-0">
+          <TabsList className="bg-white/70 backdrop-blur-md p-1 sm:p-1.5 rounded-xl sm:rounded-2xl flex gap-1 sm:gap-1.5 h-auto min-w-max border border-white/50 shadow-2xs">
             <TabsTrigger
               value="flights"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Plane className="size-4" />
               <span>Flights</span>
@@ -151,7 +151,7 @@ export function QuickBook() {
 
             <TabsTrigger
               value="hotels"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Building2 className="size-4" />
               <span>Hotels</span>
@@ -159,7 +159,7 @@ export function QuickBook() {
 
             <TabsTrigger
               value="transfers"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Car className="size-4" />
               <span>Transfers</span>
@@ -167,7 +167,7 @@ export function QuickBook() {
 
             <TabsTrigger
               value="cars"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Key className="size-4" />
               <span>Cars</span>
@@ -175,7 +175,7 @@ export function QuickBook() {
 
             <TabsTrigger
               value="tours"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Compass className="size-4" />
               <span>Tours</span>
@@ -183,7 +183,7 @@ export function QuickBook() {
 
             <TabsTrigger
               value="packages"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Globe2 className="size-4" />
               <span>Diaspora Packages</span>
@@ -191,7 +191,7 @@ export function QuickBook() {
 
             <TabsTrigger
               value="esim"
-              className="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
+              className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
             >
               <Wifi className="size-4" />
               <span>eSIM</span>

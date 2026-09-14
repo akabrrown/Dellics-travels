@@ -196,7 +196,7 @@ export function FlightSearchWidget() {
                 type="date"
                 value={departDate}
                 onChange={(e) => setDepartDate(e.target.value)}
-                className="h-10 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 shadow-2xs"
+                className="h-10 w-full min-w-0 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 shadow-2xs"
               />
           </div>
 

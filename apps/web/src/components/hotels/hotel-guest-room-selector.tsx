@@ -73,21 +73,22 @@ export function HotelGuestRoomSelector({
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex flex-wrap sm:flex-nowrap items-center gap-2 w-full ${className}`}>
+
       {/* 1. Guests Popover Pill (matches image: rounded capsule with Users icon) */}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             type="button"
             variant="outline"
-            className="h-9 px-3.5 rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 transition-all"
+            className="h-10 sm:h-9 flex-1 min-w-[130px] px-3 rounded-xl sm:rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 flex items-center justify-between gap-1.5 transition-all truncate"
           >
             <Users className="size-3.5 text-slate-500 shrink-0" />
             <span className="font-medium text-slate-800">{formatGuestsLabel()}</span>
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-80 p-4 rounded-2xl shadow-xl border-slate-200/90" align="start">
+        <PopoverContent className="w-[calc(100vw-2rem)] max-w-xs sm:w-80 p-4 rounded-2xl shadow-xl border-slate-200/90" align="start">
           <div className="space-y-4">
             <div className="border-b border-slate-100 pb-2.5">
               <h4 className="font-display text-sm font-bold text-navy">
@@ -214,7 +215,7 @@ export function HotelGuestRoomSelector({
           value={value.roomType || "Standard"}
           onValueChange={(val) => setRoomType(val)}
         >
-          <SelectTrigger className="h-9 px-3.5 rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-1.5 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="h-10 sm:h-9 flex-1 min-w-[110px] px-3 rounded-xl sm:rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-1.5 focus:ring-0 focus:ring-offset-0 truncate">
             <SelectValue placeholder="Economy" />
           </SelectTrigger>
           <SelectContent className="rounded-2xl border-slate-200/90 shadow-xl">
