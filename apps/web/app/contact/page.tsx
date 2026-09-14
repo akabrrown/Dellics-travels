@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     "Contact Dellics Travels in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
 };
 
-const LAT = "5.735064171561026";
-const LNG = "0.03743136338228435";
+const LAT = "5.734937466165215";
+const LNG = "0.036954806207670395";
 const GOOGLE_MAPS_EMBED_URL = `https://maps.google.com/maps?q=${LAT},${LNG}&hl=en&z=16&output=embed`;
 const GOOGLE_MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${LAT},${LNG}`;
 const APPLE_MAPS_URL = `https://maps.apple.com/?ll=${LAT},${LNG}&q=Dellics+Travels+Ghana+HQ`;
