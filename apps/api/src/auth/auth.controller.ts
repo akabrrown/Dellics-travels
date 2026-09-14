@@ -1,3 +1,4 @@
+import { AuthTokenService } from './auth-token.service';
 import { Controller, Post, Get, Body, Headers, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
@@ -42,7 +43,7 @@ const PROVISIONED_ADMIN_TEAM = [
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly tokenService: AuthTokenService) {}
 
   @Post('admin/login')
   async adminLogin(
@@ -59,11 +60,15 @@ export class AuthController {
       );
     }
 
-    const token = Buffer.from(`${member.id}:${member.email}:${Date.now()}`).toString('base64');
+    const token = this.tokenService.generateAdminToken({
+      id: member.id,
+      email: member.email,
+      roleId: member.roleId,
+    });
 
     return {
       status: 'success',
-      token: `dt_sec_${token}`,
+      token,
       user: {
         id: member.id,
         name: member.name,
@@ -82,20 +87,20 @@ export class AuthController {
     }
 
     const token = authHeader.replace('Bearer ', '').trim();
-    if (!token.startsWith('dt_sec_')) {
+    const payload = this.tokenService.verifyAdminToken(token);
+    if (!payload) {
       throw new UnauthorizedException('Invalid or expired operations token.');
     }
 
-    try {
-      const raw = Buffer.from(token.replace('dt_sec_', ''), 'base64').toString('utf8');
-      const [id, email] = raw.split(':');
-      const member = PROVISIONED_ADMIN_TEAM.find(
-        (m) => m.email.toLowerCase() === email?.toLowerCase() || m.id === id,
-      );
+    const member = PROVISIONED_ADMIN_TEAM.find(
+      (m) =>
+        m.id === payload.id ||
+        m.email.toLowerCase() === payload.email.toLowerCase(),
+    );
 
-      if (!member) {
-        throw new UnauthorizedException('Session account no longer active.');
-      }
+    if (!member) {
+      throw new UnauthorizedException('Session account no longer active.');
+    }
 
       return {
         status: 'success',

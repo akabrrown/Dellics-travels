@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateResetToken } from "@/lib/password";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { getClientIp, rateLimiters } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createClient } from "@supabase/supabase-js";
 import { hashPassword } from "@/lib/password";
+import { getClientIp, rateLimiters } from "@/lib/rate-limit";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||

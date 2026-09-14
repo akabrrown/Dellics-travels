@@ -511,6 +511,16 @@ export class RolesService {
   /**
    * Reassign a team member's role
    */
+  /**
+   * Server-side authorization check: verify if roleId has permissionKey
+   */
+  hasPermission(roleId: string, permissionKey: string): boolean {
+    if (roleId === 'master_admin') return true;
+    const role = this.roles.find((r) => r.id === roleId);
+    if (!role) return false;
+    return !!role.permissions[permissionKey];
+  }
+
   updateMemberRole(memberId: string, roleId: string): AdminTeamMember {
     const member = this.teamMembers.find((m) => m.id === memberId);
     if (!member) {

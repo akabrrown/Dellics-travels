@@ -7,15 +7,21 @@ import {
   Patch,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto, InviteTeamMemberDto } from './roles.types';
+import { AdminAuthGuard } from '../auth/guards/admin-auth.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 
 @Controller('roles')
+@UseGuards(AdminAuthGuard, PermissionsGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Get('permissions')
+  @RequirePermissions('dashboard.view')
   getPermissions() {
     return {
       status: 'success',
@@ -24,6 +30,7 @@ export class RolesController {
   }
 
   @Get()
+  @RequirePermissions('team.view')
   getRoles() {
     return {
       status: 'success',
@@ -32,6 +39,7 @@ export class RolesController {
   }
 
   @Get('team/members')
+  @RequirePermissions('team.view')
   getTeamMembers() {
     return {
       status: 'success',
@@ -40,6 +48,7 @@ export class RolesController {
   }
 
   @Post('team/invite')
+  @RequirePermissions('team.manage_roles')
   inviteTeamMember(@Body() dto: InviteTeamMemberDto) {
     return {
       status: 'success',
@@ -48,6 +57,7 @@ export class RolesController {
   }
 
   @Patch('team/:id/role')
+  @RequirePermissions('team.manage_roles')
   updateMemberRole(@Param('id') id: string, @Body('roleId') roleId: string) {
     return {
       status: 'success',
@@ -56,6 +66,7 @@ export class RolesController {
   }
 
   @Get(':id')
+  @RequirePermissions('team.view')
   getRoleById(@Param('id') id: string) {
     return {
       status: 'success',
@@ -63,7 +74,8 @@ export class RolesController {
     };
   }
 
-  @Post()
+  @Post('custom')
+  @RequirePermissions('team.custom_roles')
   createCustomRole(@Body() dto: CreateRoleDto) {
     return {
       status: 'success',
@@ -72,6 +84,7 @@ export class RolesController {
   }
 
   @Put(':id')
+  @RequirePermissions('team.custom_roles')
   updateRole(@Param('id') id: string, @Body() dto: Partial<CreateRoleDto>) {
     return {
       status: 'success',
@@ -80,7 +93,12 @@ export class RolesController {
   }
 
   @Delete(':id')
-  deleteCustomRole(@Param('id') id: string) {
-    return this.rolesService.deleteCustomRole(id);
+  @RequirePermissions('team.custom_roles')
+  deleteRole(@Param('id') id: string) {
+    this.rolesService.deleteRole(id);
+    return {
+      status: 'success',
+      message: `Role '${id}' deleted successfully.`,
+    };
   }
 }
