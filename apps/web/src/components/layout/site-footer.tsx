@@ -16,6 +16,7 @@ import {
   Palmtree,
   Smartphone,
   Layers,
+  HelpCircle,
   ShieldCheck,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
@@ -28,6 +29,7 @@ const OTA_CATEGORY_STRIP = [
   { label: "Packages/Diaspora Tours", href: "/diaspora", icon: Palmtree },
   { label: "eSIM", href: "/esim", icon: Smartphone },
   { label: "Services", href: "/services", icon: Layers },
+  { label: "FAQs", href: "/faq", icon: HelpCircle },
 ];
 
 const BOOK_LINKS = [
@@ -45,6 +47,7 @@ const TRAVEL_SERVICES_LINKS = [
   { label: "Travel Insurance", href: "/services#insurance" },
   { label: "Concierge", href: "/services#concierge" },
   { label: "Accreditations & Credentials", href: "/credentials" },
+  { label: "FAQs & Knowledgebase", href: "/faq" },
 ];
 
 const EXPERIENCES_LINKS = [
@@ -66,7 +69,8 @@ const SUPPORT_LINKS = [
     external: true,
   },
   { label: "Contact", href: "/contact" },
-  { label: "Help Centre", href: "/contact" },
+  { label: "Frequently Asked Questions", href: "/faq" },
+  { label: "Help Centre & Contact", href: "/contact" },
 ];
 
 const LEGAL_LINKS = [
