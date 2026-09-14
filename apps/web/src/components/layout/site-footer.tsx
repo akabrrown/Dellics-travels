@@ -17,10 +17,9 @@ import {
   Smartphone,
   Layers,
   ShieldCheck,
-  Award,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
-import { AccreditationsModal, ACCREDITATION_BADGES } from "@/components/accreditations-modal";
+import { AccreditationsModal } from "@/components/accreditations-modal";
 
 const OTA_CATEGORY_STRIP = [
   { label: "Flights", href: "/flights", icon: Plane },
@@ -92,29 +91,6 @@ export function SiteFooter() {
   return (
     <>
       <footer className="bg-navy-dark text-white">
-        {/* Dedicated Accreditations & Partners Showcase Banner Button in Footer */}
-        <div className="border-b border-white/10 bg-navy/60 px-4 sm:px-6 lg:px-8 py-3.5">
-          <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-white/80">
-              <Award className="size-4 text-brand-orange shrink-0" />
-              <span className="font-semibold text-white">
-                Official Certifications:
-              </span>
-              <span className="text-white/70">
-                Ghana Tourism Authority (GTA) · IATA · TOUGHA · Amadeus · RateHawk · Paystack
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAccreditationsOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/20 hover:bg-brand-orange text-brand-orange hover:text-white px-3.5 py-1 text-xs font-bold border border-brand-orange/40 transition-all duration-200 cursor-pointer"
-            >
-              <ShieldCheck className="size-3.5" />
-              <span>Show Partner Logos ({ACCREDITATION_BADGES.length})</span>
-            </button>
-          </div>
-        </div>
-
         {/* OTA Quick Category Strip */}
         <div className="border-b border-white/10 bg-white/[0.03]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
@@ -173,18 +149,6 @@ export function SiteFooter() {
                   We provide Flights, Hotels, Tour &amp; Holiday Packages, eSIM, and
                   Diaspora Tourism services worldwide.
                 </p>
-              </div>
-
-              {/* Dedicated Button for Accreditations in Brand Column */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setAccreditationsOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/90 hover:text-brand-orange transition-all duration-200 cursor-pointer shadow-xs"
-                >
-                  <ShieldCheck className="size-4 text-brand-orange" />
-                  <span>View Official Accreditations &amp; Partner Logos</span>
-                </button>
               </div>
 
               <div className="flex flex-col gap-3 pt-2">
