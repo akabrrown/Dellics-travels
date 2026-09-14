@@ -3,7 +3,6 @@ import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
-import { AccreditationStrip } from "@/components/accreditation-strip";
 import { CtaBanner } from "@/components/cta-banner";
 
 export const metadata: Metadata = {
@@ -158,8 +157,6 @@ export default function CredentialsPage() {
           ))}
         </div>
       </section>
-
-      <AccreditationStrip />
 
       <CtaBanner
         title="Ready to Experience Certified Luxury Travel?"
