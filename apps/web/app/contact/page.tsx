@@ -1,4 +1,5 @@
 import type { Metadata } from "next/types";
+import Link from "next/link";
 import {
   PhoneCall,
   Mail,
@@ -7,10 +8,14 @@ import {
   ShieldCheck,
   CheckCircle2,
   Building2,
+  Navigation,
+  ExternalLink,
+  Compass,
 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { ContactForm } from "@/components/forms/contact-form";
+import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -18,6 +23,12 @@ export const metadata: Metadata = {
   description:
     "Contact Dellics Travels in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
 };
+
+const LAT = "5.735064171561026";
+const LNG = "0.03743136338228435";
+const GOOGLE_MAPS_EMBED_URL = `https://maps.google.com/maps?q=${LAT},${LNG}&hl=en&z=16&output=embed`;
+const GOOGLE_MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${LAT},${LNG}`;
+const APPLE_MAPS_URL = `https://maps.apple.com/?ll=${LAT},${LNG}&q=Dellics+Travels+Ghana+HQ`;
 
 const CONTACT_CHANNELS = [
   {
@@ -48,8 +59,8 @@ const CONTACT_CHANNELS = [
     icon: MapPin,
     title: "Ghana Office (HQ)",
     value: "Community 25, Devtraco Estate Tema",
-    href: "#ghana-office",
-    action: "Greater Accra, Ghana",
+    href: "#live-map",
+    action: "View On Live Map",
     primary: false,
   },
   {
@@ -117,7 +128,7 @@ export default function ContactPage() {
       </section>
 
       {/* Form & Operating Hours Container */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
         <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
           {/* Form Container */}
           <div className="rounded-3xl bg-white border border-slate-200/80 p-8 sm:p-10 shadow-sm">
@@ -203,7 +214,6 @@ export default function ContactPage() {
                   <h4 className="font-display text-sm font-bold text-emerald-950">
                     Prompt Response Guarantee
                   </h4>
-
                   <p className="text-xs text-emerald-800 mt-0.5">
                     Our certified travel desk reviews and confirms your flight and vacation inquiries within hours.
                   </p>
@@ -211,6 +221,81 @@ export default function ContactPage() {
               </div>
             </div>
           </aside>
+        </div>
+      </section>
+
+      {/* Live Interactive Location Map Section */}
+      <section id="live-map" className="bg-slate-50 border-t border-slate-200/80 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <SectionHeading
+              align="left"
+              eyebrow="Interactive Location Map"
+              title="Visit Our Ghana Corporate Headquarters"
+              subtitle="Located at Devtraco Estate, Community 25, Tema, Greater Accra. Drop in for in-person consultations, corporate ticketing, and bespoke tour planning."
+            />
+
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <Button asChild className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs shadow-md">
+                <a
+                  href={GOOGLE_MAPS_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Navigation className="size-3.5" />
+                  <span>Get Driving Directions</span>
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="rounded-full border-slate-300 text-xs font-semibold">
+                <a
+                  href={APPLE_MAPS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
+                >
+                  <Compass className="size-3.5 text-navy" />
+                  <span>Apple Maps</span>
+                  <ExternalLink className="size-3 text-slate-400" />
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          {/* Interactive Map Frame Card */}
+          <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200/90 shadow-xl">
+            {/* Top Info Floating Strip */}
+            <div className="bg-navy-dark text-white px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-brand-orange text-white">
+                  <MapPin className="size-4" />
+                </div>
+                <div>
+                  <p className="font-bold text-white">Dellics Travels Corporate HQ</p>
+                  <p className="text-white/70">Community 25, Devtraco Estate, Tema, Greater Accra, Ghana</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-white/60 font-mono text-[11px]">
+                <span>Coordinates: {LAT}, {LNG}</span>
+                <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" title="Live Office Status" />
+              </div>
+            </div>
+
+            {/* Embedded Live Map IFrame */}
+            <div className="relative h-[420px] sm:h-[480px] lg:h-[520px] w-full bg-slate-100">
+              <iframe
+                title="Dellics Travels Ghana HQ Live Map"
+                src={GOOGLE_MAPS_EMBED_URL}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
         </div>
       </section>
     </>
