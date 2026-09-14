@@ -20,7 +20,6 @@ import {
   Award,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
-import { AccreditationStrip } from "@/components/accreditation-strip";
 import { AccreditationsModal, ACCREDITATION_BADGES } from "@/components/accreditations-modal";
 
 const OTA_CATEGORY_STRIP = [
@@ -93,9 +92,6 @@ export function SiteFooter() {
   return (
     <>
       <footer className="bg-navy-dark text-white">
-        {/* Accreditation Banner */}
-        <AccreditationStrip />
-
         {/* Dedicated Accreditations & Partners Showcase Banner Button in Footer */}
         <div className="border-b border-white/10 bg-navy/60 px-4 sm:px-6 lg:px-8 py-3.5">
           <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3 text-xs">
