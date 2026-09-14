@@ -88,7 +88,7 @@ This document is the single source of truth for building Dellics Travels to a pr
 Scope of this release
 
 
-The MVP defined in Section 6 is scoped to ship as a real, working production app: account creation, flight/hotel/package search and booking, Stripe checkout, trip management, price alerts, eSIM connectivity via Airalo, and a tiered membership system. Advanced supplier integrations (GDS/NDC direct airline contracts, white-label car rental APIs) are flagged as Phase 2/3 and are designed around third-party aggregator APIs (e.g. Duffel, Amadeus, RateHawk) so the MVP can launch without in-house airline contracts.
+The MVP defined in Section 6 is scoped to ship as a real, working production app: account creation, flight/hotel/package search and booking, Stripe checkout, trip management, price alerts, eSIM connectivity via Airalo, and a tiered membership system. Advanced supplier integrations (GDS/NDC direct airline contracts, white-label car rental APIs) are flagged as Phase 2/3 and are designed around third-party aggregator APIs (e.g. FX Flights, Amadeus, RateHawk) so the MVP can launch without in-house airline contracts.
 
 
 
@@ -916,7 +916,7 @@ Map view for hotels and activities with cluster pins and price-per-night overlay
 
 
 
-One-way, round-trip, and multi-city search via aggregator API (Duffel/Amadeus self-service in Phase 1).
+One-way, round-trip, and multi-city search via aggregator API (FX Flights/Amadeus self-service in Phase 1).
 
 Seat class comparison, baggage allowance display, and fare rules shown before checkout.
 
@@ -1680,7 +1680,7 @@ Travel content aggregation
 
 
 
-Duffel API (flights), RateHawk / Amadeus (hotels)
+FX Flights API (flights), RateHawk / Amadeus (hotels)
 
 
 
@@ -2042,7 +2042,7 @@ API Gateway (NestJS) — Auth guard (Supabase JWT) → Domain Modules:
 
    • Search Module → Typesense + cached supplier results (Redis)
 
-   • Booking Module → Duffel (flights) / RateHawk (hotels) → PostgreSQL (order ledger)
+   • Booking Module → FX Flights (flights) / RateHawk (hotels) → PostgreSQL (order ledger)
 
    • Payments Module → Stripe (PaymentIntents, Billing, Webhooks)
 
@@ -2059,7 +2059,7 @@ PostgreSQL (Supabase, RLS-enforced)  +  Upstash Redis (cache/queues)  +  Cloudin
 
 Two-stage reservation pattern for both flights and hotels: SOFT hold on selection (SERIALIZABLE transaction, short TTL) → HARD confirmation only after a Stripe PaymentIntent succeeds, preventing double-booking under concurrent demand.
 
-All supplier calls (Duffel/RateHawk) are wrapped with idempotency keys and retried via BullMQ on transient failure; webhook reconciliation confirms final booking state independent of client connectivity.
+All supplier calls (FX/RateHawk) are wrapped with idempotency keys and retried via BullMQ on transient failure; webhook reconciliation confirms final booking state independent of client connectivity.
 
 The eSIM Module is isolated behind an EsimService interface so Airalo is the only module aware it's calling a third-party SDK — booking, payments, and rewards modules interact with eSIM purchases the same way they interact with any other Booking type.
 
@@ -2655,13 +2655,13 @@ Session issued as a short-lived JWT + refresh token; RLS policies now scope all 
 
 Traveler enters origin/destination/dates (or taps Inspire Me for Everywhere search).
 
-Search Module queries Duffel aggregator API; results cached in Redis for repeat queries within the search session.
+Search Module queries FX aggregator API; results cached in Redis for repeat queries within the search session.
 
 Traveler filters/sorts, selects a fare → Booking Module creates a SOFT hold (30-min TTL) and a Stripe PaymentIntent.
 
 Traveler completes Stripe PaymentSheet (card/Apple Pay/Google Pay).
 
-On payment_intent.succeeded webhook: Booking Module finalizes the reservation with Duffel, Booking status → confirmed.
+On payment_intent.succeeded webhook: Booking Module finalizes the reservation with FX, Booking status → confirmed.
 
 Confirmation push + email sent; booking appears in the traveler's Trip Planner timeline.
 
@@ -2679,7 +2679,7 @@ Packaging engine reprices the combination, applying the bundle discount to a sin
 
 Optionally the traveler adds a Car Rental (Phase 2) or Activity (Phase 2) to the same package before checkout.
 
-A single Stripe PaymentIntent covers the full itemized package; on success, the Booking Module confirms each supplier leg (flight via Duffel, hotel via RateHawk) with independent idempotency keys.
+A single Stripe PaymentIntent covers the full itemized package; on success, the Booking Module confirms each supplier leg (flight via FX, hotel via RateHawk) with independent idempotency keys.
 
 If one supplier leg fails after payment succeeds, the reconciliation job automatically refunds the failed leg's portion and notifies the traveler and Support Agent — the succeeded leg(s) remain booked.
 

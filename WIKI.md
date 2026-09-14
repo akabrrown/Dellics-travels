@@ -34,11 +34,11 @@ All client frontends (Web, Admin, Mobile) communicate through the single central
 ### Core Search & Inventory
 | Method | Endpoint | Description | Supplier / Service |
 |---|---|---|---|
-| `GET` | `/search/flights` | Search flight offers with multi-tier cabin options | Duffel GDS |
+| `GET` | `/search/flights` | Search flight offers with multi-tier cabin options | FX Flights GDS |
 | `GET` | `/search/hotels` | Search hotel inventory, rooms, and rate rules | RateHawk API |
 | `GET` | `/search/packages` | Retrieve curated local and international tour packages | Database CMS |
 | `GET` | `/search/esim` | Query global eSIM data roaming packages | Airalo Partner API |
-| `GET` | `/search/airports` | Live IATA airport and city autocomplete | Travelpayouts / Duffel |
+| `GET` | `/search/airports` | Live IATA airport and city autocomplete | Travelpayouts / FX |
 | `GET` | `/search/rates` | Live real-time currency exchange rates | Open Exchange Rates API |
 
 ### Bookings & Reservations

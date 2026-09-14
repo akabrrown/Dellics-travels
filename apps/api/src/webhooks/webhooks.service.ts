@@ -22,8 +22,13 @@ export class WebhooksService {
       const hashBuf = Buffer.from(hash, 'utf8');
       const sigBuf = Buffer.from(signature, 'utf8');
 
-      if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
-        this.logger.warn('Paystack webhook signature verification failed in WebhooksService');
+      if (
+        hashBuf.length !== sigBuf.length ||
+        !crypto.timingSafeEqual(hashBuf, sigBuf)
+      ) {
+        this.logger.warn(
+          'Paystack webhook signature verification failed in WebhooksService',
+        );
         throw new BadRequestException('Invalid signature');
       }
     }
@@ -53,12 +58,16 @@ export class WebhooksService {
           data: { status: 'CONFIRMED' },
         });
 
-        this.logger.log(`Booking ${payment.booking_id} confirmed via Paystack webhook.`);
+        this.logger.log(
+          `Booking ${payment.booking_id} confirmed via Paystack webhook.`,
+        );
       } else if (bookingId && bookingId !== 'unknown') {
-        await this.prisma.booking.update({
-          where: { id: bookingId },
-          data: { status: 'CONFIRMED' },
-        }).catch(() => null);
+        await this.prisma.booking
+          .update({
+            where: { id: bookingId },
+            data: { status: 'CONFIRMED' },
+          })
+          .catch(() => null);
       }
     }
 

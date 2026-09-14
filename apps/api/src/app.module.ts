@@ -18,6 +18,7 @@ import { RolesModule } from './roles/roles.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CacheModule } from './cache/cache.module';
 import { ZohoModule } from './zoho/zoho.module';
+import { CrmModule } from './crm/crm.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ZohoModule } from './zoho/zoho.module';
     RolesModule,
     ReviewsModule,
     ZohoModule,
+    CrmModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

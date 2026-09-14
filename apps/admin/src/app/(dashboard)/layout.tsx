@@ -23,6 +23,7 @@ import {
   Search,
   Bell,
   LogOut,
+  Target,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { useRole, AdminRole } from "@/lib/roles";
@@ -102,7 +103,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           badge: counts.heldBookings > 0 ? `${counts.heldBookings} held` : undefined,
           badgeColor: "bg-amber-100 text-amber-800",
         },
-        { label: "Travelers", href: "/travelers", icon: Users, permission: "travelers.view" },
+        { label: "Customer CRM", href: "/travelers", icon: Users, permission: "travelers.view" },
+        { label: "Lead Pipeline", href: "/travelers/pipeline", icon: Target, permission: "travelers.view" },
       ],
     },
     {

@@ -37,7 +37,8 @@ export class EsimController {
 
   @Post('admin/webhooks/opt-in')
   async optInWebhooks(@Body() body: { webhookUrl: string }) {
-    const url = body.webhookUrl || 'https://api.dellicstravels.com/webhooks/airalo';
+    const url =
+      body.webhookUrl || 'https://api.dellicstravels.com/webhooks/airalo';
     return this.esimService.optInWebhooks(url);
   }
 

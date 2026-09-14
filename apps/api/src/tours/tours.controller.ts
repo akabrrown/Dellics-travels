@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { TourPackageDto } from './tours.types';
 
@@ -26,7 +35,10 @@ export class ToursController {
   }
 
   @Put(':id')
-  async updateTour(@Param('id') id: string, @Body() dto: Partial<TourPackageDto>) {
+  async updateTour(
+    @Param('id') id: string,
+    @Body() dto: Partial<TourPackageDto>,
+  ) {
     return this.toursService.updateTour(id, dto);
   }
 

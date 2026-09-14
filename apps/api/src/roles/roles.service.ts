@@ -1,58 +1,211 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { AdminRole, AdminTeamMember, CreateRoleDto, InviteTeamMemberDto, PermissionDefinition } from './roles.types';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import {
+  AdminRole,
+  AdminTeamMember,
+  CreateRoleDto,
+  InviteTeamMemberDto,
+  PermissionDefinition,
+} from './roles.types';
 
 export const PERMISSION_CATALOG: PermissionDefinition[] = [
   // Core
-  { key: 'dashboard.view', label: 'View Executive Dashboard', category: 'Core', description: 'Access top-level KPI metrics, revenue charts, and operational summary.' },
-  { key: 'bookings.view', label: 'View Bookings', category: 'Core', description: 'Inspect flight, hotel, tour, and package reservations.' },
-  { key: 'bookings.manage', label: 'Manage & Override Bookings', category: 'Core', description: 'Manually confirm, modify, or cancel reservations.' },
-  { key: 'travelers.view', label: 'View Traveler Profiles', category: 'Core', description: 'Read traveler history, passport numbers, and preferences.' },
-  { key: 'travelers.manage', label: 'Manage Traveler Profiles', category: 'Core', description: 'Edit customer profile data and loyalty status.' },
+  {
+    key: 'dashboard.view',
+    label: 'View Executive Dashboard',
+    category: 'Core',
+    description:
+      'Access top-level KPI metrics, revenue charts, and operational summary.',
+  },
+  {
+    key: 'bookings.view',
+    label: 'View Bookings',
+    category: 'Core',
+    description: 'Inspect flight, hotel, tour, and package reservations.',
+  },
+  {
+    key: 'bookings.manage',
+    label: 'Manage & Override Bookings',
+    category: 'Core',
+    description: 'Manually confirm, modify, or cancel reservations.',
+  },
+  {
+    key: 'travelers.view',
+    label: 'View Traveler Profiles',
+    category: 'Core',
+    description: 'Read traveler history, passport numbers, and preferences.',
+  },
+  {
+    key: 'travelers.manage',
+    label: 'Manage Traveler Profiles',
+    category: 'Core',
+    description: 'Edit customer profile data and loyalty status.',
+  },
 
   // Content & Commerce
-  { key: 'content.view', label: 'View Content & Packages', category: 'Content & Commerce', description: 'Browse curated holiday packages and tour catalog.' },
-  { key: 'content.create', label: 'Create & Design Packages', category: 'Content & Commerce', description: 'Design custom tours, day itineraries, and components.' },
-  { key: 'content.publish', label: 'Publish Packages Live', category: 'Content & Commerce', description: 'Push holiday packages to the public website.' },
-  { key: 'content.delete', label: 'Delete Packages', category: 'Content & Commerce', description: 'Remove tour packages from catalog.' },
-  { key: 'promotions.manage', label: 'Manage Promo Codes', category: 'Content & Commerce', description: 'Create and activate seasonal discount codes.' },
-  { key: 'esims.view', label: 'View eSIM Orders', category: 'Content & Commerce', description: 'Check Airalo eSIM order statuses and ICCIDs.' },
-  { key: 'esims.manage', label: 'Reprovision eSIM Orders', category: 'Content & Commerce', description: 'Manually trigger eSIM profile resends.' },
+  {
+    key: 'content.view',
+    label: 'View Content & Packages',
+    category: 'Content & Commerce',
+    description: 'Browse curated holiday packages and tour catalog.',
+  },
+  {
+    key: 'content.create',
+    label: 'Create & Design Packages',
+    category: 'Content & Commerce',
+    description: 'Design custom tours, day itineraries, and components.',
+  },
+  {
+    key: 'content.publish',
+    label: 'Publish Packages Live',
+    category: 'Content & Commerce',
+    description: 'Push holiday packages to the public website.',
+  },
+  {
+    key: 'content.delete',
+    label: 'Delete Packages',
+    category: 'Content & Commerce',
+    description: 'Remove tour packages from catalog.',
+  },
+  {
+    key: 'promotions.manage',
+    label: 'Manage Promo Codes',
+    category: 'Content & Commerce',
+    description: 'Create and activate seasonal discount codes.',
+  },
+  {
+    key: 'esims.view',
+    label: 'View eSIM Orders',
+    category: 'Content & Commerce',
+    description: 'Check Airalo eSIM order statuses and ICCIDs.',
+  },
+  {
+    key: 'esims.manage',
+    label: 'Reprovision eSIM Orders',
+    category: 'Content & Commerce',
+    description: 'Manually trigger eSIM profile resends.',
+  },
 
   // Operations & Support
-  { key: 'support.view', label: 'View Support Inquiries', category: 'Operations & Support', description: 'Read client inquiries and message threads.' },
-  { key: 'support.reply', label: 'Respond to Inquiries', category: 'Operations & Support', description: 'Send official customer responses and quotes.' },
-  { key: 'reviews.manage', label: 'Moderate Reviews', category: 'Operations & Support', description: 'Approve, feature, or reject client testimonials.' },
+  {
+    key: 'support.view',
+    label: 'View Support Inquiries',
+    category: 'Operations & Support',
+    description: 'Read client inquiries and message threads.',
+  },
+  {
+    key: 'support.reply',
+    label: 'Respond to Inquiries',
+    category: 'Operations & Support',
+    description: 'Send official customer responses and quotes.',
+  },
+  {
+    key: 'reviews.manage',
+    label: 'Moderate Reviews',
+    category: 'Operations & Support',
+    description: 'Approve, feature, or reject client testimonials.',
+  },
 
   // Finance & System
-  { key: 'finance.view', label: 'View Finance & Reconciliation', category: 'Finance & System', description: 'Inspect Paystack transactions, settlement ledger, and gross revenue.' },
-  { key: 'finance.export', label: 'Export Financial Reports', category: 'Finance & System', description: 'Download CSV audit reports and tax statements.' },
-  { key: 'refunds.view', label: 'View Refund Queue', category: 'Finance & System', description: 'Read pending refund requests.' },
-  { key: 'refunds.approve', label: 'Approve Refunds', category: 'Finance & System', description: 'Trigger Paystack merchant refund settlements.' },
-  { key: 'health.view', label: 'View Supplier Health', category: 'Finance & System', description: 'Monitor live latency of GDS, RateHawk, Airalo, and Paystack.' },
-  { key: 'analytics.view', label: 'View Analytics & BI', category: 'Finance & System', description: 'Inspect conversion funnels and cohort metrics.' },
+  {
+    key: 'finance.view',
+    label: 'View Finance & Reconciliation',
+    category: 'Finance & System',
+    description:
+      'Inspect Paystack transactions, settlement ledger, and gross revenue.',
+  },
+  {
+    key: 'finance.export',
+    label: 'Export Financial Reports',
+    category: 'Finance & System',
+    description: 'Download CSV audit reports and tax statements.',
+  },
+  {
+    key: 'refunds.view',
+    label: 'View Refund Queue',
+    category: 'Finance & System',
+    description: 'Read pending refund requests.',
+  },
+  {
+    key: 'refunds.approve',
+    label: 'Approve Refunds',
+    category: 'Finance & System',
+    description: 'Trigger Paystack merchant refund settlements.',
+  },
+  {
+    key: 'health.view',
+    label: 'View Supplier Health',
+    category: 'Finance & System',
+    description: 'Monitor live latency of GDS, RateHawk, Airalo, and Paystack.',
+  },
+  {
+    key: 'analytics.view',
+    label: 'View Analytics & BI',
+    category: 'Finance & System',
+    description: 'Inspect conversion funnels and cohort metrics.',
+  },
 
   // Administration
-  { key: 'membership.manage', label: 'Manage Voyager Club', category: 'Administration', description: 'Grant points, adjust membership tiers.' },
-  { key: 'team.view', label: 'View Team & Roles', category: 'Administration', description: 'See admin team member list.' },
-  { key: 'team.manage_roles', label: 'Assign & Invite Users', category: 'Administration', description: 'Send admin invitations and change user roles.' },
-  { key: 'team.custom_roles', label: 'Manage Custom Roles', category: 'Administration', description: 'Create, edit, and delete custom role definitions.' },
-  { key: 'audit.view', label: 'View Audit Log', category: 'Administration', description: 'Read immutable timeline of sensitive admin actions.' },
-  { key: 'settings.manage', label: 'Manage Security Settings', category: 'Administration', description: 'Configure 2FA policy, API keys, and company profile.' },
+  {
+    key: 'membership.manage',
+    label: 'Manage Voyager Club',
+    category: 'Administration',
+    description: 'Grant points, adjust membership tiers.',
+  },
+  {
+    key: 'team.view',
+    label: 'View Team & Roles',
+    category: 'Administration',
+    description: 'See admin team member list.',
+  },
+  {
+    key: 'team.manage_roles',
+    label: 'Assign & Invite Users',
+    category: 'Administration',
+    description: 'Send admin invitations and change user roles.',
+  },
+  {
+    key: 'team.custom_roles',
+    label: 'Manage Custom Roles',
+    category: 'Administration',
+    description: 'Create, edit, and delete custom role definitions.',
+  },
+  {
+    key: 'audit.view',
+    label: 'View Audit Log',
+    category: 'Administration',
+    description: 'Read immutable timeline of sensitive admin actions.',
+  },
+  {
+    key: 'settings.manage',
+    label: 'Manage Security Settings',
+    category: 'Administration',
+    description: 'Configure 2FA policy, API keys, and company profile.',
+  },
 ];
 
 export const INITIAL_ROLES: AdminRole[] = [
   {
     id: 'master_admin',
     title: 'Master Admin',
-    description: 'Unrestricted root access to all system modules, finances, custom roles, and security policies.',
+    description:
+      'Unrestricted root access to all system modules, finances, custom roles, and security policies.',
     badgeColor: 'bg-purple-100 text-purple-900 border-purple-300',
     isCustom: false,
-    permissions: PERMISSION_CATALOG.reduce((acc, p) => ({ ...acc, [p.key]: true }), {}),
+    permissions: PERMISSION_CATALOG.reduce(
+      (acc, p) => ({ ...acc, [p.key]: true }),
+      {},
+    ),
   },
   {
     id: 'supervisor',
     title: 'Operations Supervisor',
-    description: 'Operational team lead: oversees bookings, publishes tours/content, manages customer escalations and reviews.',
+    description:
+      'Operational team lead: oversees bookings, publishes tours/content, manages customer escalations and reviews.',
     badgeColor: 'bg-blue-100 text-blue-900 border-blue-300',
     isCustom: false,
     permissions: {
@@ -88,7 +241,8 @@ export const INITIAL_ROLES: AdminRole[] = [
   {
     id: 'customer_service',
     title: 'Customer Service Lead',
-    description: 'Client front desk: manages support inquiries, traveler bookings assistance, review responses, and eSIM delivery.',
+    description:
+      'Client front desk: manages support inquiries, traveler bookings assistance, review responses, and eSIM delivery.',
     badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300',
     isCustom: false,
     permissions: {
@@ -124,7 +278,8 @@ export const INITIAL_ROLES: AdminRole[] = [
   {
     id: 'finance_team',
     title: 'Finance & Reconciliation',
-    description: 'Accounting specialist: manages Paystack reconciliations, payment settlements, refunds queue, and revenue reports.',
+    description:
+      'Accounting specialist: manages Paystack reconciliations, payment settlements, refunds queue, and revenue reports.',
     badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
     isCustom: false,
     permissions: {
@@ -249,14 +404,17 @@ export class RolesService {
         .replace(/(^_|_$)/g, '');
 
     if (this.roles.some((r) => r.id === id)) {
-      throw new BadRequestException(`A role with identifier '${id}' already exists.`);
+      throw new BadRequestException(
+        `A role with identifier '${id}' already exists.`,
+      );
     }
 
     const newRole: AdminRole = {
       id,
       title: dto.title,
       description: dto.description || 'Custom administrative role.',
-      badgeColor: dto.badgeColor || 'bg-slate-100 text-slate-900 border-slate-300',
+      badgeColor:
+        dto.badgeColor || 'bg-slate-100 text-slate-900 border-slate-300',
       isCustom: true,
       permissions: dto.permissions || {},
     };
@@ -299,7 +457,9 @@ export class RolesService {
   deleteCustomRole(id: string): { success: boolean; message: string } {
     const role = this.getRoleById(id);
     if (!role.isCustom) {
-      throw new BadRequestException(`Cannot delete built-in system role '${role.title}'.`);
+      throw new BadRequestException(
+        `Cannot delete built-in system role '${role.title}'.`,
+      );
     }
 
     // Reassign team members to customer_service
@@ -312,7 +472,10 @@ export class RolesService {
 
     this.roles = this.roles.filter((r) => r.id !== id);
     this.logger.log(`Deleted custom role: ${id}`);
-    return { success: true, message: `Custom role '${role.title}' deleted successfully.` };
+    return {
+      success: true,
+      message: `Custom role '${role.title}' deleted successfully.`,
+    };
   }
 
   /**
@@ -339,7 +502,9 @@ export class RolesService {
     };
 
     this.teamMembers.push(newMember);
-    this.logger.log(`Invited team member ${newMember.email} as ${newMember.roleTitle}`);
+    this.logger.log(
+      `Invited team member ${newMember.email} as ${newMember.roleTitle}`,
+    );
     return newMember;
   }
 

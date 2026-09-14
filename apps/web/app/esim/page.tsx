@@ -31,6 +31,7 @@ interface EsimPlan {
   flag: string;
   region: string;
   data: string;
+  airtime?: string;
   validity: string;
   price: string;
   operator: string;
@@ -44,6 +45,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🇬🇭",
     region: "West Africa",
     data: "3 GB",
+    airtime: "100 Mins",
     validity: "30 Days",
     price: "$12",
     operator: "MTN / Telecel 4G",
@@ -55,6 +57,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🇬🇧",
     region: "Europe",
     data: "5 GB",
+    airtime: "120 Mins",
     validity: "30 Days",
     price: "$15",
     operator: "Vodafone / EE 5G",
@@ -66,6 +69,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🇺🇸",
     region: "North America",
     data: "5 GB",
+    airtime: "Data Only",
     validity: "30 Days",
     price: "$16",
     operator: "T-Mobile / AT&T 5G",
@@ -77,6 +81,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🇦🇪",
     region: "Middle East",
     data: "3 GB",
+    airtime: "150 Mins",
     validity: "30 Days",
     price: "$18",
     operator: "du / Etisalat 5G",
@@ -88,6 +93,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🇪🇺",
     region: "Regional",
     data: "10 GB",
+    airtime: "100 Mins",
     validity: "30 Days",
     price: "$32",
     operator: "Multi-Carrier High Speed",
@@ -99,6 +105,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🌐",
     region: "Worldwide",
     data: "5 GB",
+    airtime: "200 Mins",
     validity: "60 Days",
     price: "$38",
     operator: "Global Roaming Network",
@@ -109,6 +116,7 @@ const POPULAR_PLANS: EsimPlan[] = [
     flag: "🇿🇦",
     region: "Southern Africa",
     data: "5 GB",
+    airtime: "60 Mins",
     validity: "30 Days",
     price: "$19",
     operator: "Vodacom / MTN 5G",

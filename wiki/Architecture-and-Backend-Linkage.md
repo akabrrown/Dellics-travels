@@ -20,7 +20,7 @@ Every backend module, and exactly which mobile screens (**S**-IDs) and admin scr
 |---|---|---|---|
 | **Auth** (Supabase JWT + RLS) | S03–S07 (Sign up / Login) | A01 (2FA-gated admin JWT with role claim) | Same JWT issuer; admin tokens carry an elevated role claim checked by a NestJS guard on every admin-only route |
 | **Search** (Typesense + Redis cache) | S09, S14, S18, S36 | A10 (health only — admins don't search inventory directly) | Admin has no write path here; it only observes the circuit-breaker/cache health this module reports |
-| **Booking** (Duffel/RateHawk + soft/hard hold) | S15–S16, S20–S21, S23, S27, S29 | A03–A04, A12 | Both read/write the same Booking table; an admin refund/cancel transitions the same state machine a traveler's own cancellation would |
+| **Booking** (FX/RateHawk + soft/hard hold) | S15–S16, S20–S21, S23, S27, S29 | A03–A04, A12 | Both read/write the same Booking table; an admin refund/cancel transitions the same state machine a traveler's own cancellation would |
 | **Payments** (Stripe) | S25–S27, S46 | A11–A12 | Stripe webhooks (`payment_intent.succeeded`, `charge.refunded`) update the Payment record once — both S29 and A04 read that same updated record |
 | **Rewards** (points ledger) | S40–S42 | A16, A06 | Admin manual adjustments write to the same append-only `RewardsLedger` the traveler's own bookings write to |
 | **eSIM** (Airalo Partner API SDK) | S32–S35 | A17 | Airalo status webhook updates `ESIMOrder` once; S35 and A17 both read it — admin retry calls the identical service method the purchase used |
@@ -48,7 +48,7 @@ The **Audit Module** (append-only `AuditLog` table + NestJS interceptor on eleva
 
 | Supplier | Used for | Failure behavior |
 |---|---|---|
-| **Duffel** | Flight inventory & booking | Circuit breaker → cached search results fallback; status visible on A10 |
+| **FX** | Flight inventory & booking | Circuit breaker → cached search results fallback; status visible on A10 |
 | **RateHawk** | Hotel inventory | Circuit breaker → cached results fallback |
 | **Airalo** (Partner API SDK) | eSIM provisioning | Retry + auto-refund after 3 failed attempts; A17 retry button |
 | **Stripe** | Payments, refunds, payouts | Webhook-driven Payment record; reconciliation on A11 |

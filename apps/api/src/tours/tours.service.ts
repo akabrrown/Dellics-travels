@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { TourPackageDto, TourPackageResult } from './tours.types';
 
@@ -22,10 +27,16 @@ export const CATALOG_TOURS: TourPackageResult[] = [
       'Traditional Ghanaian Lunch & Refreshments',
       'Licensed Historic Tour Guide',
     ],
-    highlights: ['Door of No Return', 'Kakum Canopy Bridge', 'Gulf of Guinea Coastline', 'Elmina Township'],
+    highlights: [
+      'Door of No Return',
+      'Kakum Canopy Bridge',
+      'Gulf of Guinea Coastline',
+      'Elmina Township',
+    ],
     isFeatured: true,
     isDellicsSignature: true,
-    viatorUrl: 'https://www.viator.com/search/Cape%20Coast%20Ghana?sortType=featured',
+    viatorUrl:
+      'https://www.viator.com/search/Cape%20Coast%20Ghana?sortType=featured',
     status: 'PUBLISHED',
   },
   {
@@ -48,10 +59,16 @@ export const CATALOG_TOURS: TourPackageResult[] = [
       'Professional Dellics Tour Host',
       'Round-trip AC Transport from Accra',
     ],
-    highlights: ['Wildlife Encounters', 'Gourmet Buffet', 'Eco Kayaking', 'Guided Forest Trails'],
+    highlights: [
+      'Wildlife Encounters',
+      'Gourmet Buffet',
+      'Eco Kayaking',
+      'Guided Forest Trails',
+    ],
     isFeatured: true,
     isDellicsSignature: true,
-    viatorUrl: 'https://www.viator.com/search/Ghana%20Safari%20Valley?sortType=featured',
+    viatorUrl:
+      'https://www.viator.com/search/Ghana%20Safari%20Valley?sortType=featured',
     status: 'PUBLISHED',
   },
   {
@@ -74,10 +91,16 @@ export const CATALOG_TOURS: TourPackageResult[] = [
       'Executive Airport Transfers',
       'Dubai Tourist Visa Processing',
     ],
-    highlights: ['Burj Khalifa', 'Desert Safari BBQ', 'Marina Yacht Cruise', 'Dubai Mall'],
+    highlights: [
+      'Burj Khalifa',
+      'Desert Safari BBQ',
+      'Marina Yacht Cruise',
+      'Dubai Mall',
+    ],
     isFeatured: true,
     isDellicsSignature: true,
-    viatorUrl: 'https://www.viator.com/search/Dubai%20Desert%20Safari?sortType=featured',
+    viatorUrl:
+      'https://www.viator.com/search/Dubai%20Desert%20Safari?sortType=featured',
     status: 'PUBLISHED',
   },
   {
@@ -100,10 +123,16 @@ export const CATALOG_TOURS: TourPackageResult[] = [
       'Daily Gourmet Breakfast & Dinner',
       'Return Airport & Ferry Transfers',
     ],
-    highlights: ['Stone Town', 'Nungwi Beach', 'Organic Spice Farm', 'Sunset Dhow Sailing'],
+    highlights: [
+      'Stone Town',
+      'Nungwi Beach',
+      'Organic Spice Farm',
+      'Sunset Dhow Sailing',
+    ],
     isFeatured: true,
     isDellicsSignature: true,
-    viatorUrl: 'https://www.viator.com/search/Zanzibar%20Stone%20Town?sortType=featured',
+    viatorUrl:
+      'https://www.viator.com/search/Zanzibar%20Stone%20Town?sortType=featured',
     status: 'PUBLISHED',
   },
   {
@@ -126,10 +155,16 @@ export const CATALOG_TOURS: TourPackageResult[] = [
       'Daily Gourmet Breakfast',
       'Executive Airport Transfers',
     ],
-    highlights: ['Table Mountain', 'Cape Point', 'Boulders Beach', 'V&A Waterfront'],
+    highlights: [
+      'Table Mountain',
+      'Cape Point',
+      'Boulders Beach',
+      'V&A Waterfront',
+    ],
     isFeatured: true,
     isDellicsSignature: true,
-    viatorUrl: 'https://www.viator.com/search/Cape%20Town%20Table%20Mountain?sortType=featured',
+    viatorUrl:
+      'https://www.viator.com/search/Cape%20Town%20Table%20Mountain?sortType=featured',
     status: 'PUBLISHED',
   },
   {
@@ -167,7 +202,13 @@ export class ToursService {
   /**
    * Returns list of tours with optional filters (featured, destination, status)
    */
-  async getTours(query: { featured?: string | boolean; destination?: string; status?: string } = {}): Promise<{
+  async getTours(
+    query: {
+      featured?: string | boolean;
+      destination?: string;
+      status?: string;
+    } = {},
+  ): Promise<{
     status: string;
     provider: string;
     count: number;
@@ -180,7 +221,10 @@ export class ToursService {
           where.is_featured = true;
         }
         if (query.destination) {
-          where.destination = { contains: query.destination, mode: 'insensitive' };
+          where.destination = {
+            contains: query.destination,
+            mode: 'insensitive',
+          };
         }
 
         const dbTours = await (this.prisma as any).tourPackage.findMany({
@@ -218,7 +262,9 @@ export class ToursService {
         }
       }
     } catch (err: any) {
-      this.logger.warn(`TourPackage DB lookup error: ${err.message}. Serving catalog dataset.`);
+      this.logger.warn(
+        `TourPackage DB lookup error: ${err.message}. Serving catalog dataset.`,
+      );
     }
 
     // Filter in-memory catalog
@@ -228,7 +274,9 @@ export class ToursService {
     }
     if (query.destination) {
       const d = query.destination.toLowerCase();
-      filtered = filtered.filter((t) => t.destination.toLowerCase().includes(d));
+      filtered = filtered.filter((t) =>
+        t.destination.toLowerCase().includes(d),
+      );
     }
 
     return {
@@ -277,10 +325,14 @@ export class ToursService {
       this.logger.warn(`Tour DB lookup by slug failed: ${err.message}`);
     }
 
-    const fallback = CATALOG_TOURS.find((t) => t.id === idOrSlug || t.slug === idOrSlug);
+    const fallback = CATALOG_TOURS.find(
+      (t) => t.id === idOrSlug || t.slug === idOrSlug,
+    );
     if (fallback) return fallback;
 
-    throw new NotFoundException(`Tour package with identifier '${idOrSlug}' not found.`);
+    throw new NotFoundException(
+      `Tour package with identifier '${idOrSlug}' not found.`,
+    );
   }
 
   /**
@@ -299,7 +351,9 @@ export class ToursService {
         .replace(/(^-|-$)/g, '');
 
     const rawPrice =
-      typeof dto.price === 'string' ? parseFloat(dto.price.replace(/[^0-9.]/g, '')) || 100 : Number(dto.price) || 100;
+      typeof dto.price === 'string'
+        ? parseFloat(dto.price.replace(/[^0-9.]/g, '')) || 100
+        : Number(dto.price) || 100;
 
     try {
       if (this.prisma && (this.prisma as any).tourPackage) {
@@ -314,13 +368,23 @@ export class ToursService {
             badge: dto.badge || 'Curated Experience',
             image_url: dto.image || '/images/services/winter-dubai.jpg',
             overview: dto.overview || dto.tagline || dto.title,
-            includes: dto.includes || ['Executive Transport', 'Guided Tours', 'Entrance Fees'],
-            highlights: dto.highlights || ['Verified Itinerary', 'Expert Guide', 'All Entry Passes'],
+            includes: dto.includes || [
+              'Executive Transport',
+              'Guided Tours',
+              'Entrance Fees',
+            ],
+            highlights: dto.highlights || [
+              'Verified Itinerary',
+              'Expert Guide',
+              'All Entry Passes',
+            ],
             is_featured: dto.isFeatured ?? true,
           },
         });
 
-        this.logger.log(`Created new tour package in database: ${created.id} (${created.title})`);
+        this.logger.log(
+          `Created new tour package in database: ${created.id} (${created.title})`,
+        );
 
         return {
           id: created.id,
@@ -374,7 +438,10 @@ export class ToursService {
   /**
    * Updates an existing tour package
    */
-  async updateTour(id: string, dto: Partial<TourPackageDto>): Promise<TourPackageResult> {
+  async updateTour(
+    id: string,
+    dto: Partial<TourPackageDto>,
+  ): Promise<TourPackageResult> {
     const rawPrice =
       dto.price !== undefined
         ? typeof dto.price === 'string'
@@ -396,7 +463,8 @@ export class ToursService {
         if (dto.overview) updateData.overview = dto.overview;
         if (dto.includes) updateData.includes = dto.includes;
         if (dto.highlights) updateData.highlights = dto.highlights;
-        if (dto.isFeatured !== undefined) updateData.is_featured = dto.isFeatured;
+        if (dto.isFeatured !== undefined)
+          updateData.is_featured = dto.isFeatured;
 
         const updated = await (this.prisma as any).tourPackage.update({
           where: { id },
@@ -433,7 +501,9 @@ export class ToursService {
         ...CATALOG_TOURS[idx],
         ...(dto.title ? { name: dto.title } : {}),
         ...(dto.destination ? { destination: dto.destination } : {}),
-        ...(rawPrice !== undefined ? { rawPrice, price: `$${rawPrice.toLocaleString()}` } : {}),
+        ...(rawPrice !== undefined
+          ? { rawPrice, price: `$${rawPrice.toLocaleString()}` }
+          : {}),
         ...(dto.duration ? { duration: dto.duration } : {}),
         ...(dto.badge ? { badge: dto.badge } : {}),
         ...(dto.image ? { image: dto.image } : {}),
@@ -454,7 +524,10 @@ export class ToursService {
         await (this.prisma as any).tourPackage.delete({
           where: { id },
         });
-        return { success: true, message: `Tour package ${id} deleted successfully.` };
+        return {
+          success: true,
+          message: `Tour package ${id} deleted successfully.`,
+        };
       }
     } catch (err: any) {
       this.logger.warn(`Tour delete DB error: ${err.message}`);
@@ -463,7 +536,10 @@ export class ToursService {
     const idx = CATALOG_TOURS.findIndex((t) => t.id === id || t.slug === id);
     if (idx !== -1) {
       CATALOG_TOURS.splice(idx, 1);
-      return { success: true, message: `Tour package ${id} removed from catalog.` };
+      return {
+        success: true,
+        message: `Tour package ${id} removed from catalog.`,
+      };
     }
 
     throw new NotFoundException(`Tour package '${id}' not found.`);

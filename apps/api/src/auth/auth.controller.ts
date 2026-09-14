@@ -77,7 +77,10 @@ export class AuthController {
         status: 'success',
         count: users.length,
         data: users.map((u) => {
-          const totalBookings = u.trips.reduce((acc, t) => acc + t.bookings.length, 0);
+          const totalBookings = u.trips.reduce(
+            (acc, t) => acc + t.bookings.length,
+            0,
+          );
           return {
             id: u.id,
             name: u.name,

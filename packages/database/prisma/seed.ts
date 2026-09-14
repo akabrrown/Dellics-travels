@@ -121,6 +121,7 @@ async function main() {
     {
       country_or_region: "Ghana",
       data_gb: 5.0,
+      airtime_minutes: 100,
       validity_days: 30,
       price: 18.0,
       airalo_package_id: "ghana-5gb-30d",
@@ -128,6 +129,7 @@ async function main() {
     {
       country_or_region: "United Arab Emirates",
       data_gb: 10.0,
+      airtime_minutes: 200,
       validity_days: 30,
       price: 28.0,
       airalo_package_id: "uae-10gb-30d",
@@ -135,6 +137,7 @@ async function main() {
     {
       country_or_region: "United Kingdom",
       data_gb: 10.0,
+      airtime_minutes: 120,
       validity_days: 30,
       price: 22.0,
       airalo_package_id: "uk-10gb-30d",
@@ -142,6 +145,7 @@ async function main() {
     {
       country_or_region: "United States",
       data_gb: 10.0,
+      airtime_minutes: 150,
       validity_days: 30,
       price: 26.0,
       airalo_package_id: "usa-10gb-30d",
@@ -149,6 +153,7 @@ async function main() {
     {
       country_or_region: "Global (130+ Countries)",
       data_gb: 20.0,
+      airtime_minutes: 300,
       validity_days: 365,
       price: 65.0,
       airalo_package_id: "global-20gb-365d",
@@ -161,7 +166,7 @@ async function main() {
       update: plan,
       create: plan,
     });
-    console.log(`✅ Upserted eSIM Plan: ${createdPlan.country_or_region} ${createdPlan.data_gb}GB`);
+    console.log(`✅ Upserted eSIM Plan: ${createdPlan.country_or_region} ${createdPlan.data_gb}GB (${createdPlan.airtime_minutes} Mins Airtime)`);
   }
 
   console.log("✨ Supabase Database Seed Completed Successfully!");

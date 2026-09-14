@@ -40,6 +40,76 @@ export class InquiriesService {
       },
     });
 
+    // Auto-create LeadPipeline and CustomerInteraction in Dellics Travels CRM
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { email: dto.email.trim().toLowerCase() },
+      });
+
+      let source: any = 'TOUR_INQUIRY';
+      const msgLower = (dto.message || '').toLowerCase();
+      const destLower = (dto.destination || '').toLowerCase();
+      if (destLower.includes('flight') || msgLower.includes('flight'))
+        source = 'FLIGHT_SEARCH';
+      else if (destLower.includes('hotel') || msgLower.includes('hotel'))
+        source = 'HOTEL_SEARCH';
+      else if (
+        destLower.includes('visa') ||
+        msgLower.includes('visa') ||
+        msgLower.includes('consular')
+      )
+        source = 'VISA_REQUEST';
+      else if (destLower.includes('transfer') || msgLower.includes('transfer'))
+        source = 'TRANSFER_REQUEST';
+      else if (
+        destLower.includes('car') ||
+        msgLower.includes('car hire') ||
+        msgLower.includes('rental')
+      )
+        source = 'CAR_HIRE';
+      else if (
+        destLower.includes('corporate') ||
+        msgLower.includes('corporate')
+      )
+        source = 'CORPORATE_INQUIRY';
+      else if (
+        destLower.includes('diaspora') ||
+        msgLower.includes('heritage') ||
+        msgLower.includes('pilgrimage')
+      )
+        source = 'DIASPORA_PACKAGE';
+      else if (destLower.includes('esim') || msgLower.includes('airalo'))
+        source = 'ESIM_ORDER';
+
+      await this.prisma.leadPipeline.create({
+        data: {
+          user_id: user?.id || null,
+          inquiry_id: record.id,
+          stage: 'NEW',
+          source,
+          notes: `Auto-created from inquiry: ${dto.message.slice(0, 300)}`,
+          currency: 'GHS',
+        },
+      });
+
+      await this.prisma.customerInteraction.create({
+        data: {
+          user_id: user?.id || null,
+          inquiry_id: record.id,
+          channel: 'WEB_INQUIRY',
+          subject: `Web Inquiry: ${dto.destination || dto.kind}`,
+          content: `${dto.name} submitted an inquiry: ${dto.message.slice(0, 300)}`,
+          metadata: {
+            email: dto.email,
+            phone: dto.phone,
+            destination: dto.destination,
+          },
+        },
+      });
+    } catch (crmErr) {
+      this.logger.warn(`CRM auto-pipeline creation failed: ${crmErr}`);
+    }
+
     // Notify via email and sync to Zoho CRM in parallel
     await Promise.allSettled([
       this.notify(record.id, dto),
@@ -57,9 +127,12 @@ export class InquiriesService {
     try {
       let description = `Type: ${dto.kind}\nSubmission ID: ${id}\nMessage: ${dto.message}`;
       if (payload) {
-        if (payload.destination) description += `\nDestination: ${payload.destination}`;
-        if (payload.travelDate) description += `\nTravel Date: ${payload.travelDate}`;
-        if (payload.travelers) description += `\nTravelers: ${payload.travelers}`;
+        if (payload.destination)
+          description += `\nDestination: ${payload.destination}`;
+        if (payload.travelDate)
+          description += `\nTravel Date: ${payload.travelDate}`;
+        if (payload.travelers)
+          description += `\nTravelers: ${payload.travelers}`;
       }
 
       await this.zohoService.createLead({

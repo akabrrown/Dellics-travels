@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
+import { postJson } from "@/lib/api";
 
 export interface SavedTraveler {
   id: string;
@@ -588,6 +589,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             },
           },
         });
+      } catch {}
+
+      // 3. Log DIRECT_SIGNUP interaction to CRM (fire-and-forget)
+      try {
+        postJson("/crm/interactions", {
+          user_id: createdUser.id,
+          channel: "SYSTEM_AUTO",
+          subject: "Direct User Registration",
+          content: `${fullName} registered an account via Direct Signup. Initial tier: EXPLORER (500 pts welcome bonus).`,
+          metadata: {
+            source: "DIRECT_SIGNUP",
+            email: cleanEmail,
+            phone: phone || null,
+            name: fullName,
+          },
+        }).catch(() => {});
       } catch {}
 
       return {};

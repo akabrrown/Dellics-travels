@@ -37,7 +37,8 @@ export class AppService {
 
     // 1. FX-Port Flight Gateway
     try {
-      const fxUrl = this.config.get<string>('FXPORT_BASE_URL') || 'https://api.fx-port.com';
+      const fxUrl =
+        this.config.get<string>('FXPORT_BASE_URL') || 'https://api.fx-port.com';
       const fxKey = this.config.get<string>('FXPORT_API_KEY') || '';
       const start = Date.now();
       const res = await fetch(`${fxUrl}/health`, {
@@ -55,7 +56,9 @@ export class AppService {
         latencyMs,
         endpoint: `${fxUrl}/api/v1/get_flights`,
         lastChecked: new Date().toISOString(),
-        details: res.ok ? 'Live GDS / NDC flights aggregation active' : `HTTP ${res.status}`,
+        details: res.ok
+          ? 'Live GDS / NDC flights aggregation active'
+          : `HTTP ${res.status}`,
       });
     } catch (err: any) {
       results.push({
@@ -74,12 +77,17 @@ export class AppService {
 
     // 2. RateHawk Hotels B2B v3
     try {
-      const rhUrl = this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api-sandbox.ratehawk.com/api/b2b/v3';
+      const rhUrl =
+        this.config.get<string>('RATEHAWK_BASE_URL') ||
+        'https://api-sandbox.ratehawk.com/api/b2b/v3';
       const rhKey = this.config.get<string>('RATEHAWK_API_KEY') || '';
       const start = Date.now();
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
       if (rhKey) {
-        headers['Authorization'] = `Basic ${Buffer.from(`${rhKey}:`).toString('base64')}`;
+        headers['Authorization'] =
+          `Basic ${Buffer.from(`${rhKey}:`).toString('base64')}`;
       }
       const res = await fetch(`${rhUrl}/search/multicomplete/`, {
         method: 'POST',
@@ -93,11 +101,17 @@ export class AppService {
         name: 'RateHawk B2B v3 Hotels',
         category: 'HOTELS',
         provider: 'ratehawk',
-        status: res.ok ? (latencyMs > 2000 ? 'DEGRADED' : 'ONLINE') : 'DEGRADED',
+        status: res.ok
+          ? latencyMs > 2000
+            ? 'DEGRADED'
+            : 'ONLINE'
+          : 'DEGRADED',
         latencyMs,
         endpoint: `${rhUrl}/search/serp/region/`,
         lastChecked: new Date().toISOString(),
-        details: res.ok ? 'Global accommodation inventory live' : `HTTP ${res.status}`,
+        details: res.ok
+          ? 'Global accommodation inventory live'
+          : `HTTP ${res.status}`,
       });
     } catch (err: any) {
       results.push({
@@ -116,7 +130,9 @@ export class AppService {
 
     // 3. Airalo eSIM Provisioning
     try {
-      const airaloUrl = this.config.get<string>('AIRALO_BASE_URL') || 'https://sandbox-partners-api.airalo.com';
+      const airaloUrl =
+        this.config.get<string>('AIRALO_BASE_URL') ||
+        'https://sandbox-partners-api.airalo.com';
       const clientId = this.config.get<string>('AIRALO_CLIENT_ID') || '';
       const start = Date.now();
       // Probe root / public endpoint
@@ -130,7 +146,11 @@ export class AppService {
         name: 'Airalo Partner eSIM Engine',
         category: 'ESIM',
         provider: 'airalo',
-        status: clientId ? (latencyMs > 1500 ? 'DEGRADED' : 'ONLINE') : 'ONLINE',
+        status: clientId
+          ? latencyMs > 1500
+            ? 'DEGRADED'
+            : 'ONLINE'
+          : 'ONLINE',
         latencyMs: latencyMs || 280,
         endpoint: `${airaloUrl}/v2/orders`,
         lastChecked: new Date().toISOString(),
@@ -169,7 +189,9 @@ export class AppService {
         latencyMs,
         endpoint: 'https://api.paystack.co/transaction/initialize',
         lastChecked: new Date().toISOString(),
-        details: res.ok ? 'Card, MoMo & Bank payment processing live' : `HTTP ${res.status}`,
+        details: res.ok
+          ? 'Card, MoMo & Bank payment processing live'
+          : `HTTP ${res.status}`,
       });
     } catch (err: any) {
       results.push({
@@ -218,7 +240,8 @@ export class AppService {
     }
 
     const downCount = results.filter((r) => r.status === 'DOWN').length;
-    const overallStatus = downCount === 0 ? 'HEALTHY' : downCount < 2 ? 'DEGRADED' : 'CRITICAL';
+    const overallStatus =
+      downCount === 0 ? 'HEALTHY' : downCount < 2 ? 'DEGRADED' : 'CRITICAL';
 
     return {
       status: overallStatus,

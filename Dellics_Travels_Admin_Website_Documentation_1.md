@@ -163,7 +163,7 @@ Command-center home — leads with what needs action, not vanity metrics (Stripe
 | --- | --- |
 | Bookings pipeline row (Held/Confirmed/Needs Attention/Completed/Cancelled counts) | Each count → A03 — Bookings (list) pre-filtered to that status |
 | Refund queue widget (shows actual pending refunds, not just a count) | A12 — Refund & Cancellation Queue |
-| Supplier health strip (Duffel/RateHawk/Airalo/Stripe status dots) | A10 — Supplier & Inventory Health |
+| Supplier health strip (FX/RateHawk/Airalo/Stripe status dots) | A10 — Supplier & Inventory Health |
 | Support queue widget (open tickets by SLA) | A13 — Support Ticket Queue |
 | Revenue & booking trend chart | Informational → A18 — Analytics & Reports for full detail |
 | Global search bar (top) | Searches bookings, travelers, and tickets by ID/name/email/phone — jumps directly to the matching detail screen |
@@ -267,7 +267,7 @@ Live connection health for every third-party dependency (Reliability & Scale Pla
 
 | **Element / Button** | **Action / Navigates To** |
 | --- | --- |
-| Status dot per supplier (Duffel/RateHawk/Airalo/Stripe) | Green/Amber/Red — pulls from the same circuit-breaker state each NestJS module tracks internally |
+| Status dot per supplier (FX/RateHawk/Airalo/Stripe) | Green/Amber/Red — pulls from the same circuit-breaker state each NestJS module tracks internally |
 | Incident log entry (tap) | Shows timestamp, affected bookings, and which fallback path served travelers during the incident |
 
 **A11 — Finance & Reconciliation**
@@ -418,7 +418,7 @@ How the admin screens in Section 5 actually get used day to day — each workflo
 **6.3 Supplier Incident Response**
 ----------------------------------
 
-1.  Supplier Health (A10 — Supplier & Inventory Health) shows a status dot turn Amber/Red for Duffel, RateHawk, Airalo, or Stripe, reflecting the same circuit-breaker state defined in the Reliability & Scale Playbook, Section 5.1.
+1.  Supplier Health (A10 — Supplier & Inventory Health) shows a status dot turn Amber/Red for FX, RateHawk, Airalo, or Stripe, reflecting the same circuit-breaker state defined in the Reliability & Scale Playbook, Section 5.1.
 2.  An automatic Sentry/on-call alert notifies the Super Admin and any on-duty Content/Ops Admin.
 3.  Admins can confirm travelers are seeing the correct fallback (cached search results, “processing” eSIM state) by checking the Incident Log entry on A10 — Supplier & Inventory Health, which records which fallback path served traffic during the incident.
 4.  Once the supplier's health check passes again, the circuit closes automatically — no manual admin action is required to restore service, only to confirm it.
@@ -456,7 +456,7 @@ Every backend module from Section 9–12 of the Product & Technical Documentatio
 | --- | --- | --- | --- |
 | Auth Module (Supabase JWT + RLS) | S03–S07 (Sign up/Login) | A01 (2FA-gated admin JWT with role claim) | Same JWT issuer; admin tokens carry an elevated role claim checked by a NestJS guard on every admin-only route |
 | Search Module (Typesense + Redis cache) | S09, S14, S18, S36 | A10 (health only — admins don't search inventory directly) | Admin has no write path here; it only observes the circuit-breaker/cache health this module reports |
-| Booking Module (Duffel/RateHawk + soft/hard hold) | S15–S16, S20–S21, S23, S27, S29 | A03–A04, A12 | Both read/write the same Booking table; an admin refund/cancel transitions the same state machine a traveler's own cancellation would |
+| Booking Module (FX/RateHawk + soft/hard hold) | S15–S16, S20–S21, S23, S27, S29 | A03–A04, A12 | Both read/write the same Booking table; an admin refund/cancel transitions the same state machine a traveler's own cancellation would |
 | Payments Module (Stripe) | S25–S27, S46 | A11–A12 | Stripe webhooks (payment\_intent.succeeded, charge.refunded) update the Payment record once — both S29 and A04 read that same updated record |
 | Rewards Module (points ledger) | S40–S42 | A16, A06 | Admin manual adjustments write to the same append-only RewardsLedger the traveler's own bookings write to |
 | eSIM Module (Airalo Partner API SDK) | S32–S35 | A17 | Airalo status webhook updates ESIMOrder once; S35 and A17 both read it — admin “Retry provisioning” calls the identical EsimService method the original purchase used |

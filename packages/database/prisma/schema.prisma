@@ -54,6 +54,43 @@ enum ESIMOrderStatus {
   EXPIRED
 }
 
+enum InteractionChannel {
+  WEB_BOOKING
+  WEB_INQUIRY
+  WEB_ESIM
+  WHATSAPP
+  ADMIN_NOTE
+  SYSTEM_AUTO
+  PHONE
+  EMAIL
+}
+
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  WON
+  LOST
+  DORMANT
+}
+
+enum LeadSource {
+  FLIGHT_SEARCH
+  HOTEL_SEARCH
+  TOUR_INQUIRY
+  ESIM_ORDER
+  VISA_REQUEST
+  DIASPORA_PACKAGE
+  CORPORATE_INQUIRY
+  TRANSFER_REQUEST
+  CAR_HIRE
+  DIRECT_SIGNUP
+  REFERRAL
+  WALK_IN
+}
+
 model User {
   id                   String         @id @default(uuid())
   name                 String
@@ -82,6 +119,8 @@ model User {
   reviews               Review[]
   esim_orders           ESIMOrder[]
   password_reset_tokens PasswordResetToken[]
+  interactions          CustomerInteraction[]
+  leads                 LeadPipeline[]
 
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
@@ -207,6 +246,7 @@ model ESIMPlan {
   id                String      @id @default(uuid())
   country_or_region String
   data_gb           Decimal     @db.Decimal(10, 2)
+  airtime_minutes   Int         @default(0)
   validity_days     Int
   price             Decimal     @db.Decimal(10, 2)
   airalo_package_id String      @unique
@@ -226,6 +266,7 @@ model ESIMOrder {
   paystack_reference String          @unique
   qr_code_url        String?
   iccid              String?
+  airtime_minutes    Int             @default(0)
   status             ESIMOrderStatus @default(PENDING)
 
   created_at         DateTime        @default(now())
@@ -239,7 +280,7 @@ enum InquiryKind {
 }
 
 model Inquiry {
-  id         String      @id @default(uuid())
+  id         String        @id @default(uuid())
   kind       InquiryKind
   name       String
   email      String
@@ -247,7 +288,9 @@ model Inquiry {
   message    String
   payload    Json?
 
-  created_at DateTime    @default(now())
+  lead       LeadPipeline?
+
+  created_at DateTime      @default(now())
 }
 
 model TourPackage {
@@ -281,4 +324,48 @@ model PasswordResetToken {
 
   @@index([email])
   @@index([token_hash])
+}
+
+model CustomerInteraction {
+  id         String             @id @default(uuid())
+  user_id    String?
+  user       User?              @relation(fields: [user_id], references: [id])
+  channel    InteractionChannel
+  subject    String
+  content    String
+  metadata   Json?
+  agent_id   String?
+  inquiry_id String?
+  booking_id String?
+
+  created_at DateTime           @default(now())
+
+  @@index([user_id])
+  @@index([channel])
+  @@index([created_at])
+}
+
+model LeadPipeline {
+  id              String     @id @default(uuid())
+  user_id         String?
+  user            User?      @relation(fields: [user_id], references: [id])
+  inquiry_id      String?    @unique
+  inquiry         Inquiry?   @relation(fields: [inquiry_id], references: [id])
+  stage           LeadStage  @default(NEW)
+  source          LeadSource
+  assigned_agent  String?
+  estimated_value Decimal?   @db.Decimal(10, 2)
+  currency        String     @default("GHS")
+  notes           String?
+  next_followup   DateTime?
+  won_booking_id  String?
+  lost_reason     String?
+
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  @@index([user_id])
+  @@index([stage])
+  @@index([assigned_agent])
+  @@index([next_followup])
 }

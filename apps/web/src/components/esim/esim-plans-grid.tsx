@@ -11,6 +11,7 @@ export interface EsimPlanItem {
   flag: string;
   region: string;
   data: string;
+  airtime?: string;
   validity: string;
   price: string;
   operator: string;
@@ -29,6 +30,7 @@ export function EsimPlansGrid({ plans }: EsimPlansGridProps) {
       id: plan.id,
       country: plan.country,
       data: plan.data,
+      airtime: plan.airtime || "Data Only",
       validity: plan.validity,
       price: plan.price,
       network: plan.operator,
@@ -67,18 +69,26 @@ export function EsimPlansGrid({ plans }: EsimPlansGridProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 my-2 py-3 px-4 rounded-2xl bg-slate-50 border border-slate-100">
+          <div className="grid grid-cols-3 gap-2 my-2 py-3 px-3 rounded-2xl bg-slate-50 border border-slate-100">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                 Data
               </span>
-              <p className="font-display text-xl font-bold text-navy">{plan.data}</p>
+              <p className="font-display text-base font-bold text-navy">{plan.data}</p>
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Airtime
+              </span>
+              <p className="text-xs font-bold text-emerald-700 mt-0.5">
+                {plan.airtime || "Data Only"}
+              </p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                 Validity
               </span>
-              <p className="text-sm font-bold text-slate-700">{plan.validity}</p>
+              <p className="text-xs font-bold text-slate-700 mt-0.5">{plan.validity}</p>
             </div>
           </div>
 

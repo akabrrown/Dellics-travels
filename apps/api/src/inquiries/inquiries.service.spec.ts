@@ -7,7 +7,9 @@ describe('InquiriesService', () => {
   const create = jest.fn().mockResolvedValue({ id: 'inq-1' });
   const prisma = { inquiry: { create } } as unknown as PrismaService;
 
-  const createLead = jest.fn().mockResolvedValue({ success: true, leadId: 'zoho-lead-1' });
+  const createLead = jest
+    .fn()
+    .mockResolvedValue({ success: true, leadId: 'zoho-lead-1' });
   const zoho = { createLead } as any;
 
   function buildService(): InquiriesService {

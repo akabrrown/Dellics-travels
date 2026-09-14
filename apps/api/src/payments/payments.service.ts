@@ -30,7 +30,6 @@ export class PaymentsService {
     return this.configService.get<string>('PAYSTACK_PUBLIC_KEY') || '';
   }
 
-
   private get paystackBaseUrl(): string {
     return (
       this.configService.get<string>('PAYSTACK_BASE_URL') ||
@@ -165,8 +164,7 @@ export class PaymentsService {
     passengerCount?: number;
     cabinClass?: string;
   }) {
-    const stripeKey =
-      this.configService.get<string>('STRIPE_SECRET_KEY') || '';
+    const stripeKey = this.configService.get<string>('STRIPE_SECRET_KEY') || '';
     const webUrl =
       this.configService.get<string>('NEXT_PUBLIC_WEB_URL') ||
       'http://localhost:3001';
@@ -181,8 +179,13 @@ export class PaymentsService {
     const bookingRef = `FL_${Date.now()}_${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
     // If active Stripe secret key is configured and not mock, create live Stripe Checkout Session
-    if (stripeKey && !stripeKey.includes('mock') && stripeKey.startsWith('sk_')) {
+    if (
+      stripeKey &&
+      !stripeKey.includes('mock') &&
+      stripeKey.startsWith('sk_')
+    ) {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const StripeConstructor = require('stripe');
         const stripe = new StripeConstructor(stripeKey);
         const session = await stripe.checkout.sessions.create({
@@ -196,9 +199,7 @@ export class PaymentsService {
                 product_data: {
                   name: flightTitle,
                   description: flightDesc,
-                  images: [
-                    `${webUrl}/images/services/plane.jpg`,
-                  ],
+                  images: [`${webUrl}/images/services/plane.jpg`],
                 },
                 unit_amount: Math.round(opts.price * 100),
               },
@@ -314,7 +315,8 @@ export class PaymentsService {
    */
   async handlePaystackWebhook(rawBody: string | Buffer, signature: string) {
     const secret = this.paystackSecretKey;
-    const bodyStr = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
+    const bodyStr =
+      typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
 
     const hash = crypto
       .createHmac('sha512', secret)
@@ -324,7 +326,10 @@ export class PaymentsService {
     const hashBuf = Buffer.from(hash, 'utf8');
     const sigBuf = Buffer.from(signature, 'utf8');
 
-    if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
+    if (
+      hashBuf.length !== sigBuf.length ||
+      !crypto.timingSafeEqual(hashBuf, sigBuf)
+    ) {
       this.logger.warn('Invalid Paystack webhook signature');
       throw new BadRequestException('Invalid signature');
     }
@@ -449,7 +454,10 @@ export class PaymentsService {
         this.prisma.payment.count({ where: { status: 'REFUNDED' } }),
       ]);
 
-      const grossVolumeGHS = succeeded.reduce((sum, p) => sum + Number(p.amount), 0);
+      const grossVolumeGHS = succeeded.reduce(
+        (sum, p) => sum + Number(p.amount),
+        0,
+      );
 
       return {
         status: 'success',

@@ -62,7 +62,7 @@ export default function BookingDetail() {
               </span>
             </div>
             <p className="text-slate-500 text-xs mt-1">
-              Flight Reservation (ACC → DXB) · Duffel GDS Ticketed
+              Flight Reservation (ACC → DXB) · FX GDS Ticketed
             </p>
           </div>
           <div className="flex items-center gap-3">

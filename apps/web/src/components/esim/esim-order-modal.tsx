@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { toast } from "sonner";
+import { postJson } from "@/lib/api";
 
 export interface EsimPlanDetails {
   country: string;
@@ -154,6 +155,15 @@ export function EsimOrderModal({ isOpen, onClose, plan }: EsimOrderModalProps) {
         toast.success("eSIM Profile Ready!", {
           description: `Your QR code and installation guide for ${plan.country} are ready.`,
         });
+
+        // Log CRM interaction (fire-and-forget)
+        postJson("/crm/interactions", {
+          user_id: user?.id,
+          channel: "WEB_ESIM",
+          subject: `eSIM Provisioned: ${plan.country} ${selectedData} + Airtime`,
+          content: `${fullName} ordered ${selectedData} ${selectedValidity} eSIM for ${plan.country}. Device: ${deviceModel}`,
+          metadata: { country: plan.country, data: selectedData, validity: selectedValidity, price: currentPrice, deviceModel, iccid: data.order?.iccid },
+        }).catch(() => {});
       }, 1400);
     } catch (err: any) {
       toast.error("Provisioning Error", { description: err.message || "Please try again." });

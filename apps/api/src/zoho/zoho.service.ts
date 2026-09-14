@@ -124,7 +124,8 @@ export class ZohoService {
       if (!token) return { success: false, error: 'No Zoho access token' };
 
       const apiDomain =
-        this.config.get<string>('ZOHO_API_DOMAIN') || 'https://www.zohoapis.com';
+        this.config.get<string>('ZOHO_API_DOMAIN') ||
+        'https://www.zohoapis.com';
 
       // Zoho requires Last_Name for Leads
       let lastName = dto.lastName?.trim();
@@ -172,7 +173,10 @@ export class ZohoService {
       const resData = await res.json();
       const firstResult = resData?.data?.[0];
 
-      if (firstResult?.status === 'success' || firstResult?.code === 'SUCCESS') {
+      if (
+        firstResult?.status === 'success' ||
+        firstResult?.code === 'SUCCESS'
+      ) {
         const leadId = firstResult.details?.id;
         this.logger.log(`Created Zoho CRM Lead ID: ${leadId}`);
         return { success: true, leadId };
@@ -204,7 +208,8 @@ export class ZohoService {
       if (!token) return { success: false, error: 'No Zoho access token' };
 
       const apiDomain =
-        this.config.get<string>('ZOHO_API_DOMAIN') || 'https://www.zohoapis.com';
+        this.config.get<string>('ZOHO_API_DOMAIN') ||
+        'https://www.zohoapis.com';
 
       let lastName = dto.lastName?.trim();
       let firstName = dto.firstName?.trim();
@@ -248,7 +253,10 @@ export class ZohoService {
       const resData = await res.json();
       const firstResult = resData?.data?.[0];
 
-      if (firstResult?.status === 'success' || firstResult?.code === 'SUCCESS') {
+      if (
+        firstResult?.status === 'success' ||
+        firstResult?.code === 'SUCCESS'
+      ) {
         const contactId = firstResult.details?.id;
         this.logger.log(`Created Zoho CRM Contact ID: ${contactId}`);
         return { success: true, contactId };
@@ -277,7 +285,8 @@ export class ZohoService {
       if (!token) return { success: false, error: 'No Zoho access token' };
 
       const apiDomain =
-        this.config.get<string>('ZOHO_API_DOMAIN') || 'https://www.zohoapis.com';
+        this.config.get<string>('ZOHO_API_DOMAIN') ||
+        'https://www.zohoapis.com';
 
       const payload = {
         data: [
@@ -305,7 +314,10 @@ export class ZohoService {
       const resData = await res.json();
       const firstResult = resData?.data?.[0];
 
-      if (firstResult?.status === 'success' || firstResult?.code === 'SUCCESS') {
+      if (
+        firstResult?.status === 'success' ||
+        firstResult?.code === 'SUCCESS'
+      ) {
         const dealId = firstResult.details?.id;
         this.logger.log(`Created Zoho CRM Deal ID: ${dealId}`);
         return { success: true, dealId };

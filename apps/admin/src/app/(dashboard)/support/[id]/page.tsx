@@ -52,7 +52,7 @@ export default function SupportTicketDetail() {
       id: "3",
       sender: "AGENT",
       name: "Jane Doe (Support Ops)",
-      content: "Checked Duffel GDS inventory for EK 788 on Oct 20. Seats available in Economy Flex with no fare difference penalty.",
+      content: "Checked FX GDS inventory for EK 788 on Oct 20. Seats available in Economy Flex with no fare difference penalty.",
       timestamp: "Yesterday at 11:45 AM",
       isInternalNote: true,
     },

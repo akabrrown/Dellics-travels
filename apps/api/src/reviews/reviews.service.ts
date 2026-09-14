@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -25,7 +30,9 @@ export class ReviewsService {
     private readonly prisma: PrismaService,
     @Optional() injectedCache?: CacheService,
   ) {
-    this.cache = injectedCache || new CacheService({ maxEntries: 200, defaultTtlMs: 2 * 60 * 1000 });
+    this.cache =
+      injectedCache ||
+      new CacheService({ maxEntries: 200, defaultTtlMs: 2 * 60 * 1000 });
   }
 
   /**
@@ -37,9 +44,15 @@ export class ReviewsService {
     data: ReviewItem[];
   }> {
     const cacheKey = `reviews:all:${params?.status || 'ALL'}:${params?.search || ''}`;
-    const cached = this.cache.get<{ status: string; count: number; data: ReviewItem[] }>(cacheKey);
+    const cached = this.cache.get<{
+      status: string;
+      count: number;
+      data: ReviewItem[];
+    }>(cacheKey);
     if (cached) {
-      this.logger.debug(`[Cache HIT] Serving cached reviews for key: ${cacheKey}`);
+      this.logger.debug(
+        `[Cache HIT] Serving cached reviews for key: ${cacheKey}`,
+      );
       return cached;
     }
     try {
@@ -65,8 +78,9 @@ export class ReviewsService {
           travelerEmail: r.user?.email || '',
           rating: r.rating,
           text: r.text || '',
-          target: meta.target || r.booking?.trip?.title || 'Accommodations & Flights',
-          status: (meta.status as any) || 'APPROVED',
+          target:
+            meta.target || r.booking?.trip?.title || 'Accommodations & Flights',
+          status: meta.status || 'APPROVED',
           verifiedStay: meta.verifiedStay !== false,
           createdAt: r.created_at.toISOString(),
         };
@@ -105,7 +119,10 @@ export class ReviewsService {
    * Moderate review status: APPROVED, FLAGGED, PENDING
    * Automatically invalidates review caches to guarantee consistency
    */
-  async moderateReview(id: string, status: 'APPROVED' | 'FLAGGED' | 'PENDING'): Promise<{
+  async moderateReview(
+    id: string,
+    status: 'APPROVED' | 'FLAGGED' | 'PENDING',
+  ): Promise<{
     status: string;
     message: string;
     data?: any;
@@ -130,7 +147,9 @@ export class ReviewsService {
 
       // Invalidate all review cache keys
       const purged = this.cache.invalidatePrefix('reviews:');
-      this.logger.log(`[Cache INVALIDATION] Purged ${purged} review cache entries after moderating review ${id}`);
+      this.logger.log(
+        `[Cache INVALIDATION] Purged ${purged} review cache entries after moderating review ${id}`,
+      );
 
       return {
         status: 'success',
@@ -152,7 +171,11 @@ export class ReviewsService {
     data: ReviewItem[];
   }> {
     const cacheKey = 'reviews:featured';
-    const cached = this.cache.get<{ status: string; count: number; data: ReviewItem[] }>(cacheKey);
+    const cached = this.cache.get<{
+      status: string;
+      count: number;
+      data: ReviewItem[];
+    }>(cacheKey);
     if (cached) {
       this.logger.debug(`[Cache HIT] Serving cached featured reviews`);
       return cached;

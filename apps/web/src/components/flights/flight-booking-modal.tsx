@@ -26,6 +26,7 @@ import { useAuth } from "@/context/auth-context";
 import { checkoutFlightWithStripe } from "@/lib/flights";
 import { CountryFlag } from "@/components/ui/country-flag";
 import { toast } from "sonner";
+import { postJson } from "@/lib/api";
 
 export interface FlightBookingModalProps {
   isOpen: boolean;
@@ -171,11 +172,26 @@ export function FlightBookingModal({
       });
 
       if (res.url) {
+        // Log CRM interaction (fire-and-forget)
+        postJson("/crm/interactions", {
+          user_id: user?.id,
+          channel: "WEB_BOOKING",
+          subject: `Flight Booking: ${originCode} → ${destCode} (${flight.airline || "Carrier"})`,
+          content: `${firstName} ${lastName} booked ${flight.airline || "Carrier"} ${flight.flightNumber || ""} from ${originCode} to ${destCode}`,
+          metadata: { origin: originCode, destination: destCode, airline: flight.airline, price: totalPrice, currency: flight.currency || "USD", passengers: passengerCount, seatPreference, mealPreference, cabinClass: flight.cabinClass },
+        }).catch(() => {});
         window.location.href = res.url;
         return;
       }
     } catch {
       // Fallback confirmation redirect
+      postJson("/crm/interactions", {
+        user_id: user?.id,
+        channel: "WEB_BOOKING",
+        subject: `Flight Booking: ${originCode} → ${destCode}`,
+        content: `${firstName} ${lastName} completed flight booking via fallback flow`,
+        metadata: { origin: originCode, destination: destCode, airline: flight.airline, price: totalPrice },
+      }).catch(() => {});
       window.location.href = `/flights/confirmation?origin=${encodeURIComponent(originCode)}&dest=${encodeURIComponent(destCode)}&airline=${encodeURIComponent(flight.airline || "Airline")}&price=${totalPrice}&currency=USD&passenger=${encodeURIComponent(`${firstName} ${lastName}`)}`;
     } finally {
       setLoading(false);

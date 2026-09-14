@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { toast } from "sonner";
+import { postJson } from "@/lib/api";
 import type { TourPackage } from "@/lib/tours";
 
 export interface TourBookingModalProps {
@@ -112,6 +113,15 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
       toast.success("Redirecting to Paystack Checkout...", {
         description: "Complete payment via Mobile Money or Card.",
       });
+
+      // Log CRM interaction (fire-and-forget)
+      postJson("/crm/interactions", {
+        user_id: user?.id,
+        channel: "WEB_BOOKING",
+        subject: `Tour Booking: ${tour.name}`,
+        content: `${fullName} booked ${tour.name} for ${travelers} traveler(s) departing ${departureDate}`,
+        metadata: { tourId: tour.id, tourName: tour.name, departureDate, travelers, pickupLocation, totalUsd, currency },
+      }).catch(() => {});
 
       window.location.href = data.authorizationUrl;
     } catch (err: any) {

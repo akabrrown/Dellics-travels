@@ -20,7 +20,7 @@ Command-center home — leads with what needs action, not vanity metrics (Stripe
 |---|---|
 | Bookings pipeline row (Held / Confirmed / Needs Attention / Completed / Cancelled counts) | Each count → A03 Bookings pre-filtered to that status |
 | Refund queue widget (shows actual pending refunds, not just a count) | A12 Refund & Cancellation Queue |
-| Supplier health strip (Duffel / RateHawk / Airalo / Stripe status dots) | A10 Supplier & Inventory Health |
+| Supplier health strip (FX / RateHawk / Airalo / Stripe status dots) | A10 Supplier & Inventory Health |
 | Support queue widget (open tickets by SLA) | A13 Support Ticket Queue |
 | Revenue & booking trend chart | Informational → A18 Analytics & Reports for full detail |
 | Global search bar (top) | Searches bookings, travelers, and tickets by ID/name/email/phone — jumps directly to the matching detail screen |
@@ -108,7 +108,7 @@ Live connection health for every third-party dependency.
 
 | Element / Button | Action / Navigates To |
 |---|---|
-| Status dot per supplier (Duffel / RateHawk / Airalo / Stripe) | Green/Amber/Red — pulls from the same circuit-breaker state each NestJS module tracks internally |
+| Status dot per supplier (FX / RateHawk / Airalo / Stripe) | Green/Amber/Red — pulls from the same circuit-breaker state each NestJS module tracks internally |
 | Incident log entry (tap) | Shows timestamp, affected bookings, and which fallback path served travelers during the incident |
 
 ### A11 — Finance & Reconciliation

@@ -20,7 +20,7 @@ How the admin screens actually get used day to day — each workflow names the r
 
 ## 3. Supplier Incident Response
 
-1. **Supplier Health (A10)** shows a status dot turn Amber/Red for Duffel, RateHawk, Airalo, or Stripe — reflecting the same circuit-breaker state defined in the Reliability & Scale Playbook.
+1. **Supplier Health (A10)** shows a status dot turn Amber/Red for FX, RateHawk, Airalo, or Stripe — reflecting the same circuit-breaker state defined in the Reliability & Scale Playbook.
 2. An automatic **Sentry/on-call alert** notifies the Super Admin and any on-duty Content/Ops Admin.
 3. Admins confirm travelers are seeing the correct fallback (cached search results, "processing" eSIM state) by checking the **Incident Log** entry on A10, which records which fallback path served traffic during the incident.
 4. Once the supplier's health check passes again, the circuit **closes automatically** — no manual admin action is required to restore service, only to confirm it.

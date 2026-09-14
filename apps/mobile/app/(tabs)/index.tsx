@@ -558,7 +558,7 @@ export default function ExploreScreen() {
           </Pressable>
         </View>
 
-        {/* Deals Ending Soon Section (Live Duffel & RateHawk API Data) */}
+        {/* Deals Ending Soon Section (Live FX & RateHawk API Data) */}
         <View className="mb-12">
           <View className="flex-row items-center justify-between px-6 mb-6">
             <Text className="text-lg font-black text-[#0A0060]">Deals ending soon</Text>
@@ -618,7 +618,7 @@ export default function ExploreScreen() {
           </ScrollView>
         </View>
 
-        {/* Trending Destinations Section (Live Duffel API Data) */}
+        {/* Trending Destinations Section (Live FX API Data) */}
         <View className="mb-16">
           <View className="flex-row items-center justify-between px-6 mb-6">
             <Text className="text-lg font-black text-[#0A0060]">Trending destinations</Text>

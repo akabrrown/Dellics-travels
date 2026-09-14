@@ -74,7 +74,9 @@ describe('HotelsService', () => {
                   rates: [
                     {
                       payment_options: {
-                        payment_types: [{ amount: '1540', currency_code: 'USD' }],
+                        payment_types: [
+                          { amount: '1540', currency_code: 'USD' },
+                        ],
                       },
                     },
                   ],

@@ -64,7 +64,7 @@ export default function ExploreScreen() {
       }
     } catch (err: any) {
       console.error('Explore API Error:', err);
-      setError('Failed to fetch live fares from Duffel API.');
+      setError('Failed to fetch live fares from FX Flights API.');
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +74,7 @@ export default function ExploreScreen() {
     fetchExploreData();
   }, []);
 
-  // Live Duffel Places Search for Home Airport Selector
+  // Live FX Places Search for Home Airport Selector
   useEffect(() => {
     if (!airportSearchQuery || airportSearchQuery.trim().length < 2) {
       setAirportResults([]);
@@ -400,7 +400,7 @@ export default function ExploreScreen() {
             {airportSearchQuery.length < 2 ? (
               <View className="py-12 items-center">
                 <Plane size={36} color="#9ca3af" />
-                <Text className="text-gray-500 font-semibold text-sm mt-3">Type at least 2 characters to search global airports live from Duffel API</Text>
+                <Text className="text-gray-500 font-semibold text-sm mt-3">Type at least 2 characters to search global airports live from FX API</Text>
               </View>
             ) : airportResults.length === 0 && !isSearchingAirports ? (
               <View className="py-12 items-center">

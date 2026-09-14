@@ -38,11 +38,15 @@ describe('RolesService', () => {
 
     expect(customRole.id).toBe('airport_protocol_concierge');
     expect(customRole.isCustom).toBe(true);
-    expect(service.getRoles().some((r) => r.id === 'airport_protocol_concierge')).toBe(true);
+    expect(
+      service.getRoles().some((r) => r.id === 'airport_protocol_concierge'),
+    ).toBe(true);
 
     const deleteRes = service.deleteCustomRole('airport_protocol_concierge');
     expect(deleteRes.success).toBe(true);
-    expect(service.getRoles().some((r) => r.id === 'airport_protocol_concierge')).toBe(false);
+    expect(
+      service.getRoles().some((r) => r.id === 'airport_protocol_concierge'),
+    ).toBe(false);
   });
 
   it('should prevent deleting built-in roles', () => {

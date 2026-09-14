@@ -9,8 +9,16 @@ describe('ToursService', () => {
     tourPackage: {
       findMany: jest.fn().mockResolvedValue([]),
       findFirst: jest.fn().mockResolvedValue(null),
-      create: jest.fn().mockImplementation(({ data }) => Promise.resolve({ id: 'mock-id', ...data })),
-      update: jest.fn().mockImplementation(({ where, data }) => Promise.resolve({ id: where.id, ...data })),
+      create: jest
+        .fn()
+        .mockImplementation(({ data }) =>
+          Promise.resolve({ id: 'mock-id', ...data }),
+        ),
+      update: jest
+        .fn()
+        .mockImplementation(({ where, data }) =>
+          Promise.resolve({ id: where.id, ...data }),
+        ),
       delete: jest.fn().mockResolvedValue({ id: 'mock-id' }),
     },
   };

@@ -20,7 +20,9 @@ export class HotelsService {
     private readonly config: ConfigService,
     @Optional() injectedCache?: CacheService,
   ) {
-    this.cache = injectedCache || new CacheService({ maxEntries: 500, defaultTtlMs: HOTEL_CACHE_TTL_MS });
+    this.cache =
+      injectedCache ||
+      new CacheService({ maxEntries: 500, defaultTtlMs: HOTEL_CACHE_TTL_MS });
   }
 
   async search(input: HotelSearchInput): Promise<HotelResult[]> {
@@ -28,9 +30,12 @@ export class HotelsService {
 
     const today = new Date().toISOString().slice(0, 10);
     const checkIn = input.checkIn < today ? today : input.checkIn;
-    const checkOut = input.checkOut <= checkIn
-      ? new Date(new Date(checkIn).getTime() + 86400000 * 3).toISOString().slice(0, 10)
-      : input.checkOut;
+    const checkOut =
+      input.checkOut <= checkIn
+        ? new Date(new Date(checkIn).getTime() + 86400000 * 3)
+            .toISOString()
+            .slice(0, 10)
+        : input.checkOut;
 
     const adultsCount = input.adults || input.guests || 2;
     const childrenCount = input.children || 0;
@@ -39,7 +44,9 @@ export class HotelsService {
     const cacheKey = `hotels:${(input.destination || '').trim().toLowerCase()}:${checkIn}:${checkOut}:${adultsCount}:${childrenCount}:${input.rooms || 1}`;
     const cached = this.cache.get<HotelResult[]>(cacheKey);
     if (cached) {
-      this.logger.debug(`[Cache HIT] Serving cached hotel SERP for key: ${cacheKey}`);
+      this.logger.debug(
+        `[Cache HIT] Serving cached hotel SERP for key: ${cacheKey}`,
+      );
       return cached;
     }
 
@@ -48,13 +55,23 @@ export class HotelsService {
       const searchDest = (input.destination || '').trim();
       const cleanCity = searchDest.split(',')[0].trim();
 
-      const isSandbox = (this.baseUrl || '').includes('api-sandbox.ratehawk.com');
+      const isSandbox = (this.baseUrl || '').includes(
+        'api-sandbox.ratehawk.com',
+      );
       let sandboxRegionId: number | null = null;
       if (isSandbox) {
         const lower = searchDest.toLowerCase();
-        if (lower.includes('dubai') || lower.includes('uae') || lower.includes('dxb')) {
+        if (
+          lower.includes('dubai') ||
+          lower.includes('uae') ||
+          lower.includes('dxb')
+        ) {
           sandboxRegionId = 6053839; // Dubai, UAE
-        } else if (lower.includes('paris') || lower.includes('france') || lower.includes('cdg')) {
+        } else if (
+          lower.includes('paris') ||
+          lower.includes('france') ||
+          lower.includes('cdg')
+        ) {
           sandboxRegionId = 2734; // Paris, France
         } else if (
           lower.includes('los angeles') ||
@@ -66,40 +83,50 @@ export class HotelsService {
         }
       }
 
-      const multi = await this.fetchJson(`${this.baseUrl}/search/multicomplete/`, {
-        query: cleanCity || searchDest,
-        language: 'en',
-      });
+      const multi = await this.fetchJson(
+        `${this.baseUrl}/search/multicomplete/`,
+        {
+          query: cleanCity || searchDest,
+          language: 'en',
+        },
+      );
 
       const regions = multi?.data?.regions || [];
       const multiHotels = multi?.data?.hotels || [];
-      const regionId = regions[0]?.id || multiHotels[0]?.region_id || sandboxRegionId;
+      const regionId =
+        regions[0]?.id || multiHotels[0]?.region_id || sandboxRegionId;
 
       let rawHotels: any[] = [];
 
       // Step 2: Query live SERP based on RateHawk's resolved region or hotel IDs
       if (regionId) {
-        const serpBody = await this.fetchJson(`${this.baseUrl}/search/serp/region/`, {
-          checkin: checkIn,
-          checkout: checkOut,
-          residency: 'gb',
-          language: 'en',
-          guests: [{ adults: adultsCount, children: childrenAges }],
-          region_id: regionId,
-          currency: 'USD',
-        });
+        const serpBody = await this.fetchJson(
+          `${this.baseUrl}/search/serp/region/`,
+          {
+            checkin: checkIn,
+            checkout: checkOut,
+            residency: 'gb',
+            language: 'en',
+            guests: [{ adults: adultsCount, children: childrenAges }],
+            region_id: regionId,
+            currency: 'USD',
+          },
+        );
         rawHotels = serpBody?.data?.hotels ?? [];
       } else if (multiHotels.length > 0) {
         const hotelIds = multiHotels.map((h: any) => h.id).slice(0, 10);
-        const serpBody = await this.fetchJson(`${this.baseUrl}/search/serp/hotels/`, {
-          checkin: checkIn,
-          checkout: checkOut,
-          residency: 'gb',
-          language: 'en',
-          guests: [{ adults: adultsCount, children: childrenAges }],
-          ids: hotelIds,
-          currency: 'USD',
-        });
+        const serpBody = await this.fetchJson(
+          `${this.baseUrl}/search/serp/hotels/`,
+          {
+            checkin: checkIn,
+            checkout: checkOut,
+            residency: 'gb',
+            language: 'en',
+            guests: [{ adults: adultsCount, children: childrenAges }],
+            ids: hotelIds,
+            currency: 'USD',
+          },
+        );
         rawHotels = serpBody?.data?.hotels ?? [];
       }
 
@@ -109,10 +136,13 @@ export class HotelsService {
           topHotels.map(async (h: any) => {
             let info: any = null;
             try {
-              const infoRes = await this.fetchJson(`${this.baseUrl}/hotel/info/`, {
-                id: h.id,
-                language: 'en',
-              });
+              const infoRes = await this.fetchJson(
+                `${this.baseUrl}/hotel/info/`,
+                {
+                  id: h.id,
+                  language: 'en',
+                },
+              );
               info = infoRes?.data;
             } catch {
               // Ignore individual info rate limit or failure
@@ -121,10 +151,11 @@ export class HotelsService {
             const rateAmount = parseFloat(
               h.rates?.[0]?.payment_options?.payment_types?.[0]?.amount ||
                 h.rates?.[0]?.daily_prices?.[0] ||
-                '180'
+                '180',
             );
             const rateCurrency =
-              h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code || 'USD';
+              h.rates?.[0]?.payment_options?.payment_types?.[0]
+                ?.currency_code || 'USD';
 
             // Extract real photos directly from RateHawk API
             const apiImages: string[] = [];
@@ -137,38 +168,46 @@ export class HotelsService {
             if (Array.isArray(info?.images_ext)) {
               for (const img of info.images_ext) {
                 const url = typeof img === 'string' ? img : img?.url || '';
-                if (url && !apiImages.includes(url)) apiImages.push(this.sanitizeImageUrl(url));
+                if (url && !apiImages.includes(url))
+                  apiImages.push(this.sanitizeImageUrl(url));
               }
             }
 
             // Extract real live room rates from RateHawk SERP response
-            const liveRates: HotelRoomRate[] = (h.rates || []).map((r: any) => ({
-              matchHash: r.match_hash || '',
-              roomName: r.room_data_trans?.main_name || r.room_name || 'Standard Room',
-              meal:
-                r.meal === 'breakfast'
-                  ? 'Breakfast Included'
-                  : r.meal === 'all-inclusive'
-                  ? 'All Inclusive'
-                  : 'Room Only',
-              price: Math.round(
-                parseFloat(
-                  r.payment_options?.payment_types?.[0]?.amount ||
-                    r.daily_prices?.[0] ||
-                    '180'
-                )
-              ),
-              currency:
-                r.payment_options?.payment_types?.[0]?.currency_code || 'USD',
-              freeCancellationBefore:
-                r.payment_options?.payment_types?.[0]?.cancellation_penalties
-                  ?.free_cancellation_before || undefined,
-              beddingType:
-                r.room_data_trans?.bedding_type ||
-                r.amenities_data?.[0] ||
-                '1 Double Bed',
-              amenities: Array.isArray(r.amenities_data) ? r.amenities_data : [],
-            }));
+            const liveRates: HotelRoomRate[] = (h.rates || []).map(
+              (r: any) => ({
+                matchHash: r.match_hash || '',
+                roomName:
+                  r.room_data_trans?.main_name ||
+                  r.room_name ||
+                  'Standard Room',
+                meal:
+                  r.meal === 'breakfast'
+                    ? 'Breakfast Included'
+                    : r.meal === 'all-inclusive'
+                      ? 'All Inclusive'
+                      : 'Room Only',
+                price: Math.round(
+                  parseFloat(
+                    r.payment_options?.payment_types?.[0]?.amount ||
+                      r.daily_prices?.[0] ||
+                      '180',
+                  ),
+                ),
+                currency:
+                  r.payment_options?.payment_types?.[0]?.currency_code || 'USD',
+                freeCancellationBefore:
+                  r.payment_options?.payment_types?.[0]?.cancellation_penalties
+                    ?.free_cancellation_before || undefined,
+                beddingType:
+                  r.room_data_trans?.bedding_type ||
+                  r.amenities_data?.[0] ||
+                  '1 Double Bed',
+                amenities: Array.isArray(r.amenities_data)
+                  ? r.amenities_data
+                  : [],
+              }),
+            );
 
             return {
               id: String(h.id || h.hid),
@@ -183,19 +222,24 @@ export class HotelsService {
               amenities: this.extractAmenities(info?.amenity_groups),
               description: String(
                 info?.description ||
-                  `Live RateHawk accommodation in ${input.destination} with instant B2B confirmation.`
+                  `Live RateHawk accommodation in ${input.destination} with instant B2B confirmation.`,
               ),
               rates: liveRates,
             } as HotelResult;
-          })
+          }),
         );
 
         const validResults = enriched
-          .filter((r): r is PromiseFulfilledResult<HotelResult> => r.status === 'fulfilled' && r.value !== null)
+          .filter(
+            (r): r is PromiseFulfilledResult<HotelResult> =>
+              r.status === 'fulfilled' && r.value !== null,
+          )
           .map((r) => r.value);
 
         if (validResults.length > 0) {
-          this.logger.log(`RateHawk live API returned ${validResults.length} properties for ${input.destination}`);
+          this.logger.log(
+            `RateHawk live API returned ${validResults.length} properties for ${input.destination}`,
+          );
           this.cache.set(cacheKey, validResults, HOTEL_CACHE_TTL_MS);
           return validResults;
         }
@@ -203,7 +247,9 @@ export class HotelsService {
 
       return [];
     } catch (error: any) {
-      this.logger.error(`RateHawk live query error: ${error?.message || error}`);
+      this.logger.error(
+        `RateHawk live query error: ${error?.message || error}`,
+      );
       return [];
     }
   }
@@ -237,13 +283,19 @@ export class HotelsService {
       }
       if (list.length >= 6) break;
     }
-    return list.length > 0 ? list : ['Free High-Speed WiFi', 'Air Conditioning', '24/7 Front Desk'];
+    return list.length > 0
+      ? list
+      : ['Free High-Speed WiFi', 'Air Conditioning', '24/7 Front Desk'];
   }
 
   private assertDates(input: HotelSearchInput): void {
-    const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
+    const twoDaysAgo = new Date(Date.now() - 2 * 86400000)
+      .toISOString()
+      .slice(0, 10);
     if (!input.checkIn || input.checkIn < twoDaysAgo) {
-      throw new BadRequestException('checkIn date must be today or in the future');
+      throw new BadRequestException(
+        'checkIn date must be today or in the future',
+      );
     }
     if (!input.checkOut || input.checkOut <= input.checkIn) {
       throw new BadRequestException('checkOut date must be after checkIn date');
@@ -253,7 +305,9 @@ export class HotelsService {
   private async fetchJson(url: string, payload: unknown): Promise<any> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-    const basicAuth = Buffer.from(`${this.apiId}:${this.apiKey}`).toString('base64');
+    const basicAuth = Buffer.from(`${this.apiId}:${this.apiKey}`).toString(
+      'base64',
+    );
 
     try {
       const res = await fetch(url, {
@@ -271,7 +325,9 @@ export class HotelsService {
 
       if (!res.ok) {
         const errorText = await res.text().catch(() => '');
-        throw new Error(`RateHawk returned HTTP ${res.status}: ${errorText.slice(0, 150)}`);
+        throw new Error(
+          `RateHawk returned HTTP ${res.status}: ${errorText.slice(0, 150)}`,
+        );
       }
 
       return await res.json();

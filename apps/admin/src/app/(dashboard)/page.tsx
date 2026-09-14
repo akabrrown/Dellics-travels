@@ -141,7 +141,7 @@ export default function AdminDashboardPage() {
   ];
 
   const SUPPLIERS = [
-    { name: "Duffel Flights GDS", status: "Operational", ping: "284ms", err: "0.00%", ok: true },
+    { name: "FX Flights GDS", status: "Operational", ping: "284ms", err: "0.00%", ok: true },
     { name: "RateHawk Hotels", status: "Operational", ping: "410ms", err: "0.00%", ok: true },
     { name: "Airalo eSIM API", status: "Operational", ping: "310ms", err: "0.00%", ok: true },
     { name: "Paystack Gateway", status: "Operational", ping: "195ms", err: "0.00%", ok: true },

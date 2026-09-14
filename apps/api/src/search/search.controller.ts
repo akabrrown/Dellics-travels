@@ -64,4 +64,3 @@ export class SearchController {
     return this.searchService.convertCurrency(numAmount, from, to);
   }
 }
-

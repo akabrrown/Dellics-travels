@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiraloApiError } from './esim-error.handler';
@@ -25,7 +30,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit() {
-    this.logger.log('Initializing Airalo eSIM Service & Hourly Catalog Sync Engine...');
+    this.logger.log(
+      'Initializing Airalo eSIM Service & Hourly Catalog Sync Engine...',
+    );
     // Trigger initial background catalog sync after boot
     setTimeout(() => {
       this.syncPackagesCatalog().catch((err) =>
@@ -34,11 +41,14 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
     }, 5000);
 
     // Schedule hourly sync every 60 minutes (as officially recommended by Airalo Partners)
-    this.syncTimer = setInterval(() => {
-      this.syncPackagesCatalog().catch((err) =>
-        this.logger.error(`Hourly catalog sync error: ${err.message}`),
-      );
-    }, 60 * 60 * 1000);
+    this.syncTimer = setInterval(
+      () => {
+        this.syncPackagesCatalog().catch((err) =>
+          this.logger.error(`Hourly catalog sync error: ${err.message}`),
+        );
+      },
+      60 * 60 * 1000,
+    );
   }
 
   onModuleDestroy() {
@@ -76,7 +86,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
     }
 
     if (!this.clientId || !this.clientSecret) {
-      this.logger.warn('Airalo credentials missing (AIRALO_CLIENT_ID / AIRALO_CLIENT_SECRET).');
+      this.logger.warn(
+        'Airalo credentials missing (AIRALO_CLIENT_ID / AIRALO_CLIENT_SECRET).',
+      );
       return null;
     }
 
@@ -109,7 +121,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
       // expires_in is in seconds (e.g. 86400 for 24 hours)
       const validSeconds = body.data.expires_in || 86400;
       this.tokenExpiresAt = now + validSeconds * 1000;
-      this.logger.log(`Successfully acquired Airalo access token (valid for ${validSeconds}s)`);
+      this.logger.log(
+        `Successfully acquired Airalo access token (valid for ${validSeconds}s)`,
+      );
       return this.cachedAccessToken;
     } catch (err: any) {
       this.logger.warn(
@@ -125,7 +139,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
    * Accurately unpacks OpenAPI schema: data[].operators[].packages[]
    */
   async getPackages(countryOrRegion: string, typeFilter?: 'local' | 'global') {
-    this.logger.log(`Fetching eSIM packages for ${countryOrRegion} (type: ${typeFilter || 'all'})`);
+    this.logger.log(
+      `Fetching eSIM packages for ${countryOrRegion} (type: ${typeFilter || 'all'})`,
+    );
 
     const token = await this.getAiraloAccessToken();
 
@@ -133,8 +149,10 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
       try {
         const queryParams = new URLSearchParams();
         // Check if 2-letter ISO country code or global/regional
-        const isGlobal = countryOrRegion.toLowerCase() === 'global' || countryOrRegion.toLowerCase() === 'world';
-        
+        const isGlobal =
+          countryOrRegion.toLowerCase() === 'global' ||
+          countryOrRegion.toLowerCase() === 'world';
+
         if (isGlobal || typeFilter === 'global') {
           queryParams.append('filter[type]', 'global');
         } else if (countryOrRegion.length === 2) {
@@ -163,7 +181,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
           for (const country of countries) {
             const countryTitle = country.title || countryOrRegion;
             const countryImage = country.image?.url || null;
-            const minPriceUsd = country.min_price?.recommended_retail_price?.USD || country.min_price?.net_price?.USD;
+            const minPriceUsd =
+              country.min_price?.recommended_retail_price?.USD ||
+              country.min_price?.net_price?.USD;
 
             for (const operator of country.operators || []) {
               const operatorName = operator.title || 'Standard Telecom';
@@ -171,15 +191,33 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
               const apnInfo = operator.apn || null;
 
               for (const pkg of operator.packages || []) {
+                const voiceMinutes =
+                  Number(
+                    pkg.voice ||
+                      pkg.voice_minutes ||
+                      (pkg.title?.toLowerCase().includes('voice') ||
+                      pkg.title?.toLowerCase().includes('call')
+                        ? 100
+                        : 0),
+                  ) || 0;
+
                 extractedPackages.push({
                   id: pkg.id,
                   packageId: pkg.id,
                   title: pkg.title || `${pkg.data} - ${pkg.day} Days`,
                   data: pkg.data,
+                  airtimeMinutes: voiceMinutes,
                   validity: `${pkg.day} Days`,
                   validityDays: pkg.day,
-                  price: Number(pkg.price || pkg.prices?.recommended_retail_price?.USD || minPriceUsd || 10),
-                  netPrice: Number(pkg.net_price || pkg.prices?.net_price?.USD || 0),
+                  price: Number(
+                    pkg.price ||
+                      pkg.prices?.recommended_retail_price?.USD ||
+                      minPriceUsd ||
+                      10,
+                  ),
+                  netPrice: Number(
+                    pkg.net_price || pkg.prices?.net_price?.USD || 0,
+                  ),
                   type: operatorType,
                   isUnlimited: Boolean(pkg.is_unlimited),
                   operator: operatorName,
@@ -195,7 +233,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
           }
 
           if (extractedPackages.length > 0) {
-            this.logger.log(`Parsed ${extractedPackages.length} live packages from Airalo`);
+            this.logger.log(
+              `Parsed ${extractedPackages.length} live packages from Airalo`,
+            );
             return extractedPackages;
           }
         } else if (res.status === 401) {
@@ -206,36 +246,40 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // Default curated fallback packages
+    // Default curated fallback packages with Data and Airtime allowances
     return [
       {
         id: `pkg_${countryOrRegion}_1`,
-        title: `1 GB - 7 Days`,
+        title: `1 GB Data - 7 Days`,
         data: '1 GB',
+        airtimeMinutes: 0,
         validity: '7 Days',
         price: 4.5,
         type: 'local',
       },
       {
         id: `pkg_${countryOrRegion}_2`,
-        title: `3 GB - 30 Days`,
+        title: `3 GB Data + 60 Mins Airtime - 30 Days`,
         data: '3 GB',
+        airtimeMinutes: 60,
         validity: '30 Days',
         price: 11.0,
         type: 'local',
       },
       {
         id: `pkg_${countryOrRegion}_3`,
-        title: `10 GB - 30 Days`,
+        title: `10 GB Data + 120 Mins Airtime - 30 Days`,
         data: '10 GB',
+        airtimeMinutes: 120,
         validity: '30 Days',
         price: 26.0,
         type: 'local',
       },
       {
         id: `pkg_${countryOrRegion}_4`,
-        title: `20 GB - 30 Days`,
+        title: `20 GB Data + 200 Mins Airtime - 30 Days`,
         data: '20 GB',
+        airtimeMinutes: 200,
         validity: '30 Days',
         price: 42.0,
         type: 'local',
@@ -250,7 +294,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
    */
   async syncPackagesCatalog() {
     if (this.isSyncing) {
-      this.logger.log('Catalog sync already in progress. Skipping duplicate run.');
+      this.logger.log(
+        'Catalog sync already in progress. Skipping duplicate run.',
+      );
       return { status: 'in_progress' };
     }
 
@@ -396,7 +442,6 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
       include: { esim_plan: true },
     });
 
-
     if (!order) {
       this.logger.warn(`No pending eSIM order found for ${paymentReference}`);
       return null;
@@ -431,7 +476,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
           const simData = body?.data?.sims?.[0] || body?.data;
           if (simData?.qrcode_url) qrCodeUrl = simData.qrcode_url;
           if (simData?.iccid) iccid = simData.iccid;
-          this.logger.log(`Airalo eSIM order created successfully: ICCID=${iccid}`);
+          this.logger.log(
+            `Airalo eSIM order created successfully: ICCID=${iccid}`,
+          );
         } else {
           // Gracefully process 4xx and 5xx errors
           if (response.status === 401) {
@@ -444,7 +491,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
           );
         }
       } catch (err: any) {
-        this.logger.error(`Airalo order submission network error: ${err.message}`);
+        this.logger.error(
+          `Airalo order submission network error: ${err.message}`,
+        );
       }
     }
 
@@ -507,7 +556,7 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Admin: List all eSIM orders across all users with user details and plan data
+   * Admin: List all eSIM orders across all users with user details, data allowance, and airtime metrics
    */
   async getAdminOrders() {
     try {
@@ -520,27 +569,76 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
         },
       });
 
-      return {
-        status: 'success',
-        count: orders.length,
-        data: orders.map((o) => ({
+      const formattedOrders = orders.map((o) => {
+        const dataGb = o.esim_plan?.data_gb ? Number(o.esim_plan.data_gb) : 0;
+        const airtimeMinutes = Number(
+          (o as any).airtime_minutes ??
+            (o.esim_plan as any)?.airtime_minutes ??
+            0,
+        );
+        const price = o.esim_plan?.price ? Number(o.esim_plan.price) : 0;
+
+        return {
           id: o.id,
           reference: o.paystack_reference,
           status: o.status,
           iccid: o.iccid,
           qrCodeUrl: o.qr_code_url,
           region: o.esim_plan?.country_or_region || 'Global',
-          dataGb: o.esim_plan?.data_gb ? Number(o.esim_plan.data_gb) : 0,
+          dataGb,
+          airtimeMinutes,
           validityDays: o.esim_plan?.validity_days || 0,
-          price: o.esim_plan?.price ? Number(o.esim_plan.price) : 0,
+          price,
+          currency: 'USD',
           travelerName: o.user?.name || 'Client',
           travelerEmail: o.user?.email || '',
           createdAt: o.created_at,
-        })),
+        };
+      });
+
+      const totalDataGb = formattedOrders.reduce((sum, o) => sum + o.dataGb, 0);
+      const totalAirtimeMinutes = formattedOrders.reduce(
+        (sum, o) => sum + o.airtimeMinutes,
+        0,
+      );
+      const totalRevenueUsd = formattedOrders.reduce(
+        (sum, o) => sum + o.price,
+        0,
+      );
+
+      return {
+        status: 'success',
+        count: formattedOrders.length,
+        summary: {
+          totalOrders: formattedOrders.length,
+          totalDataGb: Number(totalDataGb.toFixed(1)),
+          totalAirtimeMinutes,
+          totalRevenueUsd: Number(totalRevenueUsd.toFixed(2)),
+          totalRevenueGhs: Number((totalRevenueUsd * 15.2).toFixed(2)),
+          activeOrders: formattedOrders.filter(
+            (o) => o.status === 'PROVISIONED' || o.status === 'ACTIVE',
+          ).length,
+          pendingOrders: formattedOrders.filter((o) => o.status === 'PENDING')
+            .length,
+        },
+        data: formattedOrders,
       };
     } catch (err: any) {
       this.logger.error(`getAdminOrders failed: ${err.message}`);
-      return { status: 'error', count: 0, data: [] };
+      return {
+        status: 'error',
+        count: 0,
+        summary: {
+          totalOrders: 0,
+          totalDataGb: 0,
+          totalAirtimeMinutes: 0,
+          totalRevenueUsd: 0,
+          totalRevenueGhs: 0,
+          activeOrders: 0,
+          pendingOrders: 0,
+        },
+        data: [],
+      };
     }
   }
 
@@ -552,7 +650,9 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
     const token = await this.getAiraloAccessToken();
 
     if (!token) {
-      throw new Error('Unable to authenticate with Airalo to configure webhooks.');
+      throw new Error(
+        'Unable to authenticate with Airalo to configure webhooks.',
+      );
     }
 
     try {

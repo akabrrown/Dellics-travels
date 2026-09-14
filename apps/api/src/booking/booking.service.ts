@@ -31,7 +31,6 @@ export class BookingService {
     return this.configService.get<string>('PAYSTACK_PUBLIC_KEY') || '';
   }
 
-
   private get paystackBaseUrl(): string {
     return (
       this.configService.get<string>('PAYSTACK_BASE_URL') ||
@@ -47,7 +46,8 @@ export class BookingService {
     currency: string = 'GHS',
     metadata: any = {},
   ) {
-    const email = metadata?.guestEmail || metadata?.email || 'guest@dellicstravels.com';
+    const email =
+      metadata?.guestEmail || metadata?.email || 'guest@dellicstravels.com';
     const ref = `dellics_bk_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const amountInSubunits = Math.round(amount * 100);
 
@@ -85,7 +85,8 @@ export class BookingService {
       const data = await response.json();
       if (!response.ok || !data.status) {
         throw new Error(
-          data.message || `Paystack initialization failed with status ${response.status}`,
+          data.message ||
+            `Paystack initialization failed with status ${response.status}`,
         );
       }
 
@@ -99,7 +100,9 @@ export class BookingService {
         paymentIntentId: data.data.reference,
       };
     } catch (error: any) {
-      this.logger.error(`Error initializing Paystack checkout: ${error.message}`);
+      this.logger.error(
+        `Error initializing Paystack checkout: ${error.message}`,
+      );
       throw new HttpException(
         error.message || 'Payment initialization error',
         HttpStatus.BAD_REQUEST,
@@ -179,13 +182,26 @@ export class BookingService {
   /**
    * Validates and processes Paystack booking webhook events
    */
-  async handlePaystackWebhook(signature: string, payload: Buffer | string | any) {
+  async handlePaystackWebhook(
+    signature: string,
+    payload: Buffer | string | any,
+  ) {
     if (!signature || !this.paystackSecretKey) {
-      this.logger.warn('Paystack webhook received without valid signature or secret key');
-      throw new HttpException('Invalid webhook signature', HttpStatus.BAD_REQUEST);
+      this.logger.warn(
+        'Paystack webhook received without valid signature or secret key',
+      );
+      throw new HttpException(
+        'Invalid webhook signature',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    const rawBody = typeof payload === 'string' ? payload : Buffer.isBuffer(payload) ? payload.toString('utf8') : JSON.stringify(payload);
+    const rawBody =
+      typeof payload === 'string'
+        ? payload
+        : Buffer.isBuffer(payload)
+          ? payload.toString('utf8')
+          : JSON.stringify(payload);
     const hash = crypto
       .createHmac('sha512', this.paystackSecretKey)
       .update(rawBody)
@@ -194,9 +210,15 @@ export class BookingService {
     const hashBuf = Buffer.from(hash, 'utf8');
     const sigBuf = Buffer.from(signature, 'utf8');
 
-    if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
+    if (
+      hashBuf.length !== sigBuf.length ||
+      !crypto.timingSafeEqual(hashBuf, sigBuf)
+    ) {
       this.logger.warn('Paystack webhook signature verification failed');
-      throw new HttpException('Invalid webhook signature', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Invalid webhook signature',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const event = JSON.parse(rawBody);
@@ -227,7 +249,15 @@ export class BookingService {
    */
   async getAdminOverview() {
     try {
-      const [total, held, confirmed, completed, cancelled, recentBookings, payments] = await Promise.all([
+      const [
+        total,
+        held,
+        confirmed,
+        completed,
+        cancelled,
+        recentBookings,
+        payments,
+      ] = await Promise.all([
         this.prisma.booking.count(),
         this.prisma.booking.count({ where: { status: 'HELD' } }),
         this.prisma.booking.count({ where: { status: 'CONFIRMED' } }),
@@ -251,16 +281,34 @@ export class BookingService {
         }),
       ]);
 
-      const totalRevenueGHS = payments.reduce((acc, p) => acc + Number(p.amount), 0);
+      const totalRevenueGHS = payments.reduce(
+        (acc, p) => acc + Number(p.amount),
+        0,
+      );
 
       return {
         status: 'success',
         data: {
           pipeline: [
             { label: 'Held', count: held, sub: 'Active holds', status: 'HELD' },
-            { label: 'Confirmed', count: confirmed, sub: 'Ticketed & active', status: 'CONFIRMED' },
-            { label: 'Completed', count: completed, sub: 'Completed trips', status: 'COMPLETED' },
-            { label: 'Cancelled', count: cancelled, sub: 'Voided / Cancelled', status: 'CANCELLED' },
+            {
+              label: 'Confirmed',
+              count: confirmed,
+              sub: 'Ticketed & active',
+              status: 'CONFIRMED',
+            },
+            {
+              label: 'Completed',
+              count: completed,
+              sub: 'Completed trips',
+              status: 'COMPLETED',
+            },
+            {
+              label: 'Cancelled',
+              count: cancelled,
+              sub: 'Voided / Cancelled',
+              status: 'CANCELLED',
+            },
           ],
           counts: { total, held, confirmed, completed, cancelled },
           totalRevenueGHS,
@@ -285,7 +333,13 @@ export class BookingService {
         status: 'error',
         data: {
           pipeline: [],
-          counts: { total: 0, held: 0, confirmed: 0, completed: 0, cancelled: 0 },
+          counts: {
+            total: 0,
+            held: 0,
+            confirmed: 0,
+            completed: 0,
+            cancelled: 0,
+          },
           totalRevenueGHS: 0,
           recentBookings: [],
         },
@@ -296,7 +350,12 @@ export class BookingService {
   /**
    * Admin paginated bookings list with search and filters
    */
-  async getAdminBookings(params: { status?: string; type?: string; search?: string; limit?: number }) {
+  async getAdminBookings(params: {
+    status?: string;
+    type?: string;
+    search?: string;
+    limit?: number;
+  }) {
     try {
       const where: any = {};
       if (params.status && params.status !== 'ALL') {
@@ -310,8 +369,16 @@ export class BookingService {
           { id: { contains: params.search, mode: 'insensitive' } },
           { supplier_ref: { contains: params.search, mode: 'insensitive' } },
           { trip: { title: { contains: params.search, mode: 'insensitive' } } },
-          { trip: { user: { name: { contains: params.search, mode: 'insensitive' } } } },
-          { trip: { user: { email: { contains: params.search, mode: 'insensitive' } } } },
+          {
+            trip: {
+              user: { name: { contains: params.search, mode: 'insensitive' } },
+            },
+          },
+          {
+            trip: {
+              user: { email: { contains: params.search, mode: 'insensitive' } },
+            },
+          },
         ];
       }
 
@@ -424,14 +491,34 @@ export class BookingService {
         this.prisma.user.count(),
       ]);
 
-      const totalRevenueGHS = payments.reduce((acc, p) => acc + Number(p.amount), 0);
+      const totalRevenueGHS = payments.reduce(
+        (acc, p) => acc + Number(p.amount),
+        0,
+      );
       const totalBookingsCount = bookings.length;
-      const completedCount = bookings.filter((b) => b.status === 'COMPLETED' || b.status === 'CONFIRMED').length;
-      const avgBookingValue = completedCount > 0 ? Math.round(totalRevenueGHS / completedCount) : 0;
+      const completedCount = bookings.filter(
+        (b) => b.status === 'COMPLETED' || b.status === 'CONFIRMED',
+      ).length;
+      const avgBookingValue =
+        completedCount > 0 ? Math.round(totalRevenueGHS / completedCount) : 0;
 
       // Group payments by month
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const monthlyMap: Record<string, { revenue: number; bookings: number }> = {};
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      const monthlyMap: Record<string, { revenue: number; bookings: number }> =
+        {};
       months.forEach((m) => {
         monthlyMap[m] = { revenue: 0, bookings: 0 };
       });
@@ -452,8 +539,12 @@ export class BookingService {
 
       // Conversion funnel derived from live records
       const heldCount = bookings.filter((b) => b.status === 'HELD').length;
-      const confirmedCount = bookings.filter((b) => b.status === 'CONFIRMED').length;
-      const completedFinal = bookings.filter((b) => b.status === 'COMPLETED').length;
+      const confirmedCount = bookings.filter(
+        (b) => b.status === 'CONFIRMED',
+      ).length;
+      const completedFinal = bookings.filter(
+        (b) => b.status === 'COMPLETED',
+      ).length;
       const pipelineTotal = totalBookingsCount || 1;
 
       const funnelData = [
@@ -465,7 +556,7 @@ export class BookingService {
         {
           stage: '2. Itinerary & Seat Holds',
           visitors: pipelineTotal * 3 + heldCount,
-          conversion: `${Math.round(((pipelineTotal * 3 + heldCount) / (Math.max(pipelineTotal * 12, 1000))) * 100)}%`,
+          conversion: `${Math.round(((pipelineTotal * 3 + heldCount) / Math.max(pipelineTotal * 12, 1000)) * 100)}%`,
         },
         {
           stage: '3. Checkout & Payment Authorized',
@@ -533,7 +624,8 @@ export class BookingService {
         throw new Error('Traveler name and booking amount are required');
       }
 
-      const email = dto.travelerEmail?.trim() || `walkin.${Date.now()}@dellicstravels.com`;
+      const email =
+        dto.travelerEmail?.trim() || `walkin.${Date.now()}@dellicstravels.com`;
       const numericAmount = Number(dto.amount);
       const currency = dto.currency || 'GHS';
       const bookingType = (dto.type || 'FLIGHT').toUpperCase();
@@ -574,9 +666,11 @@ export class BookingService {
       const booking = await this.prisma.booking.create({
         data: {
           trip_id: trip.id,
-          type: (bookingType as any) in ['FLIGHT', 'HOTEL', 'PACKAGE', 'CAR', 'ACTIVITY']
-            ? (bookingType as any)
-            : 'FLIGHT',
+          type:
+            (bookingType as any) in
+            ['FLIGHT', 'HOTEL', 'PACKAGE', 'CAR', 'ACTIVITY']
+              ? (bookingType as any)
+              : 'FLIGHT',
           status: 'CONFIRMED',
           supplier_ref: supplierRef,
         },

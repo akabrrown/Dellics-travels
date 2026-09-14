@@ -1,4 +1,10 @@
-import { Injectable, Logger, HttpException, HttpStatus, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  HttpException,
+  HttpStatus,
+  Optional,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -19,7 +25,9 @@ export class SearchService {
     private readonly hotelsService: HotelsService,
     @Optional() injectedCache?: CacheService,
   ) {
-    this.cache = injectedCache || new CacheService({ maxEntries: 1000, defaultTtlMs: this.CACHE_TTL_MS });
+    this.cache =
+      injectedCache ||
+      new CacheService({ maxEntries: 1000, defaultTtlMs: this.CACHE_TTL_MS });
   }
 
   private getCached(key: string) {
@@ -63,7 +71,9 @@ export class SearchService {
     const fxPortApiKey =
       this.configService.get<string>('FXPORT_API_KEY') ||
       'fxp_live_503bf984466b274916bb6d3e5ecd527e';
-    const fxPortSecret = this.configService.get<string>('FXPORT_WEBHOOK_SECRET');
+    const fxPortSecret = this.configService.get<string>(
+      'FXPORT_WEBHOOK_SECRET',
+    );
 
     if (fxPortApiKey) {
       try {
@@ -140,7 +150,8 @@ export class SearchService {
               departureTime: firstSeg?.departure?.datetime || null,
               arrivalTime: lastSeg?.arrival?.datetime || null,
               duration: this.formatDuration(itin?.duration),
-              stops: itin?.stops ?? Math.max(0, (itin?.segments?.length || 1) - 1),
+              stops:
+                itin?.stops ?? Math.max(0, (itin?.segments?.length || 1) - 1),
               cabinClass:
                 firstSeg?.cabin ||
                 cabinClass.charAt(0).toUpperCase() + cabinClass.slice(1),
@@ -458,7 +469,7 @@ export class SearchService {
     ).toUpperCase();
 
     try {
-      // Query live Duffel flight offers for target destination across the comparison dates
+      // Query live FX flight offers for target destination across the comparison dates
       const datePromises = dateStrs.map(async (d, index) => {
         try {
           const flightRes = await this.searchFlights({
@@ -695,7 +706,8 @@ export class SearchService {
     const checkIn = query.checkIn || today.toISOString().split('T')[0];
 
     const defaultCheckout = new Date(
-      new Date(checkIn).getTime() + 86400000 * (parseInt(query.nights, 10) || 3),
+      new Date(checkIn).getTime() +
+        86400000 * (parseInt(query.nights, 10) || 3),
     )
       .toISOString()
       .split('T')[0];
@@ -852,8 +864,6 @@ export class SearchService {
     }
   }
 
-
-
   /**
    * Live Foreign Exchange rates from Open Exchange Rates
    */
@@ -943,7 +953,10 @@ export class SearchService {
           where.is_featured = true;
         }
         if (query.destination) {
-          where.destination = { contains: query.destination, mode: 'insensitive' };
+          where.destination = {
+            contains: query.destination,
+            mode: 'insensitive',
+          };
         }
 
         const dbTours = await (this.prisma as any).tourPackage.findMany({
@@ -1035,4 +1048,3 @@ export class SearchService {
     };
   }
 }
-

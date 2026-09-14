@@ -175,7 +175,7 @@ export default function BookingsManagement() {
             Bookings Ledger & GDS Pipeline
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Section 5.2 A03: Multi-supplier booking lifecycle across Duffel Flights, RateHawk Stays, and Packages.
+            Section 5.2 A03: Multi-supplier booking lifecycle across FX Flights, RateHawk Stays, and Packages.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ export default function BookingsManagement() {
             className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#0A0060] focus:ring-2 focus:ring-[#0A0060]/10 transition-all cursor-pointer"
           >
             <option value="ALL">All Categories</option>
-            <option value="FLIGHT">Flights (Duffel)</option>
+            <option value="FLIGHT">Flights (FX)</option>
             <option value="HOTEL">Hotels (RateHawk)</option>
             <option value="PACKAGE">Tour Packages</option>
             <option value="ESIM">eSIMs (Airalo)</option>

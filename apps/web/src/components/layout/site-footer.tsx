@@ -9,40 +9,67 @@ import {
   Mail,
   Clock,
   ArrowRight,
+  Plane,
+  Hotel,
+  Compass,
+  Palmtree,
+  Smartphone,
+  Layers,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { AccreditationStrip } from "@/components/accreditation-strip";
 
-const LEGAL = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms & Conditions", href: "/terms" },
+const OTA_CATEGORY_STRIP = [
+  { label: "Flights", href: "/flights", icon: Plane },
+  { label: "Hotels", href: "/hotels", icon: Hotel },
+  { label: "Tours", href: "/tours", icon: Compass },
+  { label: "Packages/Diaspora Tours", href: "/diaspora", icon: Palmtree },
+  { label: "eSIM", href: "/esim", icon: Smartphone },
+  { label: "Services", href: "/services", icon: Layers },
 ];
 
-const SERVICES_LINKS = [
-  { label: "Flight Ticketing", href: "/flights" },
-  { label: "Hotels & Stays", href: "/hotels" },
-  { label: "Tour Packages", href: "/tours" },
-  { label: "Airport Transfers", href: "/transfers" },
-  { label: "Visa Assistance", href: "/visa" },
+const BOOK_LINKS = [
+  { label: "Flights", href: "/flights" },
+  { label: "Hotels", href: "/hotels" },
+  { label: "Tours", href: "/tours" },
+  { label: "Transfers", href: "/transfers" },
+  { label: "Cars", href: "/transfers#car-rental" },
+  { label: "eSIM", href: "/esim" },
+];
+
+const TRAVEL_SERVICES_LINKS = [
+  { label: "Visa", href: "/visa" },
   { label: "Corporate Travel", href: "/corporate" },
-  { label: "Diaspora & Heritage", href: "/diaspora" },
+  { label: "Travel Insurance", href: "/services#insurance" },
+  { label: "Concierge", href: "/services#concierge" },
 ];
 
-const DESTINATIONS_LINKS = [
-  { label: "Africa & Safaris", href: "/destinations/africa" },
-  { label: "Europe & UK Escapes", href: "/destinations/europe" },
-  { label: "Asia & Exotic Stays", href: "/destinations/asia" },
-  { label: "Middle East & Dubai", href: "/destinations/middle-east" },
-  { label: "North America", href: "/destinations/north-america" },
-  { label: "All Destinations", href: "/destinations" },
+const EXPERIENCES_LINKS = [
+  { label: "Ghana Tours", href: "/tours" },
+  { label: "Diaspora", href: "/diaspora" },
+  { label: "Africa", href: "/destinations/africa" },
+  { label: "International Packages", href: "/destinations" },
 ];
 
-const COMPANY_LINKS = [
-  { label: "About Us", href: "/about" },
-  { label: "Photo Gallery", href: "/gallery" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "Start an Inquiry", href: "/inquire" },
-  { label: "Client Login", href: "/signin" },
+const MY_TRIP_LINKS = [
+  { label: "Manage Booking", href: "/profile" },
+  { label: "My Account", href: "/profile" },
+];
+
+const SUPPORT_LINKS = [
+  {
+    label: "WhatsApp",
+    href: `https://wa.me/${SITE.whatsappNumber}`,
+    external: true,
+  },
+  { label: "Contact", href: "/contact" },
+  { label: "Help Centre", href: "/contact" },
+];
+
+const LEGAL_LINKS = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Cookie Policy", href: "/cookies" },
 ];
 
 export function SiteFooter() {
@@ -61,12 +88,46 @@ export function SiteFooter() {
       {/* Accreditation Banner */}
       <AccreditationStrip />
 
+      {/* OTA Quick Category Strip */}
+      <div className="border-b border-white/10 bg-white/[0.03]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+          <nav
+            aria-label="Quick Category Navigation"
+            className="flex flex-wrap items-center justify-center gap-y-2 text-xs sm:text-sm font-medium text-white/80"
+          >
+            {OTA_CATEGORY_STRIP.map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <div key={category.href} className="flex items-center">
+                  <Link
+                    href={category.href}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-white/85 hover:text-brand-orange hover:bg-white/5 transition-colors"
+                  >
+                    <Icon className="size-3.5 text-brand-orange" />
+                    <span>{category.label}</span>
+                  </Link>
+                  {index < OTA_CATEGORY_STRIP.length - 1 && (
+                    <span className="hidden sm:inline-block text-white/20 select-none px-1">
+                      |
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
       {/* Main Footer Content */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid gap-10 lg:grid-cols-5 md:grid-cols-2">
-          {/* Column 1: Brand & Story */}
-          <div className="lg:col-span-2 space-y-6">
-            <Link href="/" className="inline-flex items-center group" aria-label="Dellics Travels Home">
+        <div className="grid gap-10 lg:grid-cols-12">
+          {/* Column 1: Brand & Contact Info */}
+          <div className="lg:col-span-4 space-y-6">
+            <Link
+              href="/"
+              className="inline-flex items-center group"
+              aria-label="Dellics Travels Home"
+            >
               <div className="relative h-16 w-24 shrink-0 transition-transform group-hover:scale-105">
                 <Image
                   src="/logo.jpeg"
@@ -75,15 +136,15 @@ export function SiteFooter() {
                   className="object-contain"
                   unoptimized
                 />
-
               </div>
             </Link>
-            <div className="space-y-2 text-sm leading-relaxed text-white/75 max-w-md">
-              <p>
-                Dellics Travels is an IATA Certified, global luxury travel management company.
+            <div className="space-y-2 text-sm leading-relaxed text-white/75 max-w-sm">
+              <p className="font-medium text-white/90">
+                Africa’s trusted Online Travel Company.
               </p>
               <p>
-                We organize international flight tickets, tour &amp; holidays packages, Corporate travel, Travel Itineraries, Visa advisory.
+                We provide Flights, Hotels, Tour &amp; Holiday Packages, eSIM, and
+                Diaspora Tourism services worldwide.
               </p>
             </div>
 
@@ -91,24 +152,32 @@ export function SiteFooter() {
               <div className="flex items-start gap-3 text-xs text-white/80">
                 <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold text-white">Ghana HQ:</span> Community 25, Devtraco Estate, Tema, Greater Accra
+                  <span className="font-semibold text-white">Ghana HQ:</span>{" "}
+                  Community 25, Devtraco Estate, Tema, Greater Accra
                 </div>
               </div>
               <div className="flex items-start gap-3 text-xs text-white/80">
                 <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold text-white">USA Office:</span> 30 N Gould ST, STER, SHERIDAN, WY 82801
+                  <span className="font-semibold text-white">USA Office:</span>{" "}
+                  30 N Gould ST, STER, SHERIDAN, WY 82801
                 </div>
               </div>
               <div className="flex items-center gap-3 text-xs text-white/80">
                 <Phone className="size-4 text-brand-orange shrink-0" />
-                <a href={`tel:${SITE.whatsappNumber}`} className="hover:text-brand-orange transition-colors">
+                <a
+                  href={`tel:${SITE.whatsappNumber}`}
+                  className="hover:text-brand-orange transition-colors"
+                >
                   {SITE.phoneDisplay}
                 </a>
               </div>
               <div className="flex items-center gap-3 text-xs text-white/80">
                 <Mail className="size-4 text-brand-orange shrink-0" />
-                <a href={`mailto:${SITE.email}`} className="hover:text-brand-orange transition-colors">
+                <a
+                  href={`mailto:${SITE.email}`}
+                  className="hover:text-brand-orange transition-colors"
+                >
                   {SITE.email}
                 </a>
               </div>
@@ -117,55 +186,28 @@ export function SiteFooter() {
                 <span>Mon – Sat: 8:00 AM – 6:00 PM GMT · 24/7 Concierge</span>
               </div>
             </div>
+
+            <div className="pt-2">
+              <Link
+                href="/inquire"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold py-2.5 px-5 text-xs shadow-md transition-colors"
+              >
+                <ArrowRight className="size-3.5" />
+                <span>Start an Inquiry</span>
+              </Link>
+            </div>
           </div>
 
-          {/* Column 2: Travel Services */}
-          <div className="space-y-4">
-            <h4 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange">
-              Services
-            </h4>
-            <ul className="space-y-2.5 text-sm text-white/70">
-              {SERVICES_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white hover:underline transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Destinations */}
-          <div className="space-y-4">
-            <h4 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange">
-              Destinations
-            </h4>
-            <ul className="space-y-2.5 text-sm text-white/70">
-              {DESTINATIONS_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white hover:underline transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 4: Quick Links & Instant Support */}
-          <div className="space-y-6">
+          {/* Columns 2-6: Structured OTA Navigation */}
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
+            {/* 1. BOOK */}
             <div className="space-y-4">
-              <h4 className="font-display text-sm font-bold uppercase tracking-wider text-brand-orange">
-                Quick Links
+              <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
+                Book
               </h4>
               <ul className="space-y-2.5 text-sm text-white/70">
-                {COMPANY_LINKS.map((link) => (
-                  <li key={link.href}>
+                {BOOK_LINKS.map((link) => (
+                  <li key={link.label}>
                     <Link
                       href={link.href}
                       className="hover:text-white hover:underline transition-colors"
@@ -177,23 +219,103 @@ export function SiteFooter() {
               </ul>
             </div>
 
-            <div className="pt-2">
-              <Link
-                href="/inquire"
-                className="flex items-center justify-center gap-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold py-2.5 px-4 text-xs shadow-md transition-colors"
-              >
-                <ArrowRight className="size-3.5" />
-                <span>Start an Inquiry</span>
-              </Link>
+            {/* 2. TRAVEL SERVICES */}
+            <div className="space-y-4">
+              <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
+                Travel Services
+              </h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                {TRAVEL_SERVICES_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="hover:text-white hover:underline transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 3. EXPERIENCES */}
+            <div className="space-y-4">
+              <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
+                Experiences
+              </h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                {EXPERIENCES_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="hover:text-white hover:underline transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 4. MY TRIP */}
+            <div className="space-y-4">
+              <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
+                My Trip
+              </h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                {MY_TRIP_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="hover:text-white hover:underline transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 5. SUPPORT */}
+            <div className="space-y-4">
+              <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
+                Support
+              </h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                {SUPPORT_LINKS.map((link) => (
+                  <li key={link.label}>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-white hover:underline transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="hover:text-white hover:underline transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
 
         {/* Bottom Legal Bar */}
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-          <p>© {new Date().getFullYear()} Dellics Travels. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Dellics Travels Online Travel Company.
+            All rights reserved.
+          </p>
           <div className="flex items-center gap-6">
-            {LEGAL.map((item) => (
+            {LEGAL_LINKS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

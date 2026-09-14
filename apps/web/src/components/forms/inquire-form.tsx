@@ -129,6 +129,24 @@ export function InquireForm() {
         Object.entries(parsed.data).filter(([, value]) => value !== ""),
       );
       await postJson("/inquiries", { ...payload, kind: "INQUIRY" });
+
+      // Log CRM interaction (fire-and-forget)
+      const serviceParam = searchParams.get("service") || "general";
+      postJson("/crm/interactions", {
+        user_id: user?.id,
+        channel: "WEB_INQUIRY",
+        subject: `Web Inquiry: ${destination || serviceParam}`,
+        content: `${name} submitted an inquiry for ${destination || serviceParam}. Travel date: ${travelDate || "Flexible"}, Travelers: ${travelers || "1"}. Note: ${message.slice(0, 300)}`,
+        metadata: {
+          service: serviceParam,
+          destination,
+          travelDate,
+          travelers,
+          email,
+          phone,
+        },
+      }).catch(() => {});
+
       toast.success("Inquiry received! Our certified travel consultant will contact you within hours.");
       setName("");
       setEmail("");

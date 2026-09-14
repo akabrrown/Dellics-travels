@@ -78,7 +78,9 @@ describe('ZohoService', () => {
   it('handles API errors gracefully without throwing', async () => {
     jest.spyOn(service, 'getAccessToken').mockResolvedValueOnce('valid-token');
 
-    jest.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network offline'));
+    jest
+      .spyOn(global, 'fetch')
+      .mockRejectedValueOnce(new Error('Network offline'));
 
     const result = await service.createLead({
       lastName: 'Mensah',

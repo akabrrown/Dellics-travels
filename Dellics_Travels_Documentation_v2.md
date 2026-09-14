@@ -41,7 +41,7 @@ Table of Contents
 Dellics Travels is a mobile-first travel booking platform that lets travelers search, compare, and book flights, hotels, car rentals, activities, and bundled vacation packages from a single app. The product draws on proven patterns from **Booking.com** — the world’s largest travel platform with over 500 million annual bookings — as its primary benchmark for conversion optimization, inventory breadth, urgency merchandising, and loyalty engineering. Secondary insights from Expedia, Trip.com, Skyscanner, Hopper, and others add advanced capabilities like dynamic packaging, price prediction, and multi-modal transport search.  
 This document is the single source of truth for building Dellics Travels to a production-ready standard. It defines the competitive research behind the feature set, the visual identity derived from the Dellics Travels logo, the complete feature architecture split into MVP (ready-to-production) and later phases, the membership package structure, the full technology stack, system architecture, data model, Stripe-based payment integration, security posture, and the end-to-end operational workflows that tie every feature together.  
 **Scope of this release**  
-The MVP defined in Section 6 is scoped to ship as a real, working production app: account creation, flight/hotel/package search and booking, Stripe checkout, trip management, price alerts, and a tiered membership system. Advanced supplier integrations (GDS/NDC direct airline contracts, white-label car rental APIs) are flagged as Phase 2/3 and are designed around third-party aggregator APIs (e.g. Duffel, Amadeus, RateHawk) so the MVP can launch without in-house airline contracts.
+The MVP defined in Section 6 is scoped to ship as a real, working production app: account creation, flight/hotel/package search and booking, Stripe checkout, trip management, price alerts, and a tiered membership system. Advanced supplier integrations (GDS/NDC direct airline contracts, white-label car rental APIs) are flagged as Phase 2/3 and are designed around third-party aggregator APIs (e.g. FX Flights, Amadeus, RateHawk) so the MVP can launch without in-house airline contracts.
 
 2\. Competitive Research
 ------------------------
@@ -248,7 +248,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 
 **\[ READY-TO-PRODUCTION \]**
 
-*   One-way, round-trip, and multi-city search via aggregator API (Duffel/Amadeus self-service in Phase 1).
+*   One-way, round-trip, and multi-city search via aggregator API (FX Flights/Amadeus self-service in Phase 1).
 *   Seat class comparison, baggage allowance display, and fare rules shown before checkout.
 *   Real-time flight status: delay, gate change, and cancellation push notifications.
 *   Fare hold: reserve a fare for 30 minutes during checkout (soft reservation) before payment capture.
@@ -467,7 +467,7 @@ Selected from the organization’s reference architecture library for a mobile-f
 | Background jobs | BullMQ (Redis-based) | Price-alert polling, itinerary email generation, fare-cache refresh |
 | Scheduled tasks | Upstash QStash | Cron-style jobs: nightly FX rate refresh, membership renewal checks |
 | Search | Typesense | Typo-tolerant destination/hotel/activity search-as-you-type |
-| Travel content aggregation | Duffel API (flights), RateHawk / Amadeus (hotels) | Production-ready supplier aggregation without direct airline/hotel contracts at launch |
+| Travel content aggregation | FX Flights API (flights), RateHawk / Amadeus (hotels) | Production-ready supplier aggregation without direct airline/hotel contracts at launch |
 | Vacation rentals (Phase 2) | RateHawk homestay inventory / dedicated vacation-rental API | Adds Airbnb/Vrbo-style listings into the same Hotels search tab |
 | Price intelligence | Rule-based heuristic on cached fare history (MVP) → Python FastAPI + scikit-learn microservice (Phase 2) | Powers Explore Map, Price Graph, and book-now-vs-wait guidance without ML infra at launch |
 
@@ -505,7 +505,7 @@ API Gateway (NestJS) --- Auth guard (Supabase JWT) → Domain Modules:
   
 • Search Module → Typesense + cached supplier results (Redis)  
   
-• Booking Module → Duffel (flights) / RateHawk (hotels) → PostgreSQL (order ledger)  
+• Booking Module → FX Flights (flights) / RateHawk (hotels) → PostgreSQL (order ledger)  
   
 • Payments Module → Stripe (PaymentIntents, Billing, Webhooks)  
   
@@ -518,7 +518,7 @@ API Gateway (NestJS) --- Auth guard (Supabase JWT) → Domain Modules:
 PostgreSQL (Supabase, RLS-enforced) + Upstash Redis (cache/queues) + Cloudinary (media)
 
 *   **Two-stage reservation pattern** for both flights and hotels: SOFT hold on selection (SERIALIZABLE transaction, short TTL) → HARD confirmation only after a Stripe PaymentIntent succeeds, preventing double-booking under concurrent demand.
-*   All supplier calls (Duffel/RateHawk) are wrapped with idempotency keys and retried via BullMQ on transient failure; webhook reconciliation confirms final booking state independent of client connectivity.
+*   All supplier calls (FX/RateHawk) are wrapped with idempotency keys and retried via BullMQ on transient failure; webhook reconciliation confirms final booking state independent of client connectivity.
 
 11\. Core Data Model
 --------------------
@@ -620,10 +620,10 @@ These are the step-by-step operational flows that connect every module in Sectio
 ### 16.2 Flight Search & Booking
 
 1.  Traveler enters origin/destination/dates (or taps Inspire Me for Everywhere search).
-2.  Search Module queries Duffel aggregator API; results cached in Redis for repeat queries within the search session.
+2.  Search Module queries FX aggregator API; results cached in Redis for repeat queries within the search session.
 3.  Traveler filters/sorts, selects a fare → Booking Module creates a SOFT hold (30-min TTL) and a Stripe PaymentIntent.
 4.  Traveler completes Stripe PaymentSheet (card/Apple Pay/Google Pay).
-5.  On payment\_intent.succeeded webhook: Booking Module finalizes the reservation with Duffel, Booking status → confirmed.
+5.  On payment\_intent.succeeded webhook: Booking Module finalizes the reservation with FX, Booking status → confirmed.
 6.  Confirmation push + email sent; booking appears in the traveler’s Trip Planner timeline.
 7.  If payment fails or the 30-min hold expires first, the hold auto-releases and inventory returns to the pool.
 
@@ -632,7 +632,7 @@ These are the step-by-step operational flows that connect every module in Sectio
 1.  Traveler selects a flight, then is prompted ‘Add a hotel and save’ for matching dates/destination.
 2.  Packaging engine reprices the combination, applying the bundle discount to a single order total.
 3.  Optionally the traveler adds a Car Rental (Phase 2) or Activity (Phase 2) to the same package before checkout.
-4.  A single Stripe PaymentIntent covers the full itemized package; on success, the Booking Module confirms each supplier leg (flight via Duffel, hotel via RateHawk) with independent idempotency keys.
+4.  A single Stripe PaymentIntent covers the full itemized package; on success, the Booking Module confirms each supplier leg (flight via FX, hotel via RateHawk) with independent idempotency keys.
 5.  If one supplier leg fails after payment succeeds, the reconciliation job automatically refunds the failed leg’s portion and notifies the traveler and Support Agent — the succeeded leg(s) remain booked.
 6.  A single confirmation and itinerary entry is generated for the whole package.
 
