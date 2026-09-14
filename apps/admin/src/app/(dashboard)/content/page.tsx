@@ -1,6 +1,6 @@
-import { RoleGuard } from "@/components/role-guard";
 "use client";
 
+import { RoleGuard } from "@/components/role-guard";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search, MapPin, Eye, RefreshCw, XCircle } from "lucide-react";

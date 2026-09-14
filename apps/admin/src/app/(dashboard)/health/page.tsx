@@ -1,6 +1,6 @@
-import { RoleGuard } from "@/components/role-guard";
 "use client";
 
+import { RoleGuard } from "@/components/role-guard";
 import React, { useState, useEffect } from "react";
 import { RefreshCw, CheckCircle2, AlertTriangle, XCircle, Activity, Globe, Database, CreditCard, Plane } from "lucide-react";
 import { adminApi } from "@/lib/api";

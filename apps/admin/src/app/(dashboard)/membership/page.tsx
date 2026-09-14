@@ -1,6 +1,6 @@
-import { RoleGuard } from "@/components/role-guard";
 "use client";
 
+import { RoleGuard } from "@/components/role-guard";
 import React, { useState } from "react";
 import {
   ShieldCheck,
