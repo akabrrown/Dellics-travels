@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         req.headers.get("origin") ||
         process.env.NEXTAUTH_URL ||
         process.env.NEXT_PUBLIC_APP_URL ||
-        "http://localhost:3001";
+        process.env.NODE_ENV === "production" ? "https://dellicstravels.com" : "http://localhost:3001";
 
       const resetUrl = `${origin}/reset-password?token=${token}&email=${encodeURIComponent(cleanEmail)}`;
       debugResetUrl = resetUrl;
