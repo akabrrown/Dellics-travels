@@ -1,15 +1,15 @@
-# Dellics Travels Web Restructure — Design Spec
+# Dellics Travels Web Restructure - Design Spec
 
 **Date:** 2026-08-25
 **Status:** Approved
-**Approach:** A — Full App Router rebuild in `apps/web`, backend logic in `apps/api`
+**Approach:** A - Full App Router rebuild in `apps/web`, backend logic in `apps/api`
 
 ## Problem
 
 The current public website is a legacy static site at `apps/Dellics Travels/Dellics Travels/`: ~22 hand-maintained HTML pages, 85KB of bespoke CSS, 30KB of DOM-manipulation JS, and three parallel copies of the same passenger-selector code. It does not use the project's actual stack (Turborepo, Next.js, NestJS, Supabase), and it has two production defects:
 
-1. **Leaked credentials** — `ratehawk-config.js` ships a real Ratehawk sandbox API key to every browser (`window.RATEHAWK_API_KEY`), and `ratehawk-api.js` sends it in request bodies and headers client-side.
-2. **Dead forms** — the contact form fakes success with a toast and submits nothing.
+1. **Leaked credentials** - `ratehawk-config.js` ships a real Ratehawk sandbox API key to every browser (`window.RATEHAWK_API_KEY`), and `ratehawk-api.js` sends it in request bodies and headers client-side.
+2. **Dead forms** - the contact form fakes success with a toast and submits nothing.
 
 ## Decisions (user-confirmed)
 
@@ -23,9 +23,9 @@ The current public website is a legacy static site at `apps/Dellics Travels/Dell
 
 ## 1. Architecture
 
-- **`apps/web`** — Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui. Server Components render all content pages (prerendered for SEO). Client components only for interactive widgets.
-- **`apps/api`** — gains two NestJS modules: **Hotels** (Ratehawk proxy, server-side credentials) and **Inquiries** (form submissions). Follows existing module conventions (controller/module/service layout like `booking/`, `esim/`).
-- **Database** — one new `Inquiry` table via a new Supabase migration in `supabase/migrations/`.
+- **`apps/web`** - Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui. Server Components render all content pages (prerendered for SEO). Client components only for interactive widgets.
+- **`apps/api`** - gains two NestJS modules: **Hotels** (Ratehawk proxy, server-side credentials) and **Inquiries** (form submissions). Follows existing module conventions (controller/module/service layout like `booking/`, `esim/`).
+- **Database** - one new `Inquiry` table via a new Supabase migration in `supabase/migrations/`.
 - One backend, two front doors: `apps/web` calls the same NestJS API the mobile app uses; no Next.js route handlers duplicate backend logic.
 
 ## 2. Route map
@@ -80,7 +80,7 @@ Shared root layout: announcement bar, sticky header (scroll state) with desktop 
 |---|---|
 | `HeroSlider` | Image + muted autoplay video slides, 5s timer, dots, video-`ended` advances slide |
 | `QuickBook` | Flights/tours/hotels/transfers tabs with per-tab field placeholders |
-| `FlightSearchWidget` | Roundtrip / oneway / multi-city (2–7 legs, add/remove), class select, shared `PassengerSelector`; on submit composes the trip summary and opens the WhatsApp deep-link `https://wa.me/233552054174?text=...` — same-tab, same as legacy |
+| `FlightSearchWidget` | Roundtrip / oneway / multi-city (2–7 legs, add/remove), class select, shared `PassengerSelector`; on submit composes the trip summary and opens the WhatsApp deep-link `https://wa.me/233552054174?text=...` - same-tab, same as legacy |
 | `PassengerSelector` | One shared implementation (adults 1–9, children 0–8, infants 0–4) replacing the three legacy copies |
 | `HotelSearchForm` + results | Destination/check-in/check-out/guests → `POST /hotels/search` on the API. States: skeleton cards while loading, empty message when zero results, specific error card on failure (no silent mock fallback) |
 | `GalleryLightbox` | Click-to-open, Esc/backdrop close, focus-managed |
@@ -96,7 +96,7 @@ Every interactive surface implements loading, empty, error, and success states.
 - Body validation (DTO + class-validator): destination non-empty string, dates `YYYY-MM-DD`, check-in ≥ today, check-out > check-in, guests 1–16, rooms 1–8
 - Calls Ratehawk sandbox (`RATEHAWK_BASE_URL`, default `https://api-sandbox.ratehawk.com`) with credentials from server env only; timeouts on the outbound call
 - Normalizes the response to a stable shape: `id, name, rating, address, city, country, price, currency, images[], amenities[], description`
-- On upstream failure returns a structured error (`{ message, code }`) — the frontend shows it; mock data never masquerades as live results
+- On upstream failure returns a structured error (`{ message, code }`) - the frontend shows it; mock data never masquerades as live results
 - Env: `RATEHAWK_API_ID`, `RATEHAWK_API_KEY`, `RATEHAWK_BASE_URL` in `apps/api/.env` (gitignored) + `.env.example`
 
 ### Inquiries module (`src/inquiries/`)
@@ -147,6 +147,6 @@ Plus the matching model in the shared Prisma schema (`packages/database`).
 
 ## 8. Out of scope
 
-- Admin website build (A01–A21) — future project per the documentation set
-- Real booking/payment engine — WhatsApp remains the conversion channel
+- Admin website build (A01–A21) - future project per the documentation set
+- Real booking/payment engine - WhatsApp remains the conversion channel
 - Mobile app changes

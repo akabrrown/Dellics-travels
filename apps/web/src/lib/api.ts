@@ -17,7 +17,7 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   try {
     data = await res.json();
   } catch {
-    // non-JSON response body — fall through to the status-based message
+    // non-JSON response body - fall through to the status-based message
   }
   if (!res.ok) {
     const message =

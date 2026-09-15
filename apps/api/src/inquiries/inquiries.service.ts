@@ -116,7 +116,7 @@ export class InquiriesService {
       this.syncToZoho(record.id, dto, payload),
     ]);
 
-    return { received: true }; // opaque ack — never echo stored data back
+    return { received: true }; // opaque ack - never echo stored data back
   }
 
   private async syncToZoho(

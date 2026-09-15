@@ -533,7 +533,7 @@ export default function ExploreScreen() {
               className="flex-row items-center justify-center bg-[#0A0060] px-6 py-3 rounded-full"
             >
               <Compass color="white" size={18} />
-              <Text className="text-white font-black text-sm ml-2">Inspire me — I don't know where yet</Text>
+              <Text className="text-white font-black text-sm ml-2">Inspire me - I don't know where yet</Text>
             </Pressable>
           </View>
         </View>

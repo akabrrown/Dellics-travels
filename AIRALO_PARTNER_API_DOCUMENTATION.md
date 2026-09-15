@@ -1,4 +1,4 @@
-# Airalo Partners API v2 — Integration & Error Handling Guide
+# Airalo Partners API v2 - Integration & Error Handling Guide
 
 **Partner Integration:** Dellics Travels Limited  
 **API Version:** Airalo Partners API v2 (`https://partners-api.airalo.com`)  
@@ -31,7 +31,7 @@ POST /v2/token            ──>  GET /v2/packages           ──>  POST /v2/
 
 ## 3. Comprehensive Error Handling & Status Codes
 
-### HTTP 422 — Validation and Business Logic Errors
+### HTTP 422 - Validation and Business Logic Errors
 
 | Error Code | Official Reason | Dellics System Handling & Resolution Strategy |
 |:---|:---|:---|
@@ -44,7 +44,7 @@ POST /v2/token            ──>  GET /v2/packages           ──>  POST /v2/
 | **Code 43** | Bad request. `{additional}` Please check your input and try again. | Logs validation error payload for backend diagnostics. |
 | **Code 53** | Something unexpected happened. We're working to resolve the issue. Please try again later. | Temporary upstream telecom error; automatic retry up to 3 times before manual escalation. |
 | **Code 73** | The eSIM with iccid `{additional}` has been recycled. It can no longer be used or topped up. | Blocks subsequent top-up actions on the recycled ICCID and prompts traveler for a new installation. |
-| **Code 89** | The calling IP address is not on the allow list. | **Critical Action:** The outbound server IP is not whitelisted. Nothing is revoked — add the server IP (`102.176.94.45` / `102.176.94.46`) to the Airalo Partner Portal allowlist and retry. |
+| **Code 89** | The calling IP address is not on the allow list. | **Critical Action:** The outbound server IP is not whitelisted. Nothing is revoked - add the server IP (`102.176.94.45` / `102.176.94.46`) to the Airalo Partner Portal allowlist and retry. |
 
 ---
 

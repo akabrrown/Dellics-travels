@@ -102,7 +102,7 @@ export function BackendStatusBanner() {
             <WifiOff className="size-3.5 shrink-0" />
             <span className="font-bold">Offline Demo Mode</span>
             <span className="text-amber-100 hidden sm:inline">
-              — API backend offline at <code className="bg-amber-700/60 px-1.5 py-0.5 rounded font-mono text-[11px]">{ADMIN_CONFIG.apiUrl}</code>. Displaying simulated travel records.
+              - API backend offline at <code className="bg-amber-700/60 px-1.5 py-0.5 rounded font-mono text-[11px]">{ADMIN_CONFIG.apiUrl}</code>. Displaying simulated travel records.
             </span>
           </div>
         </div>

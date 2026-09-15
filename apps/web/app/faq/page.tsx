@@ -187,7 +187,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "esim_transfers",
     categoryLabel: "Transfers, Cars & eSIM",
     question: "How does the Airalo eSIM digital mobile connectivity work?",
-    answer: "Through our integration with Airalo, travelers can purchase affordable international high-speed mobile data for over 200+ countries. You receive an instant digital QR code via email—simply scan it in your smartphone settings before departure to enjoy high-speed 4G/5G data immediately upon landing without paying exorbitant roaming fees.",
+    answer: "Through our integration with Airalo, travelers can purchase affordable international high-speed mobile data for over 200+ countries. You receive an instant digital QR code via email-simply scan it in your smartphone settings before departure to enjoy high-speed 4G/5G data immediately upon landing without paying exorbitant roaming fees.",
     badge: "200+ Countries Coverage",
   },
 

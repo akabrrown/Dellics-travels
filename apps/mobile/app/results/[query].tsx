@@ -168,7 +168,7 @@ function FlightCard({
             <View>
               <Text className="text-2xl font-black text-gray-900 tracking-tight">{originCityName}</Text>
               <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest">{flight.origin}</Text>
-              <Text className="text-gray-500 font-semibold text-xs mt-1">{depTime || '—'}</Text>
+              <Text className="text-gray-500 font-semibold text-xs mt-1">{depTime || '-'}</Text>
             </View>
             <View className="flex-1 items-center px-4">
               <View className="h-[2px] w-full bg-gray-200 relative">
@@ -183,7 +183,7 @@ function FlightCard({
             <View className="items-end">
               <Text className="text-2xl font-black text-gray-900 tracking-tight">{destCityName}</Text>
               <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest">{flight.destination}</Text>
-              <Text className="text-gray-500 font-semibold text-xs mt-1">{arrTime || '—'}</Text>
+              <Text className="text-gray-500 font-semibold text-xs mt-1">{arrTime || '-'}</Text>
             </View>
           </View>
 

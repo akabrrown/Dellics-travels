@@ -95,7 +95,7 @@ export default function ProfileSetupScreen() {
 
     setSaving(true);
 
-    // Build metadata update — only include non-empty values
+    // Build metadata update - only include non-empty values
     const metadataUpdate: Record<string, any> = {
       preferred_currency: currency,
       notifications_enabled: notificationsEnabled,
@@ -221,7 +221,7 @@ export default function ProfileSetupScreen() {
                   <MapPin size={16} color="#9CA3AF" />
                   <Text className={`ml-3 text-base font-medium ${homeAirport ? 'text-gray-900' : 'text-gray-400'}`}>
                     {homeAirport
-                      ? (homeAirportCity ? `${homeAirport} — ${homeAirportCity}` : homeAirport)
+                      ? (homeAirportCity ? `${homeAirport} - ${homeAirportCity}` : homeAirport)
                       : 'Select airport'}
                   </Text>
                 </View>

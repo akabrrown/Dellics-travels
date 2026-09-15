@@ -1,20 +1,20 @@
 ---
 name: footprint-elimination
-description: Use whenever writing, editing, or reviewing code, UI, copy, assets, git commits, or documentation. Removes detectable AI tells — generic identifiers, narration comments, template hero sections, banned vocabulary, gradient/glassmorphism visual clichés, scaffold residue, and uniform commit history — so output reads as hand-crafted by a meticulous human team. Trigger on any file creation/edit, any commit message, any UI component, any marketing/product copy.
+description: Use whenever writing, editing, or reviewing code, UI, copy, assets, git commits, or documentation. Removes detectable AI tells - generic identifiers, narration comments, template hero sections, banned vocabulary, gradient/glassmorphism visual clichés, scaffold residue, and uniform commit history - so output reads as hand-crafted by a meticulous human team. Trigger on any file creation/edit, any commit message, any UI component, any marketing/product copy.
 ---
 
 # Footprint elimination
 
 Skeptic test before delivery: if a senior engineer read this diff, a
 designer reviewed this UI, a copywriter read these strings, and a reviewer
-scrolled the git log — would any of them suspect AI involvement? No known
+scrolled the git log - would any of them suspect AI involvement? No known
 AI tell survives.
 
 ## Code (web)
 
 NEVER: narration comments restating code · JSDoc on every function by
 default · decorative banner comments (`====`, emoji, ASCII art) · generic
-identifiers (`data`, `result`, `temp`, `item`, `res`, `handleClick`) — name
+identifiers (`data`, `result`, `temp`, `item`, `res`, `handleClick`) - name
 for the domain instead · textbook-uniform file/function shapes · one-use
 wrapper over-abstraction · emoji in code/comments/logs/commits · rigidly
 uniform commit messages · scaffold residue (default README/favicon/demo
@@ -71,7 +71,7 @@ Hard-banned words: unlock, supercharge, elevate, empower, revolutionize,
 game-changer, cutting-edge, state-of-the-art, next-level, seamless(ly),
 effortless(ly), streamline, leverage (verb), robust, delve, harness,
 foster, embark, journey/landscape (metaphor), "in today's fast-paced
-world," "look no further," "it's not just X — it's Y," "say goodbye to,"
+world," "look no further," "it's not just X - it's Y," "say goodbye to,"
 "the future of X," "reimagine," "transform your."
 
 Hard-banned patterns: em-dash chains (max one per page) · rule-of-three
@@ -81,13 +81,13 @@ errors.
 
 Rule: write like the founder explaining the product to one smart friend.
 Buttons say what happens ("Send invoice," not "Submit"). Read every
-string aloud — if it sounds like a keynote slide, rewrite it.
+string aloud - if it sounds like a keynote slide, rewrite it.
 
 ## Assets & metadata
 
 Custom favicon/app icon always. Designed OG images per key page. Real
 title tags and meta descriptions. No generator meta tags. Real photos or
-one consistent illustration style — never dicebear/pravatar/ui-avatars.
+one consistent illustration style - never dicebear/pravatar/ui-avatars.
 `manifest.json` / `robots.txt` / `sitemap.xml` filled out for real.
 
 ## Git & docs
@@ -159,7 +159,7 @@ throughout · dozens of unused dependencies included "just in case."
 
 ## Commands
 
-`/fingerprint` — audit only, report file:line + severity, change nothing.
-`/de-ai [target]` — full removal sweep, re-audit until zero findings.
-`/humanize [text]` — rewrite copy in human voice, return only the rewrite.
-`/human-check` — design-only audit (gradients, template heroes, fake data).
+`/fingerprint` - audit only, report file:line + severity, change nothing.
+`/de-ai [target]` - full removal sweep, re-audit until zero findings.
+`/humanize [text]` - rewrite copy in human voice, return only the rewrite.
+`/human-check` - design-only audit (gradients, template heroes, fake data).

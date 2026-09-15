@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { EsimPlansGrid } from "@/components/esim/esim-plans-grid";
 
 export const metadata: Metadata = {
-  title: "Instant Global eSIM Data Plans — Dellics Travels",
+  title: "Instant Global eSIM Data Plans - Dellics Travels",
   description:
     "Stay connected worldwide in 200+ countries with digital eSIM data plans powered by Airalo. Instant QR code delivery, keep your WhatsApp number, zero roaming fees.",
 };

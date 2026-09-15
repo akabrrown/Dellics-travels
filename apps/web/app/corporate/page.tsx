@@ -213,7 +213,7 @@ export default function CorporatePage() {
                   “Dellics Travels cut our company travel overheads by 18% while guaranteeing 24/7 rebooking support for our traveling executives.”
                 </p>
                 <p className="mt-3 text-xs text-white/70">
-                  — Head of HR & Operations, West Africa Energy Group
+                  - Head of HR & Operations, West Africa Energy Group
                 </p>
               </div>
             </div>

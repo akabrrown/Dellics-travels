@@ -13,7 +13,7 @@ import { CtaBanner } from "@/components/cta-banner";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "About Dellics Travels — Licensed Travel Agency in Ghana",
+  title: "About Dellics Travels - Licensed Travel Agency in Ghana",
   description:
     "Learn about Dellics Travels: IATA-accredited agency based in Tema Devtraco Estate, Ghana. Our mission, values, and experienced travel management team.",
 };
@@ -22,7 +22,7 @@ const DRIVERS = [
   {
     icon: Target,
     name: "Our Mission",
-    copy: "To deliver transparent, reliable and expertly curated travel services that create meaningful connections between travelers and the world's most incredible destinations — with zero friction and exceptional personal care.",
+    copy: "To deliver transparent, reliable and expertly curated travel services that create meaningful connections between travelers and the world's most incredible destinations - with zero friction and exceptional personal care.",
   },
   {
     icon: Globe2,
@@ -41,7 +41,7 @@ export default function AboutPage() {
     <>
       <PageHero
         title="About Dellics Travels"
-        subtitle="Ghana's premier travel management firm — organizing international itineraries with passion, certification, and personalized care."
+        subtitle="Ghana's premier travel management firm - organizing international itineraries with passion, certification, and personalized care."
         image="/images/africa/accra-city-experience.jpg"
         breadcrumbs={[{ label: "About Us" }]}
       />
@@ -59,7 +59,7 @@ export default function AboutPage() {
 
             <div className="mt-6 space-y-4 text-sm leading-relaxed text-slate-600">
               <p>
-                Dellics Travels was founded with a singular conviction: that travel should be transparent, deeply enriching, and completely free from stress. Whether an executive traveling for urgent international trade meetings, a family booking their dream Dubai vacation, or a member of the diaspora walking through the historic Door of Return in Cape Coast Castle — our team stands beside you every step of the way.
+                Dellics Travels was founded with a singular conviction: that travel should be transparent, deeply enriching, and completely free from stress. Whether an executive traveling for urgent international trade meetings, a family booking their dream Dubai vacation, or a member of the diaspora walking through the historic Door of Return in Cape Coast Castle - our team stands beside you every step of the way.
               </p>
               <p>
                 Headquartered at <strong className="text-navy">Devtraco Estate, Tema Community 25, Greater Accra</strong>, we combine official <strong className="text-brand-orange">IATA Certification</strong> with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).

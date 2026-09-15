@@ -22,7 +22,7 @@ import { FLIGHT_HERO_SLIDES } from "@/data/home";
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
   description:
-    "Book domestic and international flights with Dellics Travels — IATA Certified. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
+    "Book domestic and international flights with Dellics Travels - IATA Certified. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
 };
 
 const DEFAULT_ROUTES = [
@@ -216,7 +216,7 @@ export default async function FlightsPage() {
           <SectionHeading
             eyebrow="Why Book With Dellics"
             title="The Advantage of an Accredited Travel Agency"
-            subtitle="More than an algorithm — you get a dedicated travel concierge defending your interests at every step."
+            subtitle="More than an algorithm - you get a dedicated travel concierge defending your interests at every step."
           />
 
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

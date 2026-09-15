@@ -1,7 +1,7 @@
 DELLICS TRAVELS
 ===============
 
-_— See the World —_  
+_- See the World -_  
 **Mobile Travel Booking Platform**  
 **Complete Product & Technical Documentation**  
 **Document Version 2.0 | Status: Production-Ready Specification**  
@@ -19,7 +19,7 @@ Table of Contents
 -----------------
 
 1.  Executive Summary
-2.  Competitive Research — Booking.com, Expedia, Trip.com, Skyscanner & Others
+2.  Competitive Research - Booking.com, Expedia, Trip.com, Skyscanner & Others
 3.  Brand & Visual Identity
 4.  Product Overview
 5.  User Roles & Permissions
@@ -29,16 +29,16 @@ Table of Contents
 9.  Complete Technology Stack
 10.  System Architecture
 11.  Core Data Model
-12.  Payment Integration — Stripe
+12.  Payment Integration - Stripe
 13.  Security & Compliance
 14.  Non-Functional Requirements
 15.  Risk Register (Summary)
-16.  Workflow — End-to-End Operational Flows
+16.  Workflow - End-to-End Operational Flows
 
 1\. Executive Summary
 ---------------------
 
-Dellics Travels is a mobile-first travel booking platform that lets travelers search, compare, and book flights, hotels, car rentals, activities, and bundled vacation packages from a single app. The product draws on proven patterns from **Booking.com** — the world’s largest travel platform with over 500 million annual bookings — as its primary benchmark for conversion optimization, inventory breadth, urgency merchandising, and loyalty engineering. Secondary insights from Expedia, Trip.com, Skyscanner, Hopper, and others add advanced capabilities like dynamic packaging, price prediction, and multi-modal transport search.  
+Dellics Travels is a mobile-first travel booking platform that lets travelers search, compare, and book flights, hotels, car rentals, activities, and bundled vacation packages from a single app. The product draws on proven patterns from **Booking.com** - the world’s largest travel platform with over 500 million annual bookings - as its primary benchmark for conversion optimization, inventory breadth, urgency merchandising, and loyalty engineering. Secondary insights from Expedia, Trip.com, Skyscanner, Hopper, and others add advanced capabilities like dynamic packaging, price prediction, and multi-modal transport search.  
 This document is the single source of truth for building Dellics Travels to a production-ready standard. It defines the competitive research behind the feature set, the visual identity derived from the Dellics Travels logo, the complete feature architecture split into MVP (ready-to-production) and later phases, the membership package structure, the full technology stack, system architecture, data model, Stripe-based payment integration, security posture, and the end-to-end operational workflows that tie every feature together.  
 **Scope of this release**  
 The MVP defined in Section 6 is scoped to ship as a real, working production app: account creation, flight/hotel/package search and booking, Stripe checkout, trip management, price alerts, and a tiered membership system. Advanced supplier integrations (GDS/NDC direct airline contracts, white-label car rental APIs) are flagged as Phase 2/3 and are designed around third-party aggregator APIs (e.g. FX Flights, Amadeus, RateHawk) so the MVP can launch without in-house airline contracts.
@@ -51,7 +51,7 @@ Booking.com is the world’s largest accommodation and travel booking platform, 
 ### 2.1 Booking.com (Primary Benchmark)
 
 *   **Scale & Trust:** 500M+ annual bookings, 28M+ total reported listings (hotels, homes, apartments, resorts), and operations in 200+ countries. The benchmark for search performance, inventory breadth, and checkout reliability at massive scale.
-*   **Genius Loyalty Program:** Three-tier program (Genius Level 1–3) unlocking instant discounts, free breakfast, and room upgrades. Rewards are applied at checkout, not earned over time—reducing friction and increasing conversion.
+*   **Genius Loyalty Program:** Three-tier program (Genius Level 1–3) unlocking instant discounts, free breakfast, and room upgrades. Rewards are applied at checkout, not earned over time-reducing friction and increasing conversion.
 *   **Urgency & Scarcity Merchandising:** Heavy use of real availability signals (“Only 2 rooms left at this price,” “Booked 12 times in the last 24 hours,” “In high demand”) and countdown timers on time-limited deals. Proven to drive immediate purchase decisions.
 *   **All-in-One Inventory:** Hotels, vacation rentals, flights, car rentals, airport taxis, and attractions in a single platform. The “Homes” tab sits alongside hotels, giving apartments and villas first-class status.
 *   **Flexible Search Patterns:** “I don’t know my dates yet” and “I’m traveling for work” toggles built into the search bar from the first screen. Reduces drop-off for undecided travelers.
@@ -127,7 +127,7 @@ Booking.com is the world’s largest accommodation and travel booking platform, 
 
 ### 2.11 GetYourGuide & Klook
 
-*   **Instant-Confirmation Activities:** Mobile e-ticket/QR voucher—no printing required.
+*   **Instant-Confirmation Activities:** Mobile e-ticket/QR voucher-no printing required.
 *   **Merchandising Badges:** “Skip the line” and “Free cancellation up to 24 hours before” shown directly on activity cards.
 *   **Curated Destination Guides:** Bundle top attractions, tours, and transport passes into a single “things to do” feed.
 
@@ -145,7 +145,7 @@ Booking.com is the world’s largest accommodation and travel booking platform, 
 *   **Fare-Trend Graphs:** “Buy now vs. wait” signals and a dedicated price-tracking hub kept separate from live search results.
 *   **Multi-Product Search:** Flights, hotels, cars, and packages in one query.
 
-### 2.15 Feature Synthesis — What Dellics Travels Adopts
+### 2.15 Feature Synthesis - What Dellics Travels Adopts
 
 | **Pattern** | **Primary Source** | **Dellics Implementation** |
 | --- | --- | --- |
@@ -176,24 +176,24 @@ Colors were extracted directly from the Dellics Travels logo (deep navy circle b
 
 | **Token** | **Hex** | **Usage** |
 | --- | --- | --- |
-| Primary — Dellics Navy | #0A0060 | App bars, primary buttons, headers, nav background |
-| Primary Dark — Ink Navy | #030067 | Splash screen, hero backgrounds, footers |
-| Accent — Dellics Orange | #F4740D | CTAs, price highlights, badges, active states |
-| Accent Tint — Sunrise | #FBD9BE | Chips, selected filter backgrounds, subtle highlights |
-| Neutral — Cloud White | #FFFFFF | Cards, backgrounds, wordmark on navy |
-| Neutral — Slate Text | #3A3A3A | Body copy on light backgrounds |
-| Semantic — Confirm Green | #1E7A34 | Booking confirmed, free cancellation, success states |
-| Semantic — Alert Amber | #B5540B | Price drop alerts, limited-availability warnings |
+| Primary - Dellics Navy | #0A0060 | App bars, primary buttons, headers, nav background |
+| Primary Dark - Ink Navy | #030067 | Splash screen, hero backgrounds, footers |
+| Accent - Dellics Orange | #F4740D | CTAs, price highlights, badges, active states |
+| Accent Tint - Sunrise | #FBD9BE | Chips, selected filter backgrounds, subtle highlights |
+| Neutral - Cloud White | #FFFFFF | Cards, backgrounds, wordmark on navy |
+| Neutral - Slate Text | #3A3A3A | Body copy on light backgrounds |
+| Semantic - Confirm Green | #1E7A34 | Booking confirmed, free cancellation, success states |
+| Semantic - Alert Amber | #B5540B | Price drop alerts, limited-availability warnings |
 
 ### 3.2 Typography & Iconography
 
-*   **Primary typeface:** Poppins (headings, bold weights for pricing) with Inter for body text — both open-source, mobile-legible at small sizes.
+*   **Primary typeface:** Poppins (headings, bold weights for pricing) with Inter for body text - both open-source, mobile-legible at small sizes.
 *   **Iconography** follows a rounded, 2px-stroke line style echoing the rounded aircraft silhouette in the logo.
-*   **The circular badge mark** (sun, mountains, aircraft) is reserved for splash screen, app icon, and empty-state illustrations — never resized below 32px.
+*   **The circular badge mark** (sun, mountains, aircraft) is reserved for splash screen, app icon, and empty-state illustrations - never resized below 32px.
 
 ### 3.3 Tone of Voice
 
-*   **Confident and light** — “See the World” tagline carries through in empty states and confirmation screens (“Packed and ready — see the world.”)
+*   **Confident and light** - “See the World” tagline carries through in empty states and confirmation screens (“Packed and ready - see the world.”)
 *   **Ghanaian-friendly defaults:** GHS shown first for Ghana-based accounts, with instant toggle to USD/EUR/GBP.
 
 4\. Product Overview
@@ -201,11 +201,11 @@ Colors were extracted directly from the Dellics Travels logo (deep navy circle b
 
 ### 4.1 Vision
 
-Give travelers — starting with Ghana and expanding across West Africa — one trusted app to discover, compare, and book every part of a trip, with transparent pricing, real-time trip management, and a rewards system that pays back loyalty.
+Give travelers - starting with Ghana and expanding across West Africa - one trusted app to discover, compare, and book every part of a trip, with transparent pricing, real-time trip management, and a rewards system that pays back loyalty.
 
 ### 4.2 Platforms
 
-*   **iOS and Android mobile apps (React Native)** — primary product surface.
+*   **iOS and Android mobile apps (React Native)** - primary product surface.
 *   **Companion responsive web app (Next.js)** for search/browse and account management, sharing the same backend.
 *   **Admin/Ops web console** for content, supplier, and support management.
 
@@ -242,7 +242,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 *   **Whole-Month flexible calendar** showing the cheapest days to fly/stay within a chosen month.
 *   **Smart filters:** stops, airline, cabin class, star rating, amenities, cancellation policy, price range.
 *   **Map view** for hotels and activities with cluster pins and price-per-night overlay.
-*   **Booking.com pattern — Flexible Search Toggles:** “I don’t know my dates yet” and “I’m traveling for work” options surfaced directly on the home screen search bar to reduce drop-off.
+*   **Booking.com pattern - Flexible Search Toggles:** “I don’t know my dates yet” and “I’m traveling for work” options surfaced directly on the home screen search bar to reduce drop-off.
 
 ### 6.2 Flights
 
@@ -261,7 +261,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 *   Room-type comparison with per-night and total-stay pricing breakdown.
 *   Two-stage inventory: soft hold on selection, hard confirmation on successful payment (prevents double-booking).
 *   **“Members-only price” banner** for signed-in users (Booking.com / Expedia pattern).
-*   **Verified review display** with category sub-scores (cleanliness, location, service, value) — Booking.com pattern.
+*   **Verified review display** with category sub-scores (cleanliness, location, service, value) - Booking.com pattern.
 
 ### 6.4 Packages (Flight + Hotel Bundles)
 
@@ -285,7 +285,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 
 *   Bookable local experiences and attraction tickets, addable to any trip itinerary.
 *   Curated “Things to do” carousel per destination, sourced from a partner activities API.
-*   Instant-confirmation booking with a mobile e-ticket/QR voucher — no printing required (GetYourGuide/Klook pattern).
+*   Instant-confirmation booking with a mobile e-ticket/QR voucher - no printing required (GetYourGuide/Klook pattern).
 *   “Skip the line” and “Free cancellation up to 24h before” badges shown directly on activity cards.
 
 ### 6.7 Trip Planner / Itinerary Hub
@@ -311,7 +311,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 *   Points earned on every completed booking, redeemable as trip credit.
 *   Tiered membership packages (Section 7) unlocking lounge partners, priority support, and bonus points.
 *   Referral program: both parties earn credit when a referred friend completes their first booking.
-*   **Instant perks at checkout** (Booking.com Genius pattern) — not points-earned-over-time, but immediate discounts and benefits.
+*   **Instant perks at checkout** (Booking.com Genius pattern) - not points-earned-over-time, but immediate discounts and benefits.
 
 ### 6.10 Payments & Checkout
 
@@ -335,7 +335,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 **\[ PHASE 2 \]**
 
 *   Post-stay review prompts for hotels and activities, with photo upload.
-*   **Verified-stay badge** shown only for travelers who booked through Dellics — Booking.com pattern.
+*   **Verified-stay badge** shown only for travelers who booked through Dellics - Booking.com pattern.
 *   Category sub-scores: cleanliness, location, service, value, comfort, facilities.
 
 ### 6.13 Multi-Language & Multi-Currency
@@ -365,7 +365,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 
 **\[ READY-TO-PRODUCTION (HEURISTIC) / PHASE 2 (ML) \]**
 
-*   **Explore Map:** interactive world map of live fares from the traveler’s home airport, filterable by trip length and interest (beach, city, nature) — Google Flights pattern.
+*   **Explore Map:** interactive world map of live fares from the traveler’s home airport, filterable by trip length and interest (beach, city, nature) - Google Flights pattern.
 *   **Date Grid:** calendar matrix of departure × return date combinations, color-coded cheapest to most expensive.
 *   **Price Graph:** fare-trend chart for a fixed route over the surrounding weeks/months, with a low / typical / high indicator versus recent history.
 *   **Book-now-vs-wait guidance:** at MVP, a rule-based heuristic compares the current fare to its own 90-day cached price history; a full ML prediction model (Hopper pattern) is a Phase 2 upgrade on the same data.
@@ -397,10 +397,10 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 
 **\[ READY-TO-PRODUCTION \]**
 
-*   **Live scarcity indicators** on result cards — “only 2 rooms left”, “booked 12 times today” — driven directly from real supplier availability counts, never fabricated (Booking.com/Agoda pattern).
+*   **Live scarcity indicators** on result cards - “only 2 rooms left”, “booked 12 times today” - driven directly from real supplier availability counts, never fabricated (Booking.com/Agoda pattern).
 *   **Countdown timers** on time-boxed promotional fares/rates.
 *   **Home-screen deals carousel** merchandising curated packages and last-minute price drops.
-*   **“In high demand”** and **“Last chance”** badges for properties with high view-to-booking ratios — Booking.com pattern.
+*   **“In high demand”** and **“Last chance”** badges for properties with high view-to-booking ratios - Booking.com pattern.
 
 ### 6.21 Community Reviews & Travel Q&A
 
@@ -420,7 +420,7 @@ Each module below is tagged Ready-to-Production (ships in MVP), Phase 2, or Phas
 7\. Dellics Membership Packages
 -------------------------------
 
-Inspired by Booking.com’s Genius program and Expedia One Key, Dellics packages combine a free points program with two paid subscription tiers that bundle travel perks — distinct from trip packages (Section 6.4), which bundle flight+hotel for a single trip.
+Inspired by Booking.com’s Genius program and Expedia One Key, Dellics packages combine a free points program with two paid subscription tiers that bundle travel perks - distinct from trip packages (Section 6.4), which bundle flight+hotel for a single trip.
 
 | **Package** | **Price** | **Key Benefits** |
 | --- | --- | --- |
@@ -536,7 +536,7 @@ PostgreSQL (Supabase, RLS-enforced) + Upstash Redis (cache/queues) + Cloudinary 
 | FareFreeze | id, user\_id, fare\_ref, frozen\_price, stripe\_payment\_intent\_id, expires\_at | Phase 2; separate PaymentIntent from the eventual booking payment |
 | Review | id, user\_id, booking\_id, rating, sub\_scores, text, photos | Verified-stay badge requires a completed Booking reference |
 
-12\. Payment Integration — Stripe
+12\. Payment Integration - Stripe
 ---------------------------------
 
 Stripe is the sole payment processor for Dellics Travels, handling both one-off trip bookings and recurring membership subscriptions.
@@ -544,14 +544,14 @@ Stripe is the sole payment processor for Dellics Travels, handling both one-off 
 ### 12.1 Checkout Flow
 
 1.  Traveler selects flight/hotel/package → backend creates a SOFT hold and a Stripe PaymentIntent scoped to the itemized total (in the traveler’s selected currency).
-2.  Mobile app renders Stripe’s PaymentSheet (cards, Apple Pay, Google Pay) — card data never touches Dellics servers (PCI SAQ-A scope).
+2.  Mobile app renders Stripe’s PaymentSheet (cards, Apple Pay, Google Pay) - card data never touches Dellics servers (PCI SAQ-A scope).
 3.  On PaymentIntent success (client confirmation + server-side webhook confirmation, both required), the booking transitions from held to confirmed and supplier booking is finalized.
 4.  On failure or 30-minute hold expiry, the soft hold is released back to inventory automatically via a scheduled job.
 
 ### 12.2 Membership Subscriptions
 
 *   Voyager/Elite tiers use Stripe Billing subscriptions tied to the traveler’s Stripe Customer object.
-*   Tier changes (upgrade/downgrade/cancel) are driven by Stripe webhooks (customer.subscription.updated/deleted) — never by client-side state — to keep perk eligibility authoritative.
+*   Tier changes (upgrade/downgrade/cancel) are driven by Stripe webhooks (customer.subscription.updated/deleted) - never by client-side state - to keep perk eligibility authoritative.
 
 ### 12.3 Refunds & Cancellations
 
@@ -604,7 +604,7 @@ Stripe is the sole payment processor for Dellics Travels, handling both one-off 
 | Membership perk abuse (shared accounts) | Low | Perk redemption logged per Booking; anomaly flags reviewed by Ops |
 | Currency/FX mismatch at settlement | Medium | Charge currency locked to Stripe settlement currency at PaymentIntent creation, not display currency |
 
-16\. Workflow — End-to-End Operational Flows
+16\. Workflow - End-to-End Operational Flows
 --------------------------------------------
 
 These are the step-by-step operational flows that connect every module in Section 6 into a working product.
@@ -633,7 +633,7 @@ These are the step-by-step operational flows that connect every module in Sectio
 2.  Packaging engine reprices the combination, applying the bundle discount to a single order total.
 3.  Optionally the traveler adds a Car Rental (Phase 2) or Activity (Phase 2) to the same package before checkout.
 4.  A single Stripe PaymentIntent covers the full itemized package; on success, the Booking Module confirms each supplier leg (flight via FX, hotel via RateHawk) with independent idempotency keys.
-5.  If one supplier leg fails after payment succeeds, the reconciliation job automatically refunds the failed leg’s portion and notifies the traveler and Support Agent — the succeeded leg(s) remain booked.
+5.  If one supplier leg fails after payment succeeds, the reconciliation job automatically refunds the failed leg’s portion and notifies the traveler and Support Agent - the succeeded leg(s) remain booked.
 6.  A single confirmation and itinerary entry is generated for the whole package.
 
 ### 16.4 Membership Package Upgrade
@@ -656,7 +656,7 @@ These are the step-by-step operational flows that connect every module in Sectio
 1.  Traveler opens Explore Map → enters home airport only → map renders live fares to ranked destinations.
 2.  Selecting a destination shows the Date Grid (cheapest date combinations) and Price Graph (fare trend for the route).
 3.  The Price Intelligence service compares the current fare to its 90-day FareHistory cache and returns a Buy Now / Wait signal.
-4.  If the traveler isn’t ready to book, they may (Phase 2) pay a small fee to Price Freeze the fare — a FareFreeze record and its own Stripe PaymentIntent are created with a 14-day expiry.
+4.  If the traveler isn’t ready to book, they may (Phase 2) pay a small fee to Price Freeze the fare - a FareFreeze record and its own Stripe PaymentIntent are created with a 14-day expiry.
 5.  Booking within the freeze window honors the frozen price; on expiry, the FareFreeze simply lapses with no further charge.
 
 ### 16.7 Cancellation & Refund

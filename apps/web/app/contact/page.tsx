@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact Dellics Travels — US & Ghana Offices, Phone & Inquiries",
+  title: "Contact Dellics Travels - US & Ghana Offices, Phone & Inquiries",
   description:
     "Contact Dellics Travels in Sheridan, Wyoming, USA and Community 25 Devtraco Estate, Tema, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
 };

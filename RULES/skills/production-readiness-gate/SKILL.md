@@ -18,7 +18,7 @@ description: Use when a feature, project, or PR is being called "done," when the
 9. Monitoring recommendations
 10. Future improvements
 
-Keep this proportional — a two-line bug fix doesn't need all ten headers;
+Keep this proportional - a two-line bug fix doesn't need all ten headers;
 a new service or admin feature does.
 
 ## Production readiness scorecard
@@ -39,10 +39,10 @@ Accessibility ..... /10   (UI only)
 SEO ............... /10   (web only)
 ```
 
-Explain every score in one line — what earned the points, what's missing.
+Explain every score in one line - what earned the points, what's missing.
 A score below 7 on anything gets a named remediation, not just a number.
 
-## `/ship` — final pre-flight gate, run in order
+## `/ship` - final pre-flight gate, run in order
 
 1. Type-check
 2. Lint
@@ -66,7 +66,7 @@ until every gate is green.
 - Is sensitive data encrypted at rest and excluded from logs?
 - Does this table/list handle real scale, not just today's handful of
   test rows?
-- If this shipped today and someone tried to break it for an hour — is
+- If this shipped today and someone tried to break it for an hour - is
   that worst case acceptable?
 
-If any answer is no — fix it first, then respond.
+If any answer is no - fix it first, then respond.

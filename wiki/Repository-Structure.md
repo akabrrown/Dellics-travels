@@ -5,7 +5,7 @@ Dellics Travels is a **Turborepo + pnpm workspace monorepo**. Everything is Type
 ```
 .
 ├── apps/
-│   ├── api/        # NestJS backend — the single API shared by mobile, web, and admin
+│   ├── api/        # NestJS backend - the single API shared by mobile, web, and admin
 │   ├── mobile/     # Expo / React Native traveler app (NativeWind)
 │   └── web/        # Next.js companion web app
 ├── packages/
@@ -24,7 +24,7 @@ Dellics Travels is a **Turborepo + pnpm workspace monorepo**. Everything is Type
 └── package.json    # packageManager: pnpm@9.0.0, node >= 18
 ```
 
-## apps/api — the NestJS backend
+## apps/api - the NestJS backend
 
 The single backend that the mobile app, web app, and (future) admin website all call. Modules in `apps/api/src`:
 
@@ -38,9 +38,9 @@ The single backend that the mobile app, web app, and (future) admin website all 
 | `webhooks` | controller / module / service | Stripe/Airalo webhook handling |
 | `prisma` | `prisma.module.ts`, `prisma.service.ts` | Database access layer |
 
-> The admin website adds four more backend modules (Content/CMS, Supplier Health, Support/Ticketing, Analytics, plus Audit) — see [Architecture & Backend Linkage](Architecture-and-Backend-Linkage#new-modules-the-admin-website-adds).
+> The admin website adds four more backend modules (Content/CMS, Supplier Health, Support/Ticketing, Analytics, plus Audit) - see [Architecture & Backend Linkage](Architecture-and-Backend-Linkage#new-modules-the-admin-website-adds).
 
-## apps/mobile — the Expo traveler app
+## apps/mobile - the Expo traveler app
 
 Expo Router file-based routing under `app/`:
 
@@ -57,9 +57,9 @@ Expo Router file-based routing under `app/`:
 
 Styling is **NativeWind** (Tailwind for React Native) with a patched `react-native-css-interop` (see `patches/` and `scripts/patch-css-interop.js`, applied via the root `postinstall`).
 
-## apps/web — the Next.js companion app
+## apps/web - the Next.js companion app
 
-Next.js App Router app sharing the design system with the admin website (same stack decision — see [Admin Tech Stack & Security](Admin-Tech-Stack-and-Security)).
+Next.js App Router app sharing the design system with the admin website (same stack decision - see [Admin Tech Stack & Security](Admin-Tech-Stack-and-Security)).
 
 ## packages/
 
@@ -78,7 +78,7 @@ PostgreSQL schema managed via Supabase. Migrations live in `supabase/migrations/
 
 ```sh
 pnpm install            # install everything (runs the css-interop patch on postinstall)
-pnpm dev                # turbo run dev — all apps
+pnpm dev                # turbo run dev - all apps
 pnpm build              # turbo run build
 pnpm lint               # turbo run lint
 pnpm check-types        # turbo run check-types

@@ -35,7 +35,7 @@ const HOTEL_PERKS = [
     icon: Sparkles,
     title: "Zero Hidden City Taxes",
     description:
-      "Transparent pricing upfront — all tourism taxes, service charges, and resort fees are clearly itemized before checkout.",
+      "Transparent pricing upfront - all tourism taxes, service charges, and resort fees are clearly itemized before checkout.",
   },
   {
     icon: Headphones,
@@ -87,7 +87,7 @@ export default function HotelsPage() {
         <HotelSearchForm onStatusChange={handleStatusChange} />
       </PageHero>
 
-      {/* Results render OUTSIDE the hero — no overflow clipping */}
+      {/* Results render OUTSIDE the hero - no overflow clipping */}
       <HotelSearchResults
         status={status}
         destination={meta.destination}

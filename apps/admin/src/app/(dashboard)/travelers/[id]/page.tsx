@@ -154,7 +154,7 @@ const FALLBACK_ESIMS: EsimRecord[] = [
 const FALLBACK_INTERACTIONS: InteractionRecord[] = [
   { id: "INT-001", channel: "WEB_BOOKING", subject: "Flight Booking: ACC → DXB (Emirates EK788)", content: "Kwame Mensah booked Emirates EK788 from Accra to Dubai. Confirmed in seats 14A/14B (Aisle).", metadata: null, agent_id: null, created_at: "2026-09-01T09:00:00Z" },
   { id: "INT-002", channel: "WEB_ESIM", subject: "eSIM Provisioned: UAE 20GB + 60 Min Airtime", content: "Airalo eSIM profile provisioned. QR delivered via WhatsApp. Connected at Kotoka Intl terminal.", metadata: null, agent_id: null, created_at: "2026-09-02T08:00:00Z" },
-  { id: "INT-003", channel: "ADMIN_NOTE", subject: "VIP Airport Transfer Confirmed — Dubai Arrival", content: "Concierge confirmed private airport transfer from DXB Terminal 3 to Marriott Al Jaddaf. Driver: Mohammed Al-Falasi.", metadata: null, agent_id: "Jane Doe", created_at: "2026-09-08T10:14:00Z" },
+  { id: "INT-003", channel: "ADMIN_NOTE", subject: "VIP Airport Transfer Confirmed - Dubai Arrival", content: "Concierge confirmed private airport transfer from DXB Terminal 3 to Marriott Al Jaddaf. Driver: Mohammed Al-Falasi.", metadata: null, agent_id: "Jane Doe", created_at: "2026-09-08T10:14:00Z" },
   { id: "INT-004", channel: "SYSTEM_AUTO", subject: "Tier Upgrade: VOYAGER → ELITE", content: "Automatic tier upgrade triggered. Cumulative spend surpassed GHS 50,000 threshold after Dubai Autumn Package booking.", metadata: null, agent_id: null, created_at: "2026-08-15T00:00:00Z" },
   { id: "INT-005", channel: "WEB_BOOKING", subject: "Hotel Booking: Marriott Al Jaddaf, Dubai", content: "Kwame Mensah reserved Deluxe Suite at Marriott Hotel Al Jaddaf for Sep 10-15, 2026.", metadata: null, agent_id: null, created_at: "2026-09-01T09:30:00Z" },
   { id: "INT-006", channel: "WEB_BOOKING", subject: "Flight Booking: ACC → LHR (British Airways BA078)", content: "Business class return flight to London Heathrow. Completed trip, rated 5/5.", metadata: null, agent_id: null, created_at: "2026-06-15T14:00:00Z" },
@@ -200,13 +200,13 @@ const LEAD_STAGE_COLORS: Record<string, string> = {
 };
 
 function formatDate(d: string) {
-  if (!d) return "—";
+  if (!d) return "-";
   const date = new Date(d);
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function formatDateTime(d: string) {
-  if (!d) return "—";
+  if (!d) return "-";
   const date = new Date(d);
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
@@ -523,8 +523,8 @@ export default function TravelerCustomer360Cockpit() {
                 <div key={e.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/50">
                   <div className="size-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center"><Wifi className="size-3.5" /></div>
                   <div className="flex-1">
-                    <p className="text-[11px] font-bold text-slate-800">{e.plan?.country_or_region || "—"} · {e.plan?.data_gb || 0}GB</p>
-                    <p className="text-[10px] text-slate-400">{e.plan?.validity_days || 0} days · {e.airtimeMinutes} min airtime · ICCID: {e.iccid?.slice(-8) || "—"}</p>
+                    <p className="text-[11px] font-bold text-slate-800">{e.plan?.country_or_region || "-"} · {e.plan?.data_gb || 0}GB</p>
+                    <p className="text-[10px] text-slate-400">{e.plan?.validity_days || 0} days · {e.airtimeMinutes} min airtime · ICCID: {e.iccid?.slice(-8) || "-"}</p>
                   </div>
                   <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${e.status === "ACTIVE" ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
                     {e.status}
@@ -554,7 +554,7 @@ export default function TravelerCustomer360Cockpit() {
                       <span className="text-[10px] text-slate-400">{n.timestamp}</span>
                     </div>
                     <p className="text-[11px] text-slate-700">{n.content}</p>
-                    <p className="text-[10px] text-slate-400 mt-1">— {n.author}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">- {n.author}</p>
                   </div>
                 </div>
               ))}
@@ -631,8 +631,8 @@ export default function TravelerCustomer360Cockpit() {
               </div>
               <div className="space-y-1.5 text-[11px]">
                 <div className="flex justify-between"><span className="text-slate-400">Number</span><span className="font-semibold text-slate-700">{profile.passportNumber || "Not provided"}</span></div>
-                <div className="flex justify-between"><span className="text-slate-400">Country</span><span className="font-semibold text-slate-700">{profile.passportCountry || "—"}</span></div>
-                <div className="flex justify-between"><span className="text-slate-400">Expiry</span><span className="font-semibold text-slate-700">{profile.passportExpiry || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Country</span><span className="font-semibold text-slate-700">{profile.passportCountry || "-"}</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Expiry</span><span className="font-semibold text-slate-700">{profile.passportExpiry || "-"}</span></div>
               </div>
             </div>
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
@@ -642,7 +642,7 @@ export default function TravelerCustomer360Cockpit() {
               </div>
               <div className="space-y-1.5 text-[11px]">
                 <div className="flex justify-between"><span className="text-slate-400">Name</span><span className="font-semibold text-slate-700">{profile.emergencyContact || "Not set"}</span></div>
-                <div className="flex justify-between"><span className="text-slate-400">Phone</span><span className="font-semibold text-slate-700">{profile.emergencyPhone || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Phone</span><span className="font-semibold text-slate-700">{profile.emergencyPhone || "-"}</span></div>
               </div>
             </div>
           </div>

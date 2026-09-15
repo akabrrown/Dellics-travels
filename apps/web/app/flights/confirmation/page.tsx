@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Flight Booking Confirmed — Dellics Travels",
+  title: "Flight Booking Confirmed - Dellics Travels",
   description: "Your international flight booking and electronic ticket issuance is confirmed via Stripe.",
 };
 

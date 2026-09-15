@@ -27,15 +27,15 @@ Three admin roles operate the website. The permission matrix below extends the r
 
 ## Refund limits for Support Agents
 
-Support Agents can approve refunds **up to a configurable threshold (default GHS 500)** without escalation — matching how a traveler's own self-serve cancellation is capped. Anything above that threshold routes to a Content/Ops Admin or Super Admin approval step.
+Support Agents can approve refunds **up to a configurable threshold (default GHS 500)** without escalation - matching how a traveler's own self-serve cancellation is capped. Anything above that threshold routes to a Content/Ops Admin or Super Admin approval step.
 
 Full flow: [Admin Operational Workflows → Refund & Cancellation Approval](Admin-Operational-Workflows#1-refund--cancellation-approval)
 
 ## How permissions are enforced
 
-- **Role claim in the JWT** — the admin token carries the role; a NestJS guard checks it on every admin-only route, so a UI bug can never become a privilege escalation (see [Admin Tech Stack & Security](Admin-Tech-Stack-and-Security))
-- **Role assignment is immediate** — when the Super Admin invites or changes a team member in A19, the permission matrix determines which of the 21 screens are visible from that moment
-- **Every role change is audited** — logged in A20 Audit Log
+- **Role claim in the JWT** - the admin token carries the role; a NestJS guard checks it on every admin-only route, so a UI bug can never become a privilege escalation (see [Admin Tech Stack & Security](Admin-Tech-Stack-and-Security))
+- **Role assignment is immediate** - when the Super Admin invites or changes a team member in A19, the permission matrix determines which of the 21 screens are visible from that moment
+- **Every role change is audited** - logged in A20 Audit Log
 
 ---
 

@@ -22,7 +22,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "All Travel Services & Concierge Solutions",
   description:
-    "Dellics Travels full service travel offerings — IATA flight ticketing, 3.3M+ hotels, international tour packages, VIP airport transfers, visa assistance, and corporate accounts.",
+    "Dellics Travels full service travel offerings - IATA flight ticketing, 3.3M+ hotels, international tour packages, VIP airport transfers, visa assistance, and corporate accounts.",
 };
 
 const ALL_SERVICES = [
@@ -140,7 +140,7 @@ export default function ServicesPage() {
     <>
       <PageHero
         title="Comprehensive World-Class Travel Services"
-        subtitle="One accredited partner for every travel need — flights, luxury stays, guided safaris, airport chauffeurs, visas, and corporate management."
+        subtitle="One accredited partner for every travel need - flights, luxury stays, guided safaris, airport chauffeurs, visas, and corporate management."
         image="/images/services/plane.jpg"
         breadcrumbs={[{ label: "Services" }]}
       />

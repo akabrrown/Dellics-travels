@@ -23,12 +23,12 @@ export function ContactForm() {
     }
     setPending(true);
     try {
-      // drop blank optional fields — the API DTO regexes reject empty strings
+      // drop blank optional fields - the API DTO regexes reject empty strings
       const payload = Object.fromEntries(
         Object.entries(parsed.data).filter(([, value]) => value !== ""),
       );
       await postJson("/inquiries", { ...payload, kind: "CONTACT" });
-      toast.success("Message sent — we'll reply shortly.");
+      toast.success("Message sent - we'll reply shortly.");
       form.reset();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Sending failed. Please try again.");

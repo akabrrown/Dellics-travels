@@ -584,7 +584,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Tab 2: My Trips & Bookings (Real Data Only — Clean Empty State if 0 bookings) */}
+        {/* Tab 2: My Trips & Bookings (Real Data Only - Clean Empty State if 0 bookings) */}
         {activeTab === "trips" && (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs space-y-6">
@@ -1066,7 +1066,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Tab 5: Saved Wishlist (Zero Mock Data — High Converting Empty State) */}
+        {/* Tab 5: Saved Wishlist (Zero Mock Data - High Converting Empty State) */}
         {activeTab === "saved" && (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs space-y-6">

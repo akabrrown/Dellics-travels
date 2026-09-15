@@ -1,55 +1,55 @@
 # Admin Website Overview
 
-*From the Admin Website Documentation v1.0 — Design, Screens, Operational Workflows & Backend API Linkage (August 2026).*
+*From the Admin Website Documentation v1.0 - Design, Screens, Operational Workflows & Backend API Linkage (August 2026).*
 
 ## Purpose & scope
 
-The Dellics Travels Admin Website is the **operational control center** for the platform — the tool Content/Ops Admins, Support Agents, and the Super Admin use to run the business the mobile app exposes to travelers.
+The Dellics Travels Admin Website is the **operational control center** for the platform - the tool Content/Ops Admins, Support Agents, and the Super Admin use to run the business the mobile app exposes to travelers.
 
 It is a **separate application** from the traveler-facing mobile app and companion web app, but it shares the same NestJS backend and PostgreSQL database, viewed through an elevated, role-gated lens.
 
 The documentation covers three things end to end:
 
-1. **What the admin website looks like and why** — design benchmarks, roles, information architecture, screen specs
-2. **How the people using it actually get work done day to day** — operational workflows
-3. **Precisely how every admin action is wired to the same backend modules the mobile app calls** — so an action taken in the admin website (e.g. approving a refund) is reflected on the traveler's phone (e.g. Trip Planner status update) through a single, traceable path
+1. **What the admin website looks like and why** - design benchmarks, roles, information architecture, screen specs
+2. **How the people using it actually get work done day to day** - operational workflows
+3. **Precisely how every admin action is wired to the same backend modules the mobile app calls** - so an action taken in the admin website (e.g. approving a refund) is reflected on the traveler's phone (e.g. Trip Planner status update) through a single, traceable path
 
 > **One backend, two front doors.** There is no separate "admin API." What differs is the JWT scope: an admin token carries a role claim that unlocks additional endpoints and bypasses traveler-scoped Row-Level Security under audited conditions. See [Architecture & Backend Linkage](Architecture-and-Backend-Linkage).
 
 ## Design benchmarks
 
-The admin website is designed by studying how the best operational dashboards in the industry are actually built — not by inventing admin-panel conventions from scratch.
+The admin website is designed by studying how the best operational dashboards in the industry are actually built - not by inventing admin-panel conventions from scratch.
 
-### Stripe Dashboard — trust through clarity
+### Stripe Dashboard - trust through clarity
 
-- **Information hierarchy**: show what the admin needs to act on, not everything the database happens to contain — the Dellics Dashboard (A02) leads with what's stuck, not what's merely informational
+- **Information hierarchy**: show what the admin needs to act on, not everything the database happens to contain - the Dellics Dashboard (A02) leads with what's stuck, not what's merely informational
 - **Job-based navigation**: sidebar labels describe what an admin is doing ("Refunds," "Support Queue"), never internal table names ("BookingAdjustments")
-- **Action-oriented widgets**: Stripe's Failed Payments widget shows the actual failed transactions, not just a count — applied to the Refund & Cancellation Queue (A12) and Supplier Health panel (A10)
+- **Action-oriented widgets**: Stripe's Failed Payments widget shows the actual failed transactions, not just a count - applied to the Refund & Cancellation Queue (A12) and Supplier Health panel (A10)
 - **Colour discipline**: colour reserved for status signals only (confirmed/pending/failed), never decoration
 - **Specific microcopy**: every error answers "what happened" and "what do I do next," never a raw status code
 
-### Shopify Admin — orders by fulfilment stage, not just revenue
+### Shopify Admin - orders by fulfilment stage, not just revenue
 
-- Show orders as a row of counts by stage rather than leading with revenue — revenue is a lagging number nobody can act on at 9am, while a stack of unprocessed orders is a task
-- Applied to **A03 Bookings**: a pipeline row — *Held / Confirmed / Needs Attention / Completed / Cancelled* — each count clickable into a pre-filtered list
+- Show orders as a row of counts by stage rather than leading with revenue - revenue is a lagging number nobody can act on at 9am, while a stack of unprocessed orders is a task
+- Applied to **A03 Bookings**: a pipeline row - *Held / Confirmed / Needs Attention / Completed / Cancelled* - each count clickable into a pre-filtered list
 - **Refund rate** treated as a first-class metric on the Dashboard (A02), not buried in a report
 
-### Booking.com Partner Extranet — inventory at scale
+### Booking.com Partner Extranet - inventory at scale
 
-- Calendar-first inventory and rate management — availability and price by date, not a flat list of bookings
+- Calendar-first inventory and rate management - availability and price by date, not a flat list of bookings
 - Borrowed for the **Content module (A07–A08)**: a date-range view for time-boxed deals so an Ops Admin sees at a glance which promotions are live, upcoming, or expiring
 
-### Airbnb Host Dashboard — messaging inside the workflow
+### Airbnb Host Dashboard - messaging inside the workflow
 
 - Guest messages stay attached directly to the reservation they concern
 - Applied to **Support Ticket Detail (A14)**: every ticket has the traveler's active Booking record pulled in alongside the chat thread (matching the mobile-side pattern where chat auto-attaches booking context)
 
-### Zendesk / Intercom — queue triage, not an inbox free-for-all
+### Zendesk / Intercom - queue triage, not an inbox free-for-all
 
 - Sort by SLA urgency; let an agent claim a ticket so two agents never work the same conversation
 - Applied to **A13 Support Ticket Queue**: sorted by wait time and Membership tier (Elite travelers get SLA priority); claiming assigns the ticket exclusively
 
-## Synthesis — what the Dellics admin adopts
+## Synthesis - what the Dellics admin adopts
 
 | Pattern | Source | Dellics implementation |
 |---|---|---|

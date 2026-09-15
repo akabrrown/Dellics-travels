@@ -1,6 +1,6 @@
 ---
 name: debugging-protocol
-description: Use whenever an operation succeeds but the result is wrong, empty, or stale — upload works but list doesn't show it, request returns 200 but nothing changed, no crash but wrong output. Also use for any explicit bug report or "this doesn't work as expected." Traces the full data path end to end instead of guessing at a patch. Trigger on any bug report, failed test, or unexpected behavior.
+description: Use whenever an operation succeeds but the result is wrong, empty, or stale - upload works but list doesn't show it, request returns 200 but nothing changed, no crash but wrong output. Also use for any explicit bug report or "this doesn't work as expected." Traces the full data path end to end instead of guessing at a patch. Trigger on any bug report, failed test, or unexpected behavior.
 ---
 
 # Debugging protocol
@@ -8,7 +8,7 @@ description: Use whenever an operation succeeds but the result is wrong, empty, 
 Prime directive: find the root cause, not a patch. Never hide a symptom
 (a null check that silently swallows an error, a spinner that never
 resolves, an empty catch block). If a real root cause can't be found, say
-so — don't guess with a speculative fix.
+so - don't guess with a speculative fix.
 
 ## 1. Reproduce before touching code
 
@@ -19,18 +19,18 @@ a bug not pinned to a specific step.
 ## 2. Trace the full data path, end to end
 
 "Write succeeds but next page shows nothing" is almost always a break in
-this chain — walk it in order:
+this chain - walk it in order:
 
-1. Client action — was the right payload actually sent?
-2. Server receipt — did it actually persist? (check the DB directly)
-3. Response shape — does it match what the client expects? (a renamed
+1. Client action - was the right payload actually sent?
+2. Server receipt - did it actually persist? (check the DB directly)
+3. Response shape - does it match what the client expects? (a renamed
    field or extra wrapper is the #1 cause of "empty but no error")
-4. State update — does client state actually update after the response?
-5. Cache/revalidation — fresh data or a stale cache?
-6. Navigation timing — does navigation fire before the write completes?
+4. State update - does client state actually update after the response?
+5. Cache/revalidation - fresh data or a stale cache?
+6. Navigation timing - does navigation fire before the write completes?
    (race condition)
-7. Query/filter on read — right tenant/user/session ID filter?
-8. Render condition — does a truthy/falsy check treat valid data as empty?
+7. Query/filter on read - right tenant/user/session ID filter?
+8. Render condition - does a truthy/falsy check treat valid data as empty?
 
 ## 3. Instrument before you guess
 
@@ -70,6 +70,6 @@ file), never claim confidence in an unverified fix.
 
 ## Commands
 
-`/debug [description]` — run the full protocol.
-`/trace [flow]` — walk the data path for the named flow, diagnosis only, no fix.
-`/no-guess` — refuse to propose a fix until root cause is confirmed with evidence.
+`/debug [description]` - run the full protocol.
+`/trace [flow]` - walk the data path for the named flow, diagnosis only, no fix.
+`/no-guess` - refuse to propose a fix until root cause is confirmed with evidence.

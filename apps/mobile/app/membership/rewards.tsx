@@ -7,9 +7,9 @@ import * as Haptics from 'expo-haptics';
 
 const HISTORY = [
   { id: '1', type: 'earn', label: 'Flight ACC → LHR', points: 850, date: 'Aug 10, 2026' },
-  { id: '2', type: 'earn', label: 'Hotel — Ritz-Carlton Dubai', points: 320, date: 'Aug 8, 2026' },
+  { id: '2', type: 'earn', label: 'Hotel - Ritz-Carlton Dubai', points: 320, date: 'Aug 8, 2026' },
   { id: '3', type: 'redeem', label: 'Discount on Car Rental', points: -200, date: 'Aug 5, 2026' },
-  { id: '4', type: 'earn', label: 'Referral Bonus — Kwame A.', points: 500, date: 'Jul 29, 2026' },
+  { id: '4', type: 'earn', label: 'Referral Bonus - Kwame A.', points: 500, date: 'Jul 29, 2026' },
   { id: '5', type: 'earn', label: 'Flight ACC → JFK', points: 1200, date: 'Jul 15, 2026' },
 ];
 

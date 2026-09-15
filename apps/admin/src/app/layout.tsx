@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dellics Travels — Operations & Admin Portal",
+  title: "Dellics Travels - Operations & Admin Portal",
   description: "Internal operations control center for bookings, inventory, and travel management.",
   icons: {
     icon: [

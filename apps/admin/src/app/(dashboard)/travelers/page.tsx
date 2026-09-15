@@ -302,10 +302,10 @@ const FALLBACK_PIPELINE: Record<string, PipelineLead[]> = {
     { id: "LP-002", stage: "NEW", source: "VISA_REQUEST", estimated_value: 1200, currency: "GHS", notes: "Student visa guidance for Frankfurt exchange", next_followup: null, assigned_agent: null, created_at: "2026-09-08T14:30:00Z", user: { id: "TRV-107", name: "Kofi Asante", email: "kofi.asante@ug.edu.gh", phone: "+233 55 987 6543", membership_tier: "EXPLORER" }, inquiry: null },
   ],
   CONTACTED: [
-    { id: "LP-003", stage: "CONTACTED", source: "DIASPORA_PACKAGE", estimated_value: 12400, currency: "GHS", notes: "Cape Coast Ancestral Pilgrimage — 4 pax, Dec dates", next_followup: "2026-09-10", assigned_agent: "Jane Doe", created_at: "2026-09-06T16:00:00Z", user: { id: "TRV-102", name: "Dr. Nia Washington", email: "dr.nia.washington@howard.edu", phone: "+1 404 555 0198", membership_tier: "VOYAGER" }, inquiry: null },
+    { id: "LP-003", stage: "CONTACTED", source: "DIASPORA_PACKAGE", estimated_value: 12400, currency: "GHS", notes: "Cape Coast Ancestral Pilgrimage - 4 pax, Dec dates", next_followup: "2026-09-10", assigned_agent: "Jane Doe", created_at: "2026-09-06T16:00:00Z", user: { id: "TRV-102", name: "Dr. Nia Washington", email: "dr.nia.washington@howard.edu", phone: "+1 404 555 0198", membership_tier: "VOYAGER" }, inquiry: null },
   ],
   QUALIFIED: [
-    { id: "LP-004", stage: "QUALIFIED", source: "CORPORATE_INQUIRY", estimated_value: 28000, currency: "GHS", notes: "Gulf Logistics corporate travel management account — quarterly flights DXB-ACC", next_followup: "2026-09-11", assigned_agent: "Kwabena Boateng", created_at: "2026-09-04T10:00:00Z", user: { id: "TRV-108", name: "Fatima Al-Rashid", email: "fatima.rashid@gulflogistics.ae", phone: "+971 50 234 5678", membership_tier: "VOYAGER" }, inquiry: null },
+    { id: "LP-004", stage: "QUALIFIED", source: "CORPORATE_INQUIRY", estimated_value: 28000, currency: "GHS", notes: "Gulf Logistics corporate travel management account - quarterly flights DXB-ACC", next_followup: "2026-09-11", assigned_agent: "Kwabena Boateng", created_at: "2026-09-04T10:00:00Z", user: { id: "TRV-108", name: "Fatima Al-Rashid", email: "fatima.rashid@gulflogistics.ae", phone: "+971 50 234 5678", membership_tier: "VOYAGER" }, inquiry: null },
   ],
   PROPOSAL_SENT: [],
   NEGOTIATING: [],
@@ -404,7 +404,7 @@ export default function CustomerCRMCommandCenter() {
 
       if (customersRes.status === "fulfilled" && customersRes.value?.data?.length > 0) {
         setTravelers(customersRes.value.data);
-        setSyncNotice(`CRM synced — ${customersRes.value.total} customers loaded from live database`);
+        setSyncNotice(`CRM synced - ${customersRes.value.total} customers loaded from live database`);
       }
       if (pipelineRes.status === "fulfilled" && pipelineRes.value?.pipeline) {
         setPipeline(pipelineRes.value.pipeline);
@@ -512,7 +512,7 @@ export default function CustomerCRMCommandCenter() {
         </div>
       )}
 
-      {/* KPI Strip — 8 metrics */}
+      {/* KPI Strip - 8 metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
         {[
           { label: "Customers", value: stats.totalCustomers.toLocaleString(), icon: <Users className="size-4" />, color: "text-slate-600", bg: "bg-slate-50" },
@@ -628,7 +628,7 @@ export default function CustomerCRMCommandCenter() {
                         href={lead.user ? `/travelers/${lead.user.id}` : "#"}
                         className="block bg-white rounded-lg p-2.5 border border-slate-100 hover:shadow-sm hover:border-slate-200 transition-all group"
                       >
-                        <p className="text-[11px] font-bold text-slate-800 truncate group-hover:text-slate-900">{lead.user?.name || lead.inquiry?.name || "—"}</p>
+                        <p className="text-[11px] font-bold text-slate-800 truncate group-hover:text-slate-900">{lead.user?.name || lead.inquiry?.name || "-"}</p>
                         <p className="text-[10px] text-slate-400 mt-0.5 truncate">{lead.notes || "No notes"}</p>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-[10px] font-semibold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">
@@ -731,7 +731,7 @@ export default function CustomerCRMCommandCenter() {
                         )}
                       </td>
                       <td className="px-3 py-3">
-                        <span className="text-[11px] text-slate-400">{typeof t.lastActive === "string" ? t.lastActive : "—"}</span>
+                        <span className="text-[11px] text-slate-400">{typeof t.lastActive === "string" ? t.lastActive : "-"}</span>
                       </td>
                       <td className="px-3 py-3">
                         <Link

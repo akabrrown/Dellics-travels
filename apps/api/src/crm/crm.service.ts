@@ -151,7 +151,7 @@ export class CrmService {
         activeProducts,
         currentStatus,
         primaryRouteOrInterest:
-          u.interactions[0]?.subject || openLeads[0]?.notes || '—',
+          u.interactions[0]?.subject || openLeads[0]?.notes || '-',
         lastActive: u.interactions[0]?.created_at || u.updated_at,
         passportVerified: !!u.passport_number,
         passportExpiry: u.passport_expiry || '',

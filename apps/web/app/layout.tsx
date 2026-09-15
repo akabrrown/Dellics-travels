@@ -18,7 +18,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE.name} — Flights, Hotels, Tours & Visa Assistance`,
+    default: `${SITE.name} - Flights, Hotels, Tours & Visa Assistance`,
     template: `%s | ${SITE.name}`,
   },
   description:

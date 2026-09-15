@@ -65,7 +65,7 @@ export default function NotificationPrefsScreen() {
         </View>
 
         <Text className="text-gray-400 text-xs font-semibold mt-6 px-1 leading-relaxed">
-          You can also manage notification permissions in your device settings. Disabling "Booking Updates" is not recommended — you may miss critical travel information.
+          You can also manage notification permissions in your device settings. Disabling "Booking Updates" is not recommended - you may miss critical travel information.
         </Text>
       </ScrollView>
     </SafeAreaView>

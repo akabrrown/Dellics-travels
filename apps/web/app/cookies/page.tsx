@@ -23,7 +23,7 @@ const SECTIONS = [
   {
     icon: ShieldCheck,
     title: "3. Third-Party Integrations",
-    text: "Certain technical services integrated into our platform — such as Paystack payment security, interactive airport map visualization, and Airalo eSIM provisioning telemetry — set secure cookies to process real-time travel transactions safely.",
+    text: "Certain technical services integrated into our platform - such as Paystack payment security, interactive airport map visualization, and Airalo eSIM provisioning telemetry - set secure cookies to process real-time travel transactions safely.",
   },
   {
     icon: Settings,

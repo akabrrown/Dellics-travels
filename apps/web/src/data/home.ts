@@ -13,7 +13,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     type: "video",
     src: "/videos/Dellics_Travels_to43m0.mp4",
     poster: "/images/services/hotel-and-airbnb.jpg",
-    caption: "Dellics Travels — IATA Certified Global Luxury Travel Management",
+    caption: "Dellics Travels - IATA Certified Global Luxury Travel Management",
     subtitle: "Worldwide flight ticketing, bespoke holiday packages, corporate travel, visa advisory, and VIP concierge.",
     ctaText: "Explore Services",
     ctaHref: "#services",

@@ -11,7 +11,7 @@ const REFERRAL_LINK = `https://dellicstravels.com/r/${REFERRAL_CODE}`;
 
 const REFERRALS = [
   { id: '1', name: 'Kwame A.', status: 'Completed', reward: '+500 pts', date: 'Jul 29, 2026' },
-  { id: '2', name: 'Ama B.', status: 'Pending', reward: '—', date: 'Aug 3, 2026' },
+  { id: '2', name: 'Ama B.', status: 'Pending', reward: '-', date: 'Aug 3, 2026' },
 ];
 
 export default function ReferralScreen() {

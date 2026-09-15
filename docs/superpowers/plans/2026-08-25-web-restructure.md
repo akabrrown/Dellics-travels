@@ -4,7 +4,7 @@
 
 **Goal:** Replace the legacy static HTML/CSS/JS site (`apps/Dellics Travels/`) with the public website rebuilt in `apps/web` (Next.js App Router + Tailwind + shadcn/ui), with Ratehawk hotel search and contact/inquire forms moved into real `apps/api` NestJS endpoints.
 
-**Architecture:** `apps/web` renders 19 routes (Server Components; client components only for interactive widgets) and calls the existing NestJS API — "one backend, two front doors". Two new NestJS modules (Hotels, Inquiries) plus one new `Inquiry` Prisma model/Supabase migration. WhatsApp stays the flight conversion channel.
+**Architecture:** `apps/web` renders 19 routes (Server Components; client components only for interactive widgets) and calls the existing NestJS API - "one backend, two front doors". Two new NestJS modules (Hotels, Inquiries) plus one new `Inquiry` Prisma model/Supabase migration. WhatsApp stays the flight conversion channel.
 
 **Tech Stack:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, zod, NestJS 11, class-validator, @nestjs/throttler, axios, Prisma, Supabase/Postgres.
 
@@ -77,7 +77,7 @@ supabase/migrations/20260825000000_create_inquiry_table.sql  (create)
 
 ---
 
-### Task 1: Frontend foundation — Tailwind v4, shadcn/ui, brand tokens
+### Task 1: Frontend foundation - Tailwind v4, shadcn/ui, brand tokens
 
 **Files:**
 - Modify: `apps/web/package.json`, `apps/web/tsconfig.json`, `apps/web/next.config.js`
@@ -93,7 +93,7 @@ pnpm add tailwindcss @tailwindcss/postcss postcss class-variance-authority clsx 
 pnpm add -D @types/node
 ```
 
-- [ ] **Step 2: Configure PostCSS — create `apps/web/postcss.config.mjs`**
+- [ ] **Step 2: Configure PostCSS - create `apps/web/postcss.config.mjs`**
 
 ```js
 const config = {
@@ -102,7 +102,7 @@ const config = {
 export default config;
 ```
 
-- [ ] **Step 3: Path alias — replace `apps/web/tsconfig.json`**
+- [ ] **Step 3: Path alias - replace `apps/web/tsconfig.json`**
 
 ```json
 {
@@ -116,7 +116,7 @@ export default config;
 }
 ```
 
-- [ ] **Step 4: Brand tokens — rewrite `apps/web/app/globals.css`**
+- [ ] **Step 4: Brand tokens - rewrite `apps/web/app/globals.css`**
 
 ```css
 @import "tailwindcss";
@@ -161,7 +161,7 @@ h1, h2, h3, h4, h5, h6 {
 
 This gives utilities: `bg-navy`, `bg-ink`, `bg-brand-orange`, `bg-sunrise`, `text-confirm`, `bg-alert-tint`, `rounded-card`, `rounded-field`, `rounded-pill`, `font-display`.
 
-- [ ] **Step 5: shadcn config — create `apps/web/components.json`**
+- [ ] **Step 5: shadcn config - create `apps/web/components.json`**
 
 ```json
 {
@@ -195,7 +195,7 @@ pnpm dlx shadcn@latest add button card input label textarea select tabs sheet po
 
 Expected: components created under `apps/web/src/components/ui/`. If the CLI writes them to `components/ui/` instead, move them to `src/components/ui/` and keep the alias working.
 
-- [ ] **Step 8: Env + ports — create `apps/web/.env.local` (untracked) and edit `apps/web/package.json`**
+- [ ] **Step 8: Env + ports - create `apps/web/.env.local` (untracked) and edit `apps/web/package.json`**
 
 `.env.local`:
 ```
@@ -207,7 +207,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 "dev": "next dev --port 3001",
 ```
 
-- [ ] **Step 9: Image config — replace `apps/web/next.config.js`**
+- [ ] **Step 9: Image config - replace `apps/web/next.config.js`**
 
 ```ts
 import type { NextConfig } from "next";
@@ -248,7 +248,7 @@ git commit -m "feat(web): tailwind v4 + shadcn/ui foundation with dellics brand 
 **Files:**
 - Create: `apps/web/public/images/**`, `apps/web/public/videos/`, `apps/web/public/badges/`, `apps/web/public/logo.png`, `apps/web/public/favicon.ico`
 - Create: `apps/api/.env.example`
-- Modify: `apps/api/.env` (local only — move Ratehawk values here, never commit)
+- Modify: `apps/api/.env` (local only - move Ratehawk values here, never commit)
 
 - [ ] **Step 1: Copy images (keep region subfolders, rename to kebab-case)**
 
@@ -268,7 +268,7 @@ Copy-Item "$legacy\licensedaccredited\*" "$web\badges\"
 Copy-Item "$legacy\company logo.png" "$web\logo.png"
 ```
 
-Then rename copied files containing spaces to kebab-case (e.g. `Cape_Coast_Castle.jpg` → `cape-coast-castle.jpg`); record each rename — page copy in Tasks 7–15 must reference the new names.
+Then rename copied files containing spaces to kebab-case (e.g. `Cape_Coast_Castle.jpg` → `cape-coast-castle.jpg`); record each rename - page copy in Tasks 7–15 must reference the new names.
 
 - [ ] **Step 2: Compress the 3.7MB hero image**
 
@@ -288,7 +288,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 
-# Ratehawk (hotel inventory) — server-side only, NEVER client-side
+# Ratehawk (hotel inventory) - server-side only, NEVER client-side
 RATEHAWK_API_ID=
 RATEHAWK_API_KEY=
 RATEHAWK_BASE_URL=https://api-sandbox.ratehawk.com
@@ -300,7 +300,7 @@ INQUIRY_NOTIFY_EMAIL=info@dellicstravels.com
 
 - [ ] **Step 4: Move Ratehawk credentials server-side (local only)**
 
-Edit `apps/api/.env` (untracked): add the three `RATEHAWK_*` keys from the legacy `ratehawk-config.js` values. Verify `apps/api/.gitignore` and the root `.gitignore` ignore `.env`. The legacy `ratehawk-config.js` is deleted with the legacy folder in Task 17 — the user must also rotate this key with Ratehawk (outside code).
+Edit `apps/api/.env` (untracked): add the three `RATEHAWK_*` keys from the legacy `ratehawk-config.js` values. Verify `apps/api/.gitignore` and the root `.gitignore` ignore `.env`. The legacy `ratehawk-config.js` is deleted with the legacy folder in Task 17 - the user must also rotate this key with Ratehawk (outside code).
 
 - [ ] **Step 5: Verify no secret is staged**
 
@@ -321,7 +321,7 @@ git commit -m "feat(web): migrate images, videos, accreditation badges; add api 
 
 ---
 
-### Task 3: Database — Inquiry model, migration, Prisma client
+### Task 3: Database - Inquiry model, migration, Prisma client
 
 **Files:**
 - Modify: `packages/database/prisma/schema.prisma`
@@ -378,7 +378,7 @@ pnpm exec prisma generate
 pnpm exec prisma db push
 ```
 
-Expected: `The database is already in sync` or migration applied; no errors. (If the local DB is unreachable, mark as **Blocked** and continue — apply via `supabase db push` before Task 16 verification.)
+Expected: `The database is already in sync` or migration applied; no errors. (If the local DB is unreachable, mark as **Blocked** and continue - apply via `supabase db push` before Task 16 verification.)
 
 - [ ] **Step 4: Commit**
 
@@ -389,13 +389,13 @@ git commit -m "feat(db): add Inquiry model and migration for website submissions
 
 ---
 
-### Task 4: API — Hotels module (Ratehawk, TDD)
+### Task 4: API - Hotels module (Ratehawk, TDD)
 
 **Files:**
 - Create: `apps/api/src/hotels/hotels.types.ts`, `apps/api/src/hotels/dto/search-hotels.dto.ts`, `apps/api/src/hotels/hotels.service.ts`, `apps/api/src/hotels/hotels.controller.ts`, `apps/api/src/hotels/hotels.module.ts`
 - Test: `apps/api/src/hotels/hotels.service.spec.ts`
 
-- [ ] **Step 1: Write the failing tests — `apps/api/src/hotels/hotels.service.spec.ts`**
+- [ ] **Step 1: Write the failing tests - `apps/api/src/hotels/hotels.service.spec.ts`**
 
 ```ts
 import { ConfigService } from '@nestjs/config';
@@ -525,7 +525,7 @@ cd "c:\Users\Dell\Desktop\PROjects\Dellics Travels\apps\api"
 pnpm test -- hotels.service.spec
 ```
 
-Expected: FAIL — `Cannot find module './hotels.service'`.
+Expected: FAIL - `Cannot find module './hotels.service'`.
 
 - [ ] **Step 3: Create `apps/api/src/hotels/hotels.types.ts`**
 
@@ -711,7 +711,7 @@ pnpm test -- hotels.service.spec
 
 Expected: 4 passing.
 
-- [ ] **Step 7: Create controller + module — `apps/api/src/hotels/hotels.controller.ts`**
+- [ ] **Step 7: Create controller + module - `apps/api/src/hotels/hotels.controller.ts`**
 
 ```ts
 import { Body, Controller, Post } from '@nestjs/common';
@@ -752,7 +752,7 @@ git commit -m "feat(api): hotels search module proxying ratehawk server-side"
 
 ---
 
-### Task 5: API — Inquiries module + global validation + throttling (TDD)
+### Task 5: API - Inquiries module + global validation + throttling (TDD)
 
 **Files:**
 - Create: `apps/api/src/inquiries/dto/create-inquiry.dto.ts`, `apps/api/src/inquiries/inquiries.service.ts`, `apps/api/src/inquiries/inquiries.controller.ts`, `apps/api/src/inquiries/inquiries.module.ts`
@@ -766,7 +766,7 @@ cd "c:\Users\Dell\Desktop\PROjects\Dellics Travels\apps\api"
 pnpm add class-validator class-transformer @nestjs/throttler
 ```
 
-- [ ] **Step 2: Write the failing tests — `apps/api/src/inquiries/inquiries.service.spec.ts`**
+- [ ] **Step 2: Write the failing tests - `apps/api/src/inquiries/inquiries.service.spec.ts`**
 
 ```ts
 import { ConfigService } from '@nestjs/config';
@@ -849,7 +849,7 @@ describe('InquiriesService', () => {
 pnpm test -- inquiries.service.spec
 ```
 
-Expected: FAIL — `Cannot find module './inquiries.service'`.
+Expected: FAIL - `Cannot find module './inquiries.service'`.
 
 - [ ] **Step 4: Create `apps/api/src/inquiries/dto/create-inquiry.dto.ts`**
 
@@ -948,7 +948,7 @@ export class InquiriesService {
     });
 
     await this.notify(record.id, dto);
-    return { received: true }; // opaque ack — never echo stored data back
+    return { received: true }; // opaque ack - never echo stored data back
   }
 
   private async notify(id: string, dto: CreateInquiryDto): Promise<void> {
@@ -985,7 +985,7 @@ pnpm test -- inquiries.service.spec
 
 Expected: 3 passing.
 
-- [ ] **Step 7: Create controller + module — `apps/api/src/inquiries/inquiries.controller.ts`**
+- [ ] **Step 7: Create controller + module - `apps/api/src/inquiries/inquiries.controller.ts`**
 
 ```ts
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
@@ -1020,7 +1020,7 @@ import { InquiriesService } from './inquiries.service';
 export class InquiriesModule {}
 ```
 
-- [ ] **Step 8: Register modules + throttler — modify `apps/api/src/app.module.ts`**
+- [ ] **Step 8: Register modules + throttler - modify `apps/api/src/app.module.ts`**
 
 Add imports and entries so the array reads:
 
@@ -1044,7 +1044,7 @@ imports: [
 ],
 ```
 
-Also add the throttler guard globally — add `APP_GUARD` provider:
+Also add the throttler guard globally - add `APP_GUARD` provider:
 
 ```ts
 import { APP_GUARD } from '@nestjs/core';
@@ -1052,7 +1052,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 // providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 ```
 
-- [ ] **Step 9: Global validation pipe + remove the env console.log — rewrite `apps/api/src/main.ts`**
+- [ ] **Step 9: Global validation pipe + remove the env console.log - rewrite `apps/api/src/main.ts`**
 
 ```ts
 import { NestFactory } from '@nestjs/core';
@@ -1228,7 +1228,7 @@ cd "c:\Users\Dell\Desktop\PROjects\Dellics Travels\apps\web"
 pnpm test
 ```
 
-Expected: FAIL — `Cannot find module './passengers'`.
+Expected: FAIL - `Cannot find module './passengers'`.
 
 - [ ] **Step 5: Create `apps/web/src/lib/site.ts`**
 
@@ -1374,7 +1374,7 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   try {
     data = await res.json();
   } catch {
-    // non-JSON response body — fall through to the status-based message
+    // non-JSON response body - fall through to the status-based message
   }
   if (!res.ok) {
     const message =
@@ -1444,12 +1444,12 @@ Expected: all tests pass.
 
 ```powershell
 git add apps/web
-git commit -m "feat(web): core libs — whatsapp composer, passenger logic, api client, zod schemas"
+git commit -m "feat(web): core libs - whatsapp composer, passenger logic, api client, zod schemas"
 ```
 
 ---
 
-### Task 7: Layout shell — header, footer, fonts, not-found
+### Task 7: Layout shell - header, footer, fonts, not-found
 
 **Files:**
 - Create: `apps/web/src/data/nav.ts`, `apps/web/src/components/layout/{announcement-bar,site-header,site-footer}.tsx`, `apps/web/src/components/{page-hero,section-heading,accreditation-strip}.tsx`
@@ -1519,7 +1519,7 @@ import { SITE } from "@/lib/site";
 export function AnnouncementBar() {
   return (
     <div className="bg-brand-orange text-white text-center text-sm py-2 px-4">
-      IATA-accredited · 24/7 support — call {SITE.phoneDisplay} or WhatsApp us anytime
+      IATA-accredited · 24/7 support - call {SITE.phoneDisplay} or WhatsApp us anytime
     </div>
   );
 }
@@ -1722,7 +1722,7 @@ export function SiteFooter() {
         <div>
           <Image src="/logo.png" alt={`${SITE.name} logo`} width={140} height={40} className="h-9 w-auto" />
           <p className="mt-4 text-sm text-white/70">
-            Your trusted travel partner — flights, hotels, tours, transfers and visa
+            Your trusted travel partner - flights, hotels, tours, transfers and visa
             assistance, handled by licensed experts.
           </p>
         </div>
@@ -1771,7 +1771,7 @@ export function SiteFooter() {
 
 Carry the actual contact details from the legacy footer into `src/lib/site.ts` if different.
 
-- [ ] **Step 6: Create shared page primitives — `apps/web/src/components/page-hero.tsx`**
+- [ ] **Step 6: Create shared page primitives - `apps/web/src/components/page-hero.tsx`**
 
 ```tsx
 import { cn } from "@/lib/utils";
@@ -1838,7 +1838,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: { default: `${SITE.name} — Flights, Hotels, Tours & Visa Assistance`, template: `%s | ${SITE.name}` },
+  title: { default: `${SITE.name} - Flights, Hotels, Tours & Visa Assistance`, template: `%s | ${SITE.name}` },
   description:
     "Dellics Travels is a Ghana-based IATA-accredited travel agency offering flights, hotels, tours, airport transfers and visa assistance worldwide.",
 };
@@ -1879,7 +1879,7 @@ export default function NotFound() {
 
 - [ ] **Step 9: Delete starter leftovers**
 
-Delete `apps/web/app/page.module.css` and the `apps/web/app/fonts/` folder (GeistVF.woff, GeistMonoVF.woff) — fonts now come from `next/font/google`.
+Delete `apps/web/app/page.module.css` and the `apps/web/app/fonts/` folder (GeistVF.woff, GeistMonoVF.woff) - fonts now come from `next/font/google`.
 
 - [ ] **Step 10: Verify**
 
@@ -1895,12 +1895,12 @@ Expected: both succeed.
 
 ```powershell
 git add apps/web
-git commit -m "feat(web): layout shell — header with dropdowns, footer, fonts, 404"
+git commit -m "feat(web): layout shell - header with dropdowns, footer, fonts, 404"
 ```
 
 ---
 
-### Task 8: Home page — hero slider, quick book, sections
+### Task 8: Home page - hero slider, quick book, sections
 
 **Files:**
 - Create: `apps/web/src/data/home.ts`, `apps/web/src/components/home/{hero-slider,quick-book}.tsx`
@@ -2122,7 +2122,7 @@ export default function HomePage() {
       <AccreditationStrip />
 
       <section className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <SectionHeading title="Ready to plan your next trip?" subtitle="Talk to a real travel expert — we reply within minutes on WhatsApp." />
+        <SectionHeading title="Ready to plan your next trip?" subtitle="Talk to a real travel expert - we reply within minutes on WhatsApp." />
         <Button asChild size="lg" className="mt-8 rounded-pill bg-brand-orange hover:bg-brand-orange/90">
           <Link href="/inquire">Start an inquiry</Link>
         </Button>
@@ -2132,7 +2132,7 @@ export default function HomePage() {
 }
 ```
 
-Map the `SERVICES` and `DESTINATION_TEASERS` image paths to actual files copied in Task 2 — rename entries to match the kebab-cased files that exist, and delete entries with no matching file rather than referencing missing images.
+Map the `SERVICES` and `DESTINATION_TEASERS` image paths to actual files copied in Task 2 - rename entries to match the kebab-cased files that exist, and delete entries with no matching file rather than referencing missing images.
 
 - [ ] **Step 5: Verify**
 
@@ -2151,7 +2151,7 @@ git commit -m "feat(web): home page with hero slider, quick book tabs, services 
 
 ---
 
-### Task 9: Flights page — search widget + shared passenger selector
+### Task 9: Flights page - search widget + shared passenger selector
 
 **Files:**
 - Create: `apps/web/src/components/flights/{passenger-selector,flight-search-widget}.tsx`, `apps/web/app/flights/page.tsx`
@@ -2369,7 +2369,7 @@ export function FlightSearchWidget() {
           Continue on WhatsApp
         </Button>
         <p className="text-center text-xs text-slate-body">
-          Your trip summary opens in WhatsApp — our agents reply with live options and fares.
+          Your trip summary opens in WhatsApp - our agents reply with live options and fares.
         </p>
       </div>
     </form>
@@ -2389,11 +2389,11 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Flight Booking",
-  description: "Book domestic and international flights with Dellics Travels — IATA-accredited agents, best fares on all major airlines.",
+  description: "Book domestic and international flights with Dellics Travels - IATA-accredited agents, best fares on all major airlines.",
 };
 
 const REASONS = [
-  { title: "IATA-accredited", copy: "Tickets issued directly by licensed agents — no third-party risk." },
+  { title: "IATA-accredited", copy: "Tickets issued directly by licensed agents - no third-party risk." },
   { title: "Best-fare search", copy: "We compare across Amadeus, Travelport and RateHawk inventories." },
   { title: "24/7 trip support", copy: "Rebooking, refunds and emergencies handled around the clock." },
 ];
@@ -2401,7 +2401,7 @@ const REASONS = [
 export default function FlightsPage() {
   return (
     <>
-      <PageHero title="Book your next flight" subtitle="Tell us where you're going — real agents find the best fares and reply on WhatsApp within minutes." />
+      <PageHero title="Book your next flight" subtitle="Tell us where you're going - real agents find the best fares and reply on WhatsApp within minutes." />
       <section className="mx-auto -mt-10 max-w-4xl px-4">
         <FlightSearchWidget />
       </section>
@@ -2445,7 +2445,7 @@ git commit -m "feat(web): flights page with whatsapp search widget and shared pa
 
 ---
 
-### Task 10: Hotels page — live search against the API
+### Task 10: Hotels page - live search against the API
 
 **Files:**
 - Create: `apps/web/src/lib/hotels.ts`, `apps/web/src/components/hotels/hotel-search.tsx`, `apps/web/app/hotels/page.tsx`
@@ -2624,7 +2624,7 @@ export function HotelSearch() {
 }
 ```
 
-If upstream Ratehawk images come from a host other than `**.ratehawk.com` / `images.unsplash.com`, the build/runtime will surface an `next/image` host error — add exactly that host to `remotePatterns` in `apps/web/next.config.js` then. Do not pre-emptively add hosts.
+If upstream Ratehawk images come from a host other than `**.ratehawk.com` / `images.unsplash.com`, the build/runtime will surface an `next/image` host error - add exactly that host to `remotePatterns` in `apps/web/next.config.js` then. Do not pre-emptively add hosts.
 
 - [ ] **Step 3: Create `apps/web/app/hotels/page.tsx`**
 
@@ -2635,13 +2635,13 @@ import { HotelSearch } from "@/components/hotels/hotel-search";
 
 export const metadata: Metadata = {
   title: "Hotels & Airbnb",
-  description: "Search live hotel availability worldwide through Dellics Travels' RateHawk partnership — verified stays for every budget.",
+  description: "Search live hotel availability worldwide through Dellics Travels' RateHawk partnership - verified stays for every budget.",
 };
 
 export default function HotelsPage() {
   return (
     <>
-      <PageHero title="Hotels & Airbnb" subtitle="Live availability and honest pricing — no fake listings, no surprises at check-in." />
+      <PageHero title="Hotels & Airbnb" subtitle="Live availability and honest pricing - no fake listings, no surprises at check-in." />
       <section className="mx-auto -mt-10 max-w-6xl px-4 pb-20">
         <HotelSearch />
       </section>
@@ -2668,7 +2668,7 @@ git commit -m "feat(web): hotels page with live search, loading/empty/error stat
 
 ---
 
-### Task 11: Content pages — tours, transfers, visa, services, corporate, diaspora
+### Task 11: Content pages - tours, transfers, visa, services, corporate, diaspora
 
 **Files:**
 - Create: `apps/web/src/components/{content-sections,cta-banner}.tsx`
@@ -2676,7 +2676,7 @@ git commit -m "feat(web): hotels page with live search, loading/empty/error stat
 
 **Content rule for every page in this task:** copy the body text VERBATIM from the matching legacy file in `apps/Dellics Travels/Dellics Travels/pages/` (skip header/nav/footer/scripts/inline styles). Do not paraphrase, summarize, or invent copy. If a legacy page has an image, reference the matching file copied into `apps/web/public/images/` in Task 2.
 
-- [ ] **Step 1: Create shared content renderers — `apps/web/src/components/content-sections.tsx`**
+- [ ] **Step 1: Create shared content renderers - `apps/web/src/components/content-sections.tsx`**
 
 ```tsx
 export interface ContentSection {
@@ -2740,7 +2740,7 @@ export function CtaBanner({ title, copy, label = "Start an inquiry", href = "/in
 
 - [ ] **Step 2: Create the six pages**
 
-Each page follows this exact shape — shown here for `apps/web/app/tours/page.tsx` (the others are identical in structure; only metadata, hero text, and the extracted `SECTIONS` content differ):
+Each page follows this exact shape - shown here for `apps/web/app/tours/page.tsx` (the others are identical in structure; only metadata, hero text, and the extracted `SECTIONS` content differ):
 
 ```tsx
 import type { Metadata } from "next/types";
@@ -2800,7 +2800,7 @@ git commit -m "feat(web): tours, transfers, visa, services, corporate, diaspora 
 
 ---
 
-### Task 12: Destinations — index + one template for five regions
+### Task 12: Destinations - index + one template for five regions
 
 **Files:**
 - Create: `apps/web/src/data/destinations.ts`, `apps/web/app/destinations/page.tsx`, `apps/web/app/destinations/[region]/page.tsx`
@@ -2844,7 +2844,7 @@ export function getRegion(slug: string): Region | undefined {
 }
 ```
 
-Populate every field by extracting VERBATIM from the five legacy regional pages (`apps/Dellics Travels/Dellics Travels/pages/destinations-africa.html`, `-asia`, `-europe`, `-middle-east`, `-north-america`): hero tagline, intro paragraphs, and the destination cards (name + image + caption). Do not invent destinations. Empty `highlights` is a plan failure — each legacy regional page has its card list; transcribe it.
+Populate every field by extracting VERBATIM from the five legacy regional pages (`apps/Dellics Travels/Dellics Travels/pages/destinations-africa.html`, `-asia`, `-europe`, `-middle-east`, `-north-america`): hero tagline, intro paragraphs, and the destination cards (name + image + caption). Do not invent destinations. Empty `highlights` is a plan failure - each legacy regional page has its card list; transcribe it.
 
 - [ ] **Step 2: Create `apps/web/app/destinations/page.tsx`**
 
@@ -2940,7 +2940,7 @@ export default async function RegionPage({ params }: RouteParams) {
           </Button>
         </div>
       </section>
-      <CtaBanner title={`Planning a trip to ${data.name}?`} copy="Tell us your dates and budget — we handle flights, stays and experiences." />
+      <CtaBanner title={`Planning a trip to ${data.name}?`} copy="Tell us your dates and budget - we handle flights, stays and experiences." />
     </>
   );
 }
@@ -3120,7 +3120,7 @@ git commit -m "feat(web): about, credentials, gallery pages with accessible ligh
 
 ---
 
-### Task 14: Contact + inquire — real, validated, persisted forms
+### Task 14: Contact + inquire - real, validated, persisted forms
 
 **Files:**
 - Create: `apps/web/src/components/forms/{contact-form,inquire-form}.tsx`
@@ -3154,12 +3154,12 @@ export function ContactForm() {
     }
     setPending(true);
     try {
-      // drop blank optional fields — the API DTO regexes reject empty strings
+      // drop blank optional fields - the API DTO regexes reject empty strings
       const payload = Object.fromEntries(
         Object.entries(parsed.data).filter(([, value]) => value !== ""),
       );
       await postJson("/inquiries", { ...payload, kind: "CONTACT" });
-      toast.success("Message sent — we'll reply shortly.");
+      toast.success("Message sent - we'll reply shortly.");
       form.reset();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Sending failed. Please try again.");
@@ -3217,9 +3217,9 @@ Same structure as `ContactForm`, plus three fields before the message:
       </div>
 ```
 
-Use `inquireSchema`, send `{ ...payload, kind: "INQUIRY" }` where `payload` is built with the same blank-optional-filtering shown in `ContactForm` (the API DTO's date/phone regexes reject empty strings), success toast "Inquiry received — an expert will contact you shortly."
+Use `inquireSchema`, send `{ ...payload, kind: "INQUIRY" }` where `payload` is built with the same blank-optional-filtering shown in `ContactForm` (the API DTO's date/phone regexes reject empty strings), success toast "Inquiry received - an expert will contact you shortly."
 
-- [ ] **Step 3: Mount Toaster — add to `apps/web/app/layout.tsx` inside `<body>` after `<SiteFooter />`**
+- [ ] **Step 3: Mount Toaster - add to `apps/web/app/layout.tsx` inside `<body>` after `<SiteFooter />`**
 
 ```tsx
 import { Toaster } from "@/components/ui/sonner";
@@ -3238,13 +3238,13 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact Us",
-  description: "Reach Dellics Travels by form, phone or WhatsApp — we reply fast.",
+  description: "Reach Dellics Travels by form, phone or WhatsApp - we reply fast.",
 };
 
 export default function ContactPage() {
   return (
     <>
-      <PageHero title="Contact Us" subtitle="Questions, quotes or emergencies — we're here 24/7." />
+      <PageHero title="Contact Us" subtitle="Questions, quotes or emergencies - we're here 24/7." />
       <section className="mx-auto grid max-w-5xl gap-10 px-4 py-16 lg:grid-cols-[1fr_320px]">
         <ContactForm />
         <aside className="space-y-6 rounded-card bg-navy p-6 text-white">
@@ -3254,7 +3254,7 @@ export default function ContactPage() {
             <p className="text-sm text-white/80">{SITE.email}</p>
             <p className="text-sm text-white/80">{SITE.address}</p>
           </div>
-          <p className="text-sm text-white/60">Form messages are stored and emailed to our team — no message gets lost.</p>
+          <p className="text-sm text-white/60">Form messages are stored and emailed to our team - no message gets lost.</p>
         </aside>
       </section>
     </>
@@ -3271,13 +3271,13 @@ import { InquireForm } from "@/components/forms/inquire-form";
 
 export const metadata: Metadata = {
   title: "Inquire",
-  description: "Tell Dellics Travels what you want to book — flights, tours, hotels or a full package.",
+  description: "Tell Dellics Travels what you want to book - flights, tours, hotels or a full package.",
 };
 
 export default function InquirePage() {
   return (
     <>
-      <PageHero title="Start your inquiry" subtitle="Share the basics — a travel expert replies with tailored options and pricing." />
+      <PageHero title="Start your inquiry" subtitle="Share the basics - a travel expert replies with tailored options and pricing." />
       <section className="mx-auto max-w-2xl px-4 py-16">
         <InquireForm />
       </section>
@@ -3421,7 +3421,7 @@ git commit -m "feat(web): privacy, terms, admin stub, sitemap and robots"
 
 ---
 
-### Task 16: Full verification — monorepo gates + live endpoint checks
+### Task 16: Full verification - monorepo gates + live endpoint checks
 
 **Files:** none (verification only; fix anything that fails before proceeding)
 
@@ -3456,7 +3456,7 @@ pnpm start:dev
 
 Expected: `Nest application successfully started` on port 3000. (If the DB is unreachable and the Inquiry migration from Task 3 was never applied, apply it now via `supabase db push` or `prisma db push` before testing `/inquiries`.)
 
-- [ ] **Step 4: Endpoint checks — open a SECOND terminal**
+- [ ] **Step 4: Endpoint checks - open a SECOND terminal**
 
 Invalid hotel search (dates reversed) must be rejected:
 
@@ -3472,7 +3472,7 @@ Valid hotel search:
 curl.exe -s -X POST http://localhost:3000/hotels/search -H "Content-Type: application/json" -d '{"destination":"Dubai","checkIn":"2099-01-01","checkOut":"2099-01-08","guests":2,"rooms":1}'
 ```
 
-Expected: a JSON array in the normalized shape (`id, name, rating, …`) — or a 502 with the friendly BadGateway message if the Ratehawk sandbox is unreachable. Both are acceptable; a silent mock list is NOT.
+Expected: a JSON array in the normalized shape (`id, name, rating, …`) - or a 502 with the friendly BadGateway message if the Ratehawk sandbox is unreachable. Both are acceptable; a silent mock list is NOT.
 
 Valid inquiry:
 
@@ -3490,7 +3490,7 @@ curl.exe -s -X POST http://localhost:3000/inquiries -H "Content-Type: applicatio
 
 Expected: HTTP 400.
 
-(Single-quoted JSON bodies are intentional — PowerShell passes them through verbatim to `curl.exe`; double quotes inside `-d "..."` get mangled.)
+(Single-quoted JSON bodies are intentional - PowerShell passes them through verbatim to `curl.exe`; double quotes inside `-d "..."` get mangled.)
 
 - [ ] **Step 5: Verify the inquiry persisted**
 
@@ -3499,7 +3499,7 @@ cd "c:\Users\Dell\Desktop\PROjects\Dellics Travels\packages\database"
 pnpm exec prisma studio
 ```
 
-Open the `Inquiry` table — the `Test User` row must exist with `kind CONTACT`. Close studio afterwards. (Alternative: query via Supabase dashboard / `psql` if preferred.)
+Open the `Inquiry` table - the `Test User` row must exist with `kind CONTACT`. Close studio afterwards. (Alternative: query via Supabase dashboard / `psql` if preferred.)
 
 - [ ] **Step 6: Start the web app (third terminal)**
 
@@ -3512,14 +3512,14 @@ Expected: ready on `http://localhost:3001`.
 
 - [ ] **Step 7: Browser verification checklist** (use the preview browser; every item must pass)
 
-1. `/` — hero slider autoplays, video slides advance on `ended`, QuickBook tabs switch, all images load (no broken `next/image`)
+1. `/` - hero slider autoplays, video slides advance on `ended`, QuickBook tabs switch, all images load (no broken `next/image`)
 2. Header dropdowns open; mobile sheet opens and all links work; active route is highlighted
 3. All 19 routes render: `/flights /hotels /tours /transfers /visa /destinations /destinations/{africa,asia,europe,middle-east,north-america} /corporate /diaspora /services /credentials /gallery /about /contact /inquire /privacy /terms /admin`
 4. `/destinations/atlantis` shows the 404 page
-5. `/flights` — switch trip types; multi-city adds/removes legs (2–7); passenger counts respect limits; submit navigates to `wa.me/233552054174` with the encoded trip summary
-6. `/hotels` — invalid dates show the client error; valid search shows skeletons then results or the error card (never fake data)
-7. `/contact` + `/inquire` — empty submit shows validation toasts; valid submit shows success toast and the row appears in the DB (already proven in Step 5)
-8. `/gallery` — lightbox opens, Esc closes, arrows navigate
+5. `/flights` - switch trip types; multi-city adds/removes legs (2–7); passenger counts respect limits; submit navigates to `wa.me/233552054174` with the encoded trip summary
+6. `/hotels` - invalid dates show the client error; valid search shows skeletons then results or the error card (never fake data)
+7. `/contact` + `/inquire` - empty submit shows validation toasts; valid submit shows success toast and the row appears in the DB (already proven in Step 5)
+8. `/gallery` - lightbox opens, Esc closes, arrows navigate
 9. `/sitemap.xml` and `/robots.txt` respond with correct content
 
 - [ ] **Step 8: Stop both dev servers, commit verification note**
@@ -3532,7 +3532,7 @@ git commit --allow-empty -m "chore: verification passed for web restructure"
 
 ---
 
-### Task 17: Cutover — delete the legacy site
+### Task 17: Cutover - delete the legacy site
 
 **Files:**
 - Delete: `apps/Dellics Travels/` (entire folder)
@@ -3553,7 +3553,7 @@ pnpm build
 pnpm check-types
 ```
 
-Expected: both succeed — proves no remaining import/path dependency on the deleted folder.
+Expected: both succeed - proves no remaining import/path dependency on the deleted folder.
 
 - [ ] **Step 3: Final secret sweep**
 
@@ -3571,6 +3571,6 @@ git commit -m "chore: remove legacy static site after verified web restructure"
 
 - [ ] **Step 5: User actions (outside code)**
 
-1. Rotate the leaked Ratehawk sandbox key in the Ratehawk dashboard and update `apps/api/.env` — the old key was public in browser code and must be treated as compromised.
+1. Rotate the leaked Ratehawk sandbox key in the Ratehawk dashboard and update `apps/api/.env` - the old key was public in browser code and must be treated as compromised.
 2. Set `RESEND_API_KEY` + `INQUIRY_NOTIFY_EMAIL` in the API's production environment for inquiry notifications.
 3. Confirm the production domain used in `app/sitemap.ts` / `app/robots.ts` (`BASE_URL` constant) before deploying.

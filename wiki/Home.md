@@ -1,8 +1,8 @@
-# Dellics Travels — Repository Wiki
+# Dellics Travels - Repository Wiki
 
-> **See the World** — a mobile-first flight, hotel, package, and eSIM booking platform for the Ghanaian and West African market, competing with Booking.com, Trip.com, Skyscanner, Hopper, and Airalo.
+> **See the World** - a mobile-first flight, hotel, package, and eSIM booking platform for the Ghanaian and West African market, competing with Booking.com, Trip.com, Skyscanner, Hopper, and Airalo.
 
-This wiki is the single reference for the Dellics Travels codebase, its design system, and its operational tooling. It is built from the official documentation set — the **Admin Website Documentation (v1.0)** and the **Figma Design Prompts** library — and grounded in the actual monorepo layout.
+This wiki is the single reference for the Dellics Travels codebase, its design system, and its operational tooling. It is built from the official documentation set - the **Admin Website Documentation (v1.0)** and the **Figma Design Prompts** library - and grounded in the actual monorepo layout.
 
 ---
 
@@ -17,7 +17,7 @@ This wiki is the single reference for the Dellics Travels codebase, its design s
 ### Architecture
 | Page | What it covers |
 |---|---|
-| [Architecture & Backend Linkage](Architecture-and-Backend-Linkage) | "One backend, two front doors" — how the mobile app, web app, and admin website all call the same NestJS API, module by module |
+| [Architecture & Backend Linkage](Architecture-and-Backend-Linkage) | "One backend, two front doors" - how the mobile app, web app, and admin website all call the same NestJS API, module by module |
 
 ### Design
 | Page | What it covers |
@@ -38,13 +38,13 @@ This wiki is the single reference for the Dellics Travels codebase, its design s
 
 ## The one-paragraph summary
 
-Dellics Travels is a **Turborepo + pnpm monorepo** containing an Expo/React Native traveler app (`apps/mobile`), a Next.js companion web app (`apps/web`), and a NestJS API (`apps/api`) backed by PostgreSQL/Supabase. There is **no separate admin API** — the admin website is a second front door onto the same backend, distinguished only by an elevated, role-claiming JWT. Every design decision, from the navy/orange brand system to the admin dashboard's action-first widgets, is benchmarked against the best operators in the industry (Booking.com, Stripe, Skyscanner, Shopify, Airbnb, Hopper, Airalo) rather than invented from scratch.
+Dellics Travels is a **Turborepo + pnpm monorepo** containing an Expo/React Native traveler app (`apps/mobile`), a Next.js companion web app (`apps/web`), and a NestJS API (`apps/api`) backed by PostgreSQL/Supabase. There is **no separate admin API** - the admin website is a second front door onto the same backend, distinguished only by an elevated, role-claiming JWT. Every design decision, from the navy/orange brand system to the admin dashboard's action-first widgets, is benchmarked against the best operators in the industry (Booking.com, Stripe, Skyscanner, Shopify, Airbnb, Hopper, Airalo) rather than invented from scratch.
 
 ## Quick links
 
 - Traveler mobile screen IDs use the **S** prefix (see the Screen & Navigation Specification)
 - Admin screen IDs use the **A** prefix (A01–A21, see [Admin Screens](Admin-Screens))
-- Brand tokens live in the [Design System](Design-System) page — navy `#0A0060`, orange `#F4740D`
+- Brand tokens live in the [Design System](Design-System) page - navy `#0A0060`, orange `#F4740D`
 
 ---
 

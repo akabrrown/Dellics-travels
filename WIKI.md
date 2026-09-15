@@ -1,6 +1,6 @@
-# Dellics Travels — Official Monorepo Wiki & Architecture Blueprint
+# Dellics Travels - Official Monorepo Wiki & Architecture Blueprint
 
-> **"See the World"** — A multi-platform flight, hotel, curated tour package, and global eSIM digital booking platform tailored for the Ghanaian, West African, and international diaspora markets.
+> **"See the World"** - A multi-platform flight, hotel, curated tour package, and global eSIM digital booking platform tailored for the Ghanaian, West African, and international diaspora markets.
 > Benchmarked against **Booking.com, Trip.com, Skyscanner, Hopper, Airalo, and Stripe**.
 
 ---
@@ -12,9 +12,9 @@ Dellics Travels is structured as a high-performance **Turborepo + pnpm monorepo*
 ```
 Dellics Travels (Monorepo)
 ├── apps/
-│   ├── api/          # NestJS Core Backend (Port 3000) — Auth, Booking, Payments, Inquiries, eSIM, Health
-│   ├── web/          # Next.js 16 Customer Web Portal (Port 3001) — Flights, Hotels, Tours, eSIM, Inquiries
-│   ├── admin/        # Next.js 16 Operational Command Center (Port 3002) — Pipeline, Ledger, Support, CMS
+│   ├── api/          # NestJS Core Backend (Port 3000) - Auth, Booking, Payments, Inquiries, eSIM, Health
+│   ├── web/          # Next.js 16 Customer Web Portal (Port 3001) - Flights, Hotels, Tours, eSIM, Inquiries
+│   ├── admin/        # Next.js 16 Operational Command Center (Port 3002) - Pipeline, Ledger, Support, CMS
 │   └── mobile/       # Expo / React Native Cross-Platform App (iOS & Android)
 ├── packages/
 │   ├── api-client/   # Typed isomorphic HTTP client for Web, Mobile, and Admin
@@ -85,8 +85,8 @@ All client frontends (Web, Admin, Mobile) communicate through the single central
 
 ## 3. Brand Tokens & Design System
 
-- **Primary Brand Navy:** `#0A0060` (Deep Ghanaian Navy — Trust, Authority, Distinction)
-- **Primary Brand Orange:** `#F4740D` (Warm Gold/Orange — Action, Warmth, Ghanaian Sunset)
+- **Primary Brand Navy:** `#0A0060` (Deep Ghanaian Navy - Trust, Authority, Distinction)
+- **Primary Brand Orange:** `#F4740D` (Warm Gold/Orange - Action, Warmth, Ghanaian Sunset)
 - **Supporting Accents:** Emerald `#059669` (Confirmed / Safe), Amber `#D97706` (Hold / Action), Rose `#E11D48` (Alert / Void)
 - **Typography:** Display: `Plus Jakarta Sans`, Body: `Inter`, Code: `JetBrains Mono`
 

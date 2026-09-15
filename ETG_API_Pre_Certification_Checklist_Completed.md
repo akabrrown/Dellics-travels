@@ -117,9 +117,9 @@ User Action                    Partner Backend                  ETG v3 Endpoint
 ---
 
 ## 5. Payment Types
-- [x] **“deposit”** — The payment is deducted from the partner’s prepaid B2B balance / deposit with ETG. (Dellics Travels collects customer payment via Paystack/Card and settles via ETG deposit).
-- [ ] “hotel” — Payment at the hotel.
-- [ ] “now” — ETG is Merchant of Record.
+- [x] **“deposit”** - The payment is deducted from the partner’s prepaid B2B balance / deposit with ETG. (Dellics Travels collects customer payment via Paystack/Card and settles via ETG deposit).
+- [ ] “hotel” - Payment at the hotel.
+- [ ] “now” - ETG is Merchant of Record.
 
 ---
 

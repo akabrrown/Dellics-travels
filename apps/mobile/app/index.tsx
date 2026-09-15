@@ -99,14 +99,14 @@ export default function WelcomeScreen() {
     <Animated.View style={[styles.root, { backgroundColor }]}>
       <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
 
-        {/* ROW 1: Skip button — sits OUTSIDE the ScrollView so it always receives taps */}
+        {/* ROW 1: Skip button - sits OUTSIDE the ScrollView so it always receives taps */}
         <View style={styles.skipRow}>
           <Pressable onPress={() => finishOnboarding('/(tabs)')} hitSlop={12} style={styles.skipButton}>
             <Text style={styles.skipText}>Skip</Text>
           </Pressable>
         </View>
 
-        {/* ROW 2: Horizontal pager — takes remaining vertical space */}
+        {/* ROW 2: Horizontal pager - takes remaining vertical space */}
         <Animated.ScrollView
           ref={scrollViewRef}
           horizontal
@@ -166,7 +166,7 @@ export default function WelcomeScreen() {
           })}
         </Animated.ScrollView>
 
-        {/* ROW 3: Footer — sits OUTSIDE the ScrollView so buttons always receive taps */}
+        {/* ROW 3: Footer - sits OUTSIDE the ScrollView so buttons always receive taps */}
         <View style={styles.footer}>
           {/* Pagination Dots */}
           <View style={styles.dotsRow}>
