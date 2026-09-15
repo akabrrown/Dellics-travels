@@ -91,6 +91,8 @@ export default function RolesAndTeam() {
   const { activeRole, allRoles, switchRole } = useRole();
   const [activeTab, setActiveTab] = useState<"MEMBERS" | "MATRIX" | "BUILDER">("MEMBERS");
   const [members, setMembers] = useState<TeamMember[]>([]);
+  const [memberSearch, setMemberSearch] = useState("");
+  const [memberTypeFilter, setMemberTypeFilter] = useState<"ALL" | "STAFF" | "USERS">("ALL");
   const [loadingMembers, setLoadingMembers] = useState(true);
 
   // Invite Modal
@@ -245,6 +247,23 @@ export default function RolesAndTeam() {
     }
   };
 
+  const filteredMembers = members.filter((m) => {
+    const isStaff = m.id.startsWith("ADM-");
+    if (memberTypeFilter === "STAFF" && !isStaff) return false;
+    if (memberTypeFilter === "USERS" && isStaff) return false;
+
+    if (memberSearch.trim()) {
+      const q = memberSearch.toLowerCase();
+      return (
+        m.name.toLowerCase().includes(q) ||
+        m.email.toLowerCase().includes(q) ||
+        m.id.toLowerCase().includes(q) ||
+        m.roleId.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
   const getRoleById = (id: string): AdminRole => {
     return allRoles.find((r) => r.id === id) || allRoles[0];
   };
@@ -349,7 +368,7 @@ export default function RolesAndTeam() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {members.map((member) => {
+              {filteredMembers.map((member) => {
                 const memberRole = getRoleById(member.roleId);
                 const isEditing = editingMemberId === member.id;
 

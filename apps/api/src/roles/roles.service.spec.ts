@@ -1,12 +1,43 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RolesService } from './roles.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('RolesService', () => {
   let service: RolesService;
 
+  const mockPrisma = {
+    user: {
+      findMany: jest.fn().mockResolvedValue([
+        {
+          id: 'usr-1',
+          name: 'Akayete Benedict',
+          email: 'akayetb@gmail.com',
+          role: 'USER',
+          updated_at: new Date(),
+        },
+      ]),
+      findUnique: jest.fn().mockResolvedValue({
+        id: 'usr-1',
+        name: 'Akayete Benedict',
+        email: 'akayetb@gmail.com',
+        role: 'USER',
+      }),
+      update: jest.fn().mockResolvedValue({
+        id: 'usr-1',
+        role: 'ADMIN',
+      }),
+    },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RolesService],
+      providers: [
+        RolesService,
+        {
+          provide: PrismaService,
+          useValue: mockPrisma,
+        },
+      ],
     }).compile();
 
     service = module.get<RolesService>(RolesService);
@@ -23,6 +54,12 @@ describe('RolesService', () => {
     expect(ids).toContain('supervisor');
     expect(ids).toContain('customer_service');
     expect(ids).toContain('finance_team');
+  });
+
+  it('should fetch database users merged with staff team members', async () => {
+    const members = await service.getTeamMembers();
+    expect(members.length).toBeGreaterThan(4);
+    expect(members.some((m) => m.email === 'akayetb@gmail.com')).toBe(true);
   });
 
   it('should create and delete custom roles', () => {

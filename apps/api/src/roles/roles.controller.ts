@@ -40,10 +40,11 @@ export class RolesController {
 
   @Get('team/members')
   @RequirePermissions('team.view')
-  getTeamMembers() {
+  async getTeamMembers() {
+    const data = await this.rolesService.getTeamMembers();
     return {
       status: 'success',
-      data: this.rolesService.getTeamMembers(),
+      data,
     };
   }
 
@@ -58,10 +59,11 @@ export class RolesController {
 
   @Patch('team/:id/role')
   @RequirePermissions('team.manage_roles')
-  updateMemberRole(@Param('id') id: string, @Body('roleId') roleId: string) {
+  async updateMemberRole(@Param('id') id: string, @Body('roleId') roleId: string) {
+    const data = await this.rolesService.updateMemberRole(id, roleId);
     return {
       status: 'success',
-      data: this.rolesService.updateMemberRole(id, roleId),
+      data,
     };
   }
 

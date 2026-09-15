@@ -1,3 +1,4 @@
+import { PrismaService } from '../prisma/prisma.service';
 import {
   Injectable,
   Logger,
@@ -363,6 +364,8 @@ export class RolesService {
   private roles: AdminRole[] = [...INITIAL_ROLES];
   private teamMembers: AdminTeamMember[] = [...INITIAL_TEAM_MEMBERS];
 
+  constructor(private readonly prisma?: PrismaService) {}
+
   /**
    * Get all permission definitions
    */
@@ -452,7 +455,7 @@ export class RolesService {
   }
 
   /**
-   * Delete a custom role
+   * Delete a role (custom only)
    */
   deleteCustomRole(id: string): { success: boolean; message: string } {
     const role = this.getRoleById(id);
@@ -478,11 +481,47 @@ export class RolesService {
     };
   }
 
+  deleteRole(id: string): { success: boolean; message: string } {
+    return this.deleteCustomRole(id);
+  }
+
   /**
-   * Get all team members
+   * Get all team members (including registered database users)
    */
-  getTeamMembers(): AdminTeamMember[] {
-    return this.teamMembers;
+  async getTeamMembers(): Promise<AdminTeamMember[]> {
+    const members = [...this.teamMembers];
+    if (this.prisma && this.prisma.user) {
+      try {
+        const dbUsers = await this.prisma.user.findMany({
+          orderBy: { updated_at: 'desc' },
+        });
+        for (const u of dbUsers) {
+          if (
+            !members.some(
+              (m) => m.email.toLowerCase() === u.email.toLowerCase(),
+            )
+          ) {
+            const roleId =
+              u.role === 'ADMIN' ? 'master_admin' : 'customer_service';
+            const role =
+              this.roles.find((r) => r.id === roleId) || this.roles[0];
+            members.push({
+              id: u.id,
+              name: u.name || u.email.split('@')[0],
+              email: u.email,
+              roleId: role.id,
+              roleTitle: role.title,
+              status: 'ACTIVE',
+              twoFactorEnforced: false,
+              lastActive: 'Registered User',
+            });
+          }
+        }
+      } catch (err) {
+        this.logger.warn(`Failed to fetch database users: ${err}`);
+      }
+    }
+    return members;
   }
 
   /**
@@ -509,9 +548,6 @@ export class RolesService {
   }
 
   /**
-   * Reassign a team member's role
-   */
-  /**
    * Server-side authorization check: verify if roleId has permissionKey
    */
   hasPermission(roleId: string, permissionKey: string): boolean {
@@ -521,17 +557,53 @@ export class RolesService {
     return !!role.permissions[permissionKey];
   }
 
-  updateMemberRole(memberId: string, roleId: string): AdminTeamMember {
+  /**
+   * Reassign a team member's role
+   */
+  async updateMemberRole(
+    memberId: string,
+    roleId: string,
+  ): Promise<AdminTeamMember> {
+    const role = this.getRoleById(roleId);
+
+    // Check in-memory team members first
     const member = this.teamMembers.find((m) => m.id === memberId);
-    if (!member) {
-      throw new NotFoundException(`Team member '${memberId}' not found.`);
+    if (member) {
+      member.roleId = role.id;
+      member.roleTitle = role.title;
+      this.logger.log(`Reassigned ${member.name} to ${role.title}`);
+      return member;
     }
 
-    const role = this.getRoleById(roleId);
-    member.roleId = role.id;
-    member.roleTitle = role.title;
+    // Check database users
+    if (this.prisma && this.prisma.user) {
+      try {
+        const dbUser = await this.prisma.user.findUnique({
+          where: { id: memberId },
+        });
+        if (dbUser) {
+          const dbRole = roleId === 'master_admin' ? 'ADMIN' : 'USER';
+          await this.prisma.user.update({
+            where: { id: memberId },
+            data: { role: dbRole },
+          });
 
-    this.logger.log(`Reassigned ${member.name} to ${role.title}`);
-    return member;
+          return {
+            id: dbUser.id,
+            name: dbUser.name || dbUser.email.split('@')[0],
+            email: dbUser.email,
+            roleId: role.id,
+            roleTitle: role.title,
+            status: 'ACTIVE',
+            twoFactorEnforced: false,
+            lastActive: 'Updated role',
+          };
+        }
+      } catch (err) {
+        this.logger.error(`Error updating database user role: ${err}`);
+      }
+    }
+
+    throw new NotFoundException(`Team member '${memberId}' not found.`);
   }
 }
