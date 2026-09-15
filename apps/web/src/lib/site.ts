@@ -22,7 +22,7 @@ export const SITE = {
       email: "info@dellicstravels.com",
     },
   },
-  address: "Community 25, Devtraco Estate Tema, Greater Accra, Ghana",
+  address: "Tema Community 25, Devtraco Estate RD, Greater Accra, Ghana",
   usAddress: "30 N Gould ST, STER, SHERIDAN, WYOMING, 82801, United States",
   travelUrl: "https://mytravel.io/dellicstravels",
 };

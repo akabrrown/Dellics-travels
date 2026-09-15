@@ -158,16 +158,16 @@ export function SiteFooter() {
               <div className="flex flex-col gap-3 pt-2">
                 <div className="flex items-start gap-3 text-xs text-white/80">
                   <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-white">Ghana HQ:</span>{" "}
-                    Community 25, Devtraco Estate, Tema, Greater Accra
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-white">Dellics Travels Ghana — Headquarters</p>
+                    <p className="text-white/75">Tema Community 25, Devtraco Estate RD</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 text-xs text-white/80">
                   <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-white">USA Office:</span>{" "}
-                    30 N Gould ST, STER, SHERIDAN, WY 82801
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-white">Dellics Travels LLC — United States</p>
+                    <p className="text-white/75">30 N Gould ST, STER, SHERIDAN, WY 82801</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-white/80">
