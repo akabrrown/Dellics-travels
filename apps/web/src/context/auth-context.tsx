@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { postJson } from "@/lib/api";
+import { DeviceApprovalModal } from "@/components/auth/device-approval-modal";
 
 export interface SavedTraveler {
   id: string;
@@ -72,7 +73,15 @@ interface AuthContextType {
   supabaseUser: SupabaseUser | null;
   session: Session | null;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signIn: (email: string, password: string) => Promise<{
+    error?: string;
+    requiresDeviceApproval?: boolean;
+    challengeToken?: string;
+    verificationCode?: string;
+    primaryDeviceName?: string;
+    attemptedDevice?: string;
+  }>;
+  completeDeviceChallengeLogin: (userData: any) => void;
   signUp: (
     email: string,
     password: string,
@@ -616,6 +625,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
 
+  const completeDeviceChallengeLogin = (u: any) => {
+    if (!u) return;
+    const dbProfile: AuthProfile = {
+      id: u.id,
+      email: u.email,
+      fullName: u.name,
+      phone: u.phone || "",
+      role: u.role,
+      membershipTier: u.membership_tier,
+      pointsBalance: u.points_balance,
+      nationality: u.nationality || "",
+      homeAirport: u.home_airport || "",
+      seatPreference: u.seat_preference || "Window",
+      mealPreference: u.meal_preference || "Standard / No Restriction",
+      emergencyContact: u.emergency_contact || "",
+      emergencyPhone: u.emergency_phone || "",
+      passportNumber: u.passport_number || "",
+      passportExpiry: u.passport_expiry || "",
+      passportCountry: u.passport_country || "",
+      onboardingCompleted: u.onboarding_completed,
+      savedTravelers: [],
+      savedFavorites: [],
+      bookings: u.trips || [],
+      currency: "GHS",
+      notificationPreferences: {
+        whatsapp: true,
+        email: true,
+        priceDrops: true,
+      },
+    };
+
+    setUser(dbProfile);
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbProfile));
+    } catch {}
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -648,6 +694,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateProfile,
         addBooking,
         signOut,
+        completeDeviceChallengeLogin,
       }}
     >
       {children}
