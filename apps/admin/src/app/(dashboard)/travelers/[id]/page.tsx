@@ -115,52 +115,27 @@ interface LeadRecord {
   created_at: string;
 }
 
-/* ─── Fallback Data ─── */
-const FALLBACK_PROFILE: CustomerProfile = {
-  id: "TRV-101",
-  name: "Kwame Mensah",
-  email: "kwame.mensah@enterprise-gh.com",
-  phone: "+233 24 123 4567",
+const EMPTY_PROFILE: CustomerProfile = {
+  id: "",
+  name: "Traveler Profile",
+  email: "",
+  phone: "",
   role: "USER",
-  membershipTier: "ELITE",
-  pointsBalance: 12450,
-  nationality: "Ghanaian",
+  membershipTier: "EXPLORER",
+  pointsBalance: 0,
+  nationality: "",
   homeAirport: "ACC",
-  seatPreference: "Aisle",
-  mealPreference: "No Pork",
-  emergencyContact: "Ama Mensah",
-  emergencyPhone: "+233 24 999 8888",
-  passportNumber: "***4567",
-  passportExpiry: "2031-08-14",
-  passportCountry: "GH",
-  onboardingCompleted: true,
-  createdAt: "2024-03-15T10:00:00Z",
-  updatedAt: "2026-09-09T10:14:00Z",
+  seatPreference: "",
+  mealPreference: "",
+  emergencyContact: "",
+  emergencyPhone: "",
+  passportNumber: "",
+  passportExpiry: "",
+  passportCountry: "",
+  onboardingCompleted: false,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
-
-const FALLBACK_BOOKINGS: BookingRecord[] = [
-  { id: "BK-001", type: "FLIGHT", status: "CONFIRMED", supplierRef: "EK788-ACC-DXB", payments: [{ amount: 12400, currency: "GHS", status: "SUCCEEDED", reference: "PSK_fl_001", createdAt: "2026-09-01T09:00:00Z" }], reviews: [], createdAt: "2026-09-01T09:00:00Z" },
-  { id: "BK-002", type: "HOTEL", status: "CONFIRMED", supplierRef: "RH-DXB-MARRIOTT-4912", payments: [{ amount: 8600, currency: "GHS", status: "SUCCEEDED", reference: "PSK_ht_002", createdAt: "2026-09-01T09:30:00Z" }], reviews: [], createdAt: "2026-09-01T09:30:00Z" },
-  { id: "BK-003", type: "FLIGHT", status: "COMPLETED", supplierRef: "BA078-ACC-LHR", payments: [{ amount: 9800, currency: "GHS", status: "SUCCEEDED", reference: "PSK_fl_003", createdAt: "2026-06-15T14:00:00Z" }], reviews: [{ rating: 5 }], createdAt: "2026-06-15T14:00:00Z" },
-  { id: "BK-004", type: "PACKAGE", status: "COMPLETED", supplierRef: "TOUR-CAPE-COAST-7D", payments: [{ amount: 18500, currency: "GHS", status: "SUCCEEDED", reference: "PSK_pk_004", createdAt: "2025-12-20T10:00:00Z" }], reviews: [{ rating: 5 }], createdAt: "2025-12-20T10:00:00Z" },
-  { id: "BK-005", type: "HOTEL", status: "COMPLETED", supplierRef: "RH-LHR-HILTON-7821", payments: [{ amount: 6200, currency: "GHS", status: "SUCCEEDED", reference: "PSK_ht_005", createdAt: "2026-06-15T15:00:00Z" }], reviews: [], createdAt: "2026-06-15T15:00:00Z" },
-];
-
-const FALLBACK_ESIMS: EsimRecord[] = [
-  { id: "ES-001", plan: { country_or_region: "UAE", data_gb: 20, validity_days: 30, price: 42 }, status: "ACTIVE", iccid: "8971101012345678901", airtimeMinutes: 60, createdAt: "2026-09-02T08:00:00Z" },
-  { id: "ES-002", plan: { country_or_region: "United Kingdom", data_gb: 10, validity_days: 30, price: 26 }, status: "EXPIRED", iccid: "8971101098765432100", airtimeMinutes: 30, createdAt: "2026-06-14T12:00:00Z" },
-];
-
-const FALLBACK_INTERACTIONS: InteractionRecord[] = [
-  { id: "INT-001", channel: "WEB_BOOKING", subject: "Flight Booking: ACC → DXB (Emirates EK788)", content: "Kwame Mensah booked Emirates EK788 from Accra to Dubai. Confirmed in seats 14A/14B (Aisle).", metadata: null, agent_id: null, created_at: "2026-09-01T09:00:00Z" },
-  { id: "INT-002", channel: "WEB_ESIM", subject: "eSIM Provisioned: UAE 20GB + 60 Min Airtime", content: "Airalo eSIM profile provisioned. QR delivered via WhatsApp. Connected at Kotoka Intl terminal.", metadata: null, agent_id: null, created_at: "2026-09-02T08:00:00Z" },
-  { id: "INT-003", channel: "ADMIN_NOTE", subject: "VIP Airport Transfer Confirmed - Dubai Arrival", content: "Concierge confirmed private airport transfer from DXB Terminal 3 to Marriott Al Jaddaf. Driver: Mohammed Al-Falasi.", metadata: null, agent_id: "Jane Doe", created_at: "2026-09-08T10:14:00Z" },
-  { id: "INT-004", channel: "SYSTEM_AUTO", subject: "Tier Upgrade: VOYAGER → ELITE", content: "Automatic tier upgrade triggered. Cumulative spend surpassed GHS 50,000 threshold after Dubai Autumn Package booking.", metadata: null, agent_id: null, created_at: "2026-08-15T00:00:00Z" },
-  { id: "INT-005", channel: "WEB_BOOKING", subject: "Hotel Booking: Marriott Al Jaddaf, Dubai", content: "Kwame Mensah reserved Deluxe Suite at Marriott Hotel Al Jaddaf for Sep 10-15, 2026.", metadata: null, agent_id: null, created_at: "2026-09-01T09:30:00Z" },
-  { id: "INT-006", channel: "WEB_BOOKING", subject: "Flight Booking: ACC → LHR (British Airways BA078)", content: "Business class return flight to London Heathrow. Completed trip, rated 5/5.", metadata: null, agent_id: null, created_at: "2026-06-15T14:00:00Z" },
-];
-
-const FALLBACK_LEADS: LeadRecord[] = [];
 
 /* ─── Helpers ─── */
 const TIER_CONFIG: Record<string, { label: string; bg: string; text: string; icon: React.ReactNode; gradient: string }> = {
@@ -217,20 +192,16 @@ export default function TravelerCustomer360Cockpit() {
   const travelerId = typeof params?.id === "string" ? params.id : "TRV-101";
 
   const [activeTab, setActiveTab] = useState<DossierTab>("OVERVIEW");
-  const [profile, setProfile] = useState<CustomerProfile>(FALLBACK_PROFILE);
-  const [bookings, setBookings] = useState<BookingRecord[]>(FALLBACK_BOOKINGS);
-  const [esimOrders, setEsimOrders] = useState<EsimRecord[]>(FALLBACK_ESIMS);
-  const [interactions, setInteractions] = useState<InteractionRecord[]>(FALLBACK_INTERACTIONS);
-  const [leads, setLeads] = useState<LeadRecord[]>(FALLBACK_LEADS);
+  const [profile, setProfile] = useState<CustomerProfile>(EMPTY_PROFILE);
+  const [bookings, setBookings] = useState<BookingRecord[]>([]);
+  const [esimOrders, setEsimOrders] = useState<EsimRecord[]>([]);
+  const [interactions, setInteractions] = useState<InteractionRecord[]>([]);
+  const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [revenueByProduct, setRevenueByProduct] = useState<Record<string, number>>({});
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [notes, setNotes] = useState<{ id: string; author: string; content: string; timestamp: string; tag: string }[]>([
-    { id: "n-1", author: "Jane Doe (Concierge)", content: "VIP traveler confirmed on Emirates flight EK 788 to Dubai. Checked FX GDS inventory; seats confirmed in 14A/14B (Aisle). Requested private airport transfer upon DXB arrival.", timestamp: "Today at 10:14 AM", tag: "FLIGHT_OPS" },
-    { id: "n-2", author: "Kwabena Boateng (Support)", content: "Provisioned eSIM 20GB + 60 Mins Airtime profile. QR code delivered to traveler's WhatsApp and confirmed connected on Kotoka Intl terminal Wi-Fi.", timestamp: "Yesterday at 04:20 PM", tag: "ESIM_PROVISION" },
-    { id: "n-3", author: "System Router", content: "Tier upgraded to ELITE VIP automatically following completed Dubai Autumn Package (cumulative spend surpassed GHS 50,000 threshold).", timestamp: "Oct 12, 2026", tag: "TIER_LADDER" },
-  ]);
+  const [notes, setNotes] = useState<{ id: string; author: string; content: string; timestamp: string; tag: string }[]>([]);
   const [newNote, setNewNote] = useState("");
   const [noteTag, setNoteTag] = useState("CONCIERGE");
   const [actionAlert, setActionAlert] = useState<string | null>(null);

@@ -57,12 +57,12 @@ export default function PackageEditor() {
   const [tagline, setTagline] = useState(isNew ? "" : "2-Day Cultural Immersion, Castle History & Rainforest Canopy Walk");
   const [destination, setDestination] = useState(isNew ? "Cape Coast, Ghana" : "Cape Coast, Ghana");
   const [country, setCountry] = useState(isNew ? "Ghana" : "Ghana");
-  const [region, setRegion] = useState(isNew ? "Domestic / West Africa" : "Domestic / West Africa");
-  const [duration, setDuration] = useState(isNew ? "2 Days / 1 Night" : "2 Days / 1 Night");
-  const [category, setCategory] = useState(isNew ? "Heritage & Wildlife" : "Heritage & Wildlife");
-  const [departureCity, setDepartureCity] = useState(isNew ? "Accra (Kotoka Intl / Pickup Hub)" : "Accra (Kotoka Intl / Pickup Hub)");
-  const [seasonality, setSeasonality] = useState(isNew ? "Year-Round (Best Nov - Apr)" : "Year-Round (Best Nov - Apr)");
-  const [heroImage, setHeroImage] = useState(isNew ? "/images/packages/cape-coast-tour.jpg" : "/images/packages/cape-coast-tour.jpg");
+  const [region, setRegion] = useState(isNew ? "" : "Domestic / West Africa");
+  const [duration, setDuration] = useState(isNew ? "" : "2 Days / 1 Night");
+  const [category, setCategory] = useState(isNew ? "" : "Heritage & Wildlife");
+  const [departureCity, setDepartureCity] = useState(isNew ? "" : "Accra (Kotoka Intl / Pickup Hub)");
+  const [seasonality, setSeasonality] = useState(isNew ? "" : "Year-Round (Best Nov - Apr)");
+  const [heroImage, setHeroImage] = useState(isNew ? "" : "/images/packages/cape-coast-tour.jpg");
   const [overview, setOverview] = useState(
     isNew
       ? ""
@@ -70,34 +70,10 @@ export default function PackageEditor() {
   );
 
   // 2. Day-by-Day Itinerary Builder
-  const [itinerary, setItinerary] = useState<ItineraryDay[]>(
-    isNew
-      ? [
-          { day: 1, title: "Departure from Accra & Cape Coast Castle Tour", description: "Early morning pickup in luxury air-conditioned coaster, scenic coastal drive, guided tour of Cape Coast Castle, seafood lunch, and evening resort check-in.", meals: "Lunch, Welcome Dinner" },
-          { day: 2, title: "Kakum Canopy Walk & Return to Accra", description: "Early breakfast, guided nature trek through Kakum National Park, 350-meter canopy walkway, souvenir shopping in Mankessim, return transit to Accra.", meals: "Breakfast, Lunch" },
-        ]
-      : [
-          { day: 1, title: "Departure from Accra & Cape Coast Castle Tour", description: "Early morning pickup in luxury air-conditioned coaster, scenic coastal drive, guided tour of Cape Coast Castle, seafood lunch, and evening resort check-in.", meals: "Lunch, Welcome Dinner" },
-          { day: 2, title: "Kakum Canopy Walk & Return to Accra", description: "Early breakfast, guided nature trek through Kakum National Park, 350-meter canopy walkway, souvenir shopping in Mankessim, return transit to Accra.", meals: "Breakfast, Lunch" },
-        ]
-  );
+  const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
 
   // 3. Multi-Component Builder
-  const [components, setComponents] = useState<ComponentItem[]>(
-    isNew
-      ? [
-          { id: "1", type: "HOTEL", title: "Ridge Royal Hotel (4-Star)", details: "1 Night • Executive Double Suite with Ocean Breeze • Full Breakfast Included", costGHS: 950 },
-          { id: "2", type: "ACTIVITY", title: "Cape Coast Castle & Kakum Canopy Entry", details: "All UNESCO entrance tickets, certified historian guide fees included", costGHS: 350 },
-          { id: "3", type: "TRANSFER", title: "Private Air-Conditioned Coach", details: "Round-trip Accra ↔ Cape Coast with Wi-Fi and chilled refreshments", costGHS: 400 },
-          { id: "4", type: "ESIM", title: "Complimentary 5GB Local Roaming eSIM", details: "Airalo Ghana high-speed data profile provisioned on booking", costGHS: 150 },
-        ]
-      : [
-          { id: "1", type: "HOTEL", title: "Ridge Royal Hotel (4-Star)", details: "1 Night • Executive Double Suite with Ocean Breeze • Full Breakfast Included", costGHS: 950 },
-          { id: "2", type: "ACTIVITY", title: "Cape Coast Castle & Kakum Canopy Entry", details: "All UNESCO entrance tickets, certified historian guide fees included", costGHS: 350 },
-          { id: "3", type: "TRANSFER", title: "Private Air-Conditioned Coach", details: "Round-trip Accra ↔ Cape Coast with Wi-Fi and chilled refreshments", costGHS: 400 },
-          { id: "4", type: "ESIM", title: "Complimentary 5GB Local Roaming eSIM", details: "Airalo Ghana high-speed data profile provisioned on booking", costGHS: 150 },
-        ]
-  );
+  const [components, setComponents] = useState<ComponentItem[]>([]);
 
   // 4. Pricing, Currency & Installments
   const [currency, setCurrency] = useState("GHS");

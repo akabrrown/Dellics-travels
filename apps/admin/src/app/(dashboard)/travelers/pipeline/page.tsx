@@ -59,25 +59,14 @@ const SOURCE_LABELS: Record<string, string> = {
   WALK_IN: "Walk-in",
 };
 
-const FALLBACK_PIPELINE: Record<string, PipelineLead[]> = {
-  NEW: [
-    { id: "LP-001", stage: "NEW", source: "TOUR_INQUIRY", estimated_value: 4800, currency: "GHS", notes: "Rwanda Gorilla Trekking for 2 delegates", next_followup: "2026-09-12", assigned_agent: null, created_at: "2026-09-08T09:12:00Z", user: { id: "TRV-105", name: "Amina Diallo", email: "amina.diallo@westafricaconsult.sn", phone: "+221 77 123 4567", membership_tier: "EXPLORER" }, inquiry: null },
-    { id: "LP-002", stage: "NEW", source: "VISA_REQUEST", estimated_value: 1200, currency: "GHS", notes: "Student visa guidance - Frankfurt exchange program", next_followup: null, assigned_agent: null, created_at: "2026-09-08T14:30:00Z", user: { id: "TRV-107", name: "Kofi Asante", email: "kofi.asante@ug.edu.gh", phone: "+233 55 987 6543", membership_tier: "EXPLORER" }, inquiry: null },
-    { id: "LP-008", stage: "NEW", source: "HOTEL_SEARCH", estimated_value: 3400, currency: "GHS", notes: "Kempinski Hotel Gold Coast - 3 nights executive suite", next_followup: null, assigned_agent: null, created_at: "2026-09-09T08:45:00Z", user: null, inquiry: { name: "James Osei-Bonsu", email: "james.ob@ghanahighcomm.gov.gh", message: "Need confirmed booking for diplomatic delegation" } },
-  ],
-  CONTACTED: [
-    { id: "LP-003", stage: "CONTACTED", source: "DIASPORA_PACKAGE", estimated_value: 12400, currency: "GHS", notes: "Cape Coast Ancestral Pilgrimage - 4 pax, Dec dates requested", next_followup: "2026-09-10", assigned_agent: "Jane Doe", created_at: "2026-09-06T16:00:00Z", user: { id: "TRV-102", name: "Dr. Nia Washington", email: "dr.nia.washington@howard.edu", phone: "+1 404 555 0198", membership_tier: "VOYAGER" }, inquiry: null },
-  ],
-  QUALIFIED: [
-    { id: "LP-004", stage: "QUALIFIED", source: "CORPORATE_INQUIRY", estimated_value: 28000, currency: "GHS", notes: "Gulf Logistics corporate travel mgmt - quarterly flights DXB-ACC, hotel blocks", next_followup: "2026-09-11", assigned_agent: "Kwabena Boateng", created_at: "2026-09-04T10:00:00Z", user: { id: "TRV-108", name: "Fatima Al-Rashid", email: "fatima.rashid@gulflogistics.ae", phone: "+971 50 234 5678", membership_tier: "VOYAGER" }, inquiry: null },
-  ],
-  PROPOSAL_SENT: [
-    { id: "LP-005", stage: "PROPOSAL_SENT", source: "TOUR_INQUIRY", estimated_value: 8600, currency: "GHS", notes: "Kenya-Tanzania Safari 12-day itinerary sent - awaiting family confirmation", next_followup: "2026-09-14", assigned_agent: "Jane Doe", created_at: "2026-09-02T11:00:00Z", user: { id: "TRV-106", name: "Eshe Adebayo", email: "eshe.adebayo@zenithcapital.ng", phone: "+234 803 123 4567", membership_tier: "ELITE" }, inquiry: null },
-  ],
+
+const EMPTY_PIPELINE: Record<string, PipelineLead[]> = {
+  NEW: [],
+  CONTACTED: [],
+  QUALIFIED: [],
+  PROPOSAL_SENT: [],
   NEGOTIATING: [],
-  WON: [
-    { id: "LP-006", stage: "WON", source: "FLIGHT_SEARCH", estimated_value: 12400, currency: "GHS", notes: "Emirates EK788 ACC→DXB - converted to confirmed booking", next_followup: null, assigned_agent: "Jane Doe", created_at: "2026-08-28T09:00:00Z", user: { id: "TRV-101", name: "Kwame Mensah", email: "kwame.mensah@enterprise-gh.com", phone: "+233 24 123 4567", membership_tier: "ELITE" }, inquiry: null },
-  ],
+  WON: [],
   LOST: [],
   DORMANT: [],
 };
@@ -92,7 +81,7 @@ function daysInStage(createdAt: string) {
 }
 
 export default function LeadPipelineBoardPage() {
-  const [pipeline, setPipeline] = useState<Record<string, PipelineLead[]>>(FALLBACK_PIPELINE);
+  const [pipeline, setPipeline] = useState<Record<string, PipelineLead[]>>(EMPTY_PIPELINE);
   const [loading, setLoading] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("ALL");
   const [agentFilter, setAgentFilter] = useState("ALL");

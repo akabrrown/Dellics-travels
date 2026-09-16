@@ -509,8 +509,8 @@ export class BookingService {
         0,
       );
 
-      // Baseline executive baseline
-      const baseGBV = Math.max(liveSucceededSum, 2480000);
+      // Calculate directly from live database transactions
+      const baseGBV = liveSucceededSum;
       const supplierCost = Math.round(baseGBV * 0.795); // 79.5% average supplier cost
       const grossMargin = baseGBV - supplierCost; // ~20.5%
       const grossMarginPct = ((grossMargin / baseGBV) * 100).toFixed(1);
@@ -527,11 +527,8 @@ export class BookingService {
       const taxAmount = Math.round(netContribution * 0.05);
       const netSettlement = netContribution - taxAmount - refundAmount;
 
-      const totalBookingsCount = Math.max(bookings.length, 1420);
-      const completedCount = Math.max(
-        bookings.filter((b) => b.status === 'COMPLETED' || b.status === 'CONFIRMED').length,
-        1180,
-      );
+      const totalBookingsCount = bookings.length;
+      const completedCount = bookings.filter((b) => b.status === 'COMPLETED' || b.status === 'CONFIRMED').length;
       const aov = completedCount > 0 ? Math.round(baseGBV / completedCount) : 0;
 
       // 1. Executive Overview

@@ -80,38 +80,9 @@ export default function AuditLog() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
-            {/* Event 1 */}
-            <tr className="hover:bg-slate-50/50 transition-colors">
-              <td className="px-6 py-4 text-slate-500 whitespace-nowrap">2026-10-18T14:32:01Z</td>
-              <td className="px-6 py-4 font-sans font-bold text-[#0A0060]">kwabena.o</td>
-              <td className="px-6 py-4">
-                <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px]">
-                  MEMBERSHIP_OVERRIDE
-                </span>
-              </td>
-              <td className="px-6 py-4 font-bold text-slate-900">TRV-102</td>
-              <td className="px-6 py-4 text-slate-600 font-mono">
-                <div className="bg-slate-50 p-2 rounded-xl border border-slate-200 text-[10px] overflow-x-auto max-w-sm">
-                  {`{"from": "VOYAGER", "to": "ELITE", "reason": "Comped VIP tier for airline delay"}`}
-                </div>
-              </td>
-            </tr>
-
-            {/* Event 2 */}
-            <tr className="hover:bg-slate-50/50 transition-colors">
-              <td className="px-6 py-4 text-slate-500 whitespace-nowrap">2026-10-18T12:05:44Z</td>
-              <td className="px-6 py-4 font-sans font-bold text-[#0A0060]">akosua.m</td>
-              <td className="px-6 py-4">
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold text-[10px]">
-                  REFUND_ISSUED
-                </span>
-              </td>
-              <td className="px-6 py-4 font-bold text-slate-900">BK-8392</td>
-              <td className="px-6 py-4 text-slate-600 font-mono">
-                <div className="bg-slate-50 p-2 rounded-xl border border-slate-200 text-[10px] overflow-x-auto max-w-sm">
-                  {`{"amount_ghs": 2150.0, "provider": "PAYSTACK", "policy": "24hr_cooling_off"}`}
-
-                </div>
+            <tr>
+              <td colSpan={5} className="px-6 py-12 text-center text-slate-400 font-sans text-xs">
+                No administrative audit actions recorded yet for this filter.
               </td>
             </tr>
           </tbody>

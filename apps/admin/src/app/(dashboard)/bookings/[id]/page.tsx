@@ -21,10 +21,7 @@ export default function BookingDetail() {
   const params = useParams();
   const bookingId = typeof params?.id === "string" ? params.id : "BK-8392";
 
-  const [notes, setNotes] = useState<string[]>([
-    "Traveler requested aisle seating on Emirates leg.",
-    "Paystack payment verified and ticket issued automatically.",
-  ]);
+  const [notes, setNotes] = useState<string[]>([]);
   const [newNote, setNewNote] = useState("");
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 

@@ -33,30 +33,7 @@ export default function SupportTicketDetail() {
   const [replyText, setReplyText] = useState("");
   const [status, setStatus] = useState<"OPEN" | "RESOLVED">("OPEN");
 
-  const [messages, setMessages] = useState<MessageItem[]>([
-    {
-      id: "1",
-      sender: "TRAVELER",
-      name: "Ama Osei",
-      content: "Hello Dellics Support, I have an urgent date change request for my Emirates flight to Dubai. My business conference was shifted by two days. Can you please assist with rebooking?",
-      timestamp: "Yesterday at 09:30 AM",
-    },
-    {
-      id: "2",
-      sender: "SYSTEM",
-      name: "SLA Router",
-      content: "Ticket automatically prioritized for Elite Member Ama Osei (< 2hr target SLA).",
-      timestamp: "Yesterday at 09:31 AM",
-    },
-    {
-      id: "3",
-      sender: "AGENT",
-      name: "Jane Doe (Support Ops)",
-      content: "Checked FX GDS inventory for EK 788 on Oct 20. Seats available in Economy Flex with no fare difference penalty.",
-      timestamp: "Yesterday at 11:45 AM",
-      isInternalNote: true,
-    },
-  ]);
+  const [messages, setMessages] = useState<MessageItem[]>([]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
