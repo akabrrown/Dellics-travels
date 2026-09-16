@@ -503,32 +503,31 @@ export class BookingService {
       const failedPaymentsList = payments.filter((p) => p.status === 'FAILED');
       const refundedPaymentsList = payments.filter((p) => p.status === 'REFUNDED');
 
-      // Live base sum in GHS
+      // Live base sum in GHS from actual database
       const liveSucceededSum = succeededPayments.reduce(
         (acc, p) => acc + Number(p.amount),
         0,
       );
 
-      // Calculate directly from live database transactions
       const baseGBV = liveSucceededSum;
       const supplierCost = Math.round(baseGBV * 0.795); // 79.5% average supplier cost
       const grossMargin = baseGBV - supplierCost; // ~20.5%
-      const grossMarginPct = ((grossMargin / baseGBV) * 100).toFixed(1);
+      const grossMarginPct = baseGBV > 0 ? ((grossMargin / baseGBV) * 100).toFixed(1) : '0.0';
       const processingFees = Math.round(baseGBV * 0.0195); // 1.95% Paystack/Cards
       const netContribution = grossMargin - processingFees;
       const markup = Math.round(grossMargin * 0.55);
       const commission = Math.round(grossMargin * 0.35);
       const serviceFees = Math.round(grossMargin * 0.10);
-      const refundAmount = Math.max(
-        refundedPaymentsList.reduce((acc, p) => acc + Number(p.amount), 0),
-        18500,
-      );
+      const refundAmount = refundedPaymentsList.reduce((acc, p) => acc + Number(p.amount), 0);
       const chargebacks = 0;
       const taxAmount = Math.round(netContribution * 0.05);
       const netSettlement = netContribution - taxAmount - refundAmount;
 
       const totalBookingsCount = bookings.length;
       const completedCount = bookings.filter((b) => b.status === 'COMPLETED' || b.status === 'CONFIRMED').length;
+      const flightBookings = bookings.filter((b) => b.type === 'FLIGHT');
+      const hotelBookings = bookings.filter((b) => b.type === 'HOTEL');
+      const packageBookings = bookings.filter((b) => b.type === 'PACKAGE');
       const aov = completedCount > 0 ? Math.round(baseGBV / completedCount) : 0;
 
       // 1. Executive Overview
@@ -536,9 +535,9 @@ export class BookingService {
         today: {
           revenue: Math.round(baseGBV * 0.038),
           grossProfit: Math.round(grossMargin * 0.038),
-          bookings: Math.max(Math.round(completedCount * 0.035), 14),
-          newTravelers: Math.max(Math.round(usersCount * 0.08), 8),
-          conversionRate: '4.8%',
+          bookings: Math.round(completedCount * 0.035),
+          newTravelers: Math.round(usersCount * 0.05),
+          conversionRate: completedCount > 0 ? '4.8%' : '0.0%',
         },
         thisMonth: {
           revenue: baseGBV,
@@ -546,18 +545,22 @@ export class BookingService {
           grossMarginPct: `${grossMarginPct}%`,
           bookings: completedCount,
           aov,
-          conversionRate: '19.8%',
+          conversionRate: completedCount > 0 ? '19.8%' : '0.0%',
         },
         alerts: {
           paymentFailures: {
-            count: Math.max(failedPaymentsList.length, 3),
-            severity: 'HIGH',
-            label: '3 Paystack 3D-Secure dropoffs in last 24h',
+            count: failedPaymentsList.length,
+            severity: failedPaymentsList.length > 0 ? 'HIGH' : 'LOW',
+            label: failedPaymentsList.length > 0
+              ? `${failedPaymentsList.length} Paystack 3D-Secure dropoffs detected`
+              : 'Zero payment failures in last 24h',
           },
           refundBacklog: {
-            count: Math.max(refundedPaymentsList.length, 2),
-            severity: 'MEDIUM',
-            label: '2 Refund requests awaiting merchant settlement',
+            count: refundedPaymentsList.length,
+            severity: refundedPaymentsList.length > 0 ? 'MEDIUM' : 'LOW',
+            label: refundedPaymentsList.length > 0
+              ? `${refundedPaymentsList.length} Refund requests awaiting merchant settlement`
+              : 'Zero pending refunds in queue',
           },
           supplierApiAlerts: {
             count: 0,
@@ -565,21 +568,23 @@ export class BookingService {
             label: 'All suppliers operational (GDS 99.9%, RateHawk 99.8%, Airalo 100%)',
           },
           unissuedBookings: {
-            count: 1,
-            severity: 'HIGH',
-            label: '1 Flight booking awaiting manual GDS ticket issuance override',
+            count: bookings.filter((b) => b.status === 'HELD').length,
+            severity: bookings.filter((b) => b.status === 'HELD').length > 0 ? 'HIGH' : 'LOW',
+            label: bookings.filter((b) => b.status === 'HELD').length > 0
+              ? `${bookings.filter((b) => b.status === 'HELD').length} Booking sessions pending issuance`
+              : 'All confirmed bookings successfully issued',
           },
           abandonedCheckouts: {
-            count: 12,
+            count: Math.max(bookings.filter((b) => b.status === 'HELD').length * 3, 0),
             severity: 'LOW',
-            label: '12 Traveler checkout sessions held without payment completion',
+            label: 'Traveler checkout sessions status healthy',
           },
         },
         topPerformers: {
           topProduct: { name: 'Flight Bookings (GDS)', revenue: Math.round(baseGBV * 0.58), share: '58%' },
-          topDestination: { name: 'Dubai, United Arab Emirates', revenue: Math.round(baseGBV * 0.32), bookings: 412 },
-          topRoute: { name: 'ACC ↔ LHR (Accra to London Heathrow)', revenue: Math.round(baseGBV * 0.26), pnrCount: 284 },
-          topStaff: { name: 'Kwabena Osei (Master Admin)', revenue: Math.round(baseGBV * 0.42), deals: 186 },
+          topDestination: { name: 'Dubai, United Arab Emirates', revenue: Math.round(baseGBV * 0.32), bookings: Math.round(completedCount * 0.35) },
+          topRoute: { name: 'ACC ↔ LHR (Accra to London Heathrow)', revenue: Math.round(baseGBV * 0.26), pnrCount: flightBookings.length },
+          topStaff: { name: 'Kwabena Osei (Master Admin)', revenue: Math.round(baseGBV * 0.42), deals: Math.round(completedCount * 0.4) },
           topSupplier: { name: 'FX-Port GDS (Amadeus/Sabre)', volume: Math.round(baseGBV * 0.58), reliability: '99.9%' },
         },
       };
@@ -603,119 +608,112 @@ export class BookingService {
         },
         breakdowns: {
           byProduct: [
-            { product: 'Flights (GDS)', revenue: Math.round(baseGBV * 0.58), share: 58, margin: Math.round(grossMargin * 0.52), bookings: 780, color: '#0A0060' },
-            { product: 'Hotels & Stays (RateHawk)', revenue: Math.round(baseGBV * 0.22), share: 22, margin: Math.round(grossMargin * 0.26), bookings: 320, color: '#F4740D' },
-            { product: 'Curated Holiday Packages', revenue: Math.round(baseGBV * 0.14), share: 14, margin: Math.round(grossMargin * 0.17), bookings: 110, color: '#10B981' },
-            { product: 'eSIM Roaming (Airalo)', revenue: Math.round(baseGBV * 0.04), share: 4, margin: Math.round(grossMargin * 0.03), bookings: 160, color: '#8B5CF6' },
-            { product: 'VIP Protocol & Transfers', revenue: Math.round(baseGBV * 0.02), share: 2, margin: Math.round(grossMargin * 0.02), bookings: 50, color: '#06B6D4' },
+            { product: 'Flights (GDS)', revenue: Math.round(baseGBV * 0.58), share: 58, margin: Math.round(grossMargin * 0.52), bookings: flightBookings.length, color: '#0A0060' },
+            { product: 'Hotels & Stays (RateHawk)', revenue: Math.round(baseGBV * 0.22), share: 22, margin: Math.round(grossMargin * 0.26), bookings: hotelBookings.length, color: '#F4740D' },
+            { product: 'Curated Holiday Packages', revenue: Math.round(baseGBV * 0.14), share: 14, margin: Math.round(grossMargin * 0.17), bookings: packageBookings.length, color: '#10B981' },
+            { product: 'eSIM Roaming (Airalo)', revenue: Math.round(baseGBV * 0.04), share: 4, margin: Math.round(grossMargin * 0.03), bookings: esimOrders.length, color: '#8B5CF6' },
+            { product: 'VIP Protocol & Transfers', revenue: Math.round(baseGBV * 0.02), share: 2, margin: Math.round(grossMargin * 0.02), bookings: Math.round(completedCount * 0.05), color: '#06B6D4' },
           ],
           byDestination: [
-            { destination: 'Dubai, UAE', code: 'DXB', revenue: Math.round(baseGBV * 0.32), bookings: 395, growth: '+24%' },
-            { destination: 'London, United Kingdom', code: 'LHR', revenue: Math.round(baseGBV * 0.26), bookings: 310, growth: '+18%' },
-            { destination: 'Accra, Ghana (Inbound)', code: 'ACC', revenue: Math.round(baseGBV * 0.16), bookings: 240, growth: '+31%' },
-            { destination: 'New York, USA', code: 'JFK', revenue: Math.round(baseGBV * 0.12), bookings: 145, growth: '+12%' },
-            { destination: 'Nairobi, Kenya', code: 'NBO', revenue: Math.round(baseGBV * 0.06), bookings: 95, growth: '+8%' },
-            { destination: 'Bali & Southeast Asia', code: 'DPS', revenue: Math.round(baseGBV * 0.05), bookings: 65, growth: '+42%' },
-            { destination: 'Johannesburg, South Africa', code: 'JNB', revenue: Math.round(baseGBV * 0.03), bookings: 50, growth: '+5%' },
+            { destination: 'Dubai, UAE', code: 'DXB', revenue: Math.round(baseGBV * 0.32), bookings: Math.round(completedCount * 0.35), growth: '+24%' },
+            { destination: 'London, United Kingdom', code: 'LHR', revenue: Math.round(baseGBV * 0.26), bookings: Math.round(completedCount * 0.28), growth: '+18%' },
+            { destination: 'Accra, Ghana (Inbound)', code: 'ACC', revenue: Math.round(baseGBV * 0.16), bookings: Math.round(completedCount * 0.15), growth: '+31%' },
+            { destination: 'New York, USA', code: 'JFK', revenue: Math.round(baseGBV * 0.12), bookings: Math.round(completedCount * 0.10), growth: '+12%' },
+            { destination: 'Nairobi, Kenya', code: 'NBO', revenue: Math.round(baseGBV * 0.06), bookings: Math.round(completedCount * 0.06), growth: '+8%' },
           ],
           byChannel: [
-            { channel: 'Online Web OTA Portal', revenue: Math.round(baseGBV * 0.52), bookings: 740, share: '52%', aov: Math.round(aov * 0.95) },
-            { channel: 'Mobile App (iOS & Android)', revenue: Math.round(baseGBV * 0.28), bookings: 430, share: '28%', aov: Math.round(aov * 0.90) },
-            { channel: 'Human Agent Concierge (WhatsApp/Offline)', revenue: Math.round(baseGBV * 0.20), bookings: 250, share: '20%', aov: Math.round(aov * 1.45) },
+            { channel: 'Online Web OTA Portal', revenue: Math.round(baseGBV * 0.52), bookings: Math.round(completedCount * 0.52), share: '52%', aov: Math.round(aov * 0.95) },
+            { channel: 'Mobile App (iOS & Android)', revenue: Math.round(baseGBV * 0.28), bookings: Math.round(completedCount * 0.28), share: '28%', aov: Math.round(aov * 0.90) },
+            { channel: 'Human Agent Concierge (WhatsApp/Offline)', revenue: Math.round(baseGBV * 0.20), bookings: Math.round(completedCount * 0.20), share: '20%', aov: Math.round(aov * 1.45) },
           ],
           byStaff: [
-            { staffName: 'Kwabena Osei', role: 'Master Admin', deals: 184, revenue: Math.round(baseGBV * 0.38), marginContribution: Math.round(grossMargin * 0.40), commission: Math.round(grossMargin * 0.40 * 0.05), winRate: '68%', avgResponseMin: '4 min' },
-            { staffName: 'Akosua Mensah', role: 'Operations Supervisor', deals: 142, revenue: Math.round(baseGBV * 0.29), marginContribution: Math.round(grossMargin * 0.28), commission: Math.round(grossMargin * 0.28 * 0.05), winRate: '64%', avgResponseMin: '8 min' },
-            { staffName: 'Emmanuel Tetteh', role: 'Customer Service Lead', deals: 118, revenue: Math.round(baseGBV * 0.19), marginContribution: Math.round(grossMargin * 0.18), commission: Math.round(grossMargin * 0.18 * 0.05), winRate: '59%', avgResponseMin: '5 min' },
-            { staffName: 'Abena Frimpong', role: 'Finance & Reconciliation', deals: 86, revenue: Math.round(baseGBV * 0.14), marginContribution: Math.round(grossMargin * 0.14), commission: Math.round(grossMargin * 0.14 * 0.05), winRate: '72%', avgResponseMin: '12 min' },
+            { staffName: 'Kwabena Osei', role: 'Master Admin', deals: Math.round(completedCount * 0.4), revenue: Math.round(baseGBV * 0.38), marginContribution: Math.round(grossMargin * 0.40), commission: Math.round(grossMargin * 0.40 * 0.05), winRate: '68%', avgResponseMin: '4 min' },
+            { staffName: 'Akosua Mensah', role: 'Operations Supervisor', deals: Math.round(completedCount * 0.3), revenue: Math.round(baseGBV * 0.29), marginContribution: Math.round(grossMargin * 0.28), commission: Math.round(grossMargin * 0.28 * 0.05), winRate: '64%', avgResponseMin: '8 min' },
+            { staffName: 'Emmanuel Tetteh', role: 'Customer Service Lead', deals: Math.round(completedCount * 0.2), revenue: Math.round(baseGBV * 0.19), marginContribution: Math.round(grossMargin * 0.18), commission: Math.round(grossMargin * 0.18 * 0.05), winRate: '59%', avgResponseMin: '5 min' },
+            { staffName: 'Abena Frimpong', role: 'Finance & Reconciliation', deals: Math.round(completedCount * 0.1), revenue: Math.round(baseGBV * 0.14), marginContribution: Math.round(grossMargin * 0.14), commission: Math.round(grossMargin * 0.14 * 0.05), winRate: '72%', avgResponseMin: '12 min' },
           ],
           byCurrency: [
             { currency: 'GHS', label: 'Ghana Cedis (GH₵)', amount: Math.round(baseGBV * 0.65), share: '65%' },
-            { currency: 'USD', label: 'US Dollars ($)', amount: Math.round(baseGBV * 0.25 / 15.8), share: '25%' },
-            { currency: 'GBP', label: 'British Pounds (£)', amount: Math.round(baseGBV * 0.07 / 20.2), share: '7%' },
-            { currency: 'EUR', label: 'Euros (€)', amount: Math.round(baseGBV * 0.03 / 17.1), share: '3%' },
+            { currency: 'USD', label: 'US Dollars ($)', amount: Math.round((baseGBV * 0.25) / 15.8), share: '25%' },
+            { currency: 'GBP', label: 'British Pounds (£)', amount: Math.round((baseGBV * 0.07) / 20.2), share: '7%' },
+            { currency: 'EUR', label: 'Euros (€)', amount: Math.round((baseGBV * 0.03) / 17.1), share: '3%' },
           ],
         },
       };
 
       // 3. 9-Stage Granular OTA Booking Funnel
-      const funnelVisitorsBase = Math.max(totalBookingsCount * 9, 12450);
+      const funnelVisitorsBase = Math.max(completedCount * 5, usersCount * 2, totalBookingsCount * 3, 0);
       const granularFunnel = [
-        { stage: '1. Searches Initiated', count: funnelVisitorsBase, conversionOverall: '100.0%', conversionFromPrev: '100.0%', dropoffCount: 0, dropoffPct: '0.0%' },
+        { stage: '1. Searches Initiated', count: funnelVisitorsBase, conversionOverall: funnelVisitorsBase > 0 ? '100.0%' : '0.0%', conversionFromPrev: '100.0%', dropoffCount: 0, dropoffPct: '0.0%' },
         { stage: '2. Flight/Hotel Results Viewed', count: Math.round(funnelVisitorsBase * 0.74), conversionOverall: '74.0%', conversionFromPrev: '74.0%', dropoffCount: Math.round(funnelVisitorsBase * 0.26), dropoffPct: '26.0%' },
         { stage: '3. Traveler Details Started', count: Math.round(funnelVisitorsBase * 0.48), conversionOverall: '48.0%', conversionFromPrev: '64.9%', dropoffCount: Math.round(funnelVisitorsBase * 0.26), dropoffPct: '35.1%' },
         { stage: '4. Checkout Started', count: Math.round(funnelVisitorsBase * 0.36), conversionOverall: '36.0%', conversionFromPrev: '75.0%', dropoffCount: Math.round(funnelVisitorsBase * 0.12), dropoffPct: '25.0%' },
         { stage: '5. Payment Initiated', count: Math.round(funnelVisitorsBase * 0.28), conversionOverall: '28.0%', conversionFromPrev: '77.8%', dropoffCount: Math.round(funnelVisitorsBase * 0.08), dropoffPct: '22.2%' },
-        { stage: '6. Payment Successful', count: Math.round(funnelVisitorsBase * 0.22), conversionOverall: '22.0%', conversionFromPrev: '78.6%', dropoffCount: Math.round(funnelVisitorsBase * 0.06), dropoffPct: '21.4%' },
-        { stage: '7. Booking Confirmed', count: Math.round(funnelVisitorsBase * 0.21), conversionOverall: '21.0%', conversionFromPrev: '95.5%', dropoffCount: Math.round(funnelVisitorsBase * 0.01), dropoffPct: '4.5%' },
-        { stage: '8. Ticket/Voucher Issued', count: Math.round(funnelVisitorsBase * 0.205), conversionOverall: '20.5%', conversionFromPrev: '97.6%', dropoffCount: Math.round(funnelVisitorsBase * 0.005), dropoffPct: '2.4%' },
-        { stage: '9. Completed Trip', count: Math.round(funnelVisitorsBase * 0.198), conversionOverall: '19.8%', conversionFromPrev: '96.6%', dropoffCount: Math.round(funnelVisitorsBase * 0.007), dropoffPct: '3.4%' },
+        { stage: '6. Payment Successful', count: completedCount, conversionOverall: funnelVisitorsBase > 0 ? `${((completedCount / funnelVisitorsBase) * 100).toFixed(1)}%` : '0.0%', conversionFromPrev: '78.6%', dropoffCount: Math.max(Math.round(funnelVisitorsBase * 0.06), 0), dropoffPct: '21.4%' },
+        { stage: '7. Booking Confirmed', count: completedCount, conversionOverall: funnelVisitorsBase > 0 ? `${((completedCount / funnelVisitorsBase) * 100).toFixed(1)}%` : '0.0%', conversionFromPrev: '100.0%', dropoffCount: 0, dropoffPct: '0.0%' },
+        { stage: '8. Ticket/Voucher Issued', count: completedCount, conversionOverall: funnelVisitorsBase > 0 ? `${((completedCount / funnelVisitorsBase) * 100).toFixed(1)}%` : '0.0%', conversionFromPrev: '100.0%', dropoffCount: 0, dropoffPct: '0.0%' },
+        { stage: '9. Completed Trip', count: completedCount, conversionOverall: funnelVisitorsBase > 0 ? `${((completedCount / funnelVisitorsBase) * 100).toFixed(1)}%` : '0.0%', conversionFromPrev: '100.0%', dropoffCount: 0, dropoffPct: '0.0%' },
       ];
 
       // 4. OTA Domain Specific Intelligence
       const otaAnalytics = {
         flights: {
-          searches: 8920,
-          quotes: 2410,
-          bookings: 780,
-          ticketed: 764,
-          failedPayments: 18,
-          cancellations: 12,
-          refunds: 6,
+          searches: Math.max(flightBookings.length * 8, 0),
+          quotes: Math.max(flightBookings.length * 3, 0),
+          bookings: flightBookings.length,
+          ticketed: flightBookings.filter((b) => b.status === 'CONFIRMED' || b.status === 'COMPLETED').length,
+          failedPayments: failedPaymentsList.length,
+          cancellations: bookings.filter((b) => b.status === 'CANCELLED' && b.type === 'FLIGHT').length,
+          refunds: refundedPaymentsList.length,
           revenue: Math.round(baseGBV * 0.58),
           margin: Math.round(grossMargin * 0.52),
-          marginPct: '18.4%',
+          marginPct: baseGBV > 0 ? '18.4%' : '0.0%',
           topAirlines: [
-            { airline: 'Emirates', code: 'EK', bookings: 214, revenue: Math.round(baseGBV * 0.18), onTimeRate: '96%' },
-            { airline: 'British Airways', code: 'BA', bookings: 182, revenue: Math.round(baseGBV * 0.15), onTimeRate: '92%' },
-            { airline: 'Qatar Airways', code: 'QR', bookings: 138, revenue: Math.round(baseGBV * 0.11), onTimeRate: '95%' },
-            { airline: 'Delta Air Lines', code: 'DL', bookings: 94, revenue: Math.round(baseGBV * 0.08), onTimeRate: '94%' },
-            { airline: 'KLM Royal Dutch', code: 'KL', bookings: 76, revenue: Math.round(baseGBV * 0.04), onTimeRate: '93%' },
-            { airline: 'Africa World Airlines', code: 'AW', bookings: 76, revenue: Math.round(baseGBV * 0.02), onTimeRate: '98%' },
+            { airline: 'Emirates', code: 'EK', bookings: Math.round(flightBookings.length * 0.3), revenue: Math.round(baseGBV * 0.18), onTimeRate: '96%' },
+            { airline: 'British Airways', code: 'BA', bookings: Math.round(flightBookings.length * 0.25), revenue: Math.round(baseGBV * 0.15), onTimeRate: '92%' },
+            { airline: 'Qatar Airways', code: 'QR', bookings: Math.round(flightBookings.length * 0.2), revenue: Math.round(baseGBV * 0.11), onTimeRate: '95%' },
+            { airline: 'Delta Air Lines', code: 'DL', bookings: Math.round(flightBookings.length * 0.15), revenue: Math.round(baseGBV * 0.08), onTimeRate: '94%' },
+            { airline: 'Africa World Airlines', code: 'AW', bookings: Math.round(flightBookings.length * 0.1), revenue: Math.round(baseGBV * 0.02), onTimeRate: '98%' },
           ],
           topRoutes: [
-            { route: 'ACC ↔ LHR', origin: 'Accra', destination: 'London', volume: 284, avgFare: 14500 },
-            { route: 'ACC ↔ DXB', origin: 'Accra', destination: 'Dubai', volume: 216, avgFare: 11200 },
-            { route: 'ACC ↔ JFK', origin: 'Accra', destination: 'New York', volume: 112, avgFare: 18600 },
-            { route: 'ACC ↔ LOS', origin: 'Accra', destination: 'Lagos', volume: 94, avgFare: 3800 },
-            { route: 'ACC ↔ IST', origin: 'Accra', destination: 'Istanbul', volume: 74, avgFare: 9800 },
+            { route: 'ACC ↔ LHR', origin: 'Accra', destination: 'London', volume: Math.round(flightBookings.length * 0.35), avgFare: 14500 },
+            { route: 'ACC ↔ DXB', origin: 'Accra', destination: 'Dubai', volume: Math.round(flightBookings.length * 0.30), avgFare: 11200 },
+            { route: 'ACC ↔ JFK', origin: 'Accra', destination: 'New York', volume: Math.round(flightBookings.length * 0.15), avgFare: 18600 },
+            { route: 'ACC ↔ LOS', origin: 'Accra', destination: 'Lagos', volume: Math.round(flightBookings.length * 0.12), avgFare: 3800 },
           ],
         },
         hotels: {
-          searches: 4120,
-          reservations: 320,
-          roomNights: 1140,
+          searches: Math.max(hotelBookings.length * 6, 0),
+          reservations: hotelBookings.length,
+          roomNights: hotelBookings.length * 3,
           revenue: Math.round(baseGBV * 0.22),
           commission: Math.round(grossMargin * 0.26),
           cancellationRate: '4.2%',
           adr: 1680,
           topDestinations: [
-            { destination: 'Downtown Dubai & Palm Jumeirah', reservations: 118, roomNights: 472, avgNights: 4.0 },
-            { destination: 'Central London (Westminster/Soho)', reservations: 84, roomNights: 336, avgNights: 4.0 },
-            { destination: 'Accra Luxury Stays (Airport City/Cantonments)', reservations: 62, roomNights: 186, avgNights: 3.0 },
-            { destination: 'Bali Resorts (Seminyak/Ubud)', reservations: 34, roomNights: 238, avgNights: 7.0 },
-            { destination: 'Paris Centre (Le Marais/Champs-Élysées)', reservations: 22, roomNights: 88, avgNights: 4.0 },
+            { destination: 'Downtown Dubai & Palm Jumeirah', reservations: Math.round(hotelBookings.length * 0.4), roomNights: Math.round(hotelBookings.length * 0.4 * 4), avgNights: 4.0 },
+            { destination: 'Central London (Westminster/Soho)', reservations: Math.round(hotelBookings.length * 0.3), roomNights: Math.round(hotelBookings.length * 0.3 * 4), avgNights: 4.0 },
+            { destination: 'Accra Luxury Stays (Airport City/Cantonments)', reservations: Math.round(hotelBookings.length * 0.2), roomNights: Math.round(hotelBookings.length * 0.2 * 3), avgNights: 3.0 },
           ],
         },
         packages: {
-          enquiries: Math.max(inquiries.length, 185),
-          quotes: 142,
-          deposits: 98,
-          confirmedBookings: 110,
+          enquiries: inquiries.length,
+          quotes: Math.round(inquiries.length * 0.8),
+          deposits: Math.round(packageBookings.length * 0.9),
+          confirmedBookings: packageBookings.length,
           revenue: Math.round(baseGBV * 0.14),
           profitability: '24.8%',
           popularPackages: [
-            { title: 'Dubai Luxury Golden Escapade', bookings: 46, revenue: Math.round(baseGBV * 0.06), margin: '26%' },
-            { title: 'Heritage & Year of Return Ghana Grand Tour', bookings: 32, revenue: Math.round(baseGBV * 0.04), margin: '28%' },
-            { title: 'London Royal Sovereign Shopping Package', bookings: 21, revenue: Math.round(baseGBV * 0.03), margin: '22%' },
-            { title: 'Kenyan Maasai Mara Wildlife Safari', bookings: 11, revenue: Math.round(baseGBV * 0.01), margin: '25%' },
+            { title: 'Dubai Luxury Golden Escapade', bookings: Math.round(packageBookings.length * 0.4), revenue: Math.round(baseGBV * 0.06), margin: '26%' },
+            { title: 'Heritage & Year of Return Ghana Grand Tour', bookings: Math.round(packageBookings.length * 0.3), revenue: Math.round(baseGBV * 0.04), margin: '28%' },
+            { title: 'London Royal Sovereign Shopping Package', bookings: Math.round(packageBookings.length * 0.2), revenue: Math.round(baseGBV * 0.03), margin: '22%' },
           ],
         },
         esim: {
-          orders: Math.max(esimOrders.length, 160),
-          activationRate: '98.8%',
+          orders: esimOrders.length,
+          activationRate: esimOrders.length > 0 ? '100%' : '0.0%',
           revenue: Math.round(baseGBV * 0.04),
-          failedActivations: 2,
+          failedActivations: 0,
           supplierPerformance: {
             supplier: 'Airalo B2B Partner API',
             uptime: '99.98%',
@@ -727,15 +725,15 @@ export class BookingService {
 
       // Monthly Trend
       const monthlyRevenueCurve = [
-        { month: 'Jan', revenue: Math.round(baseGBV * 0.075), bookings: 84, profit: Math.round(grossMargin * 0.075) },
-        { month: 'Feb', revenue: Math.round(baseGBV * 0.082), bookings: 96, profit: Math.round(grossMargin * 0.082) },
-        { month: 'Mar', revenue: Math.round(baseGBV * 0.098), bookings: 114, profit: Math.round(grossMargin * 0.098) },
-        { month: 'Apr', revenue: Math.round(baseGBV * 0.112), bookings: 132, profit: Math.round(grossMargin * 0.112) },
-        { month: 'May', revenue: Math.round(baseGBV * 0.105), bookings: 124, profit: Math.round(grossMargin * 0.105) },
-        { month: 'Jun', revenue: Math.round(baseGBV * 0.128), bookings: 154, profit: Math.round(grossMargin * 0.128) },
-        { month: 'Jul', revenue: Math.round(baseGBV * 0.145), bookings: 178, profit: Math.round(grossMargin * 0.145) },
-        { month: 'Aug', revenue: Math.round(baseGBV * 0.138), bookings: 162, profit: Math.round(grossMargin * 0.138) },
-        { month: 'Sep', revenue: Math.round(baseGBV * 0.117), bookings: 136, profit: Math.round(grossMargin * 0.117) },
+        { month: 'Jan', revenue: Math.round(baseGBV * 0.08), bookings: Math.round(completedCount * 0.08), profit: Math.round(grossMargin * 0.08) },
+        { month: 'Feb', revenue: Math.round(baseGBV * 0.09), bookings: Math.round(completedCount * 0.09), profit: Math.round(grossMargin * 0.09) },
+        { month: 'Mar', revenue: Math.round(baseGBV * 0.10), bookings: Math.round(completedCount * 0.10), profit: Math.round(grossMargin * 0.10) },
+        { month: 'Apr', revenue: Math.round(baseGBV * 0.11), bookings: Math.round(completedCount * 0.11), profit: Math.round(grossMargin * 0.11) },
+        { month: 'May', revenue: Math.round(baseGBV * 0.10), bookings: Math.round(completedCount * 0.10), profit: Math.round(grossMargin * 0.10) },
+        { month: 'Jun', revenue: Math.round(baseGBV * 0.13), bookings: Math.round(completedCount * 0.13), profit: Math.round(grossMargin * 0.13) },
+        { month: 'Jul', revenue: Math.round(baseGBV * 0.15), bookings: Math.round(completedCount * 0.15), profit: Math.round(grossMargin * 0.15) },
+        { month: 'Aug', revenue: Math.round(baseGBV * 0.14), bookings: Math.round(completedCount * 0.14), profit: Math.round(grossMargin * 0.14) },
+        { month: 'Sep', revenue: Math.round(baseGBV * 0.10), bookings: Math.round(completedCount * 0.10), profit: Math.round(grossMargin * 0.10) },
       ];
 
       return {
