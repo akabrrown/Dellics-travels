@@ -40,8 +40,7 @@ export class AppService {
       const fxUrl =
         this.config.get<string>('FXPORT_BASE_URL') || 'https://api.fx-port.com';
       const fxKey =
-        this.config.get<string>('FXPORT_API_KEY') ||
-        'fxp_live_503bf984466b274916bb6d3e5ecd527e';
+        this.config.get<string>('FXPORT_API_KEY') || '';
       const start = Date.now();
 
       const fxHeaders: Record<string, string> = {
