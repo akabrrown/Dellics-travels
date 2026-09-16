@@ -232,6 +232,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 src="/logo.jpeg"
                 alt="Dellics Travels"
                 fill
+                sizes="(max-width: 768px) 40px, 48px"
                 className="object-contain"
               />
             </div>

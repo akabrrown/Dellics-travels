@@ -135,13 +135,29 @@ export async function loginAdminAccount(
   const allRoles = getAllRoles();
   const role = allRoles.find((r) => r.id === member?.roleId) || allRoles[0];
 
+  let token = `dt_sec_${Buffer.from(member.email + ":" + Date.now()).toString("base64")}`;
+  
+  try {
+    const { adminApi } = require("./api");
+    const loginRes = await adminApi.post("/auth/admin/login", {
+      email: member.email,
+      password,
+      totp,
+    });
+    if (loginRes && loginRes.token) {
+      token = loginRes.token;
+    }
+  } catch (err) {
+    console.warn("Backend auth token fetch fallback active:", err);
+  }
+
   const session: AdminUserSession = {
     id: member.id,
     name: member.name,
     email: member.email,
     roleId: role.id,
     roleTitle: role.title,
-    token: `dt_sec_${Buffer.from(member.email + ":" + Date.now()).toString("base64")}`,
+    token,
     totpEnrolled: member.totpEnrolled,
     loginAt: new Date().toISOString(),
   };

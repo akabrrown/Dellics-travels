@@ -76,6 +76,7 @@ export default function AdminLogin() {
               src="/logo.jpeg"
               alt="Dellics Travels"
               fill
+              sizes="(max-width: 768px) 64px, 96px"
               className="object-contain"
               priority
             />
