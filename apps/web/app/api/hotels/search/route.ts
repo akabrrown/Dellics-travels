@@ -129,7 +129,13 @@ export async function POST(req: NextRequest) {
     const cleanCity = searchDest.split(",")[0].trim();
 
     // In sandbox mode, support active test regions directly if query matches
-    const isSandbox = (RATEHAWK_BASE_URL || "").includes("api-sandbox.ratehawk.com");
+    let isSandbox = false;
+    try {
+      const parsedUrl = new URL(RATEHAWK_BASE_URL || "https://api-sandbox.ratehawk.com");
+      isSandbox = parsedUrl.hostname === "api-sandbox.ratehawk.com";
+    } catch {
+      isSandbox = false;
+    }
     let sandboxRegionId: number | null = null;
     if (isSandbox) {
       const lower = searchDest.toLowerCase();

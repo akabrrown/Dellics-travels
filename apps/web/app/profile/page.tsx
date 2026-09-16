@@ -44,6 +44,21 @@ import { AirportCombobox } from "@/components/ui/airport-combobox";
 import { toast } from "sonner";
 
 
+function sanitizeSafeUrl(url: string | undefined, fallback: string): string {
+  if (!url || typeof url !== "string") return fallback;
+  const trimmed = url.trim();
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//") && !trimmed.startsWith("/\\")) {
+    return trimmed;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return trimmed;
+    }
+  } catch {}
+  return fallback;
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1086,7 +1101,7 @@ export default function ProfilePage() {
                     >
                       <div className="h-44 bg-slate-200 relative overflow-hidden">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={fav.image || "/images/services/plane.jpg"} alt={fav.title} className="w-full h-full object-cover" />
+                        <img src={sanitizeSafeUrl(fav.image, "/images/services/plane.jpg")} alt={fav.title || "Favorite Trip"} className="w-full h-full object-cover" />
                         <span className="absolute top-3 left-3 bg-navy/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs">
                           {fav.type || "Favorite"}
                         </span>
@@ -1097,7 +1112,7 @@ export default function ProfilePage() {
                         <p className="text-sm font-bold text-brand-orange pt-1">{fav.price}</p>
                       </div>
                       <div className="px-4 pt-2">
-                        <Link href={fav.href || "/flights"}>
+                        <Link href={sanitizeSafeUrl(fav.href, "/flights")}>
                           <Button size="sm" className="w-full rounded-xl bg-navy hover:bg-navy/90 text-white font-bold text-xs">
                             Book Now
                           </Button>

@@ -47,20 +47,19 @@ const NAME_TO_ISO2: Record<string, string> = {
 };
 
 export function normalizeCountryCode(input: string): string {
-  if (!input) return "GH";
-  const trimmed = input.trim();
-  if (trimmed.length === 2) return trimmed.toUpperCase();
-  const lower = trimmed.toLowerCase();
-  if (NAME_TO_ISO2[lower]) return NAME_TO_ISO2[lower];
-  return trimmed.slice(0, 2).toUpperCase() || "GH";
+  if (!input || typeof input !== "string") return "GH";
+  const trimmed = input.trim().toLowerCase();
+  if (NAME_TO_ISO2[trimmed]) return NAME_TO_ISO2[trimmed];
+  const alphaOnly = trimmed.replace(/[^a-z]/gi, "");
+  if (alphaOnly.length >= 2) return alphaOnly.slice(0, 2).toUpperCase();
+  return "GH";
 }
 
 export function getFlagEmoji(countryCode: string): string {
   const code = normalizeCountryCode(countryCode);
-  if (!code || code.length !== 2) return "🌐";
+  if (!code || !/^[A-Z]{2}$/.test(code)) return "🌐";
   try {
     const codePoints = code
-      .toUpperCase()
       .split("")
       .map((char) => 127397 + char.charCodeAt(0));
     return String.fromCodePoint(...codePoints);
@@ -71,8 +70,9 @@ export function getFlagEmoji(countryCode: string): string {
 
 export function CountryFlag({ countryCode, className, alt }: CountryFlagProps) {
   const [imgError, setImgError] = useState(false);
-  const iso2 = normalizeCountryCode(countryCode);
-  const lower = iso2.toLowerCase();
+  const rawIso2 = normalizeCountryCode(countryCode);
+  const iso2 = /^[A-Z]{2}$/.test(rawIso2) ? rawIso2 : "GH";
+  const lower = encodeURIComponent(iso2.toLowerCase());
   const emoji = getFlagEmoji(iso2);
 
   // Reset error whenever the country code changes

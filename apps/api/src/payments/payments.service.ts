@@ -176,7 +176,7 @@ export class PaymentsService {
       `Creating Stripe Checkout for flight ${opts.origin}->${opts.destination}, amount=${opts.price} ${currency}, email=${opts.email}`,
     );
 
-    const bookingRef = `FL_${Date.now()}_${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const bookingRef = `FL_${Date.now()}_${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
     // If active Stripe secret key is configured and not mock, create live Stripe Checkout Session
     if (

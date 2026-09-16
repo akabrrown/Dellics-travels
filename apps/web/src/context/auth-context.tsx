@@ -97,6 +97,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEY = "dellics_auth_profile";
 
+function getSafeStorageProfile(profile: AuthProfile | null): Partial<AuthProfile> | null {
+  if (!profile) return null;
+  // Strip sensitive PII before storing in client-side localStorage
+  const {
+    passportNumber,
+    passportExpiry,
+    passportCountry,
+    emergencyContact,
+    emergencyPhone,
+    ...safeProfile
+  } = profile;
+  return safeProfile;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -203,7 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               },
             };
             try {
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(merged)));
             } catch {}
             return merged;
           });
@@ -358,7 +372,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updated);
 
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(updated)));
       if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         const bc = new BroadcastChannel("dellics_profile_realtime");
         bc.postMessage({ type: "PROFILE_UPDATED", profile: updated });
@@ -512,7 +526,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.session) setSession(data.session);
 
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbProfile));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(dbProfile)));
       } catch {}
 
       return {};
@@ -580,7 +594,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUser(profile);
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profile));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(profile)));
       } catch {}
 
       // 2. Also register in Supabase Auth if available
@@ -658,7 +672,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(dbProfile);
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbProfile));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(dbProfile)));
     } catch {}
   };
 
