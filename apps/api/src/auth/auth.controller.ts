@@ -82,25 +82,26 @@ export class AuthController {
 
   @Get('admin/me')
   async adminMe(@Headers('authorization') authHeader?: string) {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Authentication token required.');
-    }
+    try {
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new UnauthorizedException('Authentication token required.');
+      }
 
-    const token = authHeader.replace('Bearer ', '').trim();
-    const payload = this.tokenService.verifyAdminToken(token);
-    if (!payload) {
-      throw new UnauthorizedException('Invalid or expired operations token.');
-    }
+      const token = authHeader.replace('Bearer ', '').trim();
+      const payload = this.tokenService.verifyAdminToken(token);
+      if (!payload) {
+        throw new UnauthorizedException('Invalid or expired operations token.');
+      }
 
-    const member = PROVISIONED_ADMIN_TEAM.find(
-      (m) =>
-        m.id === payload.id ||
-        m.email.toLowerCase() === payload.email.toLowerCase(),
-    );
+      const member = PROVISIONED_ADMIN_TEAM.find(
+        (m) =>
+          m.id === payload.id ||
+          m.email.toLowerCase() === payload.email.toLowerCase(),
+      );
 
-    if (!member) {
-      throw new UnauthorizedException('Session account no longer active.');
-    }
+      if (!member) {
+        throw new UnauthorizedException('Session account no longer active.');
+      }
 
       return {
         status: 'success',
