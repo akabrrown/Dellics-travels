@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,10 +16,8 @@ import {
   Smartphone,
   Layers,
   HelpCircle,
-  ShieldCheck,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
-import { AccreditationsModal } from "@/components/accreditations-modal";
 
 const OTA_CATEGORY_STRIP = [
   { label: "Flights", href: "/flights", icon: Plane },
@@ -80,7 +77,6 @@ const LEGAL_LINKS = [
 ];
 
 export function SiteFooter() {
-  const [accreditationsOpen, setAccreditationsOpen] = useState(false);
   const pathname = usePathname();
 
   if (
@@ -93,8 +89,7 @@ export function SiteFooter() {
   }
 
   return (
-    <>
-      <footer className="bg-navy-dark text-white">
+    <footer className="bg-navy-dark text-white">
         {/* OTA Quick Category Strip */}
         <div className="border-b border-white/10 bg-white/[0.03]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
@@ -322,14 +317,6 @@ export function SiteFooter() {
               All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <button
-                type="button"
-                onClick={() => setAccreditationsOpen(true)}
-                className="hover:text-brand-orange flex items-center gap-1.5 transition-colors cursor-pointer text-white/80"
-              >
-                <ShieldCheck className="size-3.5 text-brand-orange" />
-                <span>Accreditations</span>
-              </button>
               {LEGAL_LINKS.map((item) => (
                 <Link
                   key={item.href}
@@ -343,12 +330,5 @@ export function SiteFooter() {
           </div>
         </div>
       </footer>
-
-      {/* Dedicated Accreditations Modal Dialog */}
-      <AccreditationsModal
-        isOpen={accreditationsOpen}
-        onClose={() => setAccreditationsOpen(false)}
-      />
-    </>
   );
 }
