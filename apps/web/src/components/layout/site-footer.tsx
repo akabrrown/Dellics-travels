@@ -328,7 +328,7 @@ export function SiteFooter() {
                 className="hover:text-brand-orange flex items-center gap-1.5 transition-colors cursor-pointer text-white/80"
               >
                 <ShieldCheck className="size-3.5 text-brand-orange" />
-                <span>Accreditations &amp; Logos</span>
+                <span>Accreditations</span>
               </button>
               {LEGAL_LINKS.map((item) => (
                 <Link

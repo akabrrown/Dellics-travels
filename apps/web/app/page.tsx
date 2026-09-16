@@ -1,16 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Plane,
-  Building2,
-  Compass,
-  Car,
-  FileCheck2,
-  Briefcase,
-  Star,
-  CheckCircle2,
-  ArrowRight,
-} from "lucide-react";
+import { Star, CheckCircle2, ArrowRight } from "lucide-react";
 import { HeroSlider } from "@/components/home/hero-slider";
 import { QuickBook } from "@/components/home/quick-book";
 import { SectionHeading } from "@/components/section-heading";
@@ -20,65 +10,6 @@ import { HERO_SLIDES } from "@/data/home";
 import { getLiveHomeDeals } from "@/lib/flights";
 import { getTours } from "@/lib/tours";
 import { getFeaturedReviews } from "@/lib/reviews";
-
-const CORE_SERVICES = [
-  {
-    title: "Flight Ticketing",
-    tag: "IATA Certified",
-    copy: "Domestic & international flights across all global airlines with instant electronic ticketing, seat selection & baggage support.",
-    href: "/flights",
-    image: "/images/services/plane.jpg",
-    icon: Plane,
-    features: ["Emirates, Qatar, Delta, KLM & More", "Exclusive Competitive Fares", "24/7 Schedule Change Support"],
-
-  },
-  {
-    title: "Hotels & Airbnb Stays",
-    tag: "Verified Global Stays",
-    copy: "Over 3.3 million verified luxury hotels, boutique apartments & beach resorts worldwide with best rate guarantee.",
-
-    href: "/hotels",
-    image: "/images/services/hotel-and-airbnb.jpg",
-    icon: Building2,
-    features: ["Instant Online Confirmation", "Free Cancellation Options", "Verified Guest Reviews"],
-  },
-  {
-    title: "Tours & Holiday Packages",
-    tag: "Curated Itineraries",
-    copy: "Bespoke guided safaris, luxury city breaks, and cultural expeditions across Africa, Europe, Asia and the Americas.",
-    href: "/tours",
-    image: "/images/africa/serengeti-national-park.jpg",
-    icon: Compass,
-    features: ["Professional Local Guides", "All-Inclusive Options", "Custom Group & Family Dates"],
-  },
-  {
-    title: "Airport Transfers & Transit",
-    tag: "Kotoka ACC Pickups",
-    copy: "Punctual airport meet & greet and city transit in air-conditioned executive sedans, luxury SUVs and passenger coaches.",
-    href: "/transfers",
-    image: "/images/services/airport-transfer-services.jpg",
-    icon: Car,
-    features: ["Live Flight Delay Tracking", "Luggage Assistance", "Vetted Executive Drivers"],
-  },
-  {
-    title: "Visa Assistance & Advisory",
-    tag: "99.4% Approval",
-    copy: "Comprehensive visa consultation, document preparation, appointment booking, and interview coaching for top destinations.",
-    href: "/visa",
-    image: "/images/services/documentation-support.jpg",
-    icon: FileCheck2,
-    features: ["UK, USA, Canada & Schengen", "Dubai & South Africa E-Visas", "Document Verification"],
-  },
-  {
-    title: "Corporate Travel Solutions",
-    tag: "Business Accounts",
-    copy: "Streamlined corporate travel management, executive retreat logistics, monthly billing & dedicated travel managers.",
-    href: "/corporate",
-    image: "/images/services/corporate-travel-management.jpg",
-    icon: Briefcase,
-    features: ["Dedicated Account Manager", "Consolidated Monthly Invoicing", "VIP Concierge Priority"],
-  },
-];
 
 const DEFAULT_DESTINATIONS = [
   {
@@ -159,74 +90,6 @@ export default async function HomePage() {
           <QuickBook />
         </div>
       </HeroSlider>
-
-      {/* 3. Core Services Grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
-        <SectionHeading
-          eyebrow="Our Expertise"
-          title="World-Class Travel Services, Tailored For You"
-          subtitle="Whether traveling for leisure, business, medical needs or family vacation, our licensed experts ensure unmatched comfort and peace of mind."
-        />
-
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {CORE_SERVICES.map((service) => {
-            const Icon = service.icon;
-            return (
-              <div
-                key={service.href}
-                className="group relative flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/70 shadow-sm transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-brand-orange/40"
-              >
-                <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-108"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/80 via-transparent to-transparent" />
-                  <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy backdrop-blur-md shadow-sm">
-                    {service.tag}
-                  </span>
-                </div>
-
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-colors">
-                      <Icon className="size-5" />
-                    </div>
-                    <h3 className="font-display text-xl font-bold text-navy">
-                      {service.title}
-                    </h3>
-                  </div>
-
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                    {service.copy}
-                  </p>
-
-                  <ul className="mt-4 space-y-1.5 border-t border-slate-100 pt-4 text-xs text-slate-700">
-                    {service.features.map((feat) => (
-                      <li key={feat} className="flex items-center gap-2">
-                        <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-6 pt-2">
-                    <Link
-                      href={service.href}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-orange uppercase tracking-wider hover:text-brand-orange-hover"
-                    >
-                      <span>Explore Service</span>
-                      <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
 
             {/* 5. Featured Destinations Showcase */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
