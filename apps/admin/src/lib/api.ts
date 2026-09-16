@@ -1,4 +1,4 @@
-import { ADMIN_CONFIG } from "./config";
+import { ADMIN_CONFIG, sanitizeApiUrl } from "./config";
 
 export class AdminApiError extends Error {
   constructor(
@@ -47,9 +47,10 @@ export function getBackendOnlineStatus() {
 
 export async function checkBackendHealth(): Promise<boolean> {
   try {
+    const baseUrl = sanitizeApiUrl(ADMIN_CONFIG.apiUrl);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch(`${ADMIN_CONFIG.apiUrl}/health`, {
+    const res = await fetch(`${baseUrl}/health`, {
       method: "GET",
       signal: controller.signal,
     });
@@ -67,8 +68,20 @@ async function request<T>(
   path: string,
   options: AdminRequestOptions = {}
 ): Promise<T> {
-  const baseUrl = (ADMIN_CONFIG.apiUrl || "").trim().replace(/[\r\n\t]+/g, "").replace(/\/+$/, "");
-  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const baseUrl = sanitizeApiUrl(ADMIN_CONFIG.apiUrl);
+  let cleanPath = (path || "")
+    .trim()
+    .replace(/\\r|\\n|\\t/gi, "")
+    .replace(/[\r\n\t\v\f]+/g, "");
+  
+  // Strip any rogue leading /n/ or n/
+  if (cleanPath.startsWith("/n/")) {
+    cleanPath = cleanPath.slice(2);
+  } else if (cleanPath.startsWith("n/")) {
+    cleanPath = cleanPath.slice(1);
+  }
+  
+  cleanPath = cleanPath.startsWith("/") ? cleanPath : `/${cleanPath}`;
   const url = `${baseUrl}${cleanPath}`;
   
   // Attach admin authorization token if present in localStorage (client-side)
@@ -91,7 +104,7 @@ async function request<T>(
   } catch {
     setBackendOnlineStatus(false);
     throw new AdminApiError(
-      `Unable to reach Dellics API backend at ${ADMIN_CONFIG.apiUrl}. Ensure apps/api is running.`,
+      `Unable to reach Dellics API backend at ${baseUrl}. Ensure apps/api is running.`,
       0,
       null,
       true

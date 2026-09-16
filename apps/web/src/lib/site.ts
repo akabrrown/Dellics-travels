@@ -1,3 +1,13 @@
+export function sanitizeApiUrl(url: string | undefined): string {
+  if (!url) return "http://localhost:3000";
+  return url
+    .trim()
+    .replace(/\\r|\\n|\\t/gi, "")
+    .replace(/[\r\n\t\v\f]+/g, "")
+    .replace(/[\/\\]+n(?=[\/\\]|$)/gi, "")
+    .replace(/[\/\\]+$/, "");
+}
+
 export const SITE = {
   name: "Dellics Travels",
   legalName: "Dellics Travels",
@@ -27,5 +37,4 @@ export const SITE = {
   travelUrl: "https://mytravel.io/dellicstravels",
 };
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+export const API_URL = sanitizeApiUrl(process.env.NEXT_PUBLIC_API_URL);

@@ -19,6 +19,15 @@ async function createNestServer(): Promise<{
 
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
+
+  // URL normalization middleware: strip any accidental /n/ prefix from rogue env vars or escaped paths
+  app.use((req: Request, res: Response, next: () => void) => {
+    if (req.url && (req.url.startsWith('/n/') || req.url === '/n')) {
+      req.url = req.url.replace(/^\/n(\/|$)/, '/');
+    }
+    next();
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
