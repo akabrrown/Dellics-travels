@@ -69,3 +69,7 @@ Thumbs.db
 supabase/.temp/
 Api integrations.txt
 Dellics-travels-main/
+
+# Ignore stray npm/yarn lockfiles in pnpm monorepo
+package-lock.json
+yarn.lock
