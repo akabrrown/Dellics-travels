@@ -67,7 +67,9 @@ async function request<T>(
   path: string,
   options: AdminRequestOptions = {}
 ): Promise<T> {
-  const url = `${ADMIN_CONFIG.apiUrl}${path.startsWith("/") ? path : `/${path}`}`;
+  const baseUrl = (ADMIN_CONFIG.apiUrl || "").trim().replace(/[\r\n\t]+/g, "").replace(/\/+$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const url = `${baseUrl}${cleanPath}`;
   
   // Attach admin authorization token if present in localStorage (client-side)
   const token = typeof window !== "undefined" ? localStorage.getItem("dellics_admin_token") : null;
