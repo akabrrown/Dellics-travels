@@ -13,6 +13,9 @@ function readPackage(pkg, context) {
     if (pkg.dependencies['fast-uri']) pkg.dependencies['fast-uri'] = '^4.1.5';
     if (pkg.dependencies['decode-uri-component']) pkg.dependencies['decode-uri-component'] = '^0.5.0';
     if (pkg.dependencies['multer']) pkg.dependencies['multer'] = '^2.3.0';
+    if (pkg.dependencies['uuid']) pkg.dependencies['uuid'] = '^14.0.1';
+    if (pkg.dependencies['qs']) pkg.dependencies['qs'] = '^6.16.0';
+    if (pkg.dependencies['@humanfs/node']) pkg.dependencies['@humanfs/node'] = '^0.16.8';
   }
   return pkg;
 }
