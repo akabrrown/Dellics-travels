@@ -84,7 +84,7 @@ export default async function HomePage() {
               Explore The World With Confidence
             </h1>
             <p className="mt-1.5 text-xs sm:text-sm text-white/90 max-w-xl mx-auto font-light drop-shadow">
-              Flights, verified luxury stays, bespoke safari tours, and international connectivity under one trusted booking roof.
+              Flights for Every Budget. Hotels for Every Journey. Experiences Worth Remembering.
             </p>
           </div>
           <QuickBook />

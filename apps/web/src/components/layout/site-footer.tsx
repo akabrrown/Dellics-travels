@@ -9,25 +9,8 @@ import {
   Mail,
   Clock,
   ArrowRight,
-  Plane,
-  Hotel,
-  Compass,
-  Palmtree,
-  Smartphone,
-  Layers,
-  HelpCircle,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
-
-const OTA_CATEGORY_STRIP = [
-  { label: "Flights", href: "/flights", icon: Plane },
-  { label: "Hotels", href: "/hotels", icon: Hotel },
-  { label: "Tours", href: "/tours", icon: Compass },
-  { label: "Packages/Diaspora Tours", href: "/diaspora", icon: Palmtree },
-  { label: "eSIM", href: "/esim", icon: Smartphone },
-  { label: "Services", href: "/services", icon: Layers },
-  { label: "FAQs", href: "/faq", icon: HelpCircle },
-];
 
 const BOOK_LINKS = [
   { label: "Flights", href: "/flights" },
@@ -90,35 +73,6 @@ export function SiteFooter() {
 
   return (
     <footer className="bg-navy-dark text-white">
-        {/* OTA Quick Category Strip */}
-        <div className="border-b border-white/10 bg-white/[0.03]">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-            <nav
-              aria-label="Quick Category Navigation"
-              className="flex flex-wrap items-center justify-center gap-y-2 text-xs sm:text-sm font-medium text-white/80"
-            >
-              {OTA_CATEGORY_STRIP.map((category, index) => {
-                const Icon = category.icon;
-                return (
-                  <div key={category.href} className="flex items-center">
-                    <Link
-                      href={category.href}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-white/85 hover:text-brand-orange hover:bg-white/5 transition-colors"
-                    >
-                      <Icon className="size-3.5 text-brand-orange" />
-                      <span>{category.label}</span>
-                    </Link>
-                    {index < OTA_CATEGORY_STRIP.length - 1 && (
-                      <span className="hidden sm:inline-block text-white/20 select-none px-1">
-                        |
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
 
         {/* Main Footer Content */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
