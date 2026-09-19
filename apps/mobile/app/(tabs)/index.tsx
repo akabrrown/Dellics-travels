@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Pressable, ImageBackground, Dimensions, Platform, TextInput, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, ImageBackground, Dimensions, Platform, TextInput, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Search, MapPin, Plane, Bed, Crown, ChevronRight, Car, Ticket, Smartphone, PlaneTakeoff, PlaneLanding, Calendar, Users, Briefcase, Bell, ArrowDownUp, Compass, Clock, ShieldCheck, Trophy, X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';

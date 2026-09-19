@@ -244,7 +244,7 @@ export default function ExploreScreen() {
                   router.push(`/results/${destQuery}?origin=${origin}`);
                 }}
                 className="absolute bottom-4 left-4 right-4 bg-white/95 p-4 rounded-xl shadow-lg border border-white flex-row items-center justify-between" 
-                style={{ backdropFilter: 'blur(10px)' }}
+                
               >
                 <View className="flex-1 mr-2">
                   <Text className="font-black text-gray-900 text-base">

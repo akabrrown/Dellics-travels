@@ -122,23 +122,23 @@ model User {
   interactions          CustomerInteraction[]
   leads                 LeadPipeline[]
 
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  tourBookings TourBooking[]
 }
 
-
 model Trip {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   user_id    String
-  user       User      @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
   title      String
   start_date DateTime
   end_date   DateTime
 
-  bookings   Booking[]
+  bookings Booking[]
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Booking {
@@ -149,12 +149,12 @@ model Booking {
   status       BookingStatus @default(HELD)
   supplier_ref String?
 
-  payments     Payment[]
-  rewards      RewardsLedger[]
-  reviews      Review[]
+  payments Payment[]
+  rewards  RewardsLedger[]
+  reviews  Review[]
 
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Payment {
@@ -166,8 +166,8 @@ model Payment {
   currency           String
   status             PaymentStatus @default(PENDING)
 
-  created_at         DateTime      @default(now())
-  updated_at         DateTime      @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Membership {
@@ -178,8 +178,8 @@ model Membership {
   paystack_subscription_code String?        @unique
   renews_at                  DateTime?
 
-  created_at                 DateTime       @default(now())
-  updated_at                 DateTime       @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model RewardsLedger {
@@ -191,7 +191,7 @@ model RewardsLedger {
   booking_id   String?
   booking      Booking? @relation(fields: [booking_id], references: [id])
 
-  created_at   DateTime @default(now())
+  created_at DateTime @default(now())
 }
 
 model PriceAlert {
@@ -203,8 +203,8 @@ model PriceAlert {
   target_price Decimal          @db.Decimal(10, 2)
   status       PriceAlertStatus @default(ACTIVE)
 
-  created_at   DateTime         @default(now())
-  updated_at   DateTime         @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model FareHistory {
@@ -223,38 +223,38 @@ model FareFreeze {
   paystack_reference String   @unique
   expires_at         DateTime
 
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Review {
-  id          String   @id @default(uuid())
-  user_id     String
-  user        User     @relation(fields: [user_id], references: [id])
-  booking_id  String
-  booking     Booking  @relation(fields: [booking_id], references: [id])
-  rating      Int
-  sub_scores  Json?
-  text        String?
-  photos      String[]
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  booking_id String
+  booking    Booking  @relation(fields: [booking_id], references: [id])
+  rating     Int
+  sub_scores Json?
+  text       String?
+  photos     String[]
 
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model ESIMPlan {
-  id                String      @id @default(uuid())
+  id                String  @id @default(uuid())
   country_or_region String
-  data_gb           Decimal     @db.Decimal(10, 2)
-  airtime_minutes   Int         @default(0)
+  data_gb           Decimal @db.Decimal(10, 2)
+  airtime_minutes   Int     @default(0)
   validity_days     Int
-  price             Decimal     @db.Decimal(10, 2)
-  airalo_package_id String      @unique
+  price             Decimal @db.Decimal(10, 2)
+  airalo_package_id String  @unique
 
-  orders            ESIMOrder[]
+  orders ESIMOrder[]
 
-  created_at        DateTime    @default(now())
-  updated_at        DateTime    @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model ESIMOrder {
@@ -269,10 +269,9 @@ model ESIMOrder {
   airtime_minutes    Int             @default(0)
   status             ESIMOrderStatus @default(PENDING)
 
-  created_at         DateTime        @default(now())
-  updated_at         DateTime        @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
-
 
 enum InquiryKind {
   CONTACT
@@ -280,36 +279,37 @@ enum InquiryKind {
 }
 
 model Inquiry {
-  id         String        @id @default(uuid())
-  kind       InquiryKind
-  name       String
-  email      String
-  phone      String?
-  message    String
-  payload    Json?
+  id      String      @id @default(uuid())
+  kind    InquiryKind
+  name    String
+  email   String
+  phone   String?
+  message String
+  payload Json?
 
-  lead       LeadPipeline?
+  lead LeadPipeline?
 
-  created_at DateTime      @default(now())
+  created_at DateTime @default(now())
 }
 
 model TourPackage {
-  id          String   @id @default(uuid())
-  title       String
-  slug        String   @unique
-  destination String
-  price       Decimal  @db.Decimal(10, 2)
-  currency    String   @default("USD")
-  duration    String
-  badge       String?
-  image_url   String
-  overview    String
-  includes    String[]
-  highlights  String[]
-  is_featured Boolean  @default(false)
+  id            String        @id @default(uuid())
+  title         String
+  slug          String        @unique
+  destination   String
+  price         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  duration      String
+  badge         String?
+  image_url     String
+  overview      String
+  includes      String[]
+  highlights    String[]
+  is_featured   Boolean       @default(false)
+  tour_bookings TourBooking[]
 
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model PasswordResetToken {
@@ -338,7 +338,7 @@ model CustomerInteraction {
   inquiry_id String?
   booking_id String?
 
-  created_at DateTime           @default(now())
+  created_at DateTime @default(now())
 
   @@index([user_id])
   @@index([channel])
@@ -361,11 +361,34 @@ model LeadPipeline {
   won_booking_id  String?
   lost_reason     String?
 
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([user_id])
   @@index([stage])
   @@index([assigned_agent])
   @@index([next_followup])
+}
+
+model TourBooking {
+  id                 String        @id @default(uuid())
+  user_id            String
+  user               User          @relation(fields: [user_id], references: [id])
+  tour_package_id    String
+  tour_package       TourPackage   @relation(fields: [tour_package_id], references: [id])
+  departure_date     DateTime
+  pax_count          Int
+  lead_pax_name      String
+  lead_pax_email     String
+  lead_pax_phone     String
+  special_requests   String?
+  paystack_reference String        @unique
+  amount             Decimal       @db.Decimal(10, 2)
+  currency           String        @default("USD")
+  status             BookingStatus @default(HELD)
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  @@index([user_id])
+  @@index([departure_date])
 }

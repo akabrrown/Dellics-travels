@@ -182,7 +182,7 @@ export async function sendPasswordResetEmail({
     try {
       const fromAddress =
         process.env.RESEND_FROM_EMAIL ||
-        "Dellics Travels <onboarding@resend.dev>";
+        "Dellics Travels <support@dellicstravels.com>";
 
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",

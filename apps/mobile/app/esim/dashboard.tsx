@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, ActivityIndicator } from 'react-native';
 import { EsimDashboardSkeleton } from '../../src/components/Skeleton';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Smartphone, QrCode } from 'lucide-react-native';
