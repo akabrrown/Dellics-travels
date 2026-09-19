@@ -55,6 +55,7 @@ const SUPPORT_LINKS = [
 
 const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy" },
+  { label: "US Privacy Policy", href: "/us-privacy" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Cookie Policy", href: "/cookies" },
 ];
