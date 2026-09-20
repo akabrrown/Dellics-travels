@@ -291,7 +291,7 @@ export class BookingService {
         ...esims.map(e => ({
           id: e.id,
           type: 'ESIM',
-          status: e.status === 'COMPLETED' ? 'CONFIRMED' : e.status, // Normalize status
+          status: (e.status as string) === 'COMPLETED' ? 'CONFIRMED' : (e.status as string),
           supplierRef: e.paystack_reference,
           travelerName: e.user?.name || 'Client',
           travelerEmail: e.user?.email || '',
@@ -387,7 +387,7 @@ export class BookingService {
         ...esims.map(e => ({
           id: e.id,
           type: 'ESIM',
-          status: e.status === 'COMPLETED' ? 'CONFIRMED' : e.status,
+          status: (e.status as string) === 'COMPLETED' ? 'CONFIRMED' : (e.status as string),
           supplierRef: e.paystack_reference,
           travelerName: e.user?.name || 'Client',
           travelerEmail: e.user?.email || '',
@@ -439,6 +439,8 @@ export class BookingService {
   }
 
   /**
+   * Admin pending & processed refunds
+   */
   async getAdminRefunds() {
     try {
       const refunds = await this.prisma.payment.findMany({
