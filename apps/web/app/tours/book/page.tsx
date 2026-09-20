@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {
+  useSearchParams,
+  useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Compass,
@@ -17,7 +19,6 @@ import {
   Clock,
   Check,
   ChevronRight,
-  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";

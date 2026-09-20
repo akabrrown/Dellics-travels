@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {
+  useSearchParams,
+  useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Plane,
@@ -20,7 +22,6 @@ import {
   Clock,
   Check,
   Building2,
-  CheckCircle2,
   MapPin,
   ChevronRight,
 } from "lucide-react";

@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, Suspense, useMemo } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {
+  useSearchParams,
+  useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -16,7 +18,6 @@ import {
   Lock,
   Clock,
   Check,
-  CheckCircle2,
   MapPin,
   ChevronRight,
   Star,
