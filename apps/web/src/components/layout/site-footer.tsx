@@ -139,7 +139,7 @@ export function SiteFooter() {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-white/80">
                   <Clock className="size-4 text-brand-orange shrink-0" />
-                  <span>Mon – Sat: 8:00 AM – 6:00 PM GMT · Chat with Travel Consultant</span>
+                  <span>24/7 Supports and Chat with Travel Consultant</span>
                 </div>
               </div>
 

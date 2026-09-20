@@ -37,6 +37,9 @@ export function FlightSearchWidget() {
   const [passengers, setPassengers] = useState<PassengerCounts>({ adults: 1, children: 0, infants: 0 });
   const [cabinClass, setCabinClass] = useState("Economy");
   const [error, setError] = useState<string | null>(null);
+  const [baggage, setBaggage] = useState(false);
+  const [nonStop, setNonStop] = useState(false);
+  const [refundable, setRefundable] = useState(false);
 
   function handleSwapAirports() {
     const temp = from;
@@ -83,6 +86,9 @@ export function FlightSearchWidget() {
       `${passengers.adults} Adult${passengers.adults > 1 ? "s" : ""}${passengers.children ? `, ${passengers.children} Child` : ""}${passengers.infants ? `, ${passengers.infants} Infant` : ""}`,
     );
     query.set("cabinClass", cabinClass);
+    if (baggage) query.set("baggage", "true");
+    if (nonStop) query.set("nonStop", "true");
+    if (refundable) query.set("refundable", "true");
     window.location.href = `/inquire?${query.toString()}`;
   }
 
@@ -289,6 +295,37 @@ export function FlightSearchWidget() {
         </p>
       )}
 
+      {/* Preferences Checkboxes */}
+      <div className="flex flex-wrap items-center gap-4 py-3">
+        <label className="flex items-center gap-2 text-[13px] font-semibold text-slate-700 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={baggage} 
+            onChange={(e) => setBaggage(e.target.checked)} 
+            className="size-4 rounded border-slate-300 accent-navy cursor-pointer" 
+          />
+          Baggage
+        </label>
+        <label className="flex items-center gap-2 text-[13px] font-semibold text-slate-700 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={nonStop} 
+            onChange={(e) => setNonStop(e.target.checked)} 
+            className="size-4 rounded border-slate-300 accent-navy cursor-pointer" 
+          />
+          Non-Stop
+        </label>
+        <label className="flex items-center gap-2 text-[13px] font-semibold text-slate-700 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={refundable} 
+            onChange={(e) => setRefundable(e.target.checked)} 
+            className="size-4 rounded border-slate-300 accent-navy cursor-pointer" 
+          />
+          Refundable
+        </label>
+      </div>
+
       {/* Primary Actions */}
       <div className="pt-2">
         <Button
@@ -309,6 +346,9 @@ export function FlightSearchWidget() {
               adults: String(passengers.adults || 1),
               children: String(passengers.children || 0),
             });
+            if (baggage) params.set("baggage", "true");
+            if (nonStop) params.set("nonStop", "true");
+            if (refundable) params.set("refundable", "true");
             router.push(`/flights/book?${params.toString()}`);
           }}
           className="w-full h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover font-bold text-white shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
