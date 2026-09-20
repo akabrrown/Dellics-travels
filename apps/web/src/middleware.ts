@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
     img-src * blob: data:;
     font-src 'self' data:;
     connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;
-    require-trusted-types-for 'script';
+    
   `.replace(/\s{2,}/g, ' ').trim();
  
   const requestHeaders = new Headers(request.headers)
