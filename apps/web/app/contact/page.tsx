@@ -57,7 +57,7 @@ const CONTACT_CHANNELS = [
   },
   {
     icon: MapPin,
-    title: "Ghana Office (HQ)",
+    title: "Ghana - Headquarters",
     value: "GN-0490-2450, Tema, Greater Accra",
     href: "#live-map",
     action: "View On Live Map",
@@ -65,7 +65,7 @@ const CONTACT_CHANNELS = [
   },
   {
     icon: Building2,
-    title: "United States Office",
+    title: "United States",
     value: "30 N Gould ST, STER, SHERIDAN, WY 82801",
     href: "#us-office",
     action: "Dellics Travels, USA",
@@ -119,7 +119,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100/20 text-xs font-bold text-brand-orange">
-                  {ch.action} â†’
+                  {ch.action} →
                 </div>
               </a>
             );
