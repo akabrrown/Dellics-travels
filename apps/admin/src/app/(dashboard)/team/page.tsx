@@ -10,7 +10,7 @@ import {
   Plus,
   Trash2,
   Settings,
-  Sparkles,
+  PenTool,
   Info,
   Check,
   RefreshCw,
@@ -339,7 +339,7 @@ export default function RolesAndTeam() {
               : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
-          <Sparkles className="size-4 text-[#F4740D]" />
+          <PenTool className="size-4 text-[#F4740D]" />
           <span>Custom Role Builder</span>
         </button>
       </div>
@@ -545,7 +545,7 @@ export default function RolesAndTeam() {
         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs max-w-4xl mx-auto space-y-8">
           <div>
             <div className="flex items-center gap-2">
-              <Sparkles className="size-5 text-[#F4740D]" />
+              <PenTool className="size-5 text-[#F4740D]" />
               <h2 className="font-display text-xl font-bold text-[#0A0060]">
                 Custom Role Builder & Granular Access Configurator
               </h2>

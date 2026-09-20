@@ -18,7 +18,7 @@ import {
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
-  Sparkles,
+  Headphones,
 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
@@ -421,7 +421,7 @@ export default function FAQPage() {
           <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
             <div className="space-y-2 max-w-xl">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-brand-orange border border-white/15">
-                <Sparkles className="size-3.5" />
+                <Headphones className="size-3.5" />
                 <span>24/7 Human Concierge Available</span>
               </div>
               <h3 className="font-display text-2xl font-bold text-white">

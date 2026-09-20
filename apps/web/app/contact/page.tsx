@@ -119,7 +119,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100/20 text-xs font-bold text-brand-orange">
-                  {ch.action} →
+                  {ch.action} â†’
                 </div>
               </a>
             );
@@ -161,12 +161,12 @@ export default function ContactPage() {
 
                 <div className="space-y-3 text-xs text-white/80">
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                    <span className="font-semibold text-white">Monday – Friday</span>
-                    <span>8:00 AM – 6:00 PM GMT</span>
+                    <span className="font-semibold text-white">Monday â€“ Friday</span>
+                    <span>8:00 AM â€“ 6:00 PM GMT</span>
                   </div>
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
                     <span className="font-semibold text-white">Saturday</span>
-                    <span>9:00 AM – 4:00 PM GMT</span>
+                    <span>9:00 AM â€“ 4:00 PM GMT</span>
                   </div>
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
                     <span className="font-semibold text-white">Sunday & Holidays</span>
@@ -184,7 +184,7 @@ export default function ContactPage() {
                     <p className="text-white/80">Community 25, Devtraco Estate Tema</p>
                     <p className="text-white/60">Greater Accra, Ghana</p>
                     <p className="text-white/80 pt-1">Tel: +233 55 205 4174</p>
-                    <p className="text-white/60">Email: Info@dellicstravels.com</p>
+                    <p className="text-white/60">Email: help@dellicstravels.com</p>
                   </div>
 
                   <div id="us-office" className="rounded-2xl bg-white/5 p-4 border border-white/10 space-y-1">
@@ -194,7 +194,7 @@ export default function ContactPage() {
                     </div>
                     <p className="text-white/80">30 N Gould ST, STER, SHERIDAN</p>
                     <p className="text-white/60">WYOMING, 82801, United States</p>
-                    <p className="text-white/60 pt-1">Email: Info@dellicstravels.com</p>
+                    <p className="text-white/60 pt-1">Email: help@dellicstravels.com</p>
                   </div>
 
                   <p className="flex items-center gap-2 pt-2">

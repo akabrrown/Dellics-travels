@@ -16,7 +16,7 @@ import {
   Lock,
   Clock,
   Check,
-  Sparkles,
+  CheckCircle2,
   MapPin,
   ChevronRight,
   Star,

@@ -11,7 +11,7 @@ import {
   ArrowRight,
   ExternalLink,
   CreditCard,
-  Sparkles,
+  Zap,
   Compass,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

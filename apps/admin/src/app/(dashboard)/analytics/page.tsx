@@ -23,7 +23,7 @@ import {
   ArrowDownRight,
   Award,
   Clock,
-  Sparkles,
+  Briefcase,
   Percent,
   Layers,
   ChevronRight,
@@ -407,7 +407,7 @@ export default function AnalyticsReports() {
         {/* Primary Navigation Tabs */}
         <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
           {[
-            { key: "overview", label: "Executive MD Overview", icon: Sparkles },
+            { key: "overview", label: "Executive MD Overview", icon: Briefcase },
             { key: "revenue", label: "Revenue Intelligence & Waterfall", icon: DollarSign },
             { key: "funnel", label: "9-Stage Booking Funnel", icon: Layers },
             { key: "ota", label: "OTA Domain Intelligence", icon: Plane },

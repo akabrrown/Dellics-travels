@@ -23,7 +23,7 @@ import {
   Compass,
   FileText,
   Clock,
-  Sparkles,
+  Ticket,
   QrCode,
   Download,
   Send,
@@ -160,7 +160,7 @@ const BOOKING_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: string;
   HOTEL: { icon: <Building2 className="size-3.5" />, label: "Hotel", color: "text-emerald-600" },
   PACKAGE: { icon: <Compass className="size-3.5" />, label: "Tour Package", color: "text-violet-600" },
   CAR: { icon: <MapPin className="size-3.5" />, label: "Car Hire", color: "text-indigo-600" },
-  ACTIVITY: { icon: <Sparkles className="size-3.5" />, label: "Activity", color: "text-orange-600" },
+  ACTIVITY: { icon: <Ticket className="size-3.5" />, label: "Activity", color: "text-orange-600" },
 };
 
 const LEAD_STAGE_COLORS: Record<string, string> = {

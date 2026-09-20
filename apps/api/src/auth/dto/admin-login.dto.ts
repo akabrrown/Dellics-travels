@@ -22,3 +22,11 @@ export class AdminLoginDto {
   @Length(6, 6)
   otp?: string;
 }
+export class ChangePasswordDto {
+  @IsString()
+  currentPassword: string;
+
+  @IsString()
+  @Length(8, 128)
+  newPassword: string;
+}

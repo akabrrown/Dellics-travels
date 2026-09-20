@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import {
   CreditCard,
   ShieldCheck,
-  Sparkles,
+  Star,
   Headphones,
 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
@@ -32,7 +32,7 @@ const HOTEL_PERKS = [
       "Every property is verified for cleanliness, location accuracy, safety, and certified amenities before arrival.",
   },
   {
-    icon: Sparkles,
+    icon: Star,
     title: "Zero Hidden City Taxes",
     description:
       "Transparent pricing upfront - all tourism taxes, service charges, and resort fees are clearly itemized before checkout.",

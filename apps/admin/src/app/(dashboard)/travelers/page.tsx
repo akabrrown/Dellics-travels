@@ -24,7 +24,7 @@ import {
   FileText,
   DollarSign,
   Calendar,
-  Sparkles,
+  Star,
   MapPin,
   CheckCircle2,
   Clock,

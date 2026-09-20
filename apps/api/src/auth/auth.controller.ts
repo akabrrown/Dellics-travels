@@ -4,7 +4,7 @@ import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcryptjs';
-import { AdminLoginInitDto, AdminLoginDto } from './dto/admin-login.dto';
+import { AdminLoginInitDto, AdminLoginDto, ChangePasswordDto } from './dto/admin-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -250,4 +250,43 @@ export class AuthController {
       return { status: 'error', count: 0, data: [], message: err.message };
     }
   }
+
+  @UseGuards(AdminAuthGuard)
+  @Post('admin/change-password')
+  async changePassword(
+    @Body() body: ChangePasswordDto,
+    @Headers('authorization') authHeader: string,
+  ) {
+    const token = authHeader.replace('Bearer ', '').trim();
+    const payload = this.tokenService.verifyAdminToken(token);
+    if (!payload) {
+      throw new UnauthorizedException('Invalid session.');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.id },
+    });
+
+    if (!user || user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Account not found.');
+    }
+
+    if (!user.password_hash) {
+      throw new UnauthorizedException('No password set. Contact your administrator.');
+    }
+
+    const isCurrentValid = await bcrypt.compare(body.currentPassword, user.password_hash);
+    if (!isCurrentValid) {
+      throw new UnauthorizedException('Current password is incorrect.');
+    }
+
+    const newHash = await bcrypt.hash(body.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password_hash: newHash },
+    });
+
+    return { status: 'success', message: 'Password updated successfully.' };
+  }
+
 }

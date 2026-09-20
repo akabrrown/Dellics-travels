@@ -20,7 +20,7 @@ import {
   Clock,
   Check,
   Building2,
-  Sparkles,
+  CheckCircle2,
   MapPin,
   ChevronRight,
 } from "lucide-react";

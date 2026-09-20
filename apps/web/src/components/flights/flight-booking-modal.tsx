@@ -19,7 +19,7 @@ import {
   Clock,
   Check,
   Building2,
-  Sparkles,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";

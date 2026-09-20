@@ -196,6 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { label: "Membership & Rewards", href: "/membership", icon: ShieldCheck, permission: "membership.manage" },
         { label: "Roles & Team", href: "/team", icon: Users, permission: "team.view" },
         { label: "Audit Log", href: "/audit", icon: FileText, permission: "audit.view" },
+        { label: "Account Security", href: "/account", icon: Lock },
         { label: "Settings", href: "/settings", icon: Sliders, permission: "settings.manage" },
       ],
     },
@@ -205,7 +206,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const filteredNavGroups = navGroups
     .map((group) => ({
       ...group,
-      items: group.items.filter((item) => checkPermission(item.permission)),
+      items: group.items.filter((item) => !item.permission || checkPermission(item.permission)),
     }))
     .filter((group) => group.items.length > 0);
 
