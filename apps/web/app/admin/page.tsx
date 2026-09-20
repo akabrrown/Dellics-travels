@@ -36,7 +36,7 @@ export default function AdminPage() {
             Administrative Portal
           </h1>
           <p className="mt-3 text-sm text-white/75 leading-relaxed">
-            The Dellics Travels Operations Control Center is hosted in a restricted administrative environment with multi-factor authentication (TOTP/2FA).
+            The Dellics Travels Operations Control Center is hosted in a restricted administrative environment with multi-factor authentication (Email OTP).
           </p>
         </div>
 

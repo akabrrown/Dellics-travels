@@ -10,7 +10,7 @@ export interface AdminUserSession {
   roleId: string;
   roleTitle: string;
   token: string;
-  totpEnrolled: boolean;
+  otpEnabled: boolean;
   loginAt: string;
 }
 
@@ -101,7 +101,7 @@ export async function loginAdminAccount(
       roleId: loginRes.user.roleId,
       roleTitle: loginRes.user.roleTitle,
       token: loginRes.token,
-      totpEnrolled: loginRes.user.totpEnrolled,
+      otpEnabled: loginRes.user.otpEnabled || true,
       loginAt: new Date().toISOString(),
     };
 

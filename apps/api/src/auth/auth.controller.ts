@@ -4,7 +4,6 @@ import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcryptjs';
-import { authenticator } from 'otplib';
 
 @Controller('auth')
 export class AuthController {
@@ -130,7 +129,7 @@ export class AuthController {
         email: user.email,
         roleId: user.admin_role_id,
         roleTitle: user.admin_role_id,
-        totpEnrolled: true,
+        otpEnabled: true,
       },
     };
   }
@@ -164,7 +163,7 @@ export class AuthController {
           email: user.email,
           roleId: user.admin_role_id,
           roleTitle: user.admin_role_id,
-          totpEnrolled: user.totp_enabled,
+          otpEnabled: true,
         },
       };
     } catch {

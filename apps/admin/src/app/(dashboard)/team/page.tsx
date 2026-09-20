@@ -35,7 +35,7 @@ interface TeamMember {
   email: string;
   roleId: string;
   status: "Active" | "Invited" | "Suspended";
-  totpEnrolled: boolean;
+  otpEnabled: boolean;
   lastLogin: string;
 }
 
@@ -46,7 +46,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
     email: "kwabena.o@dellicstravels.com",
     roleId: "master_admin",
     status: "Active",
-    totpEnrolled: true,
+    otpEnabled: true,
     lastLogin: "Active now",
   },
   {
@@ -55,7 +55,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
     email: "akosua.m@dellicstravels.com",
     roleId: "supervisor",
     status: "Active",
-    totpEnrolled: true,
+    otpEnabled: true,
     lastLogin: "25 mins ago",
   },
   {
@@ -64,7 +64,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
     email: "emmanuel.t@dellicstravels.com",
     roleId: "customer_service",
     status: "Active",
-    totpEnrolled: true,
+    otpEnabled: true,
     lastLogin: "2 hours ago",
   },
   {
@@ -73,7 +73,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
     email: "abena.f@dellicstravels.com",
     roleId: "finance_team",
     status: "Active",
-    totpEnrolled: true,
+    otpEnabled: true,
     lastLogin: "Yesterday",
   },
 ];
@@ -353,7 +353,7 @@ export default function RolesAndTeam() {
             </h3>
             <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60">
               <ShieldCheck className="size-3.5" />
-              100% 2FA TOTP Enforced
+              100% Email OTP Enforced
             </span>
           </div>
 
@@ -418,7 +418,7 @@ export default function RolesAndTeam() {
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold text-[11px]">
                         <CheckCircle2 className="size-3.5" />
-                        TOTP Enforced
+                        OTP Verified
                       </span>
                     </td>
 
@@ -759,7 +759,7 @@ export default function RolesAndTeam() {
               </div>
 
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800">
-                An invitation token with a 24-hour expiration and mandatory TOTP authenticator setup link will be dispatched.
+                An invitation token with a 24-hour expiration and mandatory Email OTP verification will be dispatched.
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
