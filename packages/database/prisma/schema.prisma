@@ -112,6 +112,8 @@ model User {
   password_hash        String?
   totp_secret          String?
   totp_enabled         Boolean        @default(false)
+  admin_otp_hash       String?
+  admin_otp_expires_at DateTime?
   admin_role_id        String?
 
   trips                 Trip[]
@@ -395,3 +397,4 @@ model TourBooking {
   @@index([user_id])
   @@index([departure_date])
 }
+

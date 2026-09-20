@@ -1,4 +1,10 @@
-// @ts-nocheck
+﻿const fs = require('fs');
+const path = require('path');
+
+const file = path.join(__dirname, '../apps/admin/src/lib/auth.ts');
+let content = fs.readFileSync(file, 'utf8');
+
+const newContent = `// @ts-nocheck
 "use client";
 
 import { AdminRole, getActiveRole, getAllRoles, setActiveRole } from "./roles";
@@ -41,7 +47,7 @@ export function setAdminSession(session: AdminUserSession): void {
   
   setActiveRole(session.roleId);
   
-  document.cookie = `dellics_admin_auth=; path=/; max-age=86400; SameSite=Lax; Secure`;
+  document.cookie = \`dellics_admin_auth=; path=/; max-age=86400; SameSite=Lax; Secure\`;
   window.dispatchEvent(new Event("dellics_auth_changed"));
 }
 
@@ -115,3 +121,7 @@ export async function loginAdminAccount(
     };
   }
 }
+`;
+
+fs.writeFileSync(file, newContent);
+console.log("Updated auth.ts");

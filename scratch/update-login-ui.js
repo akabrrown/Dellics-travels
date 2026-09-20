@@ -1,4 +1,10 @@
-"use client";
+﻿const fs = require('fs');
+const path = require('path');
+
+const file = path.join(__dirname, '../apps/admin/src/app/login/page.tsx');
+let content = fs.readFileSync(file, 'utf8');
+
+const newContent = `"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -198,7 +204,7 @@ export default function AdminLogin() {
                   type="text"
                   required
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/D/g, "").slice(0, 6))}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-mono font-bold tracking-widest text-emerald-400 focus:outline-none focus:border-[#F4740D] text-center"
                   placeholder="000 000"
                   maxLength={6}
@@ -240,3 +246,7 @@ export default function AdminLogin() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync(file, newContent);
+console.log("Updated admin login page UI");
