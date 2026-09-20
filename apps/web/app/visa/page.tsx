@@ -14,7 +14,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Visa Assistance & Immigration Document Advisory",
   description:
-    "Expert visa assistance and consultation in Ghana with Dellics Travels. 99.4% approval success rate for UK, USA, Canada, Schengen, Dubai, and South Africa visas.",
+    "Expert visa assistance and consultation in Ghana with Dellics Travels. Expert advisory for UK, USA, Canada, Schengen, Dubai, and South Africa visas.",
 };
 
 const COUNTRY_VISAS = [
@@ -148,9 +148,6 @@ export default function VisaPage() {
               <div className="p-6 sm:p-8">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl">{visa.flag}</span>
-                  <span className="rounded-full bg-emerald-50 text-emerald-700 font-bold px-3 py-1 text-xs border border-emerald-200">
-                    {visa.approval}
-                  </span>
                 </div>
 
                 <h3 className="font-display text-xl font-bold text-navy">
