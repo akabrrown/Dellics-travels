@@ -396,7 +396,7 @@ export function SiteHeader() {
                     <SheetTitle className="text-left text-white font-display text-base font-bold">
                       Dellics Travels
                     </SheetTitle>
-                    <p className="text-[11px] text-white/70">IATA Certified</p>
+                    <p className="text-[11px] text-white/70">IATA Accredited</p>
                   </div>
                 </div>
               </SheetHeader>

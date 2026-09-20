@@ -139,7 +139,7 @@ function FlightBookingContent() {
         destination: destCode,
         departureDate,
         returnDate: returnDate || undefined,
-        airline: "IATA Certified Carrier",
+        airline: "IATA Accredited Carrier",
         price: totalPrice,
         currency: "USD",
         email: email.trim(),
@@ -182,7 +182,7 @@ function FlightBookingContent() {
             <div className="flex items-center gap-2.5 mb-1.5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-50 text-brand-orange border border-orange-200">
                 <Plane className="size-3.5" />
-                IATA Certified Ticketing
+                IATA Accredited Ticketing
               </span>
               <span className="text-xs text-slate-500 font-medium">
                 Instant PNR Dispatch
@@ -661,7 +661,7 @@ function FlightBookingContent() {
                 <div className="flex items-center gap-2">
                   <Plane className="size-4 text-brand-orange" />
                   <span className="font-bold text-sm text-navy">
-                    IATA Certified Airline
+                    IATA Accredited Airline
                   </span>
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-orange bg-orange-50 border border-orange-200 px-2.5 py-0.5 rounded-full">

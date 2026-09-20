@@ -39,7 +39,7 @@ const HOTEL_PERKS = [
   },
   {
     icon: Headphones,
-    title: "24/7 Concierge Support",
+    title: "24/7 Chat with a Concierge Support",
     description:
       "Our direct booking desk coordinates airport transfers, check-in requests, and schedule adjustments around the clock.",
   },

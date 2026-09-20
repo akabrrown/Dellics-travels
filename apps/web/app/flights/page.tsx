@@ -22,7 +22,7 @@ import { FLIGHT_HERO_SLIDES } from "@/data/home";
 export const metadata: Metadata = {
   title: "Flight Booking & International Ticketing",
   description:
-    "Book domestic and international flights with Dellics Travels - IATA Certified. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
+    "Book domestic and international flights with Dellics Travels - IATA Accredited. Best fares on Emirates, Qatar, Delta, British Airways, KLM and more.",
 };
 
 const DEFAULT_ROUTES = [
@@ -85,7 +85,7 @@ const DEFAULT_ROUTES = [
 const FLIGHT_BENEFITS = [
   {
     icon: ShieldCheck,
-    title: "Official IATA Certified",
+    title: "Official IATA Accredited",
     description: "Your bookings are issued directly through accredited airline Global Distribution Systems (GDS) with verifiable airline PNR references.",
   },
   {

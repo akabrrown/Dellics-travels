@@ -199,7 +199,7 @@ export default function ContactPage() {
 
                   <p className="flex items-center gap-2 pt-2">
                     <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
-                    <span className="text-white/80">IATA Certified Global Travel Agency</span>
+                    <span className="text-white/80">IATA Accredited Global Travel Agency</span>
                   </p>
                 </div>
               </div>

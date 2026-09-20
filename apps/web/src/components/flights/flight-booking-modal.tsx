@@ -162,7 +162,7 @@ export function FlightBookingModal({
         destination: destCode,
         departureDate,
         returnDate: flight.returnDate,
-        airline: flight.airline || "IATA Certified Carrier",
+        airline: flight.airline || "IATA Accredited Carrier",
         price: totalPrice,
         currency: flight.currency || "USD",
         email: email.trim(),
@@ -229,7 +229,7 @@ export function FlightBookingModal({
                     Flight Reservation
                   </h3>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-brand-orange bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
-                    IATA Certified
+                    IATA Accredited
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium">
@@ -285,7 +285,7 @@ export function FlightBookingModal({
                   <div className="flex items-center gap-2">
                     <Plane className="size-4 text-brand-orange" />
                     <span className="font-bold text-sm text-navy">
-                      {flight.airline || "IATA Certified Airline"}
+                      {flight.airline || "IATA Accredited Airline"}
                     </span>
                     <span className="text-[11px] font-semibold bg-white border border-slate-200 px-2 py-0.5 rounded-md text-slate-700">
                       {flight.flightNumber || "DL-842"}

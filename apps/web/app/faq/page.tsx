@@ -45,10 +45,10 @@ const FAQ_ITEMS: FAQItem[] = [
     categoryLabel: "General & Licensing",
     question: "Is Dellics Travels an officially certified and licensed travel agency?",
     answer: "Yes. Dellics Travels is fully licensed and regulated by the Ghana Tourism Authority (GTA) and holds active international certification with the International Air Transport Association (IATA). We are also active members of the Tour Operators Union of Ghana (TOUGHA) and operate with enterprise direct connections to global distribution systems (Amadeus, RateHawk, Travelport).",
-    badge: "GTA & IATA Certified",
+    badge: "GTA & IATA Accredited",
     keyPoints: [
       "Ghana Tourism Authority (GTA) Statutory License",
-      "IATA Certified Travel Management Partner",
+      "IATA Accredited Travel Management Partner",
       "Tour Operators Union of Ghana (TOUGHA) Member",
       "Physical offices in Tema Devtraco Estate (Ghana) and Sheridan, WY (USA)",
     ],
@@ -63,7 +63,7 @@ const FAQ_ITEMS: FAQItem[] = [
     keyPoints: [
       "Ghana HQ: Devtraco Estate, Community 25, Tema",
       "USA Office: 30 N Gould ST, Sheridan, WY 82801",
-      "24/7 Human Concierge on WhatsApp",
+      "24/7 Chat with a Concierge on WhatsApp",
     ],
   },
 
@@ -73,7 +73,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "flights",
     categoryLabel: "Flights & Ticketing",
     question: "How are flight tickets issued and how do I receive my booking reference (PNR)?",
-    answer: "Because Dellics Travels is IATA certified and integrated directly with Amadeus and Travelport GDS, electronic tickets (e-tickets) and official airline 6-character PNR codes are generated instantly on genuine airline inventories with zero middleman markup. You receive your ticket and receipt via email and WhatsApp within minutes of payment.",
+    answer: "Because Dellics Travels is IATA accredited and integrated directly with Amadeus and Travelport GDS, electronic tickets (e-tickets) and official airline 6-character PNR codes are generated instantly on genuine airline inventories with zero middleman markup. You receive your ticket and receipt via email and WhatsApp within minutes of payment.",
     badge: "Direct GDS Issuance",
     keyPoints: [
       "Instant airline PNR and official electronic ticket (e-ticket)",
@@ -422,7 +422,7 @@ export default function FAQPage() {
             <div className="space-y-2 max-w-xl">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-brand-orange border border-white/15">
                 <Headphones className="size-3.5" />
-                <span>24/7 Human Concierge Available</span>
+                <span>24/7 Chat with a Concierge Available</span>
               </div>
               <h3 className="font-display text-2xl font-bold text-white">
                 Have a specific question not listed here?

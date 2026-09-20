@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 const ALL_SERVICES = [
   {
     title: "International Flight Ticketing",
-    badge: "IATA Certified",
+    badge: "IATA Accredited",
     icon: Plane,
     image: "/images/services/plane.jpg",
     href: "/flights",

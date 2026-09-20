@@ -24,7 +24,7 @@ export function AnnouncementBar() {
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-orange">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <ShieldCheck className="size-3 text-brand-orange" />
-            IATA Certified
+            IATA Accredited
           </span>
           <div className="hidden lg:flex items-center gap-3 text-[11px] text-white/80">
             <a

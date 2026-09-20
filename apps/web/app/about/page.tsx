@@ -104,7 +104,7 @@ export default function AboutPage() {
                 Community 25, Devtraco Estate, Tema, Ghana
               </p>
               <p className="mt-1 text-xs text-white/80">
-                P.O. Box CO 2686, Tema, Greater Accra · IATA Certified
+                P.O. Box CO 2686, Tema, Greater Accra · IATA Accredited
               </p>
             </div>
           </div>

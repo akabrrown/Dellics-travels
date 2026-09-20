@@ -23,6 +23,6 @@ export const ADMIN_CONFIG = {
   webUrl: sanitizeWebUrl(process.env.NEXT_PUBLIC_WEB_URL),
   supportEmail: "help@dellicstravels.com",
   phone: "+233 55 205 4174",
-  iataStatus: "IATA Certified",
+  iataStatus: "IATA Accredited",
   defaultRefundLimitGHS: 500,
 };

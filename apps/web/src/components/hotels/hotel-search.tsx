@@ -499,7 +499,7 @@ export function HotelSearchResults({
               <div className="relative z-10 max-w-2xl mx-auto space-y-6">
                 <div className="inline-flex items-center gap-2 rounded-full bg-brand-orange/20 border border-brand-orange/30 px-3.5 py-1 text-xs font-bold text-brand-orange">
                   <ShieldCheck className="size-3.5" />
-                  <span>IATA Certified Luxury Concierge</span>
+                  <span>IATA Accredited Luxury Concierge</span>
                 </div>
 
                 <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">

@@ -25,8 +25,8 @@ export const ACCREDITATION_BADGES: AccreditationBadge[] = [
   },
   {
     src: "/badges/iata.png",
-    alt: "IATA Certified Agency",
-    name: "IATA Certified",
+    alt: "IATA Accredited Agency",
+    name: "IATA Accredited",
     category: "Global Aviation Certification",
     description: "International Air Transport Association certification enabling direct electronic ticket issuance across all major global airlines without brokers.",
     highlight: "Direct Global Airline Ticketing",

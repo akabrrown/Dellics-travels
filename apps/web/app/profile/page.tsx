@@ -1278,7 +1278,7 @@ export default function ProfilePage() {
               <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Agency Identification</h4>
                 <p className="text-xs text-slate-600">
-                  Dellics Travels · IATA Certified
+                  Dellics Travels · IATA Accredited
                 </p>
                 <p className="text-xs text-slate-500">
                   Devtraco Estate, Community 25, Tema, Ghana

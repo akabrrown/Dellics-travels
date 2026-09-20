@@ -20,7 +20,7 @@ interface StripeFlightBookButtonProps {
 export function StripeFlightBookButton({
   origin,
   destination,
-  airline = "IATA Certified Airline",
+  airline = "IATA Accredited Airline",
   price = 850,
   departureDate,
   returnDate,
