@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
@@ -6,13 +6,12 @@ export function middleware(request: NextRequest) {
   const isDev = process.env.NODE_ENV === 'development';
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval'" : ""} https://vercel.live;
+    script-src 'self' 'nonce-${nonce}' ${isDev ? "'unsafe-eval'" : ""} 'unsafe-inline' https://vercel.live https://*.vercel.live;
     style-src 'self' 'unsafe-inline';
     img-src * blob: data:;
     font-src 'self' data:;
-    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app; trusted-types default; require-trusted-types-for 'script';
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app https://vercel.live wss://ws-us3.pusher.com;
     frame-src 'self' https://vercel.live;
-    
   `.replace(/\s{2,}/g, ' ').trim();
  
   const requestHeaders = new Headers(request.headers)
