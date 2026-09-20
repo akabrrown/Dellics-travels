@@ -2,8 +2,17 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
-  const cspHeader = `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live; style-src 'self' 'unsafe-inline'; img-src * blob: data:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;`
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  const isDev = process.env.NODE_ENV === 'development';
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval'" : ""} https://vercel.live;
+    style-src 'self' 'unsafe-inline';
+    img-src * blob: data:;
+    font-src 'self' data:;
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;
+    require-trusted-types-for 'script';
+  `.replace(/\s{2,}/g, ' ').trim();
  
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
