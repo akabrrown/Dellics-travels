@@ -24,7 +24,7 @@ export const SITE = {
     },
     ghana: {
       entity: "Dellics Travels",
-      address: "Community 25, Devtraco Estate, Tema",
+      address: "GN-0490-2450, Tema, Greater Accra",
       region: "Greater Accra",
       country: "Ghana",
       phone: "+233552054174",
@@ -32,7 +32,7 @@ export const SITE = {
       email: "help@dellicstravels.com",
     },
   },
-  address: "Tema Community 25, Devtraco Estate RD, Greater Accra, Ghana",
+  address: "GN-0490-2450, Tema, Greater Accra, Ghana",
   usAddress: "30 N Gould ST, STER, SHERIDAN, WYOMING, 82801, United States",
   travelUrl: "https://mytravel.io/dellicstravels",
 };

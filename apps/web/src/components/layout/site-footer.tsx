@@ -110,7 +110,7 @@ export function SiteFooter() {
                   <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
                     <p className="font-semibold text-white">Dellics Travels Ghana - Headquarters</p>
-                    <p className="text-white/75">Tema Community 25, Devtraco Estate RD</p>
+                    <p className="text-white/75">GN-0490-2450, Tema, Greater Accra</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 text-xs text-white/80">

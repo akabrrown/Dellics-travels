@@ -160,7 +160,7 @@ export default function CredentialsPage() {
 
       <CtaBanner
         title="Ready to Experience Certified Luxury Travel?"
-        copy="Work with a team backed by official IATA Certification. We guarantee transparent pricing and dependable on-ground service."
+        copy="Work with a team backed by official IATA Accreditation. We guarantee transparent pricing and dependable on-ground service."
         label="Inquire Now"
         href="/inquire"
       />

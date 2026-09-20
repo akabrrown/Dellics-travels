@@ -50,7 +50,7 @@ const FAQ_ITEMS: FAQItem[] = [
       "Ghana Tourism Authority (GTA) Statutory License",
       "IATA Accredited Travel Management Partner",
       "Tour Operators Union of Ghana (TOUGHA) Member",
-      "Physical offices in Tema Devtraco Estate (Ghana) and Sheridan, WY (USA)",
+      "Physical offices in Tema, Greater Accra (Ghana) and Sheridan, WY (USA)",
     ],
   },
   {
@@ -58,10 +58,10 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "all",
     categoryLabel: "General & Licensing",
     question: "Where are Dellics Travels physical offices located?",
-    answer: "Our Ghana corporate headquarters is located at Devtraco Estate, Community 25, Tema, Greater Accra (P.O. Box CO 2686). Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel consultant on WhatsApp.",
+    answer: "Our Ghana corporate headquarters is located at GN-0490-2450, Tema, Greater Accra . Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel consultant on WhatsApp.",
     badge: "Global Headquarters",
     keyPoints: [
-      "Ghana HQ: Devtraco Estate, Community 25, Tema",
+      "Ghana HQ: GN-0490-2450, Tema, Greater Accra",
       "USA Office: 30 N Gould ST, Sheridan, WY 82801",
       "Chat with Travel Consultant on WhatsApp",
     ],

@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "About Dellics Travels - Licensed Travel Agency in Ghana",
   description:
-    "Learn about Dellics Travels: IATA-accredited agency based in Tema Devtraco Estate, Ghana. Our mission, values, and experienced travel management team.",
+    "Learn about Dellics Travels: IATA-accredited agency based in GN-0490-2450, Tema, Greater Accra, Ghana. Our mission, values, and experienced travel management team.",
 };
 
 const DRIVERS = [
@@ -62,7 +62,7 @@ export default function AboutPage() {
                 Dellics Travels was founded with a singular conviction: that travel should be transparent, deeply enriching, and completely free from stress. Whether an executive traveling for urgent international trade meetings, a family booking their dream Dubai vacation, or a member of the diaspora walking through the historic Door of Return in Cape Coast Castle - our team stands beside you every step of the way.
               </p>
               <p>
-                Headquartered at <strong className="text-navy">Devtraco Estate, Tema Community 25, Greater Accra</strong>, we combine official <strong className="text-brand-orange">IATA Certification</strong> with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).
+                Headquartered at <strong className="text-navy">GN-0490-2450, Tema, Greater Accra</strong>, we combine official <strong className="text-brand-orange">IATA Accreditation</strong> with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).
               </p>
               <p>
                 When you book with Dellics, you are not dealing with an anonymous algorithm or an unverified broker. You work with certified, passionate travel consultants who actively protect your schedule, your budget, and your safety.
@@ -101,7 +101,7 @@ export default function AboutPage() {
                 Official Headquarters
               </span>
               <p className="mt-2 font-display text-xl font-bold">
-                Community 25, Devtraco Estate, Tema, Ghana
+                GN-0490-2450, Tema, Greater Accra, Ghana
               </p>
               <p className="mt-1 text-xs text-white/80">
                 P.O. Box CO 2686, Tema, Greater Accra · IATA Accredited
