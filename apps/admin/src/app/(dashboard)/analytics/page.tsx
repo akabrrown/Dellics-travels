@@ -152,6 +152,7 @@ export default function AnalyticsReports() {
   const revenueIntel = data?.revenueIntelligence || {
     waterfall: {
       grossBookingValue: gbv,
+      netRevenue: gbv - 0 - 0,
       supplierCost,
       grossMargin,
       grossMarginPct: gbv > 0 ? 20.5 : 0,
@@ -805,7 +806,11 @@ export default function AnalyticsReports() {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
                   Comprehensive Revenue Accounting Ledger
                 </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                  <div className="p-3 rounded-xl bg-white border border-slate-200">
+                    <span className="text-[10px] font-bold text-slate-400">Net Revenue</span>
+                    <p className="text-sm font-extrabold text-slate-900 mt-0.5">{formatCurrency(revenueIntel.waterfall.netRevenue)}</p>
+                  </div>
                   <div className="p-3 rounded-xl bg-white border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-400">Markup (Direct)</span>
                     <p className="text-sm font-extrabold text-slate-900 mt-0.5">{formatCurrency(revenueIntel.waterfall.markup)}</p>
@@ -819,12 +824,16 @@ export default function AnalyticsReports() {
                     <p className="text-sm font-extrabold text-slate-900 mt-0.5">{formatCurrency(revenueIntel.waterfall.serviceFees)}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-white border border-slate-200">
+                    <span className="text-[10px] font-bold text-slate-400">Taxes</span>
+                    <p className="text-sm font-extrabold text-slate-900 mt-0.5">- {formatCurrency(revenueIntel.waterfall.taxes)}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-400">Refunds Processed</span>
                     <p className="text-sm font-extrabold text-rose-600 mt-0.5">- {formatCurrency(revenueIntel.waterfall.refunds)}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-white border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-400">Chargebacks</span>
-                    <p className="text-sm font-extrabold text-emerald-600 mt-0.5">{formatCurrency(revenueIntel.waterfall.chargebacks)}</p>
+                    <p className="text-sm font-extrabold text-rose-600 mt-0.5">- {formatCurrency(revenueIntel.waterfall.chargebacks)}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-white border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-400">Net Merchant Settlement</span>
@@ -949,6 +958,34 @@ export default function AnalyticsReports() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            {/* Staff Revenue Performance */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+              <h3 className="font-display text-base font-bold text-slate-900">
+                Revenue by Staff
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+                {revenueIntel.breakdowns.byStaff.map((staff: any) => (
+                  <div key={staff.staffName} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-between h-full">
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{staff.staffName}</p>
+                      <p className="text-[11px] text-slate-500 mb-2">{staff.role}</p>
+                      <p className="text-xl font-extrabold text-[#0A0060]">{formatCurrency(staff.revenue)}</p>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-slate-200/60 flex justify-between">
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400">Margin</p>
+                        <p className="text-xs font-bold text-emerald-600">{formatCurrency(staff.marginContribution)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold text-slate-400">Commission</p>
+                        <p className="text-xs font-bold text-slate-900">{formatCurrency(staff.commission)}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
