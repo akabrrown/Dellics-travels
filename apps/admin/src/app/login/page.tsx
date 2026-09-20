@@ -26,6 +26,8 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [resending, setResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   const handleInitSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +81,35 @@ export default function AdminLogin() {
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred during login.");
       setLoading(false);
+    }
+  };
+
+
+
+  const handleResendOtp = async () => {
+    if (cooldown > 0 || resending) return;
+    setResending(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const res = await loginAdminAccountInit(email, password);
+      if (!res.success) {
+        setError(res.error || "Failed to resend code.");
+      } else {
+        setMessage("A new 6-digit access code has been sent to your email.");
+        setCooldown(60);
+        const timer = setInterval(() => {
+          setCooldown((prev) => {
+            if (prev <= 1) { clearInterval(timer); return 0; }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to resend code.");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -142,7 +173,7 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#F4740D]"
-                  placeholder="ops@dellicstravels.com"
+                  placeholder="admin@dellicstravels.com"
                 />
               </div>
             </div>
@@ -216,6 +247,17 @@ export default function AdminLogin() {
                 <ShieldCheck className="size-4" />
               </button>
               
+
+              <button
+                type="button"
+                disabled={resending || cooldown > 0}
+                onClick={handleResendOtp}
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs rounded-full transition-colors flex items-center justify-center gap-2 border border-slate-700"
+              >
+                <Mail className="size-3.5" />
+                <span>{resending ? "Sending\u2026" : cooldown > 0 ? `Resend in ${cooldown}s` : "Resend Access Code"}</span>
+              </button>
+
               <button
                 type="button"
                 disabled={loading}
@@ -224,6 +266,7 @@ export default function AdminLogin() {
                   setOtp("");
                   setMessage("");
                   setError("");
+                  setCooldown(0);
                 }}
                 className="w-full py-2 bg-transparent text-slate-400 hover:text-slate-300 font-bold text-xs rounded-full transition-colors flex items-center justify-center"
               >
