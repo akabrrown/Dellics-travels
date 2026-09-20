@@ -31,10 +31,10 @@ export class RolesController {
 
   @Get()
   @RequirePermissions('team.view')
-  getRoles() {
+  async getRoles() {
     return {
       status: 'success',
-      data: this.rolesService.getRoles(),
+      data: await this.rolesService.getRoles(),
     };
   }
 
@@ -50,10 +50,10 @@ export class RolesController {
 
   @Post('team/invite')
   @RequirePermissions('team.manage_roles')
-  inviteTeamMember(@Body() dto: InviteTeamMemberDto) {
+  async inviteTeamMember(@Body() dto: InviteTeamMemberDto) {
     return {
       status: 'success',
-      data: this.rolesService.inviteTeamMember(dto),
+      data: await this.rolesService.inviteTeamMember(dto),
     };
   }
 
@@ -69,35 +69,35 @@ export class RolesController {
 
   @Get(':id')
   @RequirePermissions('team.view')
-  getRoleById(@Param('id') id: string) {
+  async getRoleById(@Param('id') id: string) {
     return {
       status: 'success',
-      data: this.rolesService.getRoleById(id),
+      data: await this.rolesService.getRoleById(id),
     };
   }
 
   @Post('custom')
   @RequirePermissions('team.custom_roles')
-  createCustomRole(@Body() dto: CreateRoleDto) {
+  async createCustomRole(@Body() dto: CreateRoleDto) {
     return {
       status: 'success',
-      data: this.rolesService.createCustomRole(dto),
+      data: await this.rolesService.createCustomRole(dto),
     };
   }
 
   @Put(':id')
   @RequirePermissions('team.custom_roles')
-  updateRole(@Param('id') id: string, @Body() dto: Partial<CreateRoleDto>) {
+  async updateRole(@Param('id') id: string, @Body() dto: Partial<CreateRoleDto>) {
     return {
       status: 'success',
-      data: this.rolesService.updateRole(id, dto),
+      data: await this.rolesService.updateRole(id, dto),
     };
   }
 
   @Delete(':id')
   @RequirePermissions('team.custom_roles')
-  deleteRole(@Param('id') id: string) {
-    this.rolesService.deleteRole(id);
+  async deleteRole(@Param('id') id: string) {
+    await this.rolesService.deleteRole(id);
     return {
       status: 'success',
       message: `Role '${id}' deleted successfully.`,

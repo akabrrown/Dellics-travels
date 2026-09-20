@@ -114,6 +114,7 @@ model User {
   admin_otp_hash       String?
   admin_otp_expires_at DateTime?
   admin_role_id        String?
+  admin_role           AdminRole? @relation("UserAdminRole", fields: [admin_role_id], references: [id])
 
   trips                 Trip[]
   memberships           Membership[]
@@ -398,3 +399,18 @@ model TourBooking {
 }
 
 
+
+model AdminRole {
+  id          String   @id
+  title       String
+  description String?
+  badgeColor  String?
+  isCustom    Boolean  @default(true)
+  permissions Json
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  users       User[]   @relation("UserAdminRole")
+
+
+}

@@ -15,7 +15,7 @@ export class PermissionsGuard implements CanActivate {
     private rolesService: RolesService,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
       PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
@@ -32,9 +32,10 @@ export class PermissionsGuard implements CanActivate {
       throw new ForbiddenException('Access Denied: Missing operational role.');
     }
 
-    const hasAll = requiredPermissions.every((perm) =>
-      this.rolesService.hasPermission(user.roleId, perm),
-    );
+    const results = await Promise.all(requiredPermissions.map((perm) =>
+      this.rolesService.hasPermission(user.roleId, perm)
+    ));
+    const hasAll = results.every(Boolean);
 
     if (!hasAll) {
       throw new ForbiddenException(

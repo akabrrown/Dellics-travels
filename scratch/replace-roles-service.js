@@ -1,4 +1,9 @@
+﻿const fs = require('fs');
+const path = require('path');
 
+const file = path.join(__dirname, '../apps/api/src/roles/roles.service.ts');
+
+const newContent = `
 import { PrismaService } from '../prisma/prisma.service';
 import {
   Injectable,
@@ -70,7 +75,7 @@ export class RolesService {
   async getRoleById(id: string): Promise<AdminRole> {
     const role = await this.prisma.adminRole.findUnique({ where: { id } });
     if (!role) {
-      throw new NotFoundException(`Role '${id}' not found.`);
+      throw new NotFoundException(\`Role '\${id}' not found.\`);
     }
     return {
       ...role,
@@ -87,7 +92,7 @@ export class RolesService {
 
     const existing = await this.prisma.adminRole.findUnique({ where: { id } });
     if (existing) {
-      throw new BadRequestException(`A role with identifier '${id}' already exists.`);
+      throw new BadRequestException(\`A role with identifier '\${id}' already exists.\`);
     }
 
     const role = await this.prisma.adminRole.create({
@@ -100,7 +105,7 @@ export class RolesService {
         permissions: dto.permissions || {},
       }
     });
-    this.logger.log(`Created custom role: ${id}`);
+    this.logger.log(\`Created custom role: \${id}\`);
     return this.getRoleById(id);
   }
 
@@ -121,14 +126,14 @@ export class RolesService {
       }
     });
 
-    this.logger.log(`Updated role: ${id}`);
+    this.logger.log(\`Updated role: \${id}\`);
     return this.getRoleById(id);
   }
 
   async deleteCustomRole(id: string): Promise<{ success: boolean; message: string }> {
     const role = await this.getRoleById(id);
     if (!role.isCustom) {
-      throw new BadRequestException(`Cannot delete built-in system role '${role.title}'.`);
+      throw new BadRequestException(\`Cannot delete built-in system role '\${role.title}'.\`);
     }
 
     await this.prisma.user.updateMany({
@@ -138,8 +143,8 @@ export class RolesService {
 
     await this.prisma.adminRole.delete({ where: { id } });
 
-    this.logger.log(`Deleted custom role: ${id}`);
-    return { success: true, message: `Custom role '${role.title}' deleted successfully.` };
+    this.logger.log(\`Deleted custom role: \${id}\`);
+    return { success: true, message: \`Custom role '\${role.title}' deleted successfully.\` };
   }
 
   async deleteRole(id: string): Promise<{ success: boolean; message: string }> {
@@ -177,7 +182,7 @@ export class RolesService {
       }
     });
     
-    this.logger.log(`Invited team member ${newUser.email} as ${role.title}`);
+    this.logger.log(\`Invited team member \${newUser.email} as \${role.title}\`);
     
     return {
       id: newUser.id,
@@ -206,7 +211,7 @@ export class RolesService {
     
     const dbUser = await this.prisma.user.findUnique({ where: { id: memberId } });
     if (!dbUser) {
-       throw new NotFoundException(`User ${memberId} not found`);
+       throw new NotFoundException(\`User \${memberId} not found\`);
     }
 
     const dbRole = roleId === 'master_admin' ? 'ADMIN' : 'ADMIN';
@@ -230,3 +235,7 @@ export class RolesService {
     };
   }
 }
+`;
+
+fs.writeFileSync(file, newContent);
+console.log("Replaced roles.service.ts");
