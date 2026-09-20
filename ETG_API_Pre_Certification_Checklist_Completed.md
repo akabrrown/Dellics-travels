@@ -3,7 +3,7 @@
 **Partner Name:** Dellics Travels Limited  
 **Integration Type:** Emerging Travel Group (ETG / RateHawk) B2B API v3  
 **Target Environment:** Sandbox / Production Certification  
-**Contact Email:** info@dellicstravels.com / api-support@dellicstravels.com  
+**Contact Email:** help@dellicstravels.com / api-support@dellicstravels.com  
 
 ---
 

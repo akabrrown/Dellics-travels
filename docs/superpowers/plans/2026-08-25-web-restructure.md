@@ -295,7 +295,7 @@ RATEHAWK_BASE_URL=https://api-sandbox.ratehawk.com
 
 # Email (optional for inquiry notifications)
 RESEND_API_KEY=
-INQUIRY_NOTIFY_EMAIL=info@dellicstravels.com
+INQUIRY_NOTIFY_EMAIL=help@dellicstravels.com
 ```
 
 - [ ] **Step 4: Move Ratehawk credentials server-side (local only)**
@@ -1238,7 +1238,7 @@ export const SITE = {
   legalName: "Dellics Travels & Tours",
   whatsappNumber: "233552054174",
   phoneDisplay: "+233 55 205 4174",
-  email: "info@dellicstravels.com",
+  email: "help@dellicstravels.com",
   address: "Accra, Ghana",
   travelUrl: "https://mytravel.io/dellicstravels",
 };

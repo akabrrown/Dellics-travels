@@ -48,4 +48,4 @@ Dellics Travels is a **Turborepo + pnpm monorepo** containing an Expo/React Nati
 
 ---
 
-*Dellics Travels · Tema Community 25, Devtraco Estate, Ghana · +233 55 205 4174 · info@dellicstravels.com*
+*Dellics Travels · Tema Community 25, Devtraco Estate, Ghana · +233 55 205 4174 · help@dellicstravels.com*

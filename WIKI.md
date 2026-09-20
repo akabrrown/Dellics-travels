@@ -123,4 +123,4 @@ pnpm --filter admin exec next build # Compile Admin
 
 ---
 
-*Dellics Travels · Tema Community 25, Devtraco Estate, Ghana · +233 55 205 4174 · info@dellicstravels.com*
+*Dellics Travels · Tema Community 25, Devtraco Estate, Ghana · +233 55 205 4174 · help@dellicstravels.com*

@@ -12,7 +12,7 @@ Contact Information
 
 **Dellics Travels** Tema Community 25, Devtraco Estate, Ghana  
 **Phone:** +233 55 205 4174  
-**Email:** info@dellicstravels.com  
+**Email:** help@dellicstravels.com  
 **Business Hours:** Monday to Saturday, 8:00 AM to 6:00 PM GMT
 
 Table of Contents
@@ -679,6 +679,6 @@ These are the step-by-step operational flows that connect every module in Sectio
 This specification is ready to drive MVP development directly: every Ready-to-Production feature in Section 6 has a corresponding data model entity (Section 11), API/webhook contract (Section 12), and operational workflow (Section 16).  
 **Dellics Travels** _See the World_  
 Tema Community 25, Devtraco Estate, Ghana  
-+233 55 205 4174 | info@dellicstravels.com  
++233 55 205 4174 | help@dellicstravels.com  
 Monday – Saturday: 8:00 AM – 6:00 PM GMT  
 _Document Version 2.0 | August 2026_

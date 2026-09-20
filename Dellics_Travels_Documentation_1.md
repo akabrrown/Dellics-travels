@@ -6,7 +6,7 @@ Document Version 3.0 | Status: Production-Ready Specification
 Prepared for Dellics Travels | August 2026  
 **CONTACT INFORMATION**  
 **Dellics Travels** · Tema Community 25, Devtraco Estate, Ghana  
-**Phone:** +233 55 205 4174 **Email:** info@dellicstravels.com  
+**Phone:** +233 55 205 4174 **Email:** help@dellicstravels.com  
 **Business Hours:** Monday to Saturday, 8:00 AM – 6:00 PM GMT
 
 **Table of Contents**

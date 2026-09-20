@@ -25,7 +25,7 @@ const FAQ_DATA = [
     category: 'Account',
     items: [
       { q: 'How do I reset my password?', a: 'Tap "Forgot Password" on the login screen. You\'ll receive a reset link via email.' },
-      { q: 'Can I delete my account?', a: 'Contact support at info@dellicstravels.com to request permanent account deletion. All data will be erased within 30 days.' },
+      { q: 'Can I delete my account?', a: 'Contact support at help@dellicstravels.com to request permanent account deletion. All data will be erased within 30 days.' },
     ],
   },
 ];
@@ -115,7 +115,7 @@ export default function HelpCenterScreen() {
             <Mail size={20} color="#0A0060" />
             <View className="flex-1 ml-4">
               <Text className="font-bold text-gray-900 text-sm">Email</Text>
-              <Text className="text-gray-400 text-xs font-semibold">info@dellicstravels.com</Text>
+              <Text className="text-gray-400 text-xs font-semibold">help@dellicstravels.com</Text>
             </View>
           </Pressable>
           <Pressable className="flex-row items-center p-4">

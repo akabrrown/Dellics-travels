@@ -14,13 +14,13 @@ export const SITE = {
   whatsappNumber: "233552054174",
   phone: "+233552054174",
   phoneDisplay: "+233 55 205 4174",
-  email: "info@dellicstravels.com",
+  email: "help@dellicstravels.com",
   offices: {
     us: {
       entity: "Dellics Travels",
       address: "30 N Gould ST, STER, SHERIDAN, WYOMING, 82801",
       country: "United States",
-      email: "info@dellicstravels.com",
+      email: "help@dellicstravels.com",
     },
     ghana: {
       entity: "Dellics Travels",
@@ -29,7 +29,7 @@ export const SITE = {
       country: "Ghana",
       phone: "+233552054174",
       phoneDisplay: "+233 55 205 4174",
-      email: "info@dellicstravels.com",
+      email: "help@dellicstravels.com",
     },
   },
   address: "Tema Community 25, Devtraco Estate RD, Greater Accra, Ghana",

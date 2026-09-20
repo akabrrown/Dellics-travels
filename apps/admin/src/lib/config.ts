@@ -21,7 +21,7 @@ export const ADMIN_CONFIG = {
   appName: "Dellics Travels Admin Portal",
   apiUrl: sanitizeApiUrl(process.env.NEXT_PUBLIC_API_URL),
   webUrl: sanitizeWebUrl(process.env.NEXT_PUBLIC_WEB_URL),
-  supportEmail: "info@dellicstravels.com",
+  supportEmail: "help@dellicstravels.com",
   phone: "+233 55 205 4174",
   iataStatus: "IATA Certified",
   defaultRefundLimitGHS: 500,

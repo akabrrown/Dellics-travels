@@ -50,7 +50,7 @@ Whenever an admin action affects a traveler-visible screen, the documentation cr
 Dellics Travels
 Tema Community 25, Devtraco Estate, Ghana
 Phone: +233 55 205 4174
-Email: info@dellicstravels.com
+Email: help@dellicstravels.com
 ```
 
 ---

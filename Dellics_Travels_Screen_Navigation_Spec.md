@@ -6,7 +6,7 @@ Document Version 1.0 | Companion to the Product & Technical Documentation (v3.0)
 Prepared for Dellics Travels | August 2026  
 **CONTACT INFORMATION**  
 **Dellics Travels** · Tema Community 25, Devtraco Estate, Ghana  
-**Phone:** +233 55 205 4174 **Email:** info@dellicstravels.com
+**Phone:** +233 55 205 4174 **Email:** help@dellicstravels.com
 
 **Table of Contents**
 =====================
