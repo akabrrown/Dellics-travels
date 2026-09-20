@@ -58,12 +58,12 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "all",
     categoryLabel: "General & Licensing",
     question: "Where are Dellics Travels physical offices located?",
-    answer: "Our Ghana corporate headquarters is located at Devtraco Estate, Community 25, Tema, Greater Accra (P.O. Box CO 2686). Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel concierge 24/7 on WhatsApp.",
+    answer: "Our Ghana corporate headquarters is located at Devtraco Estate, Community 25, Tema, Greater Accra (P.O. Box CO 2686). Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel consultant on WhatsApp.",
     badge: "Global Headquarters",
     keyPoints: [
       "Ghana HQ: Devtraco Estate, Community 25, Tema",
       "USA Office: 30 N Gould ST, Sheridan, WY 82801",
-      "24/7 Chat with a Concierge on WhatsApp",
+      "Chat with Travel Consultant on WhatsApp",
     ],
   },
 
@@ -94,7 +94,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "flights",
     categoryLabel: "Flights & Ticketing",
     question: "Can Dellics Travels handle seat selection, extra baggage, and schedule rebooking?",
-    answer: "Yes. Our 24/7 human concierge assists with advance preferred seat selection (extra legroom, window, aisle), purchasing discounted prepaid excess baggage allowances, special in-flight meal requests (Halal, Kosher, Vegetarian, Gluten-Free), and managing urgent airline schedule changes or voluntary date modifications.",
+    answer: "Yes. Our travel consultant assists with advance preferred seat selection (extra legroom, window, aisle), purchasing discounted prepaid excess baggage allowances, special in-flight meal requests (Halal, Kosher, Vegetarian, Gluten-Free), and managing urgent airline schedule changes or voluntary date modifications.",
     badge: "24/7 Flight Support",
   },
 
@@ -422,13 +422,13 @@ export default function FAQPage() {
             <div className="space-y-2 max-w-xl">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-brand-orange border border-white/15">
                 <Headphones className="size-3.5" />
-                <span>24/7 Chat with a Concierge Available</span>
+                <span>Chat with Travel Consultant</span>
               </div>
               <h3 className="font-display text-2xl font-bold text-white">
                 Have a specific question not listed here?
               </h3>
               <p className="text-xs sm:text-sm text-white/75 leading-relaxed">
-                Our certified travel consultants are online 24/7 on WhatsApp to assist with instant flight fares, custom itineraries, and consular guidance.
+                Our certified travel consultants are available on WhatsApp to assist with instant flight fares, custom itineraries, and consular guidance.
               </p>
             </div>
 

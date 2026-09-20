@@ -1046,7 +1046,7 @@ export default function ProfilePage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 text-amber-400 shrink-0" />
-                    <span>24/7 VIP Executive Hotline</span>
+                    <span>Chat with Travel Consultant</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 text-amber-400 shrink-0" />

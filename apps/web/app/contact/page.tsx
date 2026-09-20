@@ -161,16 +161,16 @@ export default function ContactPage() {
 
                 <div className="space-y-3 text-xs text-white/80">
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                    <span className="font-semibold text-white">Monday â€“ Friday</span>
-                    <span>8:00 AM â€“ 6:00 PM GMT</span>
+                    <span className="font-semibold text-white">Monday – Friday</span>
+                    <span>8:00 AM – 6:00 PM GMT</span>
                   </div>
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
                     <span className="font-semibold text-white">Saturday</span>
-                    <span>9:00 AM â€“ 4:00 PM GMT</span>
+                    <span>9:00 AM – 4:00 PM GMT</span>
                   </div>
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
                     <span className="font-semibold text-white">Sunday & Holidays</span>
-                    <span className="text-brand-orange font-bold">24/7 Emergency Support Desk</span>
+                    <span className="text-brand-orange font-bold">Chat with Travel Consultant</span>
                   </div>
                 </div>
 
