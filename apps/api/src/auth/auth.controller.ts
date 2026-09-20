@@ -4,6 +4,7 @@ import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcryptjs';
+import { AdminLoginInitDto, AdminLoginDto } from './dto/admin-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +12,7 @@ export class AuthController {
 
   @Post('admin/login-init')
   async adminLoginInit(
-    @Body() body: { email: string; password?: string },
+    @Body() body: AdminLoginInitDto,
   ) {
     const cleanEmail = (body.email || '').trim().toLowerCase();
     const user = await this.prisma.user.findUnique({
@@ -70,7 +71,7 @@ export class AuthController {
 
   @Post('admin/login')
   async adminLogin(
-    @Body() body: { email: string; password?: string; otp?: string },
+    @Body() body: AdminLoginDto,
   ) {
     const cleanEmail = (body.email || '').trim().toLowerCase();
     
