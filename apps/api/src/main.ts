@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import helmet from 'helmet';
 import type { Express, Request, Response } from 'express';
 
 dotenv.config({ override: true });
@@ -18,6 +19,8 @@ async function createNestServer(): Promise<{
   }
 
   const app = await NestFactory.create(AppModule, { rawBody: true });
+
+  app.use(helmet());
 
 
   // URL normalization middleware: strip any accidental /n/ prefix from rogue env vars or escaped paths
@@ -45,7 +48,7 @@ async function createNestServer(): Promise<{
       /^http:\/\/localhost:[0-9]+$/,
       /^http:\/\/192\.168\.[0-9]+\.[0-9]+:[0-9]+$/,
       /^http:\/\/10\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$/,
-      /^https:\/\/.*\.vercel\.app$/,
+      /^https:\/\/dellics.*\.vercel\.app$/,
       'https://dellicstravels.com',
       'https://www.dellicstravels.com',
       'https://admin.dellicstravels.com',

@@ -1,5 +1,6 @@
 import { AuthTokenService } from './auth-token.service';
-import { Controller, Post, Get, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcryptjs';
@@ -146,6 +147,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AdminAuthGuard)
   @Get('admin/users')
   @Post('admin/users')
   async getAdminUsers() {
