@@ -527,6 +527,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(dbProfile)));
+      document.cookie = `dellics_auth_session=active; path=/; max-age=2592000; SameSite=Lax; Secure`;
       } catch {}
 
       return {};
@@ -673,10 +674,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(dbProfile);
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(getSafeStorageProfile(dbProfile)));
+      document.cookie = `dellics_auth_session=active; path=/; max-age=2592000; SameSite=Lax; Secure`;
     } catch {}
   };
 
   const signOut = async () => {
+    document.cookie = 'dellics_auth_session=; path=/; max-age=0';
     try {
       await supabase.auth.signOut();
     } catch {

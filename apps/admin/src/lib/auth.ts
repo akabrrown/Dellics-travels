@@ -41,7 +41,7 @@ export function setAdminSession(session: AdminUserSession): void {
   
   setActiveRole(session.roleId);
   
-  document.cookie = `dellics_admin_auth=true; path=/; max-age=86400; SameSite=Lax`;
+  document.cookie = `dellics_admin_auth=; path=/; max-age=86400; SameSite=Lax; Secure`;
   window.dispatchEvent(new Event("dellics_auth_changed"));
 }
 
