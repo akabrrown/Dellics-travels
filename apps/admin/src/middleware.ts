@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
     style-src 'self' 'unsafe-inline';
     img-src * blob: data:;
     font-src 'self' data:;
-    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app; trusted-types default; require-trusted-types-for 'script';
     
   `.replace(/\s{2,}/g, ' ').trim();
  

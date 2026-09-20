@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/auth-context";
 import { LocaleCurrencyProvider } from "@/context/locale-currency-context";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE } from "@/lib/site";
+import { TrustedTypesInjector } from "@/components/security/trusted-types";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -31,9 +32,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${poppins.variable}`}>
+      <head>
+        <TrustedTypesInjector />
+      </head>
       <body className="flex min-h-screen flex-col antialiased" suppressHydrationWarning>
         <AuthProvider>
           <LocaleCurrencyProvider>
@@ -48,4 +52,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
