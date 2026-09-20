@@ -52,6 +52,7 @@ enum ESIMOrderStatus {
   PROVISIONED
   ACTIVE
   EXPIRED
+  COMPLETED
 }
 
 enum InteractionChannel {

@@ -291,7 +291,7 @@ export class BookingService {
         ...esims.map(e => ({
           id: e.id,
           type: 'ESIM',
-          status: (e.status as string) === 'COMPLETED' ? 'CONFIRMED' : (e.status as string),
+          status: e.status === 'COMPLETED' ? 'CONFIRMED' : e.status,
           supplierRef: e.paystack_reference,
           travelerName: e.user?.name || 'Client',
           travelerEmail: e.user?.email || '',
@@ -387,7 +387,7 @@ export class BookingService {
         ...esims.map(e => ({
           id: e.id,
           type: 'ESIM',
-          status: (e.status as string) === 'COMPLETED' ? 'CONFIRMED' : (e.status as string),
+          status: e.status === 'COMPLETED' ? 'CONFIRMED' : e.status,
           supplierRef: e.paystack_reference,
           travelerName: e.user?.name || 'Client',
           travelerEmail: e.user?.email || '',
