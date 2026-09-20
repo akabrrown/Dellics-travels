@@ -106,7 +106,7 @@ export default function AdminLogin() {
           });
         }, 1000);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || "Failed to resend code.");
     } finally {
       setResending(false);

@@ -1,10 +1,11 @@
 import { AuthTokenService } from './auth-token.service';
+import * as crypto from 'crypto';
 import { Controller, Post, Get, Body, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcryptjs';
-import { AdminLoginInitDto, AdminLoginDto, ChangePasswordDto } from './dto/admin-login.dto';
+import { AdminLoginInitDto, AdminLoginDto, ChangePasswordDto, SetupAccountDto } from './dto/admin-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -287,6 +288,44 @@ export class AuthController {
     });
 
     return { status: 'success', message: 'Password updated successfully.' };
+  }
+
+
+  @Post('admin/setup-account')
+  async setupAccount(@Body() body: SetupAccountDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: body.email }
+    });
+
+    if (!user || user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Account not found.');
+    }
+
+    if (!user.admin_otp_hash || !user.admin_otp_expires_at) {
+      throw new UnauthorizedException('Invalid or expired setup token.');
+    }
+
+    if (new Date() > user.admin_otp_expires_at) {
+      throw new UnauthorizedException('Setup link has expired.');
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(body.token).digest('hex');
+    if (tokenHash !== user.admin_otp_hash) {
+      throw new UnauthorizedException('Invalid setup token.');
+    }
+
+    const newHash = await bcrypt.hash(body.newPassword, 10);
+    
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { 
+        password_hash: newHash,
+        admin_otp_hash: null,
+        admin_otp_expires_at: null
+      },
+    });
+
+    return { status: 'success', message: 'Account setup successfully.' };
   }
 
 }

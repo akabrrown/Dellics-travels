@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { label: "Membership & Rewards", href: "/membership", icon: ShieldCheck, permission: "membership.manage" },
         { label: "Roles & Team", href: "/team", icon: Users, permission: "team.view" },
         { label: "Audit Log", href: "/audit", icon: FileText, permission: "audit.view" },
-        { label: "Account Security", href: "/account", icon: Lock },
+        { label: "Account Security", href: "/account", icon: Lock, permission: "", badge: undefined, badgeColor: undefined },
         { label: "Settings", href: "/settings", icon: Sliders, permission: "settings.manage" },
       ],
     },

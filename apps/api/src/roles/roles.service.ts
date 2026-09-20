@@ -1,5 +1,6 @@
 
 import { PrismaService } from '../prisma/prisma.service';
+import * as crypto from 'crypto';
 import {
   Injectable,
   Logger,
@@ -168,21 +169,75 @@ export class RolesService {
   async inviteTeamMember(dto: InviteTeamMemberDto): Promise<AdminTeamMember> {
     const role = await this.getRoleById(dto.roleId);
     
-    const newUser = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        name: dto.name,
-        role: 'ADMIN',
-        admin_role_id: role.id
-      }
-    });
+    // Check if user already exists
+    let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
     
-    this.logger.log(`Invited team member ${newUser.email} as ${role.title}`);
+    // Generate secure setup token
+    const setupToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(setupToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          name: dto.name,
+          role: 'ADMIN',
+          admin_role_id: role.id,
+          admin_otp_hash: tokenHash,
+          admin_otp_expires_at: expiresAt
+        }
+      });
+    } else {
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          role: 'ADMIN',
+          admin_role_id: role.id,
+          admin_otp_hash: tokenHash,
+          admin_otp_expires_at: expiresAt
+        }
+      });
+    }
+
+    // Send email using Resend via fetch
+    const apiKey = process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY;
+    if (apiKey) {
+      const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'https://dellics-travels-admin.vercel.app';
+      const setupLink = `${adminUrl}/setup-account?email=${encodeURIComponent(dto.email)}&token=${setupToken}`;
+      
+      const htmlContent = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Invitation to Dellics Travels Admin</h2>
+          <p>Hello ${dto.name},</p>
+          <p>You have been invited to join the Dellics Travels Administrative Operations portal as a <strong>${role.title}</strong>.</p>
+          <p>Please click the button below to securely set your password and access your account. This link will expire in 48 hours.</p>
+          <a href="${setupLink}" style="display: inline-block; padding: 12px 24px; background-color: #0A0060; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px;">Set Up My Account</a>
+          <p style="margin-top: 32px; font-size: 12px; color: #666;">If you did not expect this invitation, please ignore this email.</p>
+        </div>
+      `;
+
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: process.env.RESEND_FROM_EMAIL || "Dellics Travels <help@dellicstravels.com>",
+          to: [dto.email],
+          subject: "Invitation to Dellics Travels Admin",
+          html: htmlContent
+        }),
+      }).catch(err => this.logger.error("Failed to send invite email", err));
+    }
+    
+    this.logger.log(`Invited team member ${user.email} as ${role.title}`);
     
     return {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
+      id: user.id,
+      name: user.name,
+      email: user.email,
       roleId: role.id,
       roleTitle: role.title,
       status: 'INVITED',

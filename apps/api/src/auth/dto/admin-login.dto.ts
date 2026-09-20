@@ -30,3 +30,15 @@ export class ChangePasswordDto {
   @Length(8, 128)
   newPassword: string;
 }
+
+export class SetupAccountDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  token: string;
+
+  @IsString()
+  @Length(8, 128)
+  newPassword: string;
+}
