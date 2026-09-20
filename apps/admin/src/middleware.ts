@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
     img-src * blob: data:;
     font-src 'self' data:;
     connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app; trusted-types default; require-trusted-types-for 'script';
+    frame-src 'self' https://vercel.live;
     
   `.replace(/\s{2,}/g, ' ').trim();
  
