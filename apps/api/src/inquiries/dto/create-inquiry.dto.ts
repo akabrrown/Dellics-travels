@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { IsNotDisposableEmail } from '../../common/validators/is-not-disposable-email.validator';
 
 export class CreateInquiryDto {
   @IsIn(['CONTACT', 'INQUIRY'])
@@ -18,6 +19,7 @@ export class CreateInquiryDto {
   name: string;
 
   @IsEmail()
+  @IsNotDisposableEmail()
   @MaxLength(254)
   email: string;
 

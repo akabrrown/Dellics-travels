@@ -1,3 +1,5 @@
+import { IsEmail, IsString } from 'class-validator';
+import { IsNotDisposableEmail } from '../common/validators/is-not-disposable-email.validator';
 export interface PermissionDefinition {
   key: string;
   label: string;
@@ -34,7 +36,13 @@ export class CreateRoleDto {
 }
 
 export class InviteTeamMemberDto {
+  @IsString()
   name: string;
+
+  @IsEmail()
+  @IsNotDisposableEmail()
   email: string;
+
+  @IsString()
   roleId: string;
 }

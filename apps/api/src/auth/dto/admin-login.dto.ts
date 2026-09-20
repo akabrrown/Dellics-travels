@@ -1,7 +1,9 @@
 ﻿import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
+import { IsNotDisposableEmail } from '../../common/validators/is-not-disposable-email.validator';
 
 export class AdminLoginInitDto {
   @IsEmail()
+  @IsNotDisposableEmail()
   email: string;
 
   @IsString()
@@ -11,6 +13,7 @@ export class AdminLoginInitDto {
 
 export class AdminLoginDto {
   @IsEmail()
+  @IsNotDisposableEmail()
   email: string;
 
   @IsString()
@@ -33,6 +36,7 @@ export class ChangePasswordDto {
 
 export class SetupAccountDto {
   @IsEmail()
+  @IsNotDisposableEmail()
   email: string;
 
   @IsString()
