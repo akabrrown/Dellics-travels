@@ -4,7 +4,6 @@ import { PageHero } from '@/components/page-hero';
 
 const links = [
   { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/us-privacy', label: 'US Privacy Policy' },
   { href: '/cookies', label: 'Cookie Policy' },
   { href: '/terms', label: 'Terms of Service' },
 ];
