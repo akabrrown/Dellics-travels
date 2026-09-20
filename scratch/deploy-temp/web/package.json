@@ -1,0 +1,5 @@
+{
+  "name": "dellics-web-root",
+  "version": "1.0.0",
+  "description": "Dummy package.json to satisfy CloudLinux Node.js Selector"
+}

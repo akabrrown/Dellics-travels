@@ -19,9 +19,9 @@ import { loginAdminAccount } from "@/lib/auth";
 
 export default function AdminLogin() {
   const router = useRouter();
-  const [email, setEmail] = useState("ops@dellicstravels.com");
-  const [password, setPassword] = useState("AdminSec#2026!");
-  const [totp, setTotp] = useState("849201");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [totp, setTotp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -177,68 +177,7 @@ export default function AdminLogin() {
             <span>{loading ? "Authenticating Session…" : "Enter Operations Portal"}</span>
             <ArrowRight className="size-4" />
           </button>
-        </form>
-
-        <div className="pt-2 border-t border-slate-800">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-            <UserCheck className="size-3 text-[#F4740D]" />
-            <span>Select Staff Role Profile:</span>
-          </p>
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              type="button"
-              onClick={() => handleSelectAccount("ops@dellicstravels.com")}
-              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
-                email === "ops@dellicstravels.com"
-                  ? "bg-purple-950/40 border-purple-600 text-purple-200"
-                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
-              )}
-            >
-              <span className="font-bold block text-white">Master Admin</span>
-              <span className="text-[10px] text-slate-400">Full System Access</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSelectAccount("akosua.m@dellicstravels.com")}
-              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
-                email === "akosua.m@dellicstravels.com"
-                  ? "bg-blue-950/40 border-blue-600 text-blue-200"
-                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
-              )}
-            >
-              <span className="font-bold block text-white">Supervisor</span>
-              <span className="text-[10px] text-slate-400">Content & Bookings</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSelectAccount("emmanuel.t@dellicstravels.com")}
-              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
-                email === "emmanuel.t@dellicstravels.com"
-                  ? "bg-emerald-950/40 border-emerald-600 text-emerald-200"
-                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
-              )}
-            >
-              <span className="font-bold block text-white">Customer Service</span>
-              <span className="text-[10px] text-slate-400">Support & eSIMs</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSelectAccount("abena.f@dellicstravels.com")}
-              className={"p-2 rounded-xl border text-left transition-all text-[11px] " + (
-                email === "abena.f@dellicstravels.com"
-                  ? "bg-amber-950/40 border-amber-600 text-amber-200"
-                  : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600"
-              )}
-            >
-              <span className="font-bold block text-white">Finance Team</span>
-              <span className="text-[10px] text-slate-400">Ledger & Refunds</span>
-            </button>
-          </div>
-        </div>
-      </div>
+        </form></div>
 
       <p className="text-[11px] text-slate-500 mt-6 text-center">
         Dellics Travels Operations Control Center · Restricted Authorized Access Only
