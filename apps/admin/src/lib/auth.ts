@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 "use client";
 
 import { AdminRole, getActiveRole, getAllRoles, setActiveRole } from "./roles";
@@ -41,7 +41,7 @@ export function setAdminSession(session: AdminUserSession): void {
   
   setActiveRole(session.roleId);
   
-  document.cookie = `dellics_admin_auth=; path=/; max-age=86400; SameSite=Lax; Secure`;
+  document.cookie = `dellics_admin_auth=${session.token}; path=/; max-age=86400; SameSite=Lax; Secure`;
   window.dispatchEvent(new Event("dellics_auth_changed"));
 }
 
@@ -49,7 +49,7 @@ export function clearAdminSession(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(STORAGE_KEY_AUTH_SESSION);
   localStorage.removeItem(STORAGE_KEY_AUTH_TOKEN);
-  document.cookie = "dellics_admin_auth=; path=/; max-age=0";
+  document.cookie = "dellics_admin_auth=${session.token}; path=/; max-age=0";
   window.dispatchEvent(new Event("dellics_auth_changed"));
 }
 
@@ -115,3 +115,4 @@ export async function loginAdminAccount(
     };
   }
 }
+
