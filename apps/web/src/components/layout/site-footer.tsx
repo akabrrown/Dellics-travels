@@ -267,7 +267,7 @@ export function SiteFooter() {
           {/* Bottom Legal Bar */}
           <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
             <p>
-              © {new Date().getFullYear()} Dellics Travels Online Travel Company.
+              © {new Date().getFullYear()} Dellics Travels Online Travel Agency.
               All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
