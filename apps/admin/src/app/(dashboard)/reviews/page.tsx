@@ -34,6 +34,32 @@ export default function ReviewsModeration() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newReview, setNewReview] = useState({
+    travelerName: "",
+    rating: 5,
+    text: "",
+    target: "",
+    source: "TRUSTPILOT"
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsSubmitting(true);
+      await adminApi.post("/reviews/admin/external", newReview);
+      setIsAddModalOpen(false);
+      fetchReviews();
+      setNewReview({ travelerName: "", rating: 5, text: "", target: "", source: "TRUSTPILOT" });
+    } catch (err: any) {
+      alert("Failed to add review: " + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
   const fetchReviews = async () => {
     try {
       setLoading(true);
@@ -245,6 +271,49 @@ export default function ReviewsModeration() {
         ))}
       </div>
     </div>
+    
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-xl border border-slate-200">
+            <h2 className="font-display font-bold text-xl text-[#0A0060] mb-4">Add External Review</h2>
+            <form onSubmit={handleAddSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Traveler Name</label>
+                  <input required value={newReview.travelerName} onChange={e=>setNewReview({...newReview, travelerName: e.target.value})} type="text" className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Source</label>
+                  <select value={newReview.source} onChange={e=>setNewReview({...newReview, source: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]">
+                    <option value="TRUSTPILOT">Trustpilot</option>
+                    <option value="GOOGLE">Google</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Rating (1-5)</label>
+                  <input required type="number" min="1" max="5" value={newReview.rating} onChange={e=>setNewReview({...newReview, rating: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Target (e.g. Dubai Tour)</label>
+                  <input required type="text" value={newReview.target} onChange={e=>setNewReview({...newReview, target: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Review Text</label>
+                <textarea required rows={4} value={newReview.text} onChange={e=>setNewReview({...newReview, text: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]"></textarea>
+              </div>
+              <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+                <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#0A0060] hover:bg-[#140882] disabled:opacity-50 transition-colors">
+                  {isSubmitting ? "Adding..." : "Add Review"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </RoleGuard>
   );
 }

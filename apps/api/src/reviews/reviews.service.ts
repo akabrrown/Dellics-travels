@@ -19,6 +19,7 @@ export interface ReviewItem {
   status: 'APPROVED' | 'PENDING' | 'FLAGGED';
   verifiedStay: boolean;
   createdAt: string;
+  source?: string;
 }
 
 @Injectable()
@@ -83,6 +84,7 @@ export class ReviewsService {
           status: meta.status || 'APPROVED',
           verifiedStay: meta.verifiedStay !== false,
           createdAt: r.created_at.toISOString(),
+          source: r.source,
         };
       });
 
@@ -165,6 +167,33 @@ export class ReviewsService {
   /**
    * Public: get approved high-rating reviews for website social proof (cached with 10m TTL)
    */
+  
+  async addExternalReview(dto: {
+    travelerName: string;
+    rating: number;
+    text: string;
+    target: string;
+    source: 'TRUSTPILOT' | 'GOOGLE';
+  }) {
+    try {
+      const created = await this.prisma.review.create({
+        data: {
+          source: dto.source,
+          reviewer_name: dto.travelerName,
+          rating: dto.rating,
+          text: dto.text,
+          sub_scores: { target: dto.target, status: 'APPROVED', verifiedStay: false },
+        },
+      });
+
+      this.cache.invalidatePrefix('reviews:');
+      return { status: 'success', data: created };
+    } catch (err: any) {
+      this.logger.error(`addExternalReview failed: ${err.message}`);
+      throw err;
+    }
+  }
+
   async getFeaturedReviews(): Promise<{
     status: string;
     count: number;

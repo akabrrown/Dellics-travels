@@ -26,13 +26,10 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
               <ul className="space-y-4">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-slate-600 hover:text-brand-orange font-medium text-sm transition-colors flex items-center gap-2"
-                    >
+                    <a href={link.href} className="text-slate-600 hover:text-brand-orange font-medium text-sm transition-colors flex items-center gap-2">
                       <div className="size-1.5 rounded-full bg-slate-300 group-hover:bg-brand-orange transition-colors" />
                       {link.label}
-                    </Link>
+                    </a>
                   </li>
                 ))}
               </ul>

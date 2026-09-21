@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { AdminAuthGuard } from '../auth/guards/admin-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
@@ -26,6 +26,23 @@ export class ReviewsController {
     @Body('status') status: 'APPROVED' | 'FLAGGED' | 'PENDING',
   ) {
     return this.reviewsService.moderateReview(id, status);
+  }
+
+  @Get('featured')
+  
+  @Post('admin/external')
+  @UseGuards(AdminAuthGuard, PermissionsGuard)
+  @RequirePermissions('reviews.manage')
+  async addExternalReview(
+    @Body() dto: {
+      travelerName: string;
+      rating: number;
+      text: string;
+      target: string;
+      source: 'TRUSTPILOT' | 'GOOGLE';
+    }
+  ) {
+    return this.reviewsService.addExternalReview(dto);
   }
 
   @Get('featured')

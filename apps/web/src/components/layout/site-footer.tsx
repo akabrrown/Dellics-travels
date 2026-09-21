@@ -272,13 +272,7 @@ export function SiteFooter() {
             </p>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
               {LEGAL_LINKS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="hover:text-white transition-colors"
-                >
-                  {item.label}
-                </Link>
+                <a key={item.href} href={item.href} className="hover:text-white transition-colors">{item.label}</a>
               ))}
             </div>
           </div>
