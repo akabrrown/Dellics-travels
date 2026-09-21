@@ -37,7 +37,62 @@ export function buildViatorUrl(destination: string, activity?: string): string {
   return `${base}&pid=${VIATOR_AFFILIATE_PID}&mcid=${VIATOR_MCID}&medium=link&campaign=dellics-travels`;
 }
 
-export const DELLICS_SIGNATURE_TOURS: TourPackage[] = [];
+export const DELLICS_SIGNATURE_TOURS: TourPackage[] = [
+  {
+    id: "tour-heritage-01",
+    name: "The Heritage & Roots Journey",
+    slug: "heritage-roots-journey-ghana",
+    destination: "Cape Coast & Elmina, Ghana",
+    price: "From $1,250",
+    rawPrice: 1250,
+    currency: "USD",
+    duration: "7 Days",
+    badge: "Diaspora Special",
+    image: "/images/tours/heritage.jpg",
+    copy: "A profoundly moving and culturally enriching journey designed specifically to connect you with your roots. Explore the historic Cape Coast and Elmina Castles, walk across the Kakum canopy, and immerse yourself in traditional Ghanaian hospitality.",
+    includes: ["4-Star Accommodation", "Breakfast & Dinner", "Expert Guide", "Ground Transport"],
+    highlights: ["Cape Coast Castle", "Kakum National Park", "Naming Ceremony", "Cultural Dance"],
+    isFeatured: true,
+    isDellicsSignature: true,
+    viatorUrl: buildViatorUrl("Cape Coast", "Heritage Tour")
+  },
+  {
+    id: "tour-accra-02",
+    name: "Accra City & Culture Experience",
+    slug: "accra-city-culture-experience",
+    destination: "Accra, Ghana",
+    price: "From $850",
+    rawPrice: 850,
+    currency: "USD",
+    duration: "4 Days",
+    badge: "Best Seller",
+    image: "/images/tours/accra.jpg",
+    copy: "Dive into the vibrant rhythm of Accra! From historic monuments like Black Star Square to the bustling Makola Market and the thriving nightlife, experience the ultimate modern African city lifestyle.",
+    includes: ["Luxury Boutique Hotel", "Daily Breakfast", "City Transfers", "Nightlife Concierge"],
+    highlights: ["Black Star Square", "Kwame Nkrumah Mausoleum", "Makola Market", "Osu Nightlife"],
+    isFeatured: true,
+    isDellicsSignature: true,
+    viatorUrl: buildViatorUrl("Accra", "City Tour")
+  },
+  {
+    id: "tour-safari-03",
+    name: "Savannah Wildlife Escape",
+    slug: "savannah-wildlife-escape",
+    destination: "Mole National Park, Ghana",
+    price: "From $1,450",
+    rawPrice: 1450,
+    currency: "USD",
+    duration: "5 Days",
+    badge: "Adventure",
+    image: "/images/tours/safari.jpg",
+    copy: "Experience the breathtaking beauty of Ghana's northern savannah. Embark on guided safaris to see wild elephants, antelopes, and majestic baobab trees in Mole National Park, complete with eco-lodge luxury.",
+    includes: ["Eco-Lodge Accommodation", "All Meals", "Safari Guide", "Domestic Flights"],
+    highlights: ["Walking Safari", "Wild Elephants", "Larabanga Mosque", "Mognori Eco Village"],
+    isFeatured: true,
+    isDellicsSignature: true,
+    viatorUrl: buildViatorUrl("Mole National Park", "Safari")
+  }
+];
 
 export async function getTours(params?: {
   featured?: boolean;
@@ -68,5 +123,16 @@ export async function getTours(params?: {
       // Return curated signature tours
     }
   }
-  return DELLICS_SIGNATURE_TOURS;
+  
+  // If we get here, either no API data or it failed, so return our signature tours.
+  // We can filter them if needed.
+  let tours = [...DELLICS_SIGNATURE_TOURS];
+  if (params?.featured) {
+    tours = tours.filter(t => t.isFeatured);
+  }
+  if (params?.destination) {
+    tours = tours.filter(t => t.destination.toLowerCase().includes(params.destination!.toLowerCase()));
+  }
+  
+  return tours;
 }
