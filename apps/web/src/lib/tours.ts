@@ -10,6 +10,7 @@ export interface TourPackage {
   currency: string;
   duration: string;
   badge: string;
+  segment?: string;
   image: string;
   copy: string;
   includes: string[];

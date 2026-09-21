@@ -14,6 +14,7 @@ interface TourPackageItem {
   price: string;
   status: "PUBLISHED" | "DRAFT";
   category: string;
+  segment?: string;
   image: string;
 }
 
@@ -21,6 +22,7 @@ export default function ContentList() {
   const [packages, setPackages] = useState<TourPackageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("ALL");
+  const [segmentFilter, setSegmentFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +40,7 @@ export default function ContentList() {
           price: typeof p.price === "string" ? p.price : `$${p.rawPrice || p.price}`,
           status: p.status === "DRAFT" ? "DRAFT" : "PUBLISHED",
           category: p.badge || "Signature Package",
+          segment: p.segment || "International Packages",
           image: p.image || "/images/services/holiday-packages.jpg",
         }));
         setPackages(mapped);
@@ -100,6 +103,24 @@ export default function ContentList() {
           <span>{error}</span>
         </div>
       )}
+
+      
+      {/* Segment Filters */}
+      <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-lg overflow-x-auto w-full mb-4">
+        {["ALL", "Ghana Tours", "Diaspora Tours", "Africa Tours", "International Packages"].map((seg) => (
+          <button
+            key={seg}
+            onClick={() => setSegmentFilter(seg as any)}
+            className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap ${
+              segmentFilter === seg
+                ? "bg-white text-[#0A0060] shadow-sm"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+            }`}
+          >
+            {seg === "ALL" ? "All Segments" : seg}
+          </button>
+        ))}
+      </div>
 
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-3">

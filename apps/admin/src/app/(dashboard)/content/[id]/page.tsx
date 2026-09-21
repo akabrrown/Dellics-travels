@@ -60,6 +60,7 @@ export default function PackageEditor() {
   const [region, setRegion] = useState(isNew ? "" : "Domestic / West Africa");
   const [duration, setDuration] = useState(isNew ? "" : "2 Days / 1 Night");
   const [category, setCategory] = useState(isNew ? "" : "Heritage & Wildlife");
+  const [segment, setSegment] = useState(isNew ? "Ghana Tours" : "Ghana Tours");
   const [departureCity, setDepartureCity] = useState(isNew ? "" : "Accra (Kotoka Intl / Pickup Hub)");
   const [seasonality, setSeasonality] = useState(isNew ? "" : "Year-Round (Best Nov - Apr)");
   const [heroImage, setHeroImage] = useState(isNew ? "" : "/images/packages/cape-coast-tour.jpg");
@@ -148,6 +149,7 @@ export default function PackageEditor() {
       seasonality,
       price: Number(packagePrice) || 150,
       currency: "USD",
+      segment: segment,
       badge: category || "Signature Experience",
       image: heroImage || "/images/services/winter-dubai.jpg",
       overview: overview || tagline || title,

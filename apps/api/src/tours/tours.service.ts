@@ -21,6 +21,48 @@ export class ToursService {
     return tour;
   }
 
+  
+  async createTour(body: any) {
+    return this.prisma.tourPackage.create({
+      data: {
+        title: body.title,
+        slug: body.slug,
+        destination: body.destination,
+        price: body.price,
+        currency: body.currency,
+        duration: body.duration,
+        badge: body.badge,
+        segment: body.segment,
+        image_url: body.image,
+        overview: body.overview,
+        includes: body.includes,
+        highlights: body.highlights,
+        is_featured: body.isFeatured,
+      }
+    });
+  }
+
+  async updateTour(id: string, body: any) {
+    return this.prisma.tourPackage.update({
+      where: { id },
+      data: {
+        title: body.title,
+        slug: body.slug,
+        destination: body.destination,
+        price: body.price,
+        currency: body.currency,
+        duration: body.duration,
+        badge: body.badge,
+        segment: body.segment,
+        image_url: body.image,
+        overview: body.overview,
+        includes: body.includes,
+        highlights: body.highlights,
+        is_featured: body.isFeatured,
+      }
+    });
+  }
+
   async createBooking(userId: string, body: any) {
     // Generate a placeholder reference for Paystack
     const ref = 'TR_' + Math.random().toString(36).substring(2, 10).toUpperCase();

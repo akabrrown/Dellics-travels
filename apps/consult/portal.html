@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Student Application Portal | Dellics Education Consult</title>
+  <meta name="description" content="Dellics Education Consult Student Service Platform. Manage your study abroad applications, test coordination, documents, university matching, and visa guidance." />
+  <link rel="icon" type="image/jpeg" href="DELLICS EDUCATION CONSULT.jpg" />
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="portal.css" />
+</head>
+<body class="portal-body">
+
+<div class="portal-layout">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="portal-sidebar" id="portal-sidebar">
+    <div class="portal-sidebar-header">
+      <a href="index.html" class="portal-brand">
+        <img src="DELLICS EDUCATION CONSULT.jpg" alt="Dellics Logo" class="portal-brand-logo" />
+        <div>
+          <div class="portal-brand-title">DELLICS</div>
+          <div class="portal-brand-sub">Student Portal</div>
+        </div>
+      </a>
+      <button class="portal-mobile-toggle" id="sidebar-close-btn" aria-label="Close sidebar">&times;</button>
+    </div>
+
+    <nav class="portal-nav-group">
+      <div class="portal-nav-label">Main Navigation</div>
+      <a class="portal-nav-item active" data-tab="overview">
+        <span class="portal-nav-icon">📊</span>
+        <span>Dashboard Overview</span>
+      </a>
+      <a class="portal-nav-item" data-tab="application">
+        <span class="portal-nav-icon">📝</span>
+        <span>My Application</span>
+        <span class="portal-nav-badge" id="app-stage-badge">Active</span>
+      </a>
+      <a class="portal-nav-item" data-tab="tests">
+        <span class="portal-nav-icon">🎯</span>
+        <span>Tests &amp; Exams</span>
+        <span class="portal-nav-badge" style="background: rgba(255,107,0,0.3); color:#FF8534;">Coordination</span>
+      </a>
+      <a class="portal-nav-item" data-tab="universities">
+        <span class="portal-nav-icon">🏛️</span>
+        <span>University Matcher</span>
+      </a>
+      <a class="portal-nav-item" data-tab="documents">
+        <span class="portal-nav-icon">📁</span>
+        <span>My Documents</span>
+        <span class="portal-nav-badge" id="doc-count-badge">6</span>
+      </a>
+
+      <div class="portal-nav-label" style="margin-top: 14px;">Next Steps &amp; Travel</div>
+      <a class="portal-nav-item" data-tab="visa">
+        <span class="portal-nav-icon">🛂</span>
+        <span>Visa Guidance</span>
+      </a>
+      <a class="portal-nav-item" data-tab="travel">
+        <span class="portal-nav-icon">✈️</span>
+        <span>Dellics Travels Perks</span>
+        <span class="portal-nav-badge" style="background:#10B981; color:#fff;">10% Off</span>
+      </a>
+      <a class="portal-nav-item" data-tab="messages">
+        <span class="portal-nav-icon">💬</span>
+        <span>Messages &amp; Advisor</span>
+        <span class="portal-nav-badge" id="msg-badge" style="background:var(--portal-orange); color:#fff;">1</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar User Footer -->
+    <div class="portal-sidebar-footer">
+      <div class="portal-user-card">
+        <div class="portal-avatar" id="sidebar-avatar">JM</div>
+        <div class="portal-user-info">
+          <div class="portal-user-name" id="sidebar-user-name">John Mensah</div>
+          <div class="portal-user-role" id="sidebar-user-destination">UK Undergraduate</div>
+        </div>
+        <button class="portal-logout-btn" id="portal-logout-btn" title="Sign Out">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+  <div class="portal-sidebar-backdrop" id="portal-sidebar-backdrop"></div>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="portal-main">
+
+    <!-- TOPBAR -->
+    <header class="portal-topbar">
+      <div class="portal-topbar-title">
+        <button class="portal-mobile-toggle" id="sidebar-open-btn" aria-label="Open navigation">&#9776;</button>
+        <h1 class="portal-page-heading" id="portal-page-title">Dashboard Overview</h1>
+      </div>
+
+      <div class="portal-topbar-actions">
+        <!-- Direct Travel Ecosystem Switcher -->
+        <a href="https://dellicstravels.com" target="_blank" rel="noopener noreferrer" class="portal-ecosystem-btn" title="Explore Dellics Travels Flights, Hotels, Tours & eSIM">
+          <span>✈️ Dellics Travels</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+        </a>
+
+        <!-- Admin Backoffice Switcher for Pair Testing -->
+        <a href="admin.html" class="portal-btn portal-btn-outline portal-btn-sm" style="font-size:0.78rem;">
+          Consultant View ➔
+        </a>
+
+        <!-- Notifications Bell -->
+        <button class="portal-notif-btn" id="notif-toggle-btn" aria-label="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="portal-notif-badge" id="notif-badge-count">3</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="portal-content">
+
+      <!-- ============================================================== -->
+      <!-- TAB 1: DASHBOARD OVERVIEW -->
+      <!-- ============================================================== -->
+      <section id="tab-overview" class="portal-tab-content">
+        <!-- Welcome Hero Banner -->
+        <div class="portal-hero-banner">
+          <div>
+            <h2 class="portal-hero-greeting" id="hero-greeting">Welcome, John 👋</h2>
+            <div class="portal-hero-subtitle">
+              <span>Application: <strong id="hero-app-target">UK Undergraduate (BSc Computer Science)</strong></span>
+              <span class="portal-pill-badge active-status" id="hero-app-status">● Status: Offer Letter Stage</span>
+              <span class="portal-pill-badge">Intake: Sept 2025</span>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+              <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="switchTab('application')">Review Application Dossier</button>
+              <button class="portal-btn portal-btn-secondary portal-btn-sm" onclick="switchTab('tests')">Manage Test Requirements</button>
+            </div>
+          </div>
+          <div style="text-align:right; z-index:2;" class="hide-mobile">
+            <div style="font-size:0.8rem; color:rgba(255,255,255,0.7); margin-bottom:4px;">Assigned Consultant:</div>
+            <div style="font-weight:700; font-size:1.05rem;" id="hero-consultant-name">Kwame Asante</div>
+            <div style="font-size:0.8rem; color:var(--portal-orange); font-weight:600;">Senior Admissions Specialist</div>
+            <div style="font-size:0.75rem; color:rgba(255,255,255,0.8); margin-top:4px;">📞 +233 55 205 4174</div>
+          </div>
+        </div>
+
+        <!-- COMPLETE YOUR PROFILE ONBOARDING WIDGET -->
+        <div class="portal-card onboarding-card" id="onboarding-profile-card">
+          <div class="onboarding-card-header">
+            <div>
+              <div class="onboarding-badge">Account Setup</div>
+              <h3 class="portal-card-title" style="font-size: 1.35rem; margin-top: 4px;">
+                Complete Your Profile
+              </h3>
+              <p style="margin: 4px 0 0; font-size: 0.9rem; color: var(--portal-text-muted);">
+                Welcome to Dellics, <strong id="onboarding-name-display">Glenn</strong> 👋 Let's get your profile ready.
+              </p>
+            </div>
+            <div class="onboarding-progress-wrap">
+              <div class="onboarding-progress-label">
+                <span>Profile completion</span>
+                <strong id="onboarding-percent-text">25%</strong>
+              </div>
+              <div class="onboarding-progress-bar-bg">
+                <div class="onboarding-progress-bar-fill" id="onboarding-progress-fill" style="width: 25%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step Tabs -->
+          <div class="onboarding-step-tabs" id="onboarding-tabs-bar">
+            <button type="button" class="onboarding-tab-btn active" data-step="1" onclick="goToOnboardingStep(1)">
+              <span>1</span> Personal Information
+            </button>
+            <button type="button" class="onboarding-tab-btn" data-step="2" onclick="goToOnboardingStep(2)">
+              <span>2</span> Academic Background
+            </button>
+            <button type="button" class="onboarding-tab-btn" data-step="3" onclick="goToOnboardingStep(3)">
+              <span>3</span> Study Preferences
+            </button>
+            <button type="button" class="onboarding-tab-btn" data-step="4" onclick="goToOnboardingStep(4)">
+              <span>4</span> Tests
+            </button>
+            <button type="button" class="onboarding-tab-btn" data-step="5" onclick="goToOnboardingStep(5)">
+              <span>5</span> Documents
+            </button>
+          </div>
+
+          <!-- Multi-Step Form Containers -->
+          <form id="onboarding-form" onsubmit="return false;" novalidate>
+            <!-- STEP 1: Personal Information -->
+            <div class="onboarding-step-content active" id="onboarding-step-1">
+              <div class="portal-form-grid">
+                <div class="wizard-form-group">
+                  <label>Date of Birth *</label>
+                  <input type="date" id="ob-dob" />
+                </div>
+                <div class="wizard-form-group">
+                  <label>Nationality *</label>
+                  <input type="text" id="ob-nationality" placeholder="e.g. Ghanaian" value="Ghanaian" />
+                </div>
+                <div class="wizard-form-group">
+                  <label>Country of Residence *</label>
+                  <input type="text" id="ob-residence" placeholder="e.g. Ghana" value="Ghana" />
+                </div>
+                <div class="wizard-form-group">
+                  <label>Phone Number *</label>
+                  <input type="tel" id="ob-phone" placeholder="+233 ..." />
+                </div>
+              </div>
+              <div class="onboarding-actions">
+                <div></div>
+                <button type="button" class="portal-btn portal-btn-primary" onclick="goToOnboardingStep(2)">
+                  Save &amp; Continue: Academic Background ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Academic Background -->
+            <div class="onboarding-step-content" id="onboarding-step-2">
+              <div class="portal-form-grid">
+                <div class="wizard-form-group">
+                  <label>Highest Qualification *</label>
+                  <select id="ob-qualification">
+                    <option value="">Select qualification</option>
+                    <option value="WASSCE">WASSCE / Senior High School</option>
+                    <option value="Bachelor's Degree">Bachelor's Degree (Undergraduate)</option>
+                    <option value="HND / Higher National Diploma">HND / Higher National Diploma</option>
+                    <option value="Master's Degree">Master's Degree (Postgraduate)</option>
+                    <option value="A-Levels / Cambridge / IB">A-Levels / Cambridge / IB</option>
+                    <option value="Other">Other Certificate</option>
+                  </select>
+                </div>
+                <div class="wizard-form-group">
+                  <label>School / Institution Attended *</label>
+                  <input type="text" id="ob-school" placeholder="e.g. PRESEC, Achimota, University of Ghana, KNUST" />
+                </div>
+                <div class="wizard-form-group">
+                  <label>Course / Subject Studied *</label>
+                  <input type="text" id="ob-course" placeholder="e.g. General Science, General Arts, Business, CS" />
+                </div>
+                <div class="wizard-form-group">
+                  <label>Graduation Year *</label>
+                  <input type="number" id="ob-grad-year" placeholder="e.g. 2024" min="1990" max="2030" />
+                </div>
+                <div class="wizard-form-group" style="grid-column: 1 / -1;">
+                  <label>Grades / Results Summary *</label>
+                  <input type="text" id="ob-grades" placeholder="e.g. 6 A1s, 2 B2s in WASSCE / 3.5 GPA Second Class Upper" />
+                </div>
+              </div>
+              <div class="onboarding-actions">
+                <button type="button" class="portal-btn portal-btn-outline" onclick="goToOnboardingStep(1)">
+                  ← Previous
+                </button>
+                <button type="button" class="portal-btn portal-btn-primary" onclick="goToOnboardingStep(3)">
+                  Save &amp; Continue: Study Preferences ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Study Preferences -->
+            <div class="onboarding-step-content" id="onboarding-step-3">
+              <div class="portal-form-grid">
+                <div class="wizard-form-group">
+                  <label>Country You Want to Study In *</label>
+                  <select id="ob-dest-country">
+                    <option value="United Kingdom">United Kingdom (UK)</option>
+                    <option value="Canada">Canada</option>
+                    <option value="United States">United States (USA)</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany / Europe</option>
+                    <option value="Ghana">Study in Ghana</option>
+                    <option value="Other">Other Global Destination</option>
+                  </select>
+                </div>
+                <div class="wizard-form-group">
+                  <label>Course You're Interested In *</label>
+                  <input type="text" id="ob-pref-course" placeholder="e.g. BSc Computer Science, MSc Data Science, MBA" />
+                </div>
+                <div class="wizard-form-group">
+                  <label>Degree Level *</label>
+                  <select id="ob-pref-level">
+                    <option value="Undergraduate">Undergraduate (Bachelor's Degree)</option>
+                    <option value="Postgraduate">Postgraduate (Master's / PGD)</option>
+                    <option value="Doctorate">Doctorate (PhD)</option>
+                    <option value="Foundation">Foundation / Pathway</option>
+                  </select>
+                </div>
+                <div class="wizard-form-group">
+                  <label>Preferred Intake *</label>
+                  <select id="ob-pref-intake">
+                    <option value="September 2025">September 2025 (Major Fall)</option>
+                    <option value="January 2026">January 2026 (Winter / Spring)</option>
+                    <option value="May 2026">May 2026 (Summer)</option>
+                  </select>
+                </div>
+                <div class="wizard-form-group" style="grid-column: 1 / -1;">
+                  <label>Approximate Budget (Tuition + Living) *</label>
+                  <select id="ob-pref-budget">
+                    <option value="Under £15,000 / year">Under £15,000 / $20,000 per year</option>
+                    <option value="£15,000 - £25,000 / year">£15,000 - £25,000 / $20,000 - $32,000 per year</option>
+                    <option value="£25,000+ / year">£25,000+ / $35,000+ per year</option>
+                    <option value="Full Scholarship Dependent">Full Scholarship Dependent</option>
+                  </select>
+                </div>
+              </div>
+              <div class="onboarding-actions">
+                <button type="button" class="portal-btn portal-btn-outline" onclick="goToOnboardingStep(2)">
+                  ← Previous
+                </button>
+                <button type="button" class="portal-btn portal-btn-primary" onclick="goToOnboardingStep(4)">
+                  Save &amp; Continue: Tests Needed ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 4: Tests -->
+            <div class="onboarding-step-content" id="onboarding-step-4">
+              <p style="font-size: 0.95rem; font-weight: 700; color: var(--portal-navy); margin-bottom: 8px;">
+                Which tests do you need help with?
+              </p>
+              <p style="font-size: 0.84rem; color: var(--portal-text-muted); margin-bottom: 16px;">
+                Select any exam you plan to take or need diagnostic prep / center registration for:
+              </p>
+              <div class="onboarding-tests-grid">
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="IELTS" />
+                  <span>IELTS</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="TOEFL" />
+                  <span>TOEFL</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="PTE" />
+                  <span>PTE</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="SAT" />
+                  <span>SAT</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="GRE" />
+                  <span>GRE</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="GMAT" />
+                  <span>GMAT</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="ACT" />
+                  <span>ACT</span>
+                </label>
+                <label class="onboarding-test-label">
+                  <input type="checkbox" name="ob-test" value="I'm not sure" />
+                  <span>I'm not sure</span>
+                </label>
+              </div>
+              <div class="test-coord-note">
+                🎯 <strong>Test-Centre Coordination System:</strong> Dellics partners with accredited testing centers to assist Ghanaian and African students with diagnostic practice, registration dates, and test preparation.
+              </div>
+              <div class="onboarding-actions">
+                <button type="button" class="portal-btn portal-btn-outline" onclick="goToOnboardingStep(3)">
+                  ← Previous
+                </button>
+                <button type="button" class="portal-btn portal-btn-primary" onclick="goToOnboardingStep(5)">
+                  Save &amp; Continue: Documents ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 5: Documents -->
+            <div class="onboarding-step-content" id="onboarding-step-5">
+              <p style="font-size: 0.95rem; color: var(--portal-text-primary); margin-bottom: 8px;">
+                Upload your primary documents now, or upload them later via the <strong>My Documents</strong> locker:
+              </p>
+              <div class="doc-upload-preview-grid">
+                <div class="doc-quick-drop">
+                  <div style="font-size:2rem; margin-bottom:6px;">🛂</div>
+                  <strong>International Passport Bio-data</strong>
+                  <p style="font-size:0.75rem; color:var(--portal-text-muted);">PDF or JPEG format</p>
+                  <input type="file" id="ob-doc-passport" style="margin-top:10px; font-size:0.8rem;" />
+                </div>
+                <div class="doc-quick-drop">
+                  <div style="font-size:2rem; margin-bottom:6px;">📜</div>
+                  <strong>WASSCE Slip / Degree Transcript</strong>
+                  <p style="font-size:0.75rem; color:var(--portal-text-muted);">Official statement of results</p>
+                  <input type="file" id="ob-doc-transcript" style="margin-top:10px; font-size:0.8rem;" />
+                </div>
+              </div>
+              <div class="onboarding-actions">
+                <button type="button" class="portal-btn portal-btn-outline" onclick="goToOnboardingStep(4)">
+                  ← Previous
+                </button>
+                <button type="button" class="portal-btn portal-btn-primary" id="btn-finish-onboarding">
+                  Complete Profile (100%) &amp; Unlock Portal ✓
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- 8-Step Application Tracker -->
+        <div class="portal-tracker-card">
+          <div class="portal-tracker-header">
+            <div>
+              <h3 class="portal-tracker-title">Application Milestone Tracker</h3>
+              <p style="margin:4px 0 0; font-size:0.82rem; color:var(--portal-text-muted);">Real-time status of your university admissions journey</p>
+            </div>
+            <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="switchTab('application')">Full Details ➔</button>
+          </div>
+          <div class="portal-timeline-steps" id="overview-timeline-steps">
+            <!-- Dynamically populated from DellicsStore -->
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="portal-stats-grid">
+          <div class="portal-stat-card" onclick="switchTab('documents')">
+            <div class="portal-stat-icon green">📁</div>
+            <div>
+              <div class="portal-stat-value" id="stat-docs-val">5 / 6</div>
+              <div class="portal-stat-label">Verified Documents</div>
+            </div>
+          </div>
+          <div class="portal-stat-card" onclick="switchTab('tests')">
+            <div class="portal-stat-icon orange">🎯</div>
+            <div>
+              <div class="portal-stat-value" id="stat-tests-val">IELTS</div>
+              <div class="portal-stat-label">Test Coordination: Active</div>
+            </div>
+          </div>
+          <div class="portal-stat-card" onclick="switchTab('universities')">
+            <div class="portal-stat-icon blue">🏛️</div>
+            <div>
+              <div class="portal-stat-value" id="stat-unis-val">3</div>
+              <div class="portal-stat-label">Universities Applied</div>
+            </div>
+          </div>
+          <div class="portal-stat-card" onclick="switchTab('visa')">
+            <div class="portal-stat-icon yellow">🛂</div>
+            <div>
+              <div class="portal-stat-value" id="stat-visa-val">Stage 2</div>
+              <div class="portal-stat-label">Financial Compliance Review</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Split: Active Tests & Travel Bridge -->
+        <div class="portal-grid-2col">
+          <!-- Active Test Coordination Box -->
+          <div class="portal-card">
+            <div class="portal-card-header">
+              <h3 class="portal-card-title">
+                <span>🎯</span> Active Test Status
+              </h3>
+              <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="switchTab('tests')">Request New Test</button>
+            </div>
+            <div id="overview-test-summary">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Dellics Travels Integration Spotlight -->
+          <div class="portal-travel-box">
+            <div class="portal-travel-header">
+              <div class="portal-travel-icon">✈️</div>
+              <div>
+                <h3 class="portal-travel-title">Ready for Your Journey?</h3>
+                <div style="font-size:0.8rem; color:var(--portal-text-muted);">Exclusive Perks by Dellics Travels</div>
+              </div>
+            </div>
+            <p style="font-size:0.84rem; color:var(--portal-text-secondary); margin:0 0 12px;">
+              Once your offer is confirmed, unlock discounted student flight baggage allowances, vetted student housing, and free UK/US pre-departure eSIM cards.
+            </p>
+            <div class="portal-perk-card" style="margin-bottom:12px;">
+              <div class="portal-perk-title">Student Flight Fares (46kg Baggage)</div>
+              <div class="portal-perk-desc">Save up to 10% on British Airways, Emirates, and Qatar Airways via Dellics Travels.</div>
+            </div>
+            <button class="portal-btn portal-btn-primary portal-btn-sm" style="width:100%;" onclick="switchTab('travel')">Explore Student Travel Packages</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 2: MY APPLICATION & 8-STEP WIZARD -->
+      <!-- ============================================================== -->
+      <section id="tab-application" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Study Abroad Application Dossier</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Complete all 8 sections to ensure your application meets international admission standards.
+              </p>
+            </div>
+            <span class="portal-pill-badge active-status" id="wizard-status-pill">Application Created</span>
+          </div>
+
+          <!-- Wizard Navigation Bar -->
+          <div class="wizard-stepper-nav" id="wizard-stepper-nav">
+            <div class="wizard-nav-step active" data-step="1">1. Personal Info</div>
+            <div class="wizard-nav-step" data-step="2">2. Academic Background</div>
+            <div class="wizard-nav-step" data-step="3">3. Destination</div>
+            <div class="wizard-nav-step" data-step="4">4. Intended Course</div>
+            <div class="wizard-nav-step" data-step="5">5. Budget</div>
+            <div class="wizard-nav-step" data-step="6">6. Preferred Intake</div>
+            <div class="wizard-nav-step" data-step="7">7. Test Requirements</div>
+            <div class="wizard-nav-step" data-step="8">8. Review &amp; Submit</div>
+          </div>
+
+          <!-- Step 1: Personal Info -->
+          <div class="wizard-form-panel active" id="step-panel-1">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">1. Personal Information</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="wizard-form-group">
+                <label>First Name *</label>
+                <input type="text" id="wiz-first-name" value="John" />
+              </div>
+              <div class="wizard-form-group">
+                <label>Last Name *</label>
+                <input type="text" id="wiz-last-name" value="Mensah" />
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="wizard-form-group">
+                <label>Email Address *</label>
+                <input type="email" id="wiz-email" value="john.doe@example.com" />
+              </div>
+              <div class="wizard-form-group">
+                <label>Phone Number (WhatsApp) *</label>
+                <input type="tel" id="wiz-phone" value="+233 24 412 3456" />
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="wizard-form-group">
+                <label>City &amp; Country of Residence *</label>
+                <input type="text" id="wiz-city" value="Accra, Ghana" />
+              </div>
+              <div class="wizard-form-group">
+                <label>International Passport Number</label>
+                <input type="text" id="wiz-passport" value="G1928374" placeholder="e.g. G1234567" />
+              </div>
+            </div>
+            <div class="wizard-actions">
+              <div></div>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(2)">Continue to Academic Background ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Academic Background -->
+          <div class="wizard-form-panel" id="step-panel-2">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">2. Academic Background</h4>
+            <div class="wizard-form-group">
+              <label>Highest Qualification Completed *</label>
+              <select id="wiz-qualification">
+                <option value="WASSCE" selected>WASSCE / Senior High School</option>
+                <option value="Bachelor">Bachelor's Degree</option>
+                <option value="HND">Higher National Diploma (HND)</option>
+                <option value="A-Levels">GCE A-Levels / Cambridge</option>
+                <option value="Master">Master's Degree</option>
+              </select>
+            </div>
+            <div class="wizard-form-group">
+              <label>School / Institution Attended *</label>
+              <input type="text" id="wiz-school" value="Presbyterian Boys’ Secondary School (PRESEC)" />
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="wizard-form-group">
+                <label>Year of Completion *</label>
+                <input type="number" id="wiz-year" value="2024" />
+              </div>
+              <div class="wizard-form-group">
+                <label>Grades / GPA / Classification *</label>
+                <input type="text" id="wiz-grades" value="6 A1s, 2 B2s (Core Maths A1, Elective Maths A1)" />
+              </div>
+            </div>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(1)">← Back</button>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(3)">Continue to Destination ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Destination -->
+          <div class="wizard-form-panel" id="step-panel-3">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">3. Preferred Study Destination</h4>
+            <div class="wizard-form-group">
+              <label>Primary Destination Country *</label>
+              <select id="wiz-destination">
+                <option value="United Kingdom" selected>🇬🇧 United Kingdom</option>
+                <option value="Canada">🇨🇦 Canada</option>
+                <option value="United States">🇺🇸 United States</option>
+                <option value="Australia">🇦🇺 Australia</option>
+                <option value="Germany">🇩🇪 Germany / Europe</option>
+                <option value="Ghana">🇬🇭 Ghana (Local Admissions)</option>
+              </select>
+            </div>
+            <div class="wizard-form-group">
+              <label>Degree Level Sought *</label>
+              <select id="wiz-level">
+                <option value="Undergraduate" selected>Undergraduate (Bachelor's Degree - 3-4 Years)</option>
+                <option value="Postgraduate">Postgraduate (Master's / MBA - 1-2 Years)</option>
+                <option value="Foundation">International Foundation / Pathway Program</option>
+                <option value="PhD">Doctorate / PhD</option>
+              </select>
+            </div>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(2)">← Back</button>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(4)">Continue to Intended Course ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 4: Intended Course -->
+          <div class="wizard-form-panel" id="step-panel-4">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">4. Intended Course / Field of Study</h4>
+            <div class="wizard-form-group">
+              <label>Program Name / Major *</label>
+              <input type="text" id="wiz-course" value="BSc Computer Science" placeholder="e.g. BSc Computer Science, MBA, MSc Public Health" />
+            </div>
+            <div class="wizard-form-group">
+              <label>Specialization or Career Goal</label>
+              <textarea id="wiz-career-goal" rows="3" placeholder="Tell us why you chose this course and your post-study career goals...">Specializing in Artificial Intelligence and Software Architecture.</textarea>
+            </div>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(3)">← Back</button>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(5)">Continue to Budget ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 5: Budget -->
+          <div class="wizard-form-panel" id="step-panel-5">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">5. Annual Tuition &amp; Living Budget</h4>
+            <div class="wizard-form-group">
+              <label>Estimated Annual Budget (Tuition + Living Expenses) *</label>
+              <select id="wiz-budget">
+                <option value="Under £12,000 / CAD $20,000">Affordable / Scholarship Required (Under £12,000 / CAD $20,000)</option>
+                <option value="£15,000 - £20,000 / year" selected>Moderate (£15,000 - £20,000 / CAD $25,000 - $35,000)</option>
+                <option value="£20,000 - £30,000 / year">Upper Mid (£20,000 - £30,000 / CAD $35,000 - $50,000)</option>
+                <option value="Above £30,000 / year">Premium (£30,000+ / US $45,000+)</option>
+              </select>
+            </div>
+            <div class="wizard-form-group">
+              <label>Primary Source of Funding *</label>
+              <select id="wiz-funding">
+                <option value="Self / Family Sponsor" selected>Family / Parent Sponsorship</option>
+                <option value="Government Scholarship (Ghana Scholarship Secretariat / GETFund)">Government Scholarship (Ghana Scholarship Secretariat / GETFund)</option>
+                <option value="Employer / Corporate Sponsor">Employer / Corporate Sponsorship</option>
+                <option value="Partial Scholarship Needed">Self-funded + Partial University Scholarship</option>
+              </select>
+            </div>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(4)">← Back</button>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(6)">Continue to Preferred Intake ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 6: Preferred Intake -->
+          <div class="wizard-form-panel" id="step-panel-6">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">6. Preferred Intake</h4>
+            <div class="wizard-form-group">
+              <label>Target Academic Intake *</label>
+              <select id="wiz-intake">
+                <option value="September 2025" selected>September / Fall 2025 (Main Intake)</option>
+                <option value="January 2026">January / Spring 2026 (Winter Intake)</option>
+                <option value="May 2026">May / Summer 2026</option>
+                <option value="September 2026">September 2026</option>
+              </select>
+            </div>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(5)">← Back</button>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(7)">Continue to Test Requirements ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 7: Test Requirements -->
+          <div class="wizard-form-panel" id="step-panel-7">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">7. Standardized Test Requirements</h4>
+            <p style="font-size:0.84rem; color:var(--portal-text-muted); margin-bottom:16px;">
+              Dellics assists you in identifying if your target university requires standardized test scores, and coordinates preparation and test centre bookings with accredited partners.
+            </p>
+            <div class="wizard-form-group">
+              <label>Select tests you require or need assistance with:</label>
+              <select id="wiz-test-required">
+                <option value="ielts" selected>IELTS Academic (English Language Testing)</option>
+                <option value="sat">SAT (Undergraduate Admissions)</option>
+                <option value="toefl">TOEFL iBT (English Language Testing)</option>
+                <option value="pte">PTE Academic</option>
+                <option value="duolingo">Duolingo English Test</option>
+                <option value="gre">GRE (Postgraduate Admissions)</option>
+                <option value="gmat">GMAT (Business / MBA Admissions)</option>
+                <option value="none">None / WAEC English Waiver</option>
+              </select>
+            </div>
+            <div class="wizard-form-group">
+              <label>Target Score Needed (Optional)</label>
+              <input type="text" id="wiz-test-target" value="6.5+ Overall" placeholder="e.g. IELTS 6.5 or SAT 1350" />
+            </div>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(6)">← Back</button>
+              <button class="portal-btn portal-btn-primary" onclick="goToStep(8)">Review &amp; Update Application ➔</button>
+            </div>
+          </div>
+
+          <!-- Step 8: Review & Submit -->
+          <div class="wizard-form-panel" id="step-panel-8">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:16px;">8. Summary &amp; Consultant Review</h4>
+            <div style="background:var(--portal-bg); border-radius:var(--portal-radius); padding:20px; margin-bottom:20px;">
+              <p style="margin:0 0 8px;"><strong>Student:</strong> <span id="rev-name">John Mensah</span></p>
+              <p style="margin:0 0 8px;"><strong>Target:</strong> <span id="rev-dest">UK - BSc Computer Science</span> (<span id="rev-intake">September 2025</span>)</p>
+              <p style="margin:0 0 8px;"><strong>Academic Profile:</strong> <span id="rev-acad">PRESEC (6 A1s, 2 B2s)</span></p>
+              <p style="margin:0 0 8px;"><strong>Annual Budget:</strong> <span id="rev-budget">£15,000 - £20,000 / year</span></p>
+              <p style="margin:0;"><strong>Test Requirement:</strong> <span id="rev-test">IELTS Academic (Assistance requested)</span></p>
+            </div>
+            <p style="font-size:0.84rem; color:var(--portal-text-muted);">
+              Clicking save will update your active dossier in real-time. Your assigned consultant will immediately be notified.
+            </p>
+            <div class="wizard-actions">
+              <button class="portal-btn portal-btn-outline" onclick="goToStep(7)">← Back</button>
+              <button class="portal-btn portal-btn-primary" id="wizard-save-btn" onclick="saveFullApplication()">Save &amp; Submit Application Dossier ✓</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 3: TESTS & EXAMS COORDINATION -->
+      <!-- ============================================================== -->
+      <section id="tab-tests" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Tests &amp; Examinations Coordination Hub</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Dellics coordinates your preparation with accredited test centers and tutors across Ghana.
+              </p>
+            </div>
+            <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="openTestRequestModal()">
+              + Request Test Assistance
+            </button>
+          </div>
+
+          <!-- Notice on Ethical Positioning -->
+          <div style="background:#EFF6FF; border-left:4px solid var(--portal-info); padding:12px 16px; border-radius:6px; font-size:0.82rem; color:#1E40AF; margin-bottom:20px;">
+            <strong>Advisory Note:</strong> Dellics Education Consult acts as an independent coordination and preparatory guidance service. We work closely with British Council, ETS, and accredited tutorial centers in Accra, Kumasi, and Takoradi to arrange your study materials, prep classes, and official test center dates.
+          </div>
+
+          <!-- Tests Grid -->
+          <div class="portal-tests-grid" id="tests-grid-container">
+            <!-- Dynamically populated from DellicsStore -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 4: UNIVERSITY MATCHER -->
+      <!-- ============================================================== -->
+      <section id="tab-universities" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">University Matching Engine</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Explore top universities in the UK, Canada, USA, Australia, and Europe that match your qualifications.
+              </p>
+            </div>
+            <div style="font-size:0.82rem; color:var(--portal-text-muted);">
+              Saved Universities: <strong id="saved-unis-count">0</strong>
+            </div>
+          </div>
+
+          <!-- Filters Bar -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:20px; background:var(--portal-bg); padding:16px; border-radius:var(--portal-radius);">
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; color:var(--portal-text-muted); display:block; margin-bottom:4px;">Filter by Country</label>
+              <select id="filter-uni-country" onchange="renderUniversityCatalog()" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.85rem;">
+                <option value="all">All Countries</option>
+                <option value="UK">🇬🇧 United Kingdom</option>
+                <option value="Canada">🇨🇦 Canada</option>
+                <option value="USA">🇺🇸 United States</option>
+                <option value="Australia">🇦🇺 Australia</option>
+                <option value="Germany">🇩🇪 Germany</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; color:var(--portal-text-muted); display:block; margin-bottom:4px;">Search Course / Major</label>
+              <input type="text" id="filter-uni-search" oninput="renderUniversityCatalog()" placeholder="e.g. Computer Science, MBA..." style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.85rem; box-sizing:border-box;" />
+            </div>
+          </div>
+
+          <!-- University Cards Grid -->
+          <div class="portal-uni-grid" id="university-catalog-grid">
+            <!-- Dynamically populated from DellicsStore -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 5: SECURE DOCUMENT LOCKER -->
+      <!-- ============================================================== -->
+      <section id="tab-documents" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Secure Document Management Locker</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Upload your certified documents once. Our compliance team verifies every item before submission to foreign admissions boards.
+              </p>
+            </div>
+            <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="openDocUploadModal()">
+              + Upload New Document
+            </button>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table class="portal-doc-table">
+              <thead>
+                <tr>
+                  <th>Document Name</th>
+                  <th>Status</th>
+                  <th>Uploaded Date</th>
+                  <th>Consultant Compliance Notes</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="document-table-body">
+                <!-- Dynamically populated from DellicsStore -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 6: VISA GUIDANCE -->
+      <!-- ============================================================== -->
+      <section id="tab-visa" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Visa Guidance &amp; Compliance Center</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Navigating UKVI, IRCC, and US Embassy student visa requirements with meticulous document rigor.
+              </p>
+            </div>
+            <span class="portal-pill-badge active-status" id="visa-status-pill">Active Guidance</span>
+          </div>
+
+          <!-- 6-Stage Visa Tracker -->
+          <div style="background:var(--portal-bg); border-radius:var(--portal-radius); padding:24px; margin-bottom:24px;">
+            <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-top:0; margin-bottom:16px;">
+              Visa Stage Progression: <span id="visa-dest-title">UK Student Visa</span>
+            </h4>
+            <div id="visa-stages-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Country Guidelines Card -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+            <div style="border:1px solid var(--portal-border); border-radius:var(--portal-radius); padding:20px;">
+              <h4 style="color:var(--portal-navy); margin:0 0 8px;">🇬🇧 UKVI Financial Checklist</h4>
+              <ul style="font-size:0.84rem; color:var(--portal-text-secondary); padding-left:18px; line-height:1.6;">
+                <li>28-day holding period for total tuition balance + £9,207 living costs.</li>
+                <li>Letter of sponsorship from parents with official birth certificate.</li>
+                <li>TB Screening certificate from IOM Accra clinic.</li>
+              </ul>
+            </div>
+            <div style="border:1px solid var(--portal-border); border-radius:var(--portal-radius); padding:20px;">
+              <h4 style="color:var(--portal-navy); margin:0 0 8px;">🇨🇦 Canada Study Permit Checklist</h4>
+              <ul style="font-size:0.84rem; color:var(--portal-text-secondary); padding-left:18px; line-height:1.6;">
+                <li>Provincial Attestation Letter (PAL) from university province.</li>
+                <li>Guaranteed proof of CAD $20,635+ living allowance.</li>
+                <li>Upfront medical exam with approved panel physician in Ghana.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 7: DELLICS TRAVELS PERKS & ECOSYSTEM -->
+      <!-- ============================================================== -->
+      <section id="tab-travel" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Dellics Travels Integrated Student Hub</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Since Dellics Education is powered by Dellics Travels, our students enjoy privileged airfares, housing booking, and pre-departure perks.
+              </p>
+            </div>
+            <span class="portal-pill-badge" style="background:#10B981; color:#fff;">Unified Account Active</span>
+          </div>
+
+          <div class="portal-travel-perks-grid">
+            <div class="portal-perk-card">
+              <div style="font-size:1.5rem; margin-bottom:8px;">✈️</div>
+              <div class="portal-perk-title">Student Discount Flights</div>
+              <div class="portal-perk-desc">Special discounted fares to London, Toronto, New York, Sydney with extra 23kg luggage allowance included.</div>
+              <button class="portal-btn portal-btn-outline portal-btn-sm" style="margin-top:auto;" onclick="requestTravelService('flight')">Request Flight Quote</button>
+            </div>
+
+            <div class="portal-perk-card">
+              <div style="font-size:1.5rem; margin-bottom:8px;">🏠</div>
+              <div class="portal-perk-title">Verified Student Housing</div>
+              <div class="portal-perk-desc">Direct partnerships with university halls of residence and private student accommodation (PBSAs) in UK &amp; Canada.</div>
+              <button class="portal-btn portal-btn-outline portal-btn-sm" style="margin-top:auto;" onclick="requestTravelService('dorm')">Request Housing Options</button>
+            </div>
+
+            <div class="portal-perk-card">
+              <div style="font-size:1.5rem; margin-bottom:8px;">🚐</div>
+              <div class="portal-perk-title">Airport Pickup &amp; Transfer</div>
+              <div class="portal-perk-desc">Safe pickup upon landing at Heathrow, Pearson Toronto, or JFK directly to your university residence.</div>
+              <button class="portal-btn portal-btn-outline portal-btn-sm" style="margin-top:auto;" onclick="requestTravelService('transfer')">Book Airport Transfer</button>
+            </div>
+
+            <div class="portal-perk-card">
+              <div style="font-size:1.5rem; margin-bottom:8px;">📶</div>
+              <div class="portal-perk-title">International eSIM Cards</div>
+              <div class="portal-perk-desc">Stay connected immediately upon landing with pre-activated UK, US, or European mobile data plans.</div>
+              <button class="portal-btn portal-btn-outline portal-btn-sm" style="margin-top:auto;" onclick="requestTravelService('esim')">Request Free Student eSIM</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 8: MESSAGES & CONSULTANT CHAT -->
+      <!-- ============================================================== -->
+      <section id="tab-messages" class="portal-tab-content" style="display: none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Consultant Advisory Channel</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Direct communication with your assigned education specialist. No chasing on WhatsApp required.
+              </p>
+            </div>
+            <div style="font-size:0.82rem; color:var(--portal-success); font-weight:600;">● Advisor Online</div>
+          </div>
+
+          <!-- Chat Conversation Container -->
+          <div id="chat-messages-container" style="max-height:400px; overflow-y:auto; padding:16px; background:var(--portal-bg); border-radius:var(--portal-radius); margin-bottom:16px; display:flex; flex-direction:column; gap:12px;">
+            <!-- Messages dynamically populated -->
+          </div>
+
+          <!-- Message Composer -->
+          <form id="chat-form" onsubmit="handleSendMessage(event)" style="display:flex; gap:10px;">
+            <input type="text" id="chat-input" placeholder="Type a message or question for your consultant..." style="flex:1; padding:12px 16px; border-radius:var(--portal-radius-sm); border:1px solid var(--portal-border); font-size:0.92rem;" required />
+            <button type="submit" class="portal-btn portal-btn-primary">Send Message</button>
+          </form>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- NOTIFICATION DRAWER MODAL -->
+<div class="portal-modal-overlay" id="notif-modal">
+  <div class="portal-modal-card">
+    <button class="portal-modal-close" onclick="closeNotifModal()">&times;</button>
+    <h3 style="font-family:'Outfit'; color:var(--portal-navy); margin-top:0; margin-bottom:16px;">Notifications &amp; Alerts</h3>
+    <div id="notif-list-container" style="display:flex; flex-direction:column; gap:12px;">
+      <!-- Populated from DellicsStore -->
+    </div>
+  </div>
+</div>
+
+<!-- TEST REQUEST MODAL -->
+<div class="portal-modal-overlay" id="test-request-modal">
+  <div class="portal-modal-card">
+    <button class="portal-modal-close" onclick="closeTestRequestModal()">&times;</button>
+    <h3 style="font-family:'Outfit'; color:var(--portal-navy); margin-top:0; margin-bottom:8px;">Request Test Assistance</h3>
+    <p style="font-size:0.84rem; color:var(--portal-text-muted); margin-bottom:20px;">
+      Dellics will coordinate preparation schedules, tutorial materials, and official test center registration.
+    </p>
+    <form onsubmit="handleTestRequestSubmit(event)">
+      <div class="wizard-form-group">
+        <label>Select Test *</label>
+        <select id="modal-test-select" required>
+          <option value="ielts">IELTS Academic (British Council)</option>
+          <option value="sat">SAT Digital (College Board)</option>
+          <option value="toefl">TOEFL iBT (ETS)</option>
+          <option value="pte">PTE Academic</option>
+          <option value="duolingo">Duolingo English Test</option>
+          <option value="gre">GRE General</option>
+          <option value="gmat">GMAT Focus Edition</option>
+        </select>
+      </div>
+      <div class="wizard-form-group">
+        <label>Target Score *</label>
+        <input type="text" id="modal-test-score" placeholder="e.g. 7.0 Overall or 1400" required />
+      </div>
+      <div class="wizard-form-group">
+        <label>Preferred Study Location *</label>
+        <select id="modal-test-loc">
+          <option value="Accra">Accra Partner Center</option>
+          <option value="Kumasi">Kumasi Partner Center</option>
+          <option value="Online">Live Online Tutoring</option>
+        </select>
+      </div>
+      <button type="submit" class="portal-btn portal-btn-primary" style="width:100%; margin-top:10px;">Submit Test Coordination Request</button>
+    </form>
+  </div>
+</div>
+
+<!-- DOCUMENT UPLOAD MODAL -->
+<div class="portal-modal-overlay" id="doc-upload-modal">
+  <div class="portal-modal-card">
+    <button class="portal-modal-close" onclick="closeDocUploadModal()">&times;</button>
+    <h3 style="font-family:'Outfit'; color:var(--portal-navy); margin-top:0; margin-bottom:8px;">Upload Academic Document</h3>
+    <p style="font-size:0.84rem; color:var(--portal-text-muted); margin-bottom:20px;">
+      Ensure scans are clear, high resolution, and include all margins.
+    </p>
+    <form onsubmit="handleDocUploadSubmit(event)">
+      <div class="wizard-form-group">
+        <label>Document Category *</label>
+        <select id="modal-doc-type" required>
+          <option value="passport">International Passport (Bio Page)</option>
+          <option value="wassce">WASSCE Certificate / Result Checker</option>
+          <option value="transcript">Official Academic Transcript</option>
+          <option value="recommendation">Academic Recommendation Letter</option>
+          <option value="sop">Statement of Purpose / Personal Statement</option>
+          <option value="financial">Proof of Funds / Bank Statement</option>
+          <option value="other">Other Supporting Document</option>
+        </select>
+      </div>
+      <div class="wizard-form-group">
+        <label>Select PDF / Scanned Image *</label>
+        <input type="file" id="modal-doc-file" accept=".pdf,.png,.jpg,.jpeg" required style="padding:10px;" />
+      </div>
+      <button type="submit" class="portal-btn portal-btn-primary" style="width:100%; margin-top:10px;">Upload to Document Locker</button>
+    </form>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="portal-store.js"></script>
+<script>
+  'use strict';
+
+  // Active student state
+  let currentStudent = DellicsStore.getCurrentStudent();
+
+  // Tab switching logic
+  function switchTab(tabId) {
+    document.querySelectorAll('.portal-nav-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-tab') === tabId);
+    });
+    document.querySelectorAll('.portal-tab-content').forEach(sec => {
+      sec.style.display = sec.id === `tab-${tabId}` ? 'block' : 'none';
+    });
+
+    // Update Topbar Heading
+    const titles = {
+      overview: 'Dashboard Overview',
+      application: 'My Study Abroad Application',
+      tests: 'Tests & Examinations Coordination',
+      universities: 'University Matching Engine',
+      documents: 'Secure Document Locker',
+      visa: 'Visa Guidance & Compliance',
+      travel: 'Dellics Travels Student Perks',
+      messages: 'Consultant Communication'
+    };
+    document.getElementById('portal-page-title').textContent = titles[tabId] || 'Portal';
+
+    // Close mobile sidebar if open
+    document.getElementById('portal-sidebar').classList.remove('mobile-open');
+  }
+
+  // Bind Sidebar clicks
+  document.querySelectorAll('.portal-nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const tab = this.getAttribute('data-tab');
+      if (tab) switchTab(tab);
+    });
+  });
+
+  // Mobile sidebar toggles
+  const sidebar = document.getElementById('portal-sidebar');
+  const sidebarBackdrop = document.getElementById('portal-sidebar-backdrop');
+  function openMobileSidebar() {
+    sidebar?.classList.add('mobile-open');
+    sidebarBackdrop?.classList.add('active');
+  }
+  function closeMobileSidebar() {
+    sidebar?.classList.remove('mobile-open');
+    sidebarBackdrop?.classList.remove('active');
+  }
+  document.getElementById('sidebar-open-btn')?.addEventListener('click', openMobileSidebar);
+  document.getElementById('sidebar-close-btn')?.addEventListener('click', closeMobileSidebar);
+  sidebarBackdrop?.addEventListener('click', closeMobileSidebar);
+
+  // Onboarding Step Switcher
+  function goToOnboardingStep(step) {
+    document.querySelectorAll('.onboarding-step-content').forEach((el, idx) => {
+      el.classList.toggle('active', idx + 1 === step);
+    });
+    document.querySelectorAll('.onboarding-tab-btn').forEach((btn, idx) => {
+      btn.classList.toggle('active', idx + 1 === step);
+      if (idx + 1 < step) btn.classList.add('completed');
+    });
+
+    // Step-based incremental progress
+    const stepPercentages = { 1: 25, 2: 50, 3: 75, 4: 90, 5: 100 };
+    const targetPct = Math.max(currentStudent.profileCompletion || 25, stepPercentages[step] || 25);
+    const obFill = document.getElementById('onboarding-progress-fill');
+    const obText = document.getElementById('onboarding-percent-text');
+    if (obFill) obFill.style.width = `${targetPct}%`;
+    if (obText) obText.textContent = `${targetPct}%`;
+  }
+  window.goToOnboardingStep = goToOnboardingStep;
+
+  // Render Full Student State
+  function renderStudentData() {
+    currentStudent = DellicsStore.getCurrentStudent();
+    if (!currentStudent) return;
+
+    // Update Onboarding Profile Card
+    const firstName = currentStudent.firstName || currentStudent.name.split(' ')[0] || 'Student';
+    const obNameDisplay = document.getElementById('onboarding-name-display');
+    if (obNameDisplay) obNameDisplay.textContent = firstName;
+
+    const completion = currentStudent.profileCompletion || 25;
+    const obFill = document.getElementById('onboarding-progress-fill');
+    const obText = document.getElementById('onboarding-percent-text');
+    if (obFill) obFill.style.width = `${completion}%`;
+    if (obText) obText.textContent = `${completion}%`;
+
+    // Populate onboarding inputs from student state
+    const obDob = document.getElementById('ob-dob');
+    if (obDob && currentStudent.personalInfo?.dob) obDob.value = currentStudent.personalInfo.dob;
+    const obNat = document.getElementById('ob-nationality');
+    if (obNat && currentStudent.personalInfo?.nationality) obNat.value = currentStudent.personalInfo.nationality;
+    const obRes = document.getElementById('ob-residence');
+    if (obRes && currentStudent.personalInfo?.residence) obRes.value = currentStudent.personalInfo.residence;
+    const obPhone = document.getElementById('ob-phone');
+    if (obPhone && (currentStudent.phone || currentStudent.personalInfo?.phone)) {
+      obPhone.value = currentStudent.phone || currentStudent.personalInfo.phone;
+    }
+
+    const obQual = document.getElementById('ob-qualification');
+    if (obQual && currentStudent.academicBackground?.qualification) obQual.value = currentStudent.academicBackground.qualification;
+    const obSchool = document.getElementById('ob-school');
+    if (obSchool && currentStudent.academicBackground?.school) obSchool.value = currentStudent.academicBackground.school;
+    const obCourse = document.getElementById('ob-course');
+    if (obCourse && currentStudent.academicBackground?.course) obCourse.value = currentStudent.academicBackground.course;
+    const obGrad = document.getElementById('ob-grad-year');
+    if (obGrad && currentStudent.academicBackground?.gradYear) obGrad.value = currentStudent.academicBackground.gradYear;
+    const obGrades = document.getElementById('ob-grades');
+    if (obGrades && currentStudent.academicBackground?.grades) obGrades.value = currentStudent.academicBackground.grades;
+
+    const obDest = document.getElementById('ob-dest-country');
+    if (obDest && currentStudent.studyPreferences?.destination) obDest.value = currentStudent.studyPreferences.destination;
+    const obPrefCourse = document.getElementById('ob-pref-course');
+    if (obPrefCourse && currentStudent.studyPreferences?.course) obPrefCourse.value = currentStudent.studyPreferences.course;
+    const obPrefLevel = document.getElementById('ob-pref-level');
+    if (obPrefLevel && currentStudent.studyPreferences?.level) obPrefLevel.value = currentStudent.studyPreferences.level;
+    const obPrefIntake = document.getElementById('ob-pref-intake');
+    if (obPrefIntake && currentStudent.studyPreferences?.intake) obPrefIntake.value = currentStudent.studyPreferences.intake;
+    const obPrefBudget = document.getElementById('ob-pref-budget');
+    if (obPrefBudget && currentStudent.studyPreferences?.budget) obPrefBudget.value = currentStudent.studyPreferences.budget;
+
+    // Check tests
+    if (currentStudent.testsNeeded && currentStudent.testsNeeded.length) {
+      document.querySelectorAll('input[name="ob-test"]').forEach(cb => {
+        cb.checked = currentStudent.testsNeeded.includes(cb.value);
+      });
+    }
+
+    // Check URL for onboarding parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('onboarding') === 'true') {
+      const obCard = document.getElementById('onboarding-profile-card');
+      if (obCard) obCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Sidebar & Header info
+    document.getElementById('sidebar-user-name').textContent = currentStudent.name;
+    document.getElementById('sidebar-avatar').textContent = currentStudent.avatar || currentStudent.name.slice(0, 2).toUpperCase();
+    document.getElementById('sidebar-user-destination').textContent = currentStudent.activeApplication?.destination + ' ' + (currentStudent.activeApplication?.level || '');
+    
+    // Overview Hero
+    document.getElementById('hero-greeting').textContent = `Welcome, ${currentStudent.name.split(' ')[0]} 👋`;
+    document.getElementById('hero-app-target').textContent = `${currentStudent.activeApplication?.destination} (${currentStudent.activeApplication?.course || 'Undergraduate'})`;
+    
+    const curStageIdx = currentStudent.activeApplication?.currentStageIndex || 0;
+    const stages = currentStudent.activeApplication?.stages || [];
+    const curStageName = stages[curStageIdx]?.name || 'Active';
+    document.getElementById('hero-app-status').textContent = `● Status: ${curStageName}`;
+
+    // Timeline Steps Render
+    const timelineContainer = document.getElementById('overview-timeline-steps');
+    if (timelineContainer && stages.length) {
+      timelineContainer.innerHTML = stages.map((stg, idx) => {
+        let statusClass = 'pending';
+        let bubbleContent = idx + 1;
+        if (idx < curStageIdx || stg.status === 'completed') {
+          statusClass = 'completed';
+          bubbleContent = '✓';
+        } else if (idx === curStageIdx) {
+          statusClass = 'in-progress';
+        }
+        return `
+          <div class="portal-step-node ${statusClass}">
+            <div class="portal-step-bubble">${bubbleContent}</div>
+            <div class="portal-step-label">${stg.name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Stats
+    const approvedDocs = currentStudent.documents?.filter(d => d.status === 'approved').length || 0;
+    const totalDocs = currentStudent.documents?.length || 0;
+    document.getElementById('stat-docs-val').textContent = `${approvedDocs} / ${totalDocs}`;
+    document.getElementById('doc-count-badge').textContent = totalDocs;
+
+    // Overview test summary
+    const testSummaryContainer = document.getElementById('overview-test-summary');
+    if (testSummaryContainer) {
+      const activeTest = currentStudent.tests?.ielts?.requested ? currentStudent.tests.ielts :
+                         currentStudent.tests?.sat?.requested ? currentStudent.tests.sat : null;
+      if (activeTest) {
+        testSummaryContainer.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="color:var(--portal-navy); font-size:1.05rem;">${activeTest.testType}</strong>
+            <span class="portal-pill-badge active-status">${activeTest.status}</span>
+          </div>
+          <p style="font-size:0.84rem; color:var(--portal-text-secondary); margin:0 0 12px;">${activeTest.notes || 'Coordination in progress with accredited partner center.'}</p>
+          <div style="font-size:0.78rem; color:var(--portal-orange); font-weight:600;">Next Step: ${activeTest.nextStep || 'Consultant will reach out with date availability.'}</div>
+        `;
+      } else {
+        testSummaryContainer.innerHTML = `
+          <p style="font-size:0.84rem; color:var(--portal-text-muted);">No active test coordination requested yet.</p>
+          <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="switchTab('tests')">Request IELTS / SAT Prep</button>
+        `;
+      }
+    }
+
+    // Render Tests Tab
+    renderTestsGrid();
+
+    // Render Documents Tab
+    renderDocumentsTable();
+
+    // Render Universities Tab
+    renderUniversityCatalog();
+
+    // Render Visa Tab
+    renderVisaTracker();
+
+    // Render Messages
+    renderMessages();
+
+    // Notifications Badge
+    const unreadCount = currentStudent.notifications?.filter(n => !n.read).length || 0;
+    document.getElementById('notif-badge-count').textContent = unreadCount;
+    document.getElementById('notif-badge-count').style.display = unreadCount > 0 ? 'flex' : 'none';
+  }
+
+  // Render Tests Grid with 5-stage steppers
+  function renderTestsGrid() {
+    const container = document.getElementById('tests-grid-container');
+    if (!container) return;
+
+    const testTypes = [
+      { code: 'ielts', name: 'IELTS Academic', category: 'English Language Test', defaultTarget: '6.5+' },
+      { code: 'toefl', name: 'TOEFL iBT', category: 'English Language Test', defaultTarget: '90+' },
+      { code: 'pte', name: 'PTE Academic', category: 'English Language Test', defaultTarget: '62+' },
+      { code: 'duolingo', name: 'Duolingo English Test', category: 'English Language Test', defaultTarget: '115+' },
+      { code: 'sat', name: 'SAT Digital', category: 'Undergraduate Admissions', defaultTarget: '1350+' },
+      { code: 'act', name: 'ACT Exam', category: 'Undergraduate Admissions', defaultTarget: '28+' },
+      { code: 'gre', name: 'GRE General', category: 'Postgraduate Admissions', defaultTarget: '315+' },
+      { code: 'gmat', name: 'GMAT Focus Edition', category: 'Business / MBA Admissions', defaultTarget: '620+' }
+    ];
+
+    container.innerHTML = testTypes.map(t => {
+      const studentTest = currentStudent.tests?.[t.code];
+      const isRequested = studentTest && studentTest.requested;
+
+      const stages = isRequested && studentTest.stages?.length ? studentTest.stages : [
+        { name: 'Requirement Identified', status: 'pending' },
+        { name: 'Preparation Arranged', status: 'pending' },
+        { name: 'Test Centre Coordination', status: 'pending' },
+        { name: 'Test Date Scheduled', status: 'pending' },
+        { name: 'Official Score Result', status: 'pending' }
+      ];
+
+      return `
+        <div class="portal-test-box">
+          <div class="portal-test-header">
+            <div>
+              <div class="portal-test-category">${t.category}</div>
+              <h4 class="portal-test-name">${t.name}</h4>
+            </div>
+            ${isRequested ? `<span class="portal-pill-badge active-status">Active</span>` : `<span class="portal-pill-badge">Available</span>`}
+          </div>
+
+          <div class="portal-test-stepper">
+            ${stages.map((stg, idx) => `
+              <div class="portal-test-step-row">
+                <span>${idx + 1}. ${stg.name}</span>
+                <span class="portal-test-badge ${stg.status}">${stg.status === 'completed' ? '✓' : stg.status === 'in-progress' ? '⏳' : '—'}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="margin-top:auto;">
+            ${isRequested ? `
+              <div style="font-size:0.78rem; color:var(--portal-text-muted); margin-bottom:8px;">
+                <strong>Target:</strong> ${studentTest.targetScore || t.defaultTarget} | <strong>Partner:</strong> ${studentTest.partnerCenter || 'Accredited Center'}
+              </div>
+              <div style="font-size:0.75rem; color:var(--portal-orange); font-weight:600; margin-bottom:10px;">
+                ${studentTest.nextStep || 'Consultant coordinating schedule.'}
+              </div>
+              <button class="portal-btn portal-btn-outline portal-btn-sm" style="width:100%;" onclick="openTestRequestModal('${t.code}')">Update Requirements</button>
+            ` : `
+              <p style="font-size:0.8rem; color:var(--portal-text-muted); margin:0 0 12px;">Dellics arranges study curriculum &amp; test center registration.</p>
+              <button class="portal-btn portal-btn-primary portal-btn-sm" style="width:100%;" onclick="openTestRequestModal('${t.code}')">I Need Help With ${t.name}</button>
+            `}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Render Documents Table
+  function renderDocumentsTable() {
+    const tbody = document.getElementById('document-table-body');
+    if (!tbody) return;
+
+    const docs = currentStudent.documents || [];
+    if (!docs.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--portal-text-muted);">No documents uploaded yet. Click "+ Upload New Document" to begin.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = docs.map(d => {
+      const statusClass = d.status || 'pending';
+      const statusLabels = {
+        approved: 'Approved ✓',
+        action_required: 'Action Required ⚠',
+        pending: 'Under Review ⏳',
+        rejected: 'Declined'
+      };
+
+      return `
+        <tr>
+          <td>
+            <div class="portal-doc-info">
+              <div class="portal-doc-icon">📄</div>
+              <div>
+                <div class="portal-doc-title">${d.name}</div>
+                <div class="portal-doc-meta">${d.fileName} (${d.size || '1.5 MB'})</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="portal-status-pill ${statusClass}">${statusLabels[statusClass] || statusClass}</span>
+          </td>
+          <td>${d.uploadedAt || 'Recently'}</td>
+          <td style="font-size:0.82rem; color:var(--portal-text-secondary); max-width:260px;">${d.note || 'Compliance inspection in queue.'}</td>
+          <td>
+            <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="openDocUploadModal('${d.type}')">Replace</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Render Universities Catalog
+  function renderUniversityCatalog() {
+    const grid = document.getElementById('university-catalog-grid');
+    if (!grid) return;
+
+    const countryFilter = document.getElementById('filter-uni-country')?.value || 'all';
+    const searchQuery = (document.getElementById('filter-uni-search')?.value || '').trim().toLowerCase();
+
+    const state = DellicsStore.getState();
+    const unis = state.universities || [];
+
+    const filtered = unis.filter(u => {
+      const matchesCountry = countryFilter === 'all' || u.country === countryFilter;
+      const matchesSearch = !searchQuery ||
+        u.name.toLowerCase().includes(searchQuery) ||
+        u.popularCourses.some(c => c.toLowerCase().includes(searchQuery));
+      return matchesCountry && matchesSearch;
+    });
+
+    const savedList = currentStudent.savedUniversities || [];
+    document.getElementById('saved-unis-count').textContent = savedList.length;
+
+    grid.innerHTML = filtered.map(u => {
+      const isSaved = savedList.includes(u.id);
+      return `
+        <div class="portal-uni-card">
+          <div class="portal-uni-badge-row">
+            <div class="portal-uni-country">${u.flag} ${u.country}</div>
+            <span style="font-size:0.75rem; font-weight:700; color:${u.accentColor}; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:4px;">${u.ranking}</span>
+          </div>
+          <h4 class="portal-uni-name">${u.name}</h4>
+          <div class="portal-uni-location">${u.city}</div>
+
+          <div class="portal-uni-detail"><strong>Tuition:</strong> ${u.tuition}</div>
+          <div class="portal-uni-detail"><strong>Entry Criteria:</strong> ${u.entryRequirement}</div>
+          <div class="portal-uni-detail"><strong>English:</strong> ${u.englishRequirement}</div>
+          <div class="portal-uni-detail" style="color:var(--portal-success);"><strong>Scholarship:</strong> ${u.scholarships}</div>
+
+          <div class="portal-uni-actions">
+            <button class="portal-btn ${isSaved ? 'portal-btn-outline' : 'portal-btn-secondary'} portal-btn-sm" onclick="toggleSaveUni('${u.id}')">
+              ${isSaved ? '★ Saved' : '☆ Save'}
+            </button>
+            <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="requestApplicationForUni('${u.id}')">
+              Request Application ➔
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Render Visa Tracker
+  function renderVisaTracker() {
+    const container = document.getElementById('visa-stages-container');
+    if (!container) return;
+
+    const visa = currentStudent.visa;
+    if (!visa) return;
+
+    document.getElementById('visa-dest-title').textContent = visa.destination || 'Student Visa';
+    document.getElementById('visa-status-pill').textContent = visa.status || 'Active Guidance';
+
+    container.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        ${visa.stages.map((stg, idx) => `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#fff; border-radius:8px; border:1px solid var(--portal-border);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="width:28px; height:28px; border-radius:50%; background:${stg.status === 'completed' ? 'var(--portal-success)' : stg.status === 'in-progress' ? 'var(--portal-orange)' : '#E2E8F0'}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.75rem;">
+                ${stg.status === 'completed' ? '✓' : idx + 1}
+              </span>
+              <div>
+                <strong style="font-size:0.88rem; color:var(--portal-navy);">${stg.name}</strong>
+                <div style="font-size:0.75rem; color:var(--portal-text-muted);">${stg.date || 'Pending'}</div>
+              </div>
+            </div>
+            <span class="portal-pill-badge ${stg.status === 'completed' ? 'active-status' : ''}">${stg.status}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:16px; padding:12px; background:#FEF3C7; border-radius:6px; font-size:0.82rem; color:#92400E;">
+        <strong>Advisor Note:</strong> ${visa.advisoryNotes || 'Keep bank statements untouched during the 28-day holding cycle.'}
+      </div>
+    `;
+  }
+
+  // Render Messages
+  function renderMessages() {
+    const container = document.getElementById('chat-messages-container');
+    if (!container) return;
+
+    const msgs = currentStudent.messages || [];
+    container.innerHTML = msgs.map(m => `
+      <div style="align-self:${m.sender === 'student' ? 'flex-end' : 'flex-start'}; max-width:80%;">
+        <div style="font-size:0.72rem; color:var(--portal-text-muted); margin-bottom:2px; text-align:${m.sender === 'student' ? 'right' : 'left'};">
+          ${m.author} • ${m.time}
+        </div>
+        <div style="padding:10px 14px; border-radius:${m.sender === 'student' ? '14px 14px 2px 14px' : '14px 14px 14px 2px'}; background:${m.sender === 'student' ? 'var(--portal-navy)' : '#fff'}; color:${m.sender === 'student' ? '#fff' : 'var(--portal-text-primary)'}; box-shadow:var(--portal-shadow-xs); font-size:0.88rem; border:${m.sender === 'student' ? 'none' : '1px solid var(--portal-border)'};">
+          ${m.text}
+        </div>
+      </div>
+    `).join('');
+
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function handleSendMessage(e) {
+    e.preventDefault();
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    DellicsStore.sendMessage(currentStudent.id, text, 'student');
+    input.value = '';
+    renderMessages();
+  }
+
+  // Wizard Steps Controller
+  function goToStep(stepNum) {
+    document.querySelectorAll('.wizard-nav-step').forEach(el => {
+      const s = parseInt(el.getAttribute('data-step'), 10);
+      el.classList.toggle('active', s === stepNum);
+      if (s < stepNum) el.classList.add('done');
+    });
+
+    document.querySelectorAll('.wizard-form-panel').forEach(p => {
+      p.classList.remove('active');
+    });
+    document.getElementById(`step-panel-${stepNum}`)?.classList.add('active');
+
+    // Update Summary in Step 8
+    if (stepNum === 8) {
+      document.getElementById('rev-name').textContent = `${document.getElementById('wiz-first-name').value} ${document.getElementById('wiz-last-name').value}`;
+      document.getElementById('rev-dest').textContent = `${document.getElementById('wiz-destination').value} - ${document.getElementById('wiz-course').value}`;
+      document.getElementById('rev-intake').textContent = document.getElementById('wiz-intake').value;
+      document.getElementById('rev-acad').textContent = `${document.getElementById('wiz-school').value} (${document.getElementById('wiz-grades').value})`;
+      document.getElementById('rev-budget').textContent = document.getElementById('wiz-budget').value;
+      const testReq = document.getElementById('wiz-test-required').value;
+      document.getElementById('rev-test').textContent = testReq !== 'none' ? `${testReq.toUpperCase()} (Assistance requested)` : 'None';
+    }
+  }
+
+  function saveFullApplication() {
+    const appData = {
+      firstName: document.getElementById('wiz-first-name').value,
+      lastName: document.getElementById('wiz-last-name').value,
+      email: document.getElementById('wiz-email').value,
+      phone: document.getElementById('wiz-phone').value,
+      city: document.getElementById('wiz-city').value,
+      passportNumber: document.getElementById('wiz-passport').value,
+      qualification: document.getElementById('wiz-qualification').value,
+      school: document.getElementById('wiz-school').value,
+      year: document.getElementById('wiz-year').value,
+      grades: document.getElementById('wiz-grades').value,
+      destination: document.getElementById('wiz-destination').value,
+      level: document.getElementById('wiz-level').value,
+      course: document.getElementById('wiz-course').value,
+      budget: document.getElementById('wiz-budget').value,
+      funding: document.getElementById('wiz-funding').value,
+      intake: document.getElementById('wiz-intake').value,
+      testRequired: document.getElementById('wiz-test-required').value,
+      targetScore: document.getElementById('wiz-test-target').value
+    };
+
+    DellicsStore.submitFullApplication(currentStudent.id, appData);
+    alert('Application dossier updated successfully! Your consultant has received your complete profile.');
+    switchTab('overview');
+  }
+
+  // Test Modal
+  function openTestRequestModal(preselect = 'ielts') {
+    document.getElementById('modal-test-select').value = preselect;
+    document.getElementById('test-request-modal').classList.add('active');
+  }
+  function closeTestRequestModal() {
+    document.getElementById('test-request-modal').classList.remove('active');
+  }
+  function handleTestRequestSubmit(e) {
+    e.preventDefault();
+    const testCode = document.getElementById('modal-test-select').value;
+    const targetScore = document.getElementById('modal-test-score').value;
+    DellicsStore.requestTestAssistance(currentStudent.id, testCode, { targetScore });
+    closeTestRequestModal();
+    alert(`Your ${testCode.toUpperCase()} coordination request has been logged! Status: Arranging test/preparation.`);
+    renderStudentData();
+  }
+
+  // Document Upload Modal
+  function openDocUploadModal(preselectType = 'wassce') {
+    document.getElementById('modal-doc-type').value = preselectType;
+    document.getElementById('doc-upload-modal').classList.add('active');
+  }
+  function closeDocUploadModal() {
+    document.getElementById('doc-upload-modal').classList.remove('active');
+  }
+  function handleDocUploadSubmit(e) {
+    e.preventDefault();
+    const docType = document.getElementById('modal-doc-type').value;
+    const fileInput = document.getElementById('modal-doc-file');
+    const fileName = fileInput.files[0] ? fileInput.files[0].name : `${docType}_document.pdf`;
+    const fileSize = fileInput.files[0] ? (fileInput.files[0].size / (1024 * 1024)).toFixed(1) + ' MB' : '1.8 MB';
+
+    DellicsStore.uploadDocument(currentStudent.id, docType, { fileName, size: fileSize });
+    closeDocUploadModal();
+    alert('Document uploaded! Status set to Under Review. Your consultant has been notified.');
+    renderStudentData();
+  }
+
+  // Save Uni & Request Application
+  function toggleSaveUni(uniId) {
+    const isSaved = (currentStudent.savedUniversities || []).includes(uniId);
+    if (isSaved) DellicsStore.removeSavedUniversity(currentStudent.id, uniId);
+    else DellicsStore.saveUniversity(currentStudent.id, uniId);
+    renderUniversityCatalog();
+  }
+  function requestApplicationForUni(uniId) {
+    DellicsStore.requestUniversityApplication(currentStudent.id, uniId);
+    alert('Application requested! Your consultant will review your documents against this university’s entry criteria.');
+    renderStudentData();
+  }
+
+  // Travel Service Request
+  function requestTravelService(type) {
+    DellicsStore.requestTravelService(currentStudent.id, type);
+    alert('Travel request received! Our Dellics Travels concierge will send tailored options directly to your email & notifications.');
+    renderStudentData();
+  }
+
+  // Notifications Modal
+  document.getElementById('notif-toggle-btn').addEventListener('click', () => {
+    const list = document.getElementById('notif-list-container');
+    const notifs = currentStudent.notifications || [];
+    if (!notifs.length) {
+      list.innerHTML = `<p style="font-size:0.84rem; color:var(--portal-text-muted);">No new notifications.</p>`;
+    } else {
+      list.innerHTML = notifs.map(n => `
+        <div style="padding:12px; background:var(--portal-bg); border-radius:8px; border-left:3px solid var(--portal-orange);">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <strong style="font-size:0.88rem; color:var(--portal-navy);">${n.title}</strong>
+            <span style="font-size:0.72rem; color:var(--portal-text-muted);">${n.time}</span>
+          </div>
+          <p style="font-size:0.82rem; color:var(--portal-text-secondary); margin:0;">${n.text}</p>
+        </div>
+      `).join('');
+    }
+    document.getElementById('notif-modal').classList.add('active');
+  });
+  function closeNotifModal() {
+    document.getElementById('notif-modal').classList.remove('active');
+  }
+
+  // Finish Onboarding & Save Profile
+  document.getElementById('btn-finish-onboarding')?.addEventListener('click', () => {
+    const selectedTests = [];
+    document.querySelectorAll('input[name="ob-test"]:checked').forEach(cb => {
+      selectedTests.push(cb.value);
+    });
+
+    const profileData = {
+      personalInfo: {
+        dob: document.getElementById('ob-dob')?.value || '',
+        nationality: document.getElementById('ob-nationality')?.value || 'Ghanaian',
+        residence: document.getElementById('ob-residence')?.value || 'Ghana',
+        phone: document.getElementById('ob-phone')?.value || currentStudent.phone
+      },
+      academicBackground: {
+        qualification: document.getElementById('ob-qualification')?.value || 'WASSCE',
+        school: document.getElementById('ob-school')?.value || 'Senior High School',
+        course: document.getElementById('ob-course')?.value || 'General Science',
+        gradYear: document.getElementById('ob-grad-year')?.value || '2024',
+        grades: document.getElementById('ob-grades')?.value || 'Results Verified'
+      },
+      studyPreferences: {
+        destination: document.getElementById('ob-dest-country')?.value || 'United Kingdom',
+        course: document.getElementById('ob-pref-course')?.value || 'BSc Computer Science',
+        level: document.getElementById('ob-pref-level')?.value || 'Undergraduate',
+        intake: document.getElementById('ob-pref-intake')?.value || 'September 2025',
+        budget: document.getElementById('ob-pref-budget')?.value || '£15,000 - £20,000 / year'
+      },
+      testsNeeded: selectedTests,
+      completionPercentage: 100
+    };
+
+    DellicsStore.updateStudentProfile(currentStudent.id, profileData);
+    alert('🎉 Profile 100% Completed! Your advisor Kwame Asante has been notified and your university matching is now unlocked.');
+    renderStudentData();
+  });
+
+  // Logout
+  document.getElementById('portal-logout-btn').addEventListener('click', () => {
+    DellicsStore.logout();
+    window.location.href = 'index.html';
+  });
+
+  // Subscribe to store updates
+  DellicsStore.subscribe(() => {
+    renderStudentData();
+  });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    renderStudentData();
+  });
+</script>
+
+</body>
+</html>

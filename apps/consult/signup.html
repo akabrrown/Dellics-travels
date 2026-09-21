@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Create Your Dellics Account | Dellics Education Consult</title>
+  <meta name="description" content="Sign up for your Dellics student account. Begin your study-abroad application, test coordination, and document verification." />
+  <link rel="icon" type="image/jpeg" href="DELLICS EDUCATION CONSULT.jpg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Dedicated Auth Page Styles */
+    .auth-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #08124A 0%, #0D1B5E 60%, #1A2D7A 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow-x: hidden;
+      color: #0F172A;
+    }
+
+    .auth-page::before {
+      content: '';
+      position: absolute;
+      top: -150px;
+      right: -150px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,0,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-page::after {
+      content: '';
+      position: absolute;
+      bottom: -150px;
+      left: -150px;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13,27,94,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-header-bar {
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .auth-brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    .auth-brand-text {
+      color: #FFFFFF;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .auth-brand-text span {
+      color: #FF6B00;
+    }
+
+    .auth-back-link {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: all 0.2s ease;
+    }
+
+    .auth-back-link:hover {
+      background: rgba(255,255,255,0.16);
+      color: #FFFFFF;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 20px auto 40px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card-top-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #FF6B00, #FF8534);
+    }
+
+    .auth-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #0D1B5E;
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      font-size: 0.95rem;
+      color: #64748B;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .input-field-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1E293B;
+    }
+
+    .input-box {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1.5px solid #CBD5E1;
+      font-size: 0.95rem;
+      color: #0F172A;
+      background: #F8FAFC;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .input-box:focus {
+      outline: none;
+      background: #FFFFFF;
+      border-color: #FF6B00;
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+    }
+
+    .input-password-wrap {
+      position: relative;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #64748B;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .password-toggle-btn:hover {
+      color: #FF6B00;
+    }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 4px;
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .checkbox-wrap input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: #FF6B00;
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-wrap a {
+      color: #FF6B00;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .btn-submit-auth {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FF6B00 0%, #E55A00 100%);
+      color: #FFFFFF;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 107, 0, 0.35);
+      transition: all 0.2s ease;
+      margin-top: 6px;
+    }
+
+    .btn-submit-auth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 107, 0, 0.45);
+    }
+
+    .btn-submit-auth:active {
+      transform: translateY(0);
+    }
+
+    .auth-footer-prompt {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #64748B;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #E2E8F0;
+    }
+
+    .auth-footer-prompt a {
+      color: #0D1B5E;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 4px;
+    }
+
+    .auth-footer-prompt a:hover {
+      color: #FF6B00;
+      text-decoration: underline;
+    }
+
+    /* Verification State View */
+    .verification-view {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .verification-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(255, 107, 0, 0.12);
+      color: #FF6B00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .verification-email-badge {
+      display: inline-block;
+      background: #F1F5F9;
+      color: #0D1B5E;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 50px;
+      margin: 12px 0 20px;
+      font-size: 0.92rem;
+      word-break: break-all;
+    }
+
+    .btn-resend {
+      background: none;
+      border: 1.5px solid #CBD5E1;
+      color: #475569;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .btn-resend:hover {
+      border-color: #0D1B5E;
+      color: #0D1B5E;
+    }
+
+    .alert-banner {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .alert-banner.error {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: 1px solid #FCA5A5;
+      display: block;
+    }
+
+    .alert-banner.success {
+      background: #DCFCE7;
+      color: #16A34A;
+      border: 1px solid #86EFAC;
+      display: block;
+    }
+
+    .auth-page-footer {
+      text-align: center;
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.82rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (max-width: 640px) {
+      .auth-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+      .form-row-2col {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .auth-header-bar {
+        padding: 16px 20px;
+      }
+      .auth-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <!-- TOP BAR -->
+  <header class="auth-header-bar">
+    <a href="index.html" class="auth-brand">
+      <img src="DELLICS EDUCATION CONSULT.jpg" alt="Dellics Logo" />
+      <div class="auth-brand-text">DELLICS <span>EDUCATION</span></div>
+    </a>
+    <a href="index.html" class="auth-back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      <span>Back to Home</span>
+    </a>
+  </header>
+
+  <!-- MAIN AUTH CONTAINER -->
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-card-top-accent"></div>
+
+      <!-- Alert Notification Banner -->
+      <div id="auth-alert" class="alert-banner" role="alert"></div>
+
+      <!-- STEP 1: INITIAL REGISTRATION FORM -->
+      <div id="signup-form-section">
+        <h1 class="auth-title">Create your Dellics account</h1>
+        <p class="auth-subtitle">Start your study-abroad journey with Dellics Education Consult.</p>
+
+        <form id="signup-form" class="auth-form" novalidate>
+          <div class="form-row-2col">
+            <div class="input-field-wrap">
+              <label for="first-name" class="input-label">First Name</label>
+              <input type="text" id="first-name" class="input-box" placeholder="Enter your first name" required />
+            </div>
+            <div class="input-field-wrap">
+              <label for="last-name" class="input-label">Last Name</label>
+              <input type="text" id="last-name" class="input-box" placeholder="Enter your last name" required />
+            </div>
+          </div>
+
+          <div class="input-field-wrap">
+            <label for="email" class="input-label">Email Address</label>
+            <input type="email" id="email" class="input-box" placeholder="Enter your email address" required />
+          </div>
+
+          <div class="input-field-wrap">
+            <label for="phone" class="input-label">Phone Number</label>
+            <input type="tel" id="phone" class="input-box" placeholder="+233 ..." required />
+          </div>
+
+          <div class="form-row-2col">
+            <div class="input-field-wrap">
+              <label for="password" class="input-label">Password</label>
+              <div class="input-password-wrap">
+                <input type="password" id="password" class="input-box" placeholder="Create a password" required minlength="6" />
+                <button type="button" class="password-toggle-btn" id="toggle-pwd" aria-label="Toggle password visibility">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="input-field-wrap">
+              <label for="confirm-password" class="input-label">Confirm Password</label>
+              <div class="input-password-wrap">
+                <input type="password" id="confirm-password" class="input-box" placeholder="Re-enter your password" required minlength="6" />
+                <button type="button" class="password-toggle-btn" id="toggle-confirm-pwd" aria-label="Toggle password visibility">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="terms-agree" required />
+            <span>I agree to the <a href="about.html" target="_blank">Terms of Service</a> and <a href="about.html" target="_blank">Privacy Policy</a></span>
+          </label>
+
+          <button type="submit" class="btn-submit-auth" id="btn-create-account">
+            Create Account
+          </button>
+        </form>
+
+        <div class="auth-footer-prompt">
+          Already have an account? <a href="login.html">Log in</a>
+        </div>
+      </div>
+
+      <!-- STEP 2: EMAIL VERIFICATION VIEW (Post Registration) -->
+      <div id="verification-section" class="verification-view">
+        <div class="verification-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+
+        <h2 class="auth-title" style="font-size: 1.5rem;">Verify your email</h2>
+        <p class="auth-subtitle" style="margin-bottom: 8px;">We've sent a verification link to your email address.</p>
+        
+        <div class="verification-email-badge" id="display-registered-email">student@example.com</div>
+
+        <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 24px;">
+          Please verify your email to continue. Click below to confirm and proceed to complete your student profile.
+        </p>
+
+        <button type="button" class="btn-submit-auth" id="btn-proceed-profile">
+          Continue to Complete Profile &#8594;
+        </button>
+
+        <div style="margin-top: 14px;">
+          <button type="button" class="btn-resend" id="btn-resend-email">
+            Resend verification email
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="auth-page-footer">
+    &copy; 2026 Dellics Education Consult. All rights reserved. Guiding Futures. Building Success.
+  </footer>
+
+  <!-- Store Script & Auth Handler -->
+  <script src="portal-store.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('signup-form');
+      const alertBox = document.getElementById('auth-alert');
+      const signupSection = document.getElementById('signup-form-section');
+      const verificationSection = document.getElementById('verification-section');
+      const displayEmail = document.getElementById('display-registered-email');
+      const proceedBtn = document.getElementById('btn-proceed-profile');
+      const resendBtn = document.getElementById('btn-resend-email');
+
+      // Password toggles
+      function setupToggle(btnId, inputId) {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        if (!btn || !input) return;
+        btn.addEventListener('click', () => {
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          btn.innerHTML = isPassword
+            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>'
+            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+        });
+      }
+      setupToggle('toggle-pwd', 'password');
+      setupToggle('toggle-confirm-pwd', 'confirm-password');
+
+      function showAlert(message, type = 'error') {
+        alertBox.textContent = message;
+        alertBox.className = `alert-banner ${type}`;
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function clearAlert() {
+        alertBox.textContent = '';
+        alertBox.className = 'alert-banner';
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearAlert();
+
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const termsAgreed = document.getElementById('terms-agree').checked;
+
+        // Validation
+        if (!firstName || !lastName) {
+          showAlert('Please enter both your first name and last name.');
+          return;
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showAlert('Please enter a valid email address.');
+          return;
+        }
+        if (!phone) {
+          showAlert('Please enter your phone number (+233...).');
+          return;
+        }
+        if (password.length < 6) {
+          showAlert('Password must be at least 6 characters long.');
+          return;
+        }
+        if (password !== confirmPassword) {
+          showAlert('Passwords do not match. Please re-enter your password.');
+          return;
+        }
+        if (!termsAgreed) {
+          showAlert('Please agree to the Terms of Service and Privacy Policy to continue.');
+          return;
+        }
+
+        // Register in DellicsStore
+        if (window.DellicsStore && window.DellicsStore.registerStudent) {
+          const res = window.DellicsStore.registerStudent({
+            firstName,
+            lastName,
+            email,
+            phone
+          });
+
+          if (res && res.success) {
+            // Transition to email verification screen
+            displayEmail.textContent = email;
+            signupSection.style.display = 'none';
+            verificationSection.style.display = 'block';
+            clearAlert();
+          } else {
+            showAlert((res && res.error) || 'Registration failed. Please try again.');
+          }
+        } else {
+          // Fallback if store not loaded
+          displayEmail.textContent = email;
+          signupSection.style.display = 'none';
+          verificationSection.style.display = 'block';
+        }
+      });
+
+      // Proceed to Profile Completion in Portal
+      proceedBtn.addEventListener('click', () => {
+        // Redirect to portal with onboarding flag
+        window.location.href = 'portal.html?onboarding=true';
+      });
+
+      // Resend verification email simulation
+      resendBtn.addEventListener('click', () => {
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Sending...';
+        setTimeout(() => {
+          showAlert('A fresh verification link has been sent to your email.', 'success');
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend verification email';
+        }, 800);
+      });
+    });
+  </script>
+</body>
+</html>

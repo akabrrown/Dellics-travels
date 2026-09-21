@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { WhatsappWidget } from "@/components/layout/whatsapp-widget";
 import { AuthProvider } from "@/context/auth-context";
 import { LocaleCurrencyProvider } from "@/context/locale-currency-context";
 import { Toaster } from "@/components/ui/sonner";
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <SiteHeader />
             <main className="flex-1">{children}</main>
             <SiteFooter />
+            <WhatsappWidget />
             <Toaster richColors position="top-center" />
           </LocaleCurrencyProvider>
         </AuthProvider>

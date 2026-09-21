@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -14,6 +14,19 @@ export class ToursController {
   @Get(':slug')
   async getTourBySlug(@Param('slug') slug: string) {
     return this.toursService.getTourBySlug(slug);
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createTour(@Body() body: any) {
+    return this.toursService.createTour(body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async updateTour(@Param('id') id: string, @Body() body: any) {
+    return this.toursService.updateTour(id, body);
   }
 
   @UseGuards(JwtAuthGuard)

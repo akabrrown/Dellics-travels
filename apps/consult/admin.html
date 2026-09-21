@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Consultant &amp; Admin CRM | Dellics Education Consult</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/jpeg" href="DELLICS EDUCATION CONSULT.jpg" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="portal.css" />
+  <style>
+    .admin-stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .admin-stat-item {
+      background: var(--portal-card-bg);
+      border: 1px solid var(--portal-border);
+      border-radius: var(--portal-radius);
+      padding: 18px;
+      box-shadow: var(--portal-shadow-xs);
+    }
+    .admin-stat-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--portal-navy);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .admin-stat-label {
+      font-size: 0.78rem;
+      color: var(--portal-text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .admin-crm-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .admin-crm-table th {
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--portal-text-muted);
+      border-bottom: 1px solid var(--portal-border);
+      background: var(--portal-bg);
+    }
+    .admin-crm-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--portal-border);
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+    .admin-crm-table tr:hover td {
+      background: rgba(13, 27, 94, 0.015);
+    }
+    .admin-tab-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--portal-border);
+      padding-bottom: 12px;
+    }
+    .admin-tab-btn {
+      padding: 8px 16px;
+      border-radius: var(--portal-radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid var(--portal-border);
+      color: var(--portal-text-secondary);
+      cursor: pointer;
+    }
+    .admin-tab-btn.active {
+      background: var(--portal-navy);
+      color: #fff;
+      border-color: var(--portal-navy);
+    }
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      justify-content: flex-end;
+    }
+    .drawer-overlay.active {
+      display: flex;
+    }
+    .drawer-panel {
+      width: 760px;
+      max-width: 95vw;
+      background: #FFFFFF;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+      padding: 32px;
+      position: relative;
+    }
+    .drawer-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--portal-text-muted);
+    }
+  </style>
+</head>
+<body class="portal-body">
+
+<div class="portal-layout">
+
+  <!-- ADMIN SIDEBAR -->
+  <aside class="portal-sidebar" style="background-color: var(--portal-navy-dark);">
+    <div class="portal-sidebar-header">
+      <a href="index.html" class="portal-brand">
+        <img src="DELLICS EDUCATION CONSULT.jpg" alt="Dellics Logo" class="portal-brand-logo" />
+        <div>
+          <div class="portal-brand-title">DELLICS</div>
+          <div class="portal-brand-sub" style="color:#6EE7B7;">Consultant CRM</div>
+        </div>
+      </a>
+    </div>
+
+    <nav class="portal-nav-group">
+      <div class="portal-nav-label">Consultant Desk</div>
+      <a class="portal-nav-item active" onclick="switchAdminTab('crm')">
+        <span class="portal-nav-icon">👥</span>
+        <span>Student CRM</span>
+        <span class="portal-nav-badge" id="admin-badge-students">248</span>
+      </a>
+      <a class="portal-nav-item" onclick="switchAdminTab('tests')">
+        <span class="portal-nav-icon">🎯</span>
+        <span>Tests Coordination</span>
+        <span class="portal-nav-badge" style="background:var(--portal-orange); color:#fff;" id="admin-badge-tests">42</span>
+      </a>
+      <a class="portal-nav-item" onclick="switchAdminTab('documents')">
+        <span class="portal-nav-icon">📁</span>
+        <span>Document Verification</span>
+      </a>
+      <a class="portal-nav-item" onclick="switchAdminTab('visa')">
+        <span class="portal-nav-icon">🛂</span>
+        <span>Visa Queue</span>
+        <span class="portal-nav-badge" id="admin-badge-visa">31</span>
+      </a>
+
+      <div class="portal-nav-label" style="margin-top: 14px;">Platform Views</div>
+      <a href="portal.html" class="portal-nav-item" style="color:var(--portal-orange);">
+        <span class="portal-nav-icon">🎓</span>
+        <span>Open Student Portal</span>
+      </a>
+      <a href="index.html" class="portal-nav-item">
+        <span class="portal-nav-icon">🌐</span>
+        <span>Public Website</span>
+      </a>
+    </nav>
+
+    <div class="portal-sidebar-footer">
+      <div class="portal-user-card">
+        <div class="portal-avatar" style="background:linear-gradient(135deg, #10B981 0%, var(--portal-navy) 100%);">KA</div>
+        <div class="portal-user-info">
+          <div class="portal-user-name">Kwame Asante</div>
+          <div class="portal-user-role">Senior Education Consultant</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ADMIN MAIN -->
+  <main class="portal-main">
+
+    <!-- TOPBAR -->
+    <header class="portal-topbar">
+      <div class="portal-topbar-title">
+        <h1 class="portal-page-heading" id="admin-topbar-title">Consultant &amp; Staff Operations Dashboard</h1>
+      </div>
+      <div class="portal-topbar-actions">
+        <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="handleResetData()" title="Reset mock data to initial state">
+          Reset Demo Data
+        </button>
+        <a href="portal.html" class="portal-btn portal-btn-primary portal-btn-sm">
+          Test as Student ➔
+        </a>
+      </div>
+    </header>
+
+    <div class="portal-content">
+
+      <!-- 6 KEY BUSINESS METRICS STRIP -->
+      <div class="admin-stats-strip">
+        <div class="admin-stat-item">
+          <div class="admin-stat-number" id="kpi-students">248</div>
+          <div class="admin-stat-label">Total Students</div>
+        </div>
+        <div class="admin-stat-item">
+          <div class="admin-stat-number" id="kpi-apps" style="color:var(--portal-orange);">137</div>
+          <div class="admin-stat-label">Active Applications</div>
+        </div>
+        <div class="admin-stat-item">
+          <div class="admin-stat-number" id="kpi-tests">42</div>
+          <div class="admin-stat-label">Tests Pending</div>
+        </div>
+        <div class="admin-stat-item">
+          <div class="admin-stat-number" id="kpi-uni-apps">89</div>
+          <div class="admin-stat-label">Uni Submissions</div>
+        </div>
+        <div class="admin-stat-item">
+          <div class="admin-stat-number" id="kpi-visa" style="color:var(--portal-info);">31</div>
+          <div class="admin-stat-label">Visa Processing</div>
+        </div>
+        <div class="admin-stat-item">
+          <div class="admin-stat-number" id="kpi-appointments" style="color:var(--portal-success);">7</div>
+          <div class="admin-stat-label">Appointments Today</div>
+        </div>
+      </div>
+
+      <!-- TAB 1: STUDENT CRM -->
+      <section id="admin-tab-crm" class="admin-content-view">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Student Applicant Directory &amp; Case Management</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Click on any student record to review their dossier, verify documents, change application stage, or update test status.
+              </p>
+            </div>
+            <!-- Search & Filters -->
+            <div style="display:flex; gap:10px;">
+              <input type="text" id="admin-search-input" oninput="renderStudentsTable()" placeholder="Search by student name or email..." style="padding:8px 12px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.85rem; width:220px;" />
+              <select id="admin-dest-filter" onchange="renderStudentsTable()" style="padding:8px 12px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.85rem;">
+                <option value="all">All Destinations</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Canada">Canada</option>
+                <option value="United States">United States</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table class="admin-crm-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Destination &amp; Course</th>
+                  <th>Intake</th>
+                  <th>Application Stage</th>
+                  <th>Tests</th>
+                  <th>Documents</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-crm-tbody">
+                <!-- Dynamically populated from DellicsStore -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TESTS COORDINATION QUEUE -->
+      <section id="admin-tab-tests" class="admin-content-view" style="display:none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Standardized Test Coordination Queue</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Manage IELTS, SAT, TOEFL, GRE preparation arrangements with accredited test partners.
+              </p>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-crm-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Required Test</th>
+                  <th>Target Score</th>
+                  <th>Coordination Stage</th>
+                  <th>Partner Center</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tests-tbody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DOCUMENT VERIFICATION -->
+      <section id="admin-tab-documents" class="admin-content-view" style="display:none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Pending Document Compliance Verification</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Review high-resolution scans of passports, WASSCE slips, transcripts, and financial proof.
+              </p>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-crm-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Document Type</th>
+                  <th>File Name</th>
+                  <th>Uploaded Date</th>
+                  <th>Current Status</th>
+                  <th>Verification Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-docs-tbody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: VISA QUEUE -->
+      <section id="admin-tab-visa" class="admin-content-view" style="display:none;">
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div>
+              <h3 class="portal-card-title">Visa Guidance &amp; CAS Pipeline</h3>
+              <p style="margin:4px 0 0; font-size:0.84rem; color:var(--portal-text-muted);">
+                Track 28-day holding funds compliance, CAS issuance, and embassy interview schedules.
+              </p>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-crm-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Visa Route</th>
+                  <th>Current Stage</th>
+                  <th>Compliance Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-visa-tbody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- STUDENT INSPECTOR DRAWER -->
+<div class="drawer-overlay" id="student-drawer">
+  <div class="drawer-panel">
+    <button class="drawer-close" onclick="closeStudentDrawer()">&times;</button>
+    <div id="drawer-content">
+      <!-- Dynamically populated -->
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="portal-store.js"></script>
+<script>
+  'use strict';
+
+  let selectedStudentId = null;
+
+  function switchAdminTab(tabName) {
+    document.querySelectorAll('.admin-content-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.portal-nav-item').forEach(i => i.classList.remove('active'));
+    
+    document.getElementById(`admin-tab-${tabName}`)?.style.removeProperty('display');
+    
+    const titles = {
+      crm: 'Student CRM & Dossier Management',
+      tests: 'Tests Coordination & Test Centre Booking',
+      documents: 'Document Compliance & Verification',
+      visa: 'Visa Pipeline & CAS Compliance'
+    };
+    document.getElementById('admin-topbar-title').textContent = titles[tabName] || 'Admin Backoffice';
+  }
+
+  function renderAdminDashboard() {
+    const state = DellicsStore.getState();
+    const students = state.students || [];
+
+    // Update KPI numbers
+    document.getElementById('kpi-students').textContent = state.stats.totalStudents || students.length;
+    document.getElementById('kpi-apps').textContent = state.stats.activeApplications;
+    document.getElementById('kpi-tests').textContent = state.stats.testsPending;
+    document.getElementById('kpi-uni-apps').textContent = state.stats.universityApplications;
+    document.getElementById('kpi-visa').textContent = state.stats.visaProcessing;
+    document.getElementById('kpi-appointments').textContent = state.stats.appointmentsToday;
+
+    renderStudentsTable();
+    renderTestsQueue();
+    renderDocsQueue();
+    renderVisaQueue();
+  }
+
+  function renderStudentsTable() {
+    const tbody = document.getElementById('admin-crm-tbody');
+    if (!tbody) return;
+
+    const state = DellicsStore.getState();
+    const students = state.students || [];
+    const search = (document.getElementById('admin-search-input')?.value || '').toLowerCase().trim();
+    const destFilter = document.getElementById('admin-dest-filter')?.value || 'all';
+
+    const filtered = students.filter(s => {
+      const matchSearch = !search || s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search);
+      const matchDest = destFilter === 'all' || s.activeApplication?.destination === destFilter;
+      return matchSearch && matchDest;
+    });
+
+    tbody.innerHTML = filtered.map(s => {
+      const app = s.activeApplication || {};
+      const stages = app.stages || [];
+      const curStageIdx = app.currentStageIndex || 0;
+      const curStageName = stages[curStageIdx]?.name || 'Active';
+
+      // Tests summary
+      const testNames = Object.keys(s.tests || {}).filter(k => s.tests[k]?.requested);
+      const testsBadge = testNames.length ? testNames.map(t => `<span class="portal-pill-badge active-status" style="font-size:0.7rem;">${t.toUpperCase()}</span>`).join(' ') : '<span style="color:var(--portal-text-muted); font-size:0.8rem;">None</span>';
+
+      // Docs summary
+      const approvedDocs = s.documents?.filter(d => d.status === 'approved').length || 0;
+      const totalDocs = s.documents?.length || 0;
+
+      return `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="portal-avatar" style="width:34px; height:34px; font-size:0.8rem;">${s.avatar || s.name.slice(0, 2).toUpperCase()}</div>
+              <div>
+                <strong>${s.name}</strong>
+                <div style="font-size:0.75rem; color:var(--portal-text-muted);">${s.email}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div><strong>${app.destination || 'Unassigned'}</strong></div>
+            <div style="font-size:0.78rem; color:var(--portal-text-secondary);">${app.course || 'General Admission'} (${app.level || 'UG'})</div>
+          </td>
+          <td>${app.intake || 'Sept 2025'}</td>
+          <td>
+            <span class="portal-status-pill pending">${curStageName}</span>
+          </td>
+          <td>${testsBadge}</td>
+          <td>
+            <span style="font-size:0.84rem; font-weight:600;">${approvedDocs} / ${totalDocs}</span>
+          </td>
+          <td>
+            <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="openStudentDrawer('${s.id}')">
+              Manage Dossier ➔
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderTestsQueue() {
+    const tbody = document.getElementById('admin-tests-tbody');
+    if (!tbody) return;
+
+    const state = DellicsStore.getState();
+    const students = state.students || [];
+
+    const rows = [];
+    students.forEach(s => {
+      Object.keys(s.tests || {}).forEach(k => {
+        const t = s.tests[k];
+        if (t && t.requested) {
+          rows.push(`
+            <tr>
+              <td><strong>${s.name}</strong> (${s.activeApplication?.destination})</td>
+              <td><span class="portal-pill-badge active-status">${t.testType}</span></td>
+              <td>${t.targetScore}</td>
+              <td><strong>${t.status}</strong></td>
+              <td>${t.partnerCenter || 'Dellics Partner'}</td>
+              <td>
+                <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="openStudentDrawer('${s.id}')">
+                  Update Stage
+                </button>
+              </td>
+            </tr>
+          `);
+        }
+      });
+    });
+
+    tbody.innerHTML = rows.length ? rows.join('') : `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--portal-text-muted);">No pending test requests.</td></tr>`;
+  }
+
+  function renderDocsQueue() {
+    const tbody = document.getElementById('admin-docs-tbody');
+    if (!tbody) return;
+
+    const state = DellicsStore.getState();
+    const students = state.students || [];
+
+    const rows = [];
+    students.forEach(s => {
+      (s.documents || []).forEach(d => {
+        rows.push(`
+          <tr>
+            <td><strong>${s.name}</strong></td>
+            <td>${d.name}</td>
+            <td style="font-size:0.8rem; color:var(--portal-text-muted);">${d.fileName}</td>
+            <td>${d.uploadedAt || 'Recent'}</td>
+            <td><span class="portal-status-pill ${d.status}">${d.status}</span></td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="quickVerifyDoc('${s.id}', '${d.id}', 'approved')">Approve ✓</button>
+                <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="quickVerifyDoc('${s.id}', '${d.id}', 'action_required')">Request Edit</button>
+              </div>
+            </td>
+          </tr>
+        `);
+      });
+    });
+
+    tbody.innerHTML = rows.length ? rows.join('') : `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--portal-text-muted);">No documents pending review.</td></tr>`;
+  }
+
+  function renderVisaQueue() {
+    const tbody = document.getElementById('admin-visa-tbody');
+    if (!tbody) return;
+
+    const state = DellicsStore.getState();
+    const students = state.students || [];
+
+    tbody.innerHTML = students.map(s => {
+      const v = s.visa || {};
+      return `
+        <tr>
+          <td><strong>${s.name}</strong></td>
+          <td>${v.destination || s.activeApplication?.destination}</td>
+          <td>${v.status || 'Not Started'}</td>
+          <td style="font-size:0.82rem; color:var(--portal-text-muted);">${v.advisoryNotes || 'None'}</td>
+          <td>
+            <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="openStudentDrawer('${s.id}')">
+              Review Compliance
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Open Detailed Drawer for Student
+  function openStudentDrawer(studentId) {
+    selectedStudentId = studentId;
+    const state = DellicsStore.getState();
+    const student = state.students.find(s => s.id === studentId);
+    if (!student) return;
+
+    const app = student.activeApplication || {};
+    const curStageIdx = app.currentStageIndex || 0;
+    const stages = app.stages || [];
+
+    const drawer = document.getElementById('drawer-content');
+    drawer.innerHTML = `
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--portal-border);">
+        <div class="portal-avatar" style="width:54px; height:54px; font-size:1.2rem;">${student.avatar || student.name.slice(0, 2)}</div>
+        <div>
+          <h2 style="font-family:'Outfit'; color:var(--portal-navy); margin:0 0 4px;">${student.name}</h2>
+          <div style="font-size:0.85rem; color:var(--portal-text-muted);">${student.email} • 📞 ${student.phone} • 📍 ${student.city}</div>
+        </div>
+      </div>
+
+      <!-- Application Stage Advancement -->
+      <div style="background:var(--portal-bg); border-radius:var(--portal-radius); padding:20px; margin-bottom:24px;">
+        <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-top:0; margin-bottom:12px;">Application Stage Progression</h4>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <label style="font-weight:600; font-size:0.85rem;">Current Stage:</label>
+          <select id="drawer-stage-select" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.88rem;">
+            ${stages.map((stg, idx) => `
+              <option value="${idx}" ${idx === curStageIdx ? 'selected' : ''}>${idx + 1}. ${stg.name} (${stg.status})</option>
+            `).join('')}
+          </select>
+          <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="handleAdvanceStage('${student.id}')">Advance Stage</button>
+        </div>
+      </div>
+
+      <!-- Document Compliance Actions -->
+      <div style="margin-bottom:24px;">
+        <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:12px;">Documents Compliance Verification</h4>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${(student.documents || []).map(d => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; border:1px solid var(--portal-border); border-radius:8px;">
+              <div>
+                <strong>${d.name}</strong>
+                <div style="font-size:0.78rem; color:var(--portal-text-muted);">${d.fileName} (${d.size || '1.5MB'}) • Uploaded ${d.uploadedAt}</div>
+                <div style="font-size:0.8rem; color:var(--portal-orange); margin-top:2px;">${d.note || ''}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="portal-status-pill ${d.status}">${d.status}</span>
+                <button class="portal-btn portal-btn-secondary portal-btn-sm" onclick="handleVerifyDoc('${student.id}', '${d.id}', 'approved')">Approve ✓</button>
+                <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="handleVerifyDocPrompt('${student.id}', '${d.id}', 'action_required')">Request Revision</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Tests Coordination Manager -->
+      <div style="margin-bottom:24px;">
+        <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:12px;">Tests Coordination Status</h4>
+        ${Object.keys(student.tests || {}).map(k => {
+          const t = student.tests[k];
+          if (!t || !t.requested) return '';
+          return `
+            <div style="padding:16px; border:1px solid var(--portal-border); border-radius:8px; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <strong style="color:var(--portal-navy); font-size:1.05rem;">${t.testType}</strong>
+                <span class="portal-pill-badge active-status">${t.status}</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--portal-text-secondary); margin:0 0 10px;">${t.notes || ''}</p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="handleUpdateTestStage('${student.id}', '${k}', 1, 'Preparation arranged with tutor.')">Mark Prep Arranged</button>
+                <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="handleUpdateTestStage('${student.id}', '${k}', 2, 'Test centre booking in progress.')">Mark Centre Coordination</button>
+                <button class="portal-btn portal-btn-outline portal-btn-sm" onclick="handlePromptTestDate('${student.id}', '${k}')">Set Test Date</button>
+                <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="handlePromptTestScore('${student.id}', '${k}')">Record Official Score</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- Send In-App Notification to Student -->
+      <div style="margin-bottom:24px; padding:20px; background:var(--portal-bg); border-radius:var(--portal-radius);">
+        <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-top:0; margin-bottom:10px;">Dispatch In-App Alert to Student</h4>
+        <input type="text" id="admin-alert-title" placeholder="Alert Title (e.g. Offer Letter Received)" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.88rem; margin-bottom:8px; box-sizing:border-box;" />
+        <textarea id="admin-alert-text" rows="2" placeholder="Alert message details..." style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.88rem; margin-bottom:10px; box-sizing:border-box;"></textarea>
+        <button class="portal-btn portal-btn-primary portal-btn-sm" onclick="handleSendStudentAlert('${student.id}')">Send Notification</button>
+      </div>
+
+      <!-- Internal Consultant Notes -->
+      <div>
+        <h4 style="font-family:'Outfit'; color:var(--portal-navy); margin-bottom:10px;">Internal Case Notes (Staff Only)</h4>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" id="admin-internal-note" placeholder="Add confidential consultant note..." style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid var(--portal-border); font-size:0.88rem;" />
+          <button class="portal-btn portal-btn-secondary portal-btn-sm" onclick="handleAddNote('${student.id}')">Add Note</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${(student.internalNotes || []).map(n => `
+            <div style="font-size:0.82rem; padding:10px; background:#fff; border:1px solid var(--portal-border); border-radius:6px;">
+              <div style="display:flex; justify-content:space-between; color:var(--portal-text-muted); font-size:0.75rem; margin-bottom:2px;">
+                <strong>${n.author}</strong>
+                <span>${n.date}</span>
+              </div>
+              <div>${n.text}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('student-drawer').classList.add('active');
+  }
+
+  function closeStudentDrawer() {
+    document.getElementById('student-drawer').classList.remove('active');
+  }
+
+  // Action Handlers
+  function handleAdvanceStage(studentId) {
+    const stageIdx = parseInt(document.getElementById('drawer-stage-select').value, 10);
+    DellicsStore.updateApplicationStage(studentId, stageIdx);
+    alert('Application stage advanced! Student will see this update in their portal timeline.');
+    openStudentDrawer(studentId);
+    renderAdminDashboard();
+  }
+
+  function quickVerifyDoc(studentId, docId, status) {
+    DellicsStore.updateDocumentStatus(studentId, docId, status, 'Approved by consultant after compliance review.');
+    renderAdminDashboard();
+  }
+
+  function handleVerifyDoc(studentId, docId, status) {
+    quickVerifyDoc(studentId, docId, status);
+    openStudentDrawer(studentId);
+  }
+
+  function handleVerifyDocPrompt(studentId, docId, status) {
+    const note = prompt('Enter compliance reason for requesting revision:', 'Official institutional stamp and signature required.');
+    if (note) {
+      DellicsStore.updateDocumentStatus(studentId, docId, status, note);
+      openStudentDrawer(studentId);
+      renderAdminDashboard();
+    }
+  }
+
+  function handleUpdateTestStage(studentId, testCode, stageIdx, note) {
+    DellicsStore.updateTestCoordination(studentId, testCode, stageIdx, note);
+    openStudentDrawer(studentId);
+    renderAdminDashboard();
+  }
+
+  function handlePromptTestDate(studentId, testCode) {
+    const date = prompt('Enter scheduled test date (e.g. April 12, 2025 at British Council Accra):');
+    if (date) {
+      DellicsStore.updateTestCoordination(studentId, testCode, 3, `Official exam scheduled for: ${date}`);
+      openStudentDrawer(studentId);
+      renderAdminDashboard();
+    }
+  }
+
+  function handlePromptTestScore(studentId, testCode) {
+    const score = prompt('Enter official exam score achieved (e.g. 7.5 or 1420):');
+    if (score) {
+      DellicsStore.updateTestCoordination(studentId, testCode, 4, `Test completed. Official score received: ${score}`, score);
+      openStudentDrawer(studentId);
+      renderAdminDashboard();
+    }
+  }
+
+  function handleSendStudentAlert(studentId) {
+    const title = document.getElementById('admin-alert-title').value.trim();
+    const text = document.getElementById('admin-alert-text').value.trim();
+    if (!title || !text) return;
+    const student = DellicsStore.getState().students.find(s => s.id === studentId);
+    if (student) {
+      student.notifications.unshift({
+        id: 'notif-' + Date.now(),
+        title: title,
+        text: text,
+        time: 'Just now',
+        read: false,
+        type: 'application'
+      });
+      alert('In-app notification sent to student portal!');
+      document.getElementById('admin-alert-title').value = '';
+      document.getElementById('admin-alert-text').value = '';
+    }
+  }
+
+  function handleAddNote(studentId) {
+    const input = document.getElementById('admin-internal-note');
+    const text = input.value.trim();
+    if (!text) return;
+    DellicsStore.addInternalNote(studentId, text, 'Kwame Asante');
+    input.value = '';
+    openStudentDrawer(studentId);
+    renderAdminDashboard();
+  }
+
+  function handleResetData() {
+    if (confirm('Reset platform data to clean pre-seeded demo state?')) {
+      DellicsStore.resetToDemoData();
+      renderAdminDashboard();
+    }
+  }
+
+  // Subscribe to live updates
+  DellicsStore.subscribe(() => {
+    renderAdminDashboard();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderAdminDashboard();
+  });
+</script>
+
+</body>
+</html>

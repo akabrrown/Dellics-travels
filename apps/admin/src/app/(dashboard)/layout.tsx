@@ -126,6 +126,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       group: "Core",
       items: [
         { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
+        { label: "Consultant CRM", href: "/consultant", icon: FileText, permission: "consultant.view" },
         {
           label: "Bookings",
           href: "/bookings",
