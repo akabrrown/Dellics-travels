@@ -173,7 +173,7 @@ export default function AdminLogin() {
             <div className="flex items-center justify-between">
               <div className="relative h-14 w-20">
                 <Image
-                  src="/logo.jpeg"
+                  src="/logo.png"
                   alt="Dellics Travels"
                   fill
                   className="object-contain"
