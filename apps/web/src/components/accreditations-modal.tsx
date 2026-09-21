@@ -53,7 +53,7 @@ export const ACCREDITATION_BADGES: AccreditationBadge[] = [
     name: "RateHawk B2B",
     category: "Wholesale Hotel Network",
     description: "B2B partnership providing instant booking access to over 3.3 million verified hotels, luxury apartments, and boutique stays across 190+ countries.",
-    highlight: "3.3M+ Verified Stays",
+    
   },
   {
     src: "/badges/travel-port.png",

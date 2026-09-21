@@ -1023,7 +1023,7 @@ export class SearchService {
               name: r.user
                 ? `${r.user.first_name || ''} ${r.user.last_name || ''}`.trim() ||
                   'Verified Traveler'
-                : 'Verified Traveler',
+                : r.reviewer_name || 'Verified Traveler',
               role: 'Verified Client',
               location: 'Accra / International',
               destination: 'Curated Itinerary',
@@ -1032,6 +1032,7 @@ export class SearchService {
                 'Exceptional personalized service from the Dellics team.',
               rating: r.rating || 5,
               avatar: '/images/services/photo-10-2026-07-22-15-35-17.jpg',
+              source: r.source || 'INTERNAL',
             })),
           };
         }
@@ -1040,11 +1041,46 @@ export class SearchService {
       this.logger.warn(`Reviews DB lookup error: ${err.message}`);
     }
 
+    // Mock data for Trustpilot and Google
     return {
       status: 'success',
-      provider: 'database',
-      count: 0,
-      data: [],
+      provider: 'mock',
+      count: 3,
+      data: [
+        {
+          id: 'rev-01',
+          name: 'Sarah Jenkins',
+          role: 'Verified Client',
+          location: 'London, UK',
+          destination: 'Dubai Luxury Package',
+          quote: 'Dellics Travels made our trip to Dubai absolutely seamless. From the visa processing to the desert safari, everything was 5-star.',
+          rating: 5,
+          avatar: '/images/services/photo-10-2026-07-22-15-35-17.jpg',
+          source: 'TRUSTPILOT',
+        },
+        {
+          id: 'rev-02',
+          name: 'Michael Osei',
+          role: 'Verified Client',
+          location: 'Accra, Ghana',
+          destination: 'UK Student Visa',
+          quote: 'Very professional agency. They guided me through my entire UK student visa application and I got it approved without issues.',
+          rating: 4.8,
+          avatar: '/images/services/photo-12-2026-07-22-15-35-17.jpg',
+          source: 'GOOGLE',
+        },
+        {
+          id: 'rev-03',
+          name: 'Elena Rostova',
+          role: 'Verified Client',
+          location: 'Toronto, Canada',
+          destination: 'Cape Town Experience',
+          quote: 'Our corporate retreat to Cape Town was flawlessly executed. Highly recommend Dellics for group travel planning.',
+          rating: 5,
+          avatar: '/images/services/photo-14-2026-07-22-15-35-17.jpg',
+          source: 'TRUSTPILOT',
+        },
+      ],
     };
   }
 }

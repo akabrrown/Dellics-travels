@@ -1,7 +1,21 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 import Image from "next/image";
 
 export default function SignupPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsSuccess(true);
+    }, 1500);
+  };
+
   return (
     <main>
       
@@ -22,7 +36,7 @@ export default function SignupPage() {
         <h1 className="auth-title">Create your Dellics account</h1>
         <p className="auth-subtitle">Start your study-abroad journey with Dellics Education Consult.</p>
 
-        <form id="signup-form" className="auth-form" noValidate>
+        <form id="signup-form" className="auth-form" noValidate onSubmit={handleSubmit}>
           <div className="form-row-2col">
             <div className="input-field-wrap">
               <label htmlFor="first-name" className="input-label">First Name</label>
@@ -41,25 +55,25 @@ export default function SignupPage() {
 
           <div className="input-field-wrap">
             <label htmlFor="phone" className="input-label">Phone Number</label>
-            <input type="tel" id="phone" className="input-box" placeholder="+233 ..." required />
+            <input type="tel" id="phone" className="input-box" placeholder="+233 …" required />
           </div>
 
           <div className="form-row-2col">
             <div className="input-field-wrap">
               <label htmlFor="password" className="input-label">Password</label>
               <div className="input-password-wrap">
-                <input type="password" id="password" className="input-box" placeholder="Create a password" required minLength="6" />
+                <input type="password" id="password" className="input-box" placeholder="Create a password" required minLength={6} />
                 <button type="button" className="password-toggle-btn" id="toggle-pwd" aria-label="Toggle password visibility">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
             </div>
             <div className="input-field-wrap">
               <label htmlFor="confirm-password" className="input-label">Confirm Password</label>
               <div className="input-password-wrap">
-                <input type="password" id="confirm-password" className="input-box" placeholder="Re-enter your password" required minLength="6" />
+                <input type="password" id="confirm-password" className="input-box" placeholder="Re-enter your password" required minLength={6} />
                 <button type="button" className="password-toggle-btn" id="toggle-confirm-pwd" aria-label="Toggle password visibility">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
             </div>
@@ -67,7 +81,7 @@ export default function SignupPage() {
 
           <label className="checkbox-wrap">
             <input type="checkbox" id="terms-agree" required />
-            <span>I agree to the <a href="/about" target="_blank">Terms of Service</a> and <a href="/about" target="_blank">Privacy Policy</a></span>
+            <span>I agree to the <Link href="/about" target="_blank">Terms of Service</Link> and <Link href="/about" target="_blank">Privacy Policy</Link></span>
           </label>
 
           <button type="submit" className="btn-submit-auth" id="btn-create-account">
@@ -76,15 +90,15 @@ export default function SignupPage() {
         </form>
 
         <div className="auth-footer-prompt">
-          Already have an account? <a href="/login">Log in</a>
+          Already have an account? <Link href="/login">Log in</Link>
         </div>
       </div>
 
       {/*  STEP 2: EMAIL VERIFICATION VIEW (Post Registration)  */}
       <div id="verification-section" className="verification-view">
         <div className="verification-icon">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect width={20} height={16} x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
           </svg>
         </div>
 

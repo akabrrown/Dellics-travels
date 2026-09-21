@@ -1,8 +1,19 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function PortalPage() {
-  return (
+  
+  const switchTab = (tab: any) => {};
+  const goToOnboardingStep = (step: any) => {};
+  const goToStep = (step: any) => {};
+  const saveFullApplication = () => {};
+  const openTestRequestModal = () => {};
+  const renderUniversityCatalog = (e?: any) => {};
+  const openDocUploadModal = () => {};
+  const requestTravelService = (service: any) => {};
+  const handleSendMessage = (e: any) => { if(e && e.preventDefault) e.preventDefault(); };
+return (
     <main>
       
 
@@ -17,17 +28,17 @@ export default function PortalPage() {
         {/*  Direct Travel Ecosystem Switcher  */}
         <a href="https://dellicstravels.com" target="_blank" rel="noopener noreferrer" className="portal-ecosystem-btn" title="Explore Dellics Travels Flights, Hotels, Tours & eSIM">
           <span>✈️ Dellics Travels</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
         </a>
 
         {/*  Admin Backoffice Switcher for Pair Testing  */}
-        <a href="/admin" className="portal-btn portal-btn-outline portal-btn-sm" style={{ fontSize: "0.78rem" }}>
+        <Link href="/admin" className="portal-btn portal-btn-outline portal-btn-sm" style={{ fontSize: "0.78rem" }}>
           Consultant View ➔
-        </a>
+        </Link>
 
         {/*  Notifications Bell  */}
         <button className="portal-notif-btn" id="notif-toggle-btn" aria-label="Notifications">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span className="portal-notif-badge" id="notif-badge-count">3</span>
         </button>
       </div>
@@ -50,8 +61,8 @@ export default function PortalPage() {
               <span className="portal-pill-badge">Intake: Sept 2025</span>
             </div>
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "8px" }}>
-              <button className="portal-btn portal-btn-primary portal-btn-sm" onclick="switchTab('application')">Review Application Dossier</button>
-              <button className="portal-btn portal-btn-secondary portal-btn-sm" onclick="switchTab('tests')">Manage Test Requirements</button>
+              <button className="portal-btn portal-btn-primary portal-btn-sm" onClick={() => { switchTab('application') }}>Review Application Dossier</button>
+              <button className="portal-btn portal-btn-secondary portal-btn-sm" onClick={() => { switchTab('tests') }}>Manage Test Requirements</button>
             </div>
           </div>
           <div style={{ textAlign: "right", zIndex: "2" }} className="hide-mobile">
@@ -87,25 +98,25 @@ export default function PortalPage() {
 
           {/*  Step Tabs  */}
           <div className="onboarding-step-tabs" id="onboarding-tabs-bar">
-            <button type="button" className="onboarding-tab-btn active" data-step="1" onclick="goToOnboardingStep(1)">
+            <button type="button" className="onboarding-tab-btn active" data-step="1" onClick={() => { goToOnboardingStep(1) }}>
               <span>1</span> Personal Information
             </button>
-            <button type="button" className="onboarding-tab-btn" data-step="2" onclick="goToOnboardingStep(2)">
+            <button type="button" className="onboarding-tab-btn" data-step="2" onClick={() => { goToOnboardingStep(2) }}>
               <span>2</span> Academic Background
             </button>
-            <button type="button" className="onboarding-tab-btn" data-step="3" onclick="goToOnboardingStep(3)">
+            <button type="button" className="onboarding-tab-btn" data-step="3" onClick={() => { goToOnboardingStep(3) }}>
               <span>3</span> Study Preferences
             </button>
-            <button type="button" className="onboarding-tab-btn" data-step="4" onclick="goToOnboardingStep(4)">
+            <button type="button" className="onboarding-tab-btn" data-step="4" onClick={() => { goToOnboardingStep(4) }}>
               <span>4</span> Tests
             </button>
-            <button type="button" className="onboarding-tab-btn" data-step="5" onclick="goToOnboardingStep(5)">
+            <button type="button" className="onboarding-tab-btn" data-step="5" onClick={() => { goToOnboardingStep(5) }}>
               <span>5</span> Documents
             </button>
           </div>
 
           {/*  Multi-Step Form Containers  */}
-          <form id="onboarding-form" onsubmit="return false;" noValidate>
+          <form id="onboarding-form" onSubmit={() => { return false; }} noValidate>
             {/*  STEP 1: Personal Information  */}
             <div className="onboarding-step-content active" id="onboarding-step-1">
               <div className="portal-form-grid">
@@ -123,12 +134,12 @@ export default function PortalPage() {
                 </div>
                 <div className="wizard-form-group">
                   <label>Phone Number *</label>
-                  <input type="tel" id="ob-phone" placeholder="+233 ..." />
+                  <input type="tel" id="ob-phone" placeholder="+233 …" />
                 </div>
               </div>
               <div className="onboarding-actions">
                 <div></div>
-                <button type="button" className="portal-btn portal-btn-primary" onclick="goToOnboardingStep(2)">
+                <button type="button" className="portal-btn portal-btn-primary" onClick={() => { goToOnboardingStep(2) }}>
                   Save &amp; Continue: Academic Background ➔
                 </button>
               </div>
@@ -167,10 +178,10 @@ export default function PortalPage() {
                 </div>
               </div>
               <div className="onboarding-actions">
-                <button type="button" className="portal-btn portal-btn-outline" onclick="goToOnboardingStep(1)">
+                <button type="button" className="portal-btn portal-btn-outline" onClick={() => { goToOnboardingStep(1) }}>
                   ← Previous
                 </button>
-                <button type="button" className="portal-btn portal-btn-primary" onclick="goToOnboardingStep(3)">
+                <button type="button" className="portal-btn portal-btn-primary" onClick={() => { goToOnboardingStep(3) }}>
                   Save &amp; Continue: Study Preferences ➔
                 </button>
               </div>
@@ -223,10 +234,10 @@ export default function PortalPage() {
                 </div>
               </div>
               <div className="onboarding-actions">
-                <button type="button" className="portal-btn portal-btn-outline" onclick="goToOnboardingStep(2)">
+                <button type="button" className="portal-btn portal-btn-outline" onClick={() => { goToOnboardingStep(2) }}>
                   ← Previous
                 </button>
-                <button type="button" className="portal-btn portal-btn-primary" onclick="goToOnboardingStep(4)">
+                <button type="button" className="portal-btn portal-btn-primary" onClick={() => { goToOnboardingStep(4) }}>
                   Save &amp; Continue: Tests Needed ➔
                 </button>
               </div>
@@ -278,10 +289,10 @@ export default function PortalPage() {
                 🎯 <strong>Test-Centre Coordination System:</strong> Dellics partners with accredited testing centers to assist Ghanaian and African students with diagnostic practice, registration dates, and test preparation.
               </div>
               <div className="onboarding-actions">
-                <button type="button" className="portal-btn portal-btn-outline" onclick="goToOnboardingStep(3)">
+                <button type="button" className="portal-btn portal-btn-outline" onClick={() => { goToOnboardingStep(3) }}>
                   ← Previous
                 </button>
-                <button type="button" className="portal-btn portal-btn-primary" onclick="goToOnboardingStep(5)">
+                <button type="button" className="portal-btn portal-btn-primary" onClick={() => { goToOnboardingStep(5) }}>
                   Save &amp; Continue: Documents ➔
                 </button>
               </div>
@@ -307,7 +318,7 @@ export default function PortalPage() {
                 </div>
               </div>
               <div className="onboarding-actions">
-                <button type="button" className="portal-btn portal-btn-outline" onclick="goToOnboardingStep(4)">
+                <button type="button" className="portal-btn portal-btn-outline" onClick={() => { goToOnboardingStep(4) }}>
                   ← Previous
                 </button>
                 <button type="button" className="portal-btn portal-btn-primary" id="btn-finish-onboarding">
@@ -325,7 +336,7 @@ export default function PortalPage() {
               <h3 className="portal-tracker-title">Application Milestone Tracker</h3>
               <p style={{ margin: "4px 0 0", fontSize: "0.82rem", color: "var(--portal-text-muted)" }}>Real-time status of your university admissions journey</p>
             </div>
-            <button className="portal-btn portal-btn-outline portal-btn-sm" onclick="switchTab('application')">Full Details ➔</button>
+            <button className="portal-btn portal-btn-outline portal-btn-sm" onClick={() => { switchTab('application') }}>Full Details ➔</button>
           </div>
           <div className="portal-timeline-steps" id="overview-timeline-steps">
             {/*  Dynamically populated from DellicsStore  */}
@@ -334,28 +345,28 @@ export default function PortalPage() {
 
         {/*  Quick Stats  */}
         <div className="portal-stats-grid">
-          <div className="portal-stat-card" onclick="switchTab('documents')">
+          <div className="portal-stat-card" onClick={() => { switchTab('documents') }}>
             <div className="portal-stat-icon green">📁</div>
             <div>
               <div className="portal-stat-value" id="stat-docs-val">5 / 6</div>
               <div className="portal-stat-label">Verified Documents</div>
             </div>
           </div>
-          <div className="portal-stat-card" onclick="switchTab('tests')">
+          <div className="portal-stat-card" onClick={() => { switchTab('tests') }}>
             <div className="portal-stat-icon orange">🎯</div>
             <div>
               <div className="portal-stat-value" id="stat-tests-val">IELTS</div>
               <div className="portal-stat-label">Test Coordination: Active</div>
             </div>
           </div>
-          <div className="portal-stat-card" onclick="switchTab('universities')">
+          <div className="portal-stat-card" onClick={() => { switchTab('universities') }}>
             <div className="portal-stat-icon blue">🏛️</div>
             <div>
               <div className="portal-stat-value" id="stat-unis-val">3</div>
               <div className="portal-stat-label">Universities Applied</div>
             </div>
           </div>
-          <div className="portal-stat-card" onclick="switchTab('visa')">
+          <div className="portal-stat-card" onClick={() => { switchTab('visa') }}>
             <div className="portal-stat-icon yellow">🛂</div>
             <div>
               <div className="portal-stat-value" id="stat-visa-val">Stage 2</div>
@@ -372,7 +383,7 @@ export default function PortalPage() {
               <h3 className="portal-card-title">
                 <span>🎯</span> Active Test Status
               </h3>
-              <button className="portal-btn portal-btn-outline portal-btn-sm" onclick="switchTab('tests')">Request New Test</button>
+              <button className="portal-btn portal-btn-outline portal-btn-sm" onClick={() => { switchTab('tests') }}>Request New Test</button>
             </div>
             <div id="overview-test-summary">
               {/*  Dynamically populated  */}
@@ -395,7 +406,7 @@ export default function PortalPage() {
               <div className="portal-perk-title">Student Flight Fares (46kg Baggage)</div>
               <div className="portal-perk-desc">Save up to 10% on British Airways, Emirates, and Qatar Airways via Dellics Travels.</div>
             </div>
-            <button className="portal-btn portal-btn-primary portal-btn-sm" style={{ width: "100%" }} onclick="switchTab('travel')">Explore Student Travel Packages</button>
+            <button className="portal-btn portal-btn-primary portal-btn-sm" style={{ width: "100%" }} onClick={() => { switchTab('travel') }}>Explore Student Travel Packages</button>
           </div>
         </div>
       </section>
@@ -462,7 +473,7 @@ export default function PortalPage() {
             </div>
             <div className="wizard-actions">
               <div></div>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(2)">Continue to Academic Background ➔</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(2) }}>Continue to Academic Background ➔</button>
             </div>
           </div>
 
@@ -494,8 +505,8 @@ export default function PortalPage() {
               </div>
             </div>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(1)">← Back</button>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(3)">Continue to Destination ➔</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(1) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(3) }}>Continue to Destination ➔</button>
             </div>
           </div>
 
@@ -523,8 +534,8 @@ export default function PortalPage() {
               </select>
             </div>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(2)">← Back</button>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(4)">Continue to Intended Course ➔</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(2) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(4) }}>Continue to Intended Course ➔</button>
             </div>
           </div>
 
@@ -537,11 +548,11 @@ export default function PortalPage() {
             </div>
             <div className="wizard-form-group">
               <label>Specialization or Career Goal</label>
-              <textarea id="wiz-career-goal" rows="3" placeholder="Tell us why you chose this course and your post-study career goals...">Specializing in Artificial Intelligence and Software Architecture.</textarea>
+              <textarea id="wiz-career-goal" rows={3} placeholder="Tell us why you chose this course and your post-study career goals…">Specializing in Artificial Intelligence and Software Architecture.</textarea>
             </div>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(3)">← Back</button>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(5)">Continue to Budget ➔</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(3) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(5) }}>Continue to Budget ➔</button>
             </div>
           </div>
 
@@ -567,8 +578,8 @@ export default function PortalPage() {
               </select>
             </div>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(4)">← Back</button>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(6)">Continue to Preferred Intake ➔</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(4) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(6) }}>Continue to Preferred Intake ➔</button>
             </div>
           </div>
 
@@ -585,8 +596,8 @@ export default function PortalPage() {
               </select>
             </div>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(5)">← Back</button>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(7)">Continue to Test Requirements ➔</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(5) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(7) }}>Continue to Test Requirements ➔</button>
             </div>
           </div>
 
@@ -614,8 +625,8 @@ export default function PortalPage() {
               <input type="text" id="wiz-test-target" value="6.5+ Overall" placeholder="e.g. IELTS 6.5 or SAT 1350" />
             </div>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(6)">← Back</button>
-              <button className="portal-btn portal-btn-primary" onclick="goToStep(8)">Review &amp; Update Application ➔</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(6) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" onClick={() => { goToStep(8) }}>Review &amp; Update Application ➔</button>
             </div>
           </div>
 
@@ -633,8 +644,8 @@ export default function PortalPage() {
               Clicking save will update your active dossier in real-time. Your assigned consultant will immediately be notified.
             </p>
             <div className="wizard-actions">
-              <button className="portal-btn portal-btn-outline" onclick="goToStep(7)">← Back</button>
-              <button className="portal-btn portal-btn-primary" id="wizard-save-btn" onclick="saveFullApplication()">Save &amp; Submit Application Dossier ✓</button>
+              <button className="portal-btn portal-btn-outline" onClick={() => { goToStep(7) }}>← Back</button>
+              <button className="portal-btn portal-btn-primary" id="wizard-save-btn" onClick={() => { saveFullApplication() }}>Save &amp; Submit Application Dossier ✓</button>
             </div>
           </div>
         </div>
@@ -652,7 +663,7 @@ export default function PortalPage() {
                 Dellics coordinates your preparation with accredited test centers and tutors across Ghana.
               </p>
             </div>
-            <button className="portal-btn portal-btn-primary portal-btn-sm" onclick="openTestRequestModal()">
+            <button className="portal-btn portal-btn-primary portal-btn-sm" onClick={() => { openTestRequestModal() }}>
               + Request Test Assistance
             </button>
           </div>
@@ -690,7 +701,7 @@ export default function PortalPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginBottom: "20px", background: "var(--portal-bg)", padding: "16px", borderRadius: "var(--portal-radius)" }}>
             <div>
               <label style={{ fontSize: "0.75rem", fontWeight: "600", color: "var(--portal-text-muted)", display: "block", marginBottom: "4px" }}>Filter by Country</label>
-              <select id="filter-uni-country" onchange="renderUniversityCatalog()" style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid var(--portal-border)", fontSize: "0.85rem" }}>
+              <select id="filter-uni-country" onChange={() => { renderUniversityCatalog() }} style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid var(--portal-border)", fontSize: "0.85rem" }}>
                 <option value="all">All Countries</option>
                 <option value="UK">🇬🇧 United Kingdom</option>
                 <option value="Canada">🇨🇦 Canada</option>
@@ -701,7 +712,7 @@ export default function PortalPage() {
             </div>
             <div>
               <label style={{ fontSize: "0.75rem", fontWeight: "600", color: "var(--portal-text-muted)", display: "block", marginBottom: "4px" }}>Search Course / Major</label>
-              <input type="text" id="filter-uni-search" oninput="renderUniversityCatalog()" placeholder="e.g. Computer Science, MBA..." style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid var(--portal-border)", fontSize: "0.85rem", boxSizing: "border-box" }} />
+              <input type="text" id="filter-uni-search" onInput={() => { renderUniversityCatalog() }} placeholder="e.g. Computer Science, MBA…" style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid var(--portal-border)", fontSize: "0.85rem", boxSizing: "border-box" }} />
             </div>
           </div>
 
@@ -724,7 +735,7 @@ export default function PortalPage() {
                 Upload your certified documents once. Our compliance team verifies every item before submission to foreign admissions boards.
               </p>
             </div>
-            <button className="portal-btn portal-btn-primary portal-btn-sm" onclick="openDocUploadModal()">
+            <button className="portal-btn portal-btn-primary portal-btn-sm" onClick={() => { openDocUploadModal() }}>
               + Upload New Document
             </button>
           </div>
@@ -815,28 +826,28 @@ export default function PortalPage() {
               <div style={{ fontSize: "1.5rem", marginBottom: "8px" }}>✈️</div>
               <div className="portal-perk-title">Student Discount Flights</div>
               <div className="portal-perk-desc">Special discounted fares to London, Toronto, New York, Sydney with extra 23kg luggage allowance included.</div>
-              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onclick="requestTravelService('flight')">Request Flight Quote</button>
+              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onClick={() => { requestTravelService('flight') }}>Request Flight Quote</button>
             </div>
 
             <div className="portal-perk-card">
               <div style={{ fontSize: "1.5rem", marginBottom: "8px" }}>🏠</div>
               <div className="portal-perk-title">Verified Student Housing</div>
               <div className="portal-perk-desc">Direct partnerships with university halls of residence and private student accommodation (PBSAs) in UK &amp; Canada.</div>
-              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onclick="requestTravelService('dorm')">Request Housing Options</button>
+              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onClick={() => { requestTravelService('dorm') }}>Request Housing Options</button>
             </div>
 
             <div className="portal-perk-card">
               <div style={{ fontSize: "1.5rem", marginBottom: "8px" }}>🚐</div>
               <div className="portal-perk-title">Airport Pickup &amp; Transfer</div>
               <div className="portal-perk-desc">Safe pickup upon landing at Heathrow, Pearson Toronto, or JFK directly to your university residence.</div>
-              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onclick="requestTravelService('transfer')">Book Airport Transfer</button>
+              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onClick={() => { requestTravelService('transfer') }}>Book Airport Transfer</button>
             </div>
 
             <div className="portal-perk-card">
               <div style={{ fontSize: "1.5rem", marginBottom: "8px" }}>📶</div>
               <div className="portal-perk-title">International eSIM Cards</div>
               <div className="portal-perk-desc">Stay connected immediately upon landing with pre-activated UK, US, or European mobile data plans.</div>
-              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onclick="requestTravelService('esim')">Request Free Student eSIM</button>
+              <button className="portal-btn portal-btn-outline portal-btn-sm" style={{ marginTop: "auto" }} onClick={() => { requestTravelService('esim') }}>Request Free Student eSIM</button>
             </div>
           </div>
         </div>
@@ -863,8 +874,8 @@ export default function PortalPage() {
           </div>
 
           {/*  Message Composer  */}
-          <form id="chat-form" onsubmit="handleSendMessage(event)" style={{ display: "flex", gap: "10px" }}>
-            <input type="text" id="chat-input" placeholder="Type a message or question for your consultant..." style={{ flex: "1", padding: "12px 16px", borderRadius: "var(--portal-radius-sm)", border: "1px solid var(--portal-border)", fontSize: "0.92rem" }} required />
+          <form id="chat-form" onSubmit={(event) => { handleSendMessage(event) }} style={{ display: "flex", gap: "10px" }}>
+            <input type="text" id="chat-input" placeholder="Type a message or question for your consultant…" style={{ flex: "1", padding: "12px 16px", borderRadius: "var(--portal-radius-sm)", border: "1px solid var(--portal-border)", fontSize: "0.92rem" }} required />
             <button type="submit" className="portal-btn portal-btn-primary">Send Message</button>
           </form>
         </div>

@@ -104,7 +104,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "hotels",
     categoryLabel: "Hotels & Stays",
     question: "How many hotel properties are available and what is your RateHawk B2B partnership?",
-    answer: "Through our enterprise partnership with RateHawk, Dellics Travels provides direct booking access to over 3.3 million verified hotels, boutique apartments, and luxury villas across 190+ countries. This B2B integration delivers wholesale contracted room rates with instant server-side confirmation and zero surprise resort fees.",
+    answer: "Through our enterprise partnership with RateHawk, Dellics Travels provides direct booking access to a global network of verified hotels, boutique apartments, and luxury villas across 190+ countries. This B2B integration delivers wholesale contracted room rates with instant server-side confirmation and zero surprise resort fees.",
     badge: "3.3M+ Verified Stays",
     keyPoints: [
       "Wholesale contracted rates below standard public OTAs",
@@ -140,7 +140,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "visa",
     categoryLabel: "Visa Advisory",
     question: "Does Dellics Travels guarantee visa approval?",
-    answer: "By international law, all visa issuance decisions rest solely with the consular officers of the respective embassy or high commission. However, our 99.4% approval success rate is achieved because we rigorously audit every document, detect discrepancies beforehand, and ensure 100% compliance with statutory immigration regulations before submission.",
+    answer: "By international law, all visa issuance decisions rest solely with the consular officers of the respective embassy or high commission. However, our high approval success rate is achieved because we rigorously audit every document, detect discrepancies beforehand, and ensure 100% compliance with statutory immigration regulations before submission.",
     badge: "Strict Ethical Standards",
   },
 

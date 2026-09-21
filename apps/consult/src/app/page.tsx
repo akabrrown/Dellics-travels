@@ -17,13 +17,13 @@ export default function HomePage() {
       <div className="hero-text">
         <h1 className="hero-title"><span className="highlight">Transform</span> Your Future<br />Through Global Education</h1>
         <p className="hero-subtitle">Expert guidance for Ghanaian &amp; African students aspiring to study abroad. From university shortlisting and test coordination to visa approval and travel — manage your entire journey with confidence.</p>
-        <div className="hero-tagline">&#8220;Guiding students from application to arrival.&#8221;</div>
+        <div className="hero-tagline">“Guiding students from application to arrival.”</div>
         <div className="hero-actions">
-          <a href="/signup" className="btn btn-primary btn-lg">
+          <Link href="/signup" className="btn btn-primary btn-lg">
             <span>Start Your Application</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a href="#how-it-works" className="btn btn-outline btn-lg">Explore Our Process</a>
+            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </Link>
+          <Link href="#how-it-works" className="btn btn-outline btn-lg">Explore Our Process</Link>
         </div>
         <div className="hero-stats">
           <div className="hero-stat"><span className="stat-num" data-count="500">0</span><span className="stat-plus">+</span><span className="stat-label">Students Advised</span></div>
@@ -36,7 +36,7 @@ export default function HomePage() {
       <div className="hero-visual">
         <div className="hero-card-wrap">
           <div className="hero-logo-card">
-            <img src="/logo.jpg" alt="Dellics Education Consult" className="hero-logo" />
+            <Image src="/logo.jpg" width={100} height={100}  alt="Dellics Education Consult" className="hero-logo" />
             <div className="hero-card-shine"></div>
           </div>
           <div className="float-card float-card-1"><span>Award</span><div><strong>Scholarship Found!</strong><small>&#163;25,000 Award</small></div></div>
@@ -129,69 +129,69 @@ export default function HomePage() {
         <article className="service-card" itemScope itemType="https://schema.org/Service">
           <div className="service-icon-wrap">
             <div className="service-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
             </div>
           </div>
           <h3 itemProp="name">University Admissions</h3>
           <p itemProp="description">Expert guidance on choosing the right university and program. We review your profile, shortlist institutions, and manage your complete application dossier.</p>
           <ul className="service-list"><li>Profile evaluation &amp; university matching</li><li>Statement of purpose writing</li><li>Recommendation letter guidance</li><li>Application submission &amp; tracking</li></ul>
-          <a href="/signup" className="service-cta">Start Application &#8594;</a>
+          <Link href="/signup" className="service-cta">Start Application &#8594;</Link>
         </article>
         <article className="service-card featured" itemScope itemType="https://schema.org/Service">
           <div className="service-badge">High Demand</div>
           <div className="service-icon-wrap">
             <div className="service-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
             </div>
           </div>
           <h3 itemProp="name">Visa Guidance &amp; Compliance</h3>
           <p itemProp="description">Navigate complex visa requirements with confidence. Our visa specialists conduct rigorous financial audits, CAS/I-20 reviews, and one-on-one embassy interview coaching.</p>
           <ul className="service-list"><li>UK Tier 4 / Student Route Visa</li><li>Canada Study Permit &amp; PAL</li><li>USA F-1 Student Visa &amp; SEVIS</li><li>Schengen &amp; Australia Student Visa</li></ul>
-          <a href="/contact" className="service-cta">Get Visa Guidance &#8594;</a>
+          <Link href="/contact" className="service-cta">Get Visa Guidance &#8594;</Link>
         </article>
         <article className="service-card" itemScope itemType="https://schema.org/Service">
           <div className="service-icon-wrap">
             <div className="service-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
             </div>
           </div>
           <h3 itemProp="name">Scholarship Guidance</h3>
           <p itemProp="description">Discover and secure scholarships worth thousands of dollars. We identify opportunities you qualify for and craft compelling scholarship applications.</p>
           <ul className="service-list"><li>Chevening, Commonwealth &amp; more</li><li>University-specific merit awards</li><li>Essay &amp; application review</li><li>Interview preparation</li></ul>
-          <a href="/contact" className="service-cta">Explore Grants &#8594;</a>
+          <Link href="/contact" className="service-cta">Explore Grants &#8594;</Link>
         </article>
         <article className="service-card" itemScope itemType="https://schema.org/Service">
           <div className="service-icon-wrap">
             <div className="service-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
             </div>
           </div>
           <h3 itemProp="name">Dellics Travels Integration</h3>
           <p itemProp="description">Powered by Dellics Travels, we arrange student discounted airfares with extra baggage, verified accommodation, airport transfers, and pre-departure eSIM cards.</p>
           <ul className="service-list"><li>Student airfare booking (46kg baggage)</li><li>Vetted university dorms &amp; residences</li><li>Airport transfer pickups</li><li>Pre-activated international eSIMs</li></ul>
-          <a href="/portal" className="service-cta">View Travel Perks &#8594;</a>
+          <Link href="/portal" className="service-cta">View Travel Perks &#8594;</Link>
         </article>
         <article className="service-card" itemScope itemType="https://schema.org/Service">
           <div className="service-icon-wrap">
             <div className="service-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width={15} height={14} rx="2" ry="2"/></svg>
             </div>
           </div>
           <h3 itemProp="name">Online Counselling</h3>
           <p itemProp="description">Connect with our qualified counsellors via video call from anywhere in Ghana or Africa for personalized guidance at your convenience.</p>
           <ul className="service-list"><li>1-on-1 video consultations</li><li>Flexible scheduling</li><li>Document review via portal</li><li>Direct advisor messaging</li></ul>
-          <a href="/contact" className="service-cta">Book Session &#8594;</a>
+          <Link href="/contact" className="service-cta">Book Session &#8594;</Link>
         </article>
         <article className="service-card" itemScope itemType="https://schema.org/Service">
           <div className="service-icon-wrap">
             <div className="service-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width={8} height={4} rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
             </div>
           </div>
           <h3 itemProp="name">Tests &amp; Exam Coordination</h3>
           <p itemProp="description">Dellics acts as your coordination service with accredited institutions and British Council/ETS partners for comprehensive test preparation and registration.</p>
           <ul className="service-list"><li>English: IELTS, TOEFL, PTE, Duolingo</li><li>Admissions: SAT, ACT, GRE, GMAT</li><li>Accredited test center booking</li><li>Tutorial class scheduling in Ghana</li></ul>
-          <a href="/portal" className="service-cta">Coordinate Exam &#8594;</a>
+          <Link href="/portal" className="service-cta">Coordinate Exam &#8594;</Link>
         </article>
       </div>
     </div>
@@ -232,7 +232,7 @@ export default function HomePage() {
                 <div className="dash-progress-fill" style={{ width: "75%" }}></div>
               </div>
             </div>
-            <a href="/portal" className="btn btn-sm btn-primary dash-portal-cta">Launch Live Portal &rarr;</a>
+            <Link href="/portal" className="btn btn-sm btn-primary dash-portal-cta">Launch Live Portal &rarr;</Link>
           </div>
         </div>
 
@@ -388,7 +388,7 @@ export default function HomePage() {
                 <div><span>Intake:</span> <strong>September 2025</strong></div>
               </div>
               <div className="dash-app-action">
-                <a href="/portal" className="btn btn-sm btn-primary">Accept Offer &amp; Request CAS</a>
+                <Link href="/portal" className="btn btn-sm btn-primary">Accept Offer &amp; Request CAS</Link>
               </div>
             </div>
 
@@ -405,7 +405,7 @@ export default function HomePage() {
                 <div><span>Intake:</span> <strong>September 2025</strong></div>
               </div>
               <div className="dash-app-action">
-                <a href="/portal" className="btn btn-sm btn-secondary">Upload Final Certificate</a>
+                <Link href="/portal" className="btn btn-sm btn-secondary">Upload Final Certificate</Link>
               </div>
             </div>
 
@@ -422,7 +422,7 @@ export default function HomePage() {
                 <div><span>Expected:</span> <strong>Within 10 business days</strong></div>
               </div>
               <div className="dash-app-action">
-                <a href="/portal" className="btn btn-sm btn-secondary">Track Submission Dossier</a>
+                <Link href="/portal" className="btn btn-sm btn-secondary">Track Submission Dossier</Link>
               </div>
             </div>
           </div>
@@ -467,7 +467,7 @@ export default function HomePage() {
                 <div className="subscore-item"><span>Center</span><strong>Accra</strong></div>
               </div>
               <div className="dash-test-footer">
-                <a href="/portal" className="btn btn-sm btn-secondary">Schedule Diagnostic Mock Test &rarr;</a>
+                <Link href="/portal" className="btn btn-sm btn-secondary">Schedule Diagnostic Mock Test &rarr;</Link>
               </div>
             </div>
           </div>
@@ -492,35 +492,35 @@ export default function HomePage() {
                   <td>Identity</td>
                   <td><span className="doc-badge-verified">&#10003; Verified</span></td>
                   <td>Dellics Compliance Desk</td>
-                  <td><a href="/portal" className="doc-link">View File</a></td>
+                  <td><Link href="/portal" className="doc-link">View File</Link></td>
                 </tr>
                 <tr>
                   <td><strong>WASSCE Result Slip &amp; Online Checker</strong><br /><small>7 A1s, 1 B2</small></td>
                   <td>Academic</td>
                   <td><span className="doc-badge-verified">&#10003; Verified</span></td>
                   <td>WAEC Ghana Scratch Card Verified</td>
-                  <td><a href="/portal" className="doc-link">View File</a></td>
+                  <td><Link href="/portal" className="doc-link">View File</Link></td>
                 </tr>
                 <tr>
                   <td><strong>Statement of Purpose (SOP)</strong><br /><small>Version 3.2 (Final Approved)</small></td>
                   <td>Admissions</td>
                   <td><span className="doc-badge-verified">&#10003; Approved</span></td>
                   <td>Senior Academic Counselor</td>
-                  <td><a href="/portal" className="doc-link">View File</a></td>
+                  <td><Link href="/portal" className="doc-link">View File</Link></td>
                 </tr>
                 <tr>
                   <td><strong>Academic Recommendation Letters (2)</strong><br /><small>Principal &amp; Head of Science</small></td>
                   <td>References</td>
                   <td><span className="doc-badge-verified">&#10003; Verified</span></td>
                   <td>School Direct Verification</td>
-                  <td><a href="/portal" className="doc-link">View File</a></td>
+                  <td><Link href="/portal" className="doc-link">View File</Link></td>
                 </tr>
                 <tr>
                   <td><strong>Financial Audit &amp; Bank Statement</strong><br /><small>28-Day Holding Period Tracking</small></td>
                   <td>Visa Compliance</td>
                   <td><span className="doc-badge-pending">&#9679; Auditing (Day 21/28)</span></td>
                   <td>Dellics Financial Compliance</td>
-                  <td><a href="/portal" className="doc-link">Check Status</a></td>
+                  <td><Link href="/portal" className="doc-link">Check Status</Link></td>
                 </tr>
               </tbody>
             </table>
@@ -569,8 +569,8 @@ export default function HomePage() {
             <p>Create your free student account to unlock university shortlists, test bookings, and real-time application tracking.</p>
           </div>
           <div className="dash-footer-actions">
-            <a href="/signup" className="btn btn-primary btn-lg">Create Student Account</a>
-            <a href="/portal" className="btn btn-outline-white btn-lg">Launch Live Portal Demo &rarr;</a>
+            <Link href="/signup" className="btn btn-primary btn-lg">Create Student Account</Link>
+            <Link href="/portal" className="btn btn-outline-white btn-lg">Launch Live Portal Demo &rarr;</Link>
           </div>
         </div>
 
@@ -587,13 +587,13 @@ export default function HomePage() {
         <p className="section-subtitle">We place students in top universities across the globe</p>
       </div>
       <div className="destinations-grid">
-        <article className="dest-card"><div className="dest-flag">UK</div><div className="dest-content"><h3>United Kingdom</h3><p>Home to Oxford, Cambridge, Imperial College, and 100+ world-class universities. Post-study work visa available.</p><div className="dest-tags"><span className="dest-tag">Top Rankings</span><span className="dest-tag">Scholarships</span><span className="dest-tag">Work Rights</span></div>        <a href="/contact" className="dest-link">Explore UK &#8594;</a></div></article>
-        <article className="dest-card"><div className="dest-flag">CA</div><div className="dest-content"><h3>Canada</h3><p>Affordable tuition, multicultural environment, and a clear pathway to permanent residency. Work while you study!</p><div className="dest-tags"><span className="dest-tag">PR Pathway</span><span className="dest-tag">Affordable</span><span className="dest-tag">Safe</span></div>        <a href="/contact" className="dest-link">Explore Canada &#8594;</a></div></article>
-        <article className="dest-card"><div className="dest-flag">US</div><div className="dest-content"><h3>United States</h3><p>The world&#39;s leading academic destination. Access to Ivy League schools, Silicon Valley connections, and OPT opportunities.</p><div className="dest-tags"><span className="dest-tag">Ivy League</span><span className="dest-tag">Research</span><span className="dest-tag">OPT</span></div>        <a href="/contact" className="dest-link">Explore USA &#8594;</a></div></article>
-        <article className="dest-card"><div className="dest-flag">AU</div><div className="dest-content"><h3>Australia</h3><p>World-class education in a stunning environment. Post-study work rights, vibrant student community, and sunny lifestyle.</p><div className="dest-tags"><span className="dest-tag">Work Rights</span><span className="dest-tag">PR Pathway</span><span className="dest-tag">Quality Life</span></div>        <a href="/contact" className="dest-link">Explore Australia &#8594;</a></div></article>
-        <article className="dest-card"><div className="dest-flag">EU</div><div className="dest-content"><h3>Europe</h3><p>Germany, Netherlands, France and more — many offering free or low-cost tuition. Rich culture and global career opportunities.</p><div className="dest-tags"><span className="dest-tag">Low Tuition</span><span className="dest-tag">Culture</span><span className="dest-tag">Erasmus+</span></div><div className="europe-schools"><h4>Popular European Schools:</h4><ul><li>University of Oxford (UK)</li><li>University of Cambridge (UK)</li><li>Technical University of Munich (Germany)</li><li>University of Amsterdam (Netherlands)</li><li>Sorbonne University (France)</li><li>ETH Zurich (Switzerland)</li></ul></div>        <a href="/contact" className="dest-link">Explore Europe &#8594;</a></div></article>
-        <article className="dest-card"><div className="dest-flag">GH</div><div className="dest-content"><h3>Study in Ghana</h3><p>International students seeking quality education in Ghana. We guide you through admissions to top Ghanaian universities and colleges.</p><div className="dest-tags"><span className="dest-tag">Quality Education</span><span className="dest-tag">Affordable</span><span className="dest-tag">Welcoming</span></div>        <a href="/contact" className="dest-link">Study in Ghana &#8594;</a></div></article>
-        <article className="dest-card"><div className="dest-flag">Global</div><div className="dest-content"><h3>And More...</h3><p>New Zealand, Ireland, Dubai, Singapore, and beyond. Wherever your dream destination is, we will get you there.</p><div className="dest-tags"><span className="dest-tag">New Zealand</span><span className="dest-tag">Ireland</span><span className="dest-tag">UAE</span></div>        <a href="/contact" className="dest-link">Ask Us &#8594;</a></div></article>
+        <article className="dest-card"><div className="dest-flag">UK</div><div className="dest-content"><h3>United Kingdom</h3><p>Home to Oxford, Cambridge, Imperial College, and 100+ world-class universities. Post-study work visa available.</p><div className="dest-tags"><span className="dest-tag">Top Rankings</span><span className="dest-tag">Scholarships</span><span className="dest-tag">Work Rights</span></div>        <Link href="/contact" className="dest-link">Explore UK &#8594;</Link></div></article>
+        <article className="dest-card"><div className="dest-flag">CA</div><div className="dest-content"><h3>Canada</h3><p>Affordable tuition, multicultural environment, and a clear pathway to permanent residency. Work while you study!</p><div className="dest-tags"><span className="dest-tag">PR Pathway</span><span className="dest-tag">Affordable</span><span className="dest-tag">Safe</span></div>        <Link href="/contact" className="dest-link">Explore Canada &#8594;</Link></div></article>
+        <article className="dest-card"><div className="dest-flag">US</div><div className="dest-content"><h3>United States</h3><p>The world&#39;s leading academic destination. Access to Ivy League schools, Silicon Valley connections, and OPT opportunities.</p><div className="dest-tags"><span className="dest-tag">Ivy League</span><span className="dest-tag">Research</span><span className="dest-tag">OPT</span></div>        <Link href="/contact" className="dest-link">Explore USA &#8594;</Link></div></article>
+        <article className="dest-card"><div className="dest-flag">AU</div><div className="dest-content"><h3>Australia</h3><p>World-class education in a stunning environment. Post-study work rights, vibrant student community, and sunny lifestyle.</p><div className="dest-tags"><span className="dest-tag">Work Rights</span><span className="dest-tag">PR Pathway</span><span className="dest-tag">Quality Life</span></div>        <Link href="/contact" className="dest-link">Explore Australia &#8594;</Link></div></article>
+        <article className="dest-card"><div className="dest-flag">EU</div><div className="dest-content"><h3>Europe</h3><p>Germany, Netherlands, France and more — many offering free or low-cost tuition. Rich culture and global career opportunities.</p><div className="dest-tags"><span className="dest-tag">Low Tuition</span><span className="dest-tag">Culture</span><span className="dest-tag">Erasmus+</span></div><div className="europe-schools"><h4>Popular European Schools:</h4><ul><li>University of Oxford (UK)</li><li>University of Cambridge (UK)</li><li>Technical University of Munich (Germany)</li><li>University of Amsterdam (Netherlands)</li><li>Sorbonne University (France)</li><li>ETH Zurich (Switzerland)</li></ul></div>        <Link href="/contact" className="dest-link">Explore Europe &#8594;</Link></div></article>
+        <article className="dest-card"><div className="dest-flag">GH</div><div className="dest-content"><h3>Study in Ghana</h3><p>International students seeking quality education in Ghana. We guide you through admissions to top Ghanaian universities and colleges.</p><div className="dest-tags"><span className="dest-tag">Quality Education</span><span className="dest-tag">Affordable</span><span className="dest-tag">Welcoming</span></div>        <Link href="/contact" className="dest-link">Study in Ghana &#8594;</Link></div></article>
+        <article className="dest-card"><div className="dest-flag">Global</div><div className="dest-content"><h3>And More…</h3><p>New Zealand, Ireland, Dubai, Singapore, and beyond. Wherever your dream destination is, we will get you there.</p><div className="dest-tags"><span className="dest-tag">New Zealand</span><span className="dest-tag">Ireland</span><span className="dest-tag">UAE</span></div>        <Link href="/contact" className="dest-link">Ask Us &#8594;</Link></div></article>
       </div>
     </div>
   </section>
@@ -609,49 +609,49 @@ export default function HomePage() {
           <div className="why-features">
             <div className="why-feat">
               <div className="why-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
               <div><h4>Dedicated Consultants</h4><p>Direct access to your assigned education advisor with transparent milestone updates.</p></div>
             </div>
             <div className="why-feat">
               <div className="why-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
               </div>
               <div><h4>Personalized Matching</h4><p>Every student is unique. We match you to universities that fit your exact grades, budget, and career goals.</p></div>
             </div>
             <div className="why-feat">
               <div className="why-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
               </div>
               <div><h4>Meticulous Visa Compliance</h4><p>We rigorously review funds, holding periods, and documentation to protect your application.</p></div>
             </div>
             <div className="why-feat">
               <div className="why-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width={18} height={11} rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <div><h4>Secure Document Locker</h4><p>Upload your academic transcripts, WAEC slips, and passport once into a secure student portal.</p></div>
             </div>
             <div className="why-feat">
               <div className="why-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
               </div>
               <div><h4>Accredited Test Prep Coordination</h4><p>We arrange diagnostic preparation and official test bookings with accredited partner centers.</p></div>
             </div>
             <div className="why-feat">
               <div className="why-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width={20} height={14} rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
               </div>
               <div><h4>Dellics Travels Integration</h4><p>Enjoy discounted student flights, verified student accommodation, airport transfers, and eSIMs.</p></div>
             </div>
           </div>
           <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-            <a href="/signup" className="btn btn-primary">Start Your Application</a>
-            <a href="/contact" className="btn btn-outline">Book Free Consultation</a>
+            <Link href="/signup" className="btn btn-primary">Start Your Application</Link>
+            <Link href="/contact" className="btn btn-outline">Book Free Consultation</Link>
           </div>
         </div>
         <div className="why-visual">
           <div className="why-logo-container">
-            <img src="/logo.jpg" alt="Dellics Education Consult" className="why-logo" />
+            <Image src="/logo.jpg" width={100} height={100}  alt="Dellics Education Consult" className="why-logo" />
             <div className="why-ring why-ring-1"></div>
             <div className="why-ring why-ring-2"></div>
             <div className="why-ring why-ring-3"></div>
@@ -679,27 +679,27 @@ export default function HomePage() {
         <div className="testimonials-track" id="testimonials-track">
           <article className="testimonial-card" itemScope itemType="https://schema.org/Review">
             <div className="testimonial-stars">5 Stars</div>
-            <blockquote itemProp="reviewBody">&#8220;Dellics made my dream of studying in the UK a reality. They guided me through every step &#8212; from IELTS prep to my Tier 4 visa. I&#39;m now at the University of Manchester!&#8221;</blockquote>
+            <blockquote itemProp="reviewBody">“Dellics made my dream of studying in the UK a reality. They guided me through every step &#8212; from IELTS prep to my Tier 4 visa. I&#39;m now at the University of Manchester!”</blockquote>
             <div className="testimonial-author"><div className="testimonial-avatar">AK</div><div><strong itemProp="author">Ama Kyei</strong><span>University of Manchester, UK</span></div></div>
           </article>
           <article className="testimonial-card" itemScope itemType="https://schema.org/Review">
             <div className="testimonial-stars">5 Stars</div>
-            <blockquote itemProp="reviewBody">&#8220;I had tried twice before with other agents and failed. Dellics Education Consult got my Canadian study permit approved in just 6 weeks! Professional and thorough.&#8221;</blockquote>
+            <blockquote itemProp="reviewBody">“I had tried twice before with other agents and failed. Dellics Education Consult got my Canadian study permit approved in just 6 weeks! Professional and thorough.”</blockquote>
             <div className="testimonial-author"><div className="testimonial-avatar">KB</div><div><strong itemProp="author">Kwame Boateng</strong><span>University of Calgary, Canada</span></div></div>
           </article>
           <article className="testimonial-card" itemScope itemType="https://schema.org/Review">
             <div className="testimonial-stars">5 Stars</div>
-            <blockquote itemProp="reviewBody">&#8220;The scholarship guidance from Dellics was phenomenal. They helped me secure a Chevening Scholarship worth &#163;25,000. I couldn&#39;t have done it without their expert help!&#8221;</blockquote>
+            <blockquote itemProp="reviewBody">“The scholarship guidance from Dellics was phenomenal. They helped me secure a Chevening Scholarship worth &#163;25,000. I couldn&#39;t have done it without their expert help!”</blockquote>
             <div className="testimonial-author"><div className="testimonial-avatar">AF</div><div><strong itemProp="author">Abena Frimpong</strong><span>Chevening Scholar, LSE London</span></div></div>
           </article>
           <article className="testimonial-card" itemScope itemType="https://schema.org/Review">
             <div className="testimonial-stars">5 Stars</div>
-            <blockquote itemProp="reviewBody">&#8220;Dellics handled everything &#8212; from my application to booking my flight and finding accommodation in Sydney. Truly an all-in-one service. I&#39;m forever grateful!&#8221;</blockquote>
+            <blockquote itemProp="reviewBody">“Dellics handled everything &#8212; from my application to booking my flight and finding accommodation in Sydney. Truly an all-in-one service. I&#39;m forever grateful!”</blockquote>
             <div className="testimonial-author"><div className="testimonial-avatar">KA</div><div><strong itemProp="author">Kofi Asante</strong><span>University of Sydney, Australia</span></div></div>
           </article>
           <article className="testimonial-card" itemScope itemType="https://schema.org/Review">
             <div className="testimonial-stars">5 Stars</div>
-            <blockquote itemProp="reviewBody">&#8220;Very professional team! Their online counselling sessions via Zoom were so convenient. My USA F-1 visa was approved on the first try. Highly recommend Dellics!&#8221;</blockquote>
+            <blockquote itemProp="reviewBody">“Very professional team! Their online counselling sessions via Zoom were so convenient. My USA F-1 visa was approved on the first try. Highly recommend Dellics!”</blockquote>
             <div className="testimonial-author"><div className="testimonial-avatar">EA</div><div><strong itemProp="author">Efua Acheampong</strong><span>Boston University, USA</span></div></div>
           </article>
         </div>
@@ -810,8 +810,8 @@ export default function HomePage() {
     <div className="container cta-banner-inner">
       <div className="cta-banner-text"><h2>Ready to Study Abroad?</h2><p>Book your free consultation today and take the first step toward your global future.</p></div>
       <div className="cta-banner-actions">
-        <a href="/contact" className="btn btn-white btn-lg">Book Free Consultation</a>
-        <a href="tel:+233552054174" className="btn btn-outline-white btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> Call Us Now</a>
+        <Link href="/contact" className="btn btn-white btn-lg">Book Free Consultation</Link>
+        <a href="tel:+233552054174" className="btn btn-outline-white btn-lg"><svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> Call Us Now</a>
       </div>
     </div>
   </section>
@@ -837,33 +837,33 @@ export default function HomePage() {
             </div>
             <div className="form-group">
               <label htmlFor="destination">Preferred Study Destination</label>
-              <select id="destination" name="destination"><option value="">Select a destination...</option><option value="uk">United Kingdom</option><option value="canada">Canada</option><option value="usa">United States</option><option value="australia">Australia</option><option value="europe">Europe</option><option value="newzealand">New Zealand</option><option value="other">Other</option></select>
+              <select id="destination" name="destination"><option value="">Select a destination…</option><option value="uk">United Kingdom</option><option value="canada">Canada</option><option value="usa">United States</option><option value="australia">Australia</option><option value="europe">Europe</option><option value="newzealand">New Zealand</option><option value="other">Other</option></select>
             </div>
             <div className="form-group">
               <label htmlFor="service">Service Required</label>
-              <select id="service" name="service"><option value="">Select a service...</option><option value="admissions">University Admissions</option><option value="visa">Visa Assistance</option><option value="scholarship">Scholarship Guidance</option><option value="travel">Travel &amp; Tour</option><option value="online">Online Counselling</option><option value="test">Test Prep (IELTS/TOEFL)</option><option value="all">All Services</option></select>
+              <select id="service" name="service"><option value="">Select a service…</option><option value="admissions">University Admissions</option><option value="visa">Visa Assistance</option><option value="scholarship">Scholarship Guidance</option><option value="travel">Travel &amp; Tour</option><option value="online">Online Counselling</option><option value="test">Test Prep (IELTS/TOEFL)</option><option value="all">All Services</option></select>
             </div>
-            <div className="form-group"><label htmlFor="message">Tell Us About Your Goals</label><textarea id="message" name="message" rows="4" placeholder="Share your study abroad goals, current qualification level, and any specific questions..."></textarea></div>
+            <div className="form-group"><label htmlFor="message">Tell Us About Your Goals</label><textarea id="message" name="message" rows={4} placeholder="Share your study abroad goals, current qualification level, and any specific questions…"></textarea></div>
             <button type="submit" className="btn btn-primary btn-full" id="form-submit-btn">
               <span className="btn-text">Submit &amp; Book Consultation</span>
-              <span className="btn-loading" style={{ display: "none" }}>Sending...</span>
+              <span className="btn-loading" style={{ display: "none" }}>Sending…</span>
             </button>
             <div className="form-success" id="form-success" style={{ display: "none" }}>&#10003; Thank you! Your consultation request has been received. We will contact you within 24 hours.</div>
           </form>
         </div>
         <div className="contact-info">
           <div className="contact-info-card">
-            <img src="/logo.jpg" alt="Dellics Education Consult" className="contact-logo" />
-            <p className="contact-tagline">&#8220;Guiding Futures. Building Success.&#8221;</p>
+            <Image src="/logo.jpg" width={100} height={100}  alt="Dellics Education Consult" className="contact-logo" />
+            <p className="contact-tagline">“Guiding Futures. Building Success.”</p>
           </div>
           <div className="contact-details">
-            <div className="contact-item"><div className="contact-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div><div><strong>Visit Our Office</strong><p>Tema Community 25, Devtraco Estate<br />Greater Accra, Ghana<br /><a href="https://maps.google.com/?q=Tema+Community+25+Devtraco+Estate+Ghana" target="_blank" rel="noopener noreferrer">View on Google Maps</a></p></div></div>
-            <div className="contact-item"><div className="contact-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div><div><strong>Call / WhatsApp</strong><p><a href="tel:+233552054174">+233 55 205 4174</a></p></div></div>
-            <div className="contact-item"><div className="contact-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div><div><strong>Email Us</strong><p><a href="mailto:info@dellicstravels.com">info@dellicstravels.com</a></p></div></div>
-            <div className="contact-item"><div className="contact-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><div><strong>Office Hours</strong><p>Mon - Fri: 8:00 AM - 6:00 PM<br />Sat: 9:00 AM - 4:00 PM</p></div></div>
+            <div className="contact-item"><div className="contact-item-icon"><svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div><div><strong>Visit Our Office</strong><p>Tema Community 25, Devtraco Estate<br />Greater Accra, Ghana<br /><a href="https://maps.google.com/?q=Tema+Community+25+Devtraco+Estate+Ghana" target="_blank" rel="noopener noreferrer">View on Google Maps</a></p></div></div>
+            <div className="contact-item"><div className="contact-item-icon"><svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div><div><strong>Call / WhatsApp</strong><p><a href="tel:+233552054174">+233 55 205 4174</a></p></div></div>
+            <div className="contact-item"><div className="contact-item-icon"><svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div><div><strong>Email Us</strong><p><a href="mailto:info@dellicstravels.com">info@dellicstravels.com</a></p></div></div>
+            <div className="contact-item"><div className="contact-item-icon"><svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><div><strong>Office Hours</strong><p>Mon - Fri: 8:00 AM - 6:00 PM<br />Sat: 9:00 AM - 4:00 PM</p></div></div>
           </div>
           <a href="https://wa.me/233552054174?text=Hello%20Dellics!" className="whatsapp-cta" target="_blank" rel="noopener noreferrer">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488 11.815 11.815 0 0012.05 0z"/></svg>
+            <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488 11.815 11.815 0 0012.05 0z"/></svg>
             Chat with Us on WhatsApp
           </a>
       </div>

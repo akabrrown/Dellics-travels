@@ -233,19 +233,30 @@ model FareFreeze {
   updated_at DateTime @updatedAt
 }
 
-model Review {
-  id         String   @id @default(uuid())
-  user_id    String
-  user       User     @relation(fields: [user_id], references: [id])
-  booking_id String
-  booking    Booking  @relation(fields: [booking_id], references: [id])
-  rating     Int
-  sub_scores Json?
-  text       String?
-  photos     String[]
+enum ReviewSource {
+  INTERNAL
+  TRUSTPILOT
+  GOOGLE
+}
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+model Review {
+  id            String       @id @default(uuid())
+  source        ReviewSource @default(INTERNAL)
+  source_ref    String?
+  reviewer_name String?
+
+  user_id       String?
+  user          User?        @relation(fields: [user_id], references: [id])
+  booking_id    String?
+  booking       Booking?     @relation(fields: [booking_id], references: [id])
+  
+  rating        Int
+  sub_scores    Json?
+  text          String?
+  photos        String[]
+
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
 }
 
 model ESIMPlan {

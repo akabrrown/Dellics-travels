@@ -90,7 +90,7 @@ const ALL_SERVICES = [
   },
   {
     title: "Visa Assistance & Advisory",
-    badge: "99.4% Approval Record",
+    
     icon: FileCheck2,
     image: "/images/services/documentation-support.jpg",
     href: "/visa",

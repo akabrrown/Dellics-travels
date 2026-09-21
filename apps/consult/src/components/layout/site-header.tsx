@@ -48,7 +48,7 @@ export function SiteHeader() {
               <div className="flex items-center justify-between lg:justify-start w-full cursor-pointer" onClick={() => toggleDropdown('services')}>
                 <Link href="/services" className={`nav-link font-semibold transition-colors hover:text-brand-orange ${pathname.startsWith("/services") ? "text-brand-orange" : "text-slate-700"}`}>Services</Link>
                 <button type="button" className="lg:hidden p-2 text-slate-500">
-                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width={10} height={6} viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
               <ul className={`lg:absolute top-full left-0 mt-2 w-full lg:w-56 bg-white lg:shadow-xl rounded-xl py-2 flex-col gap-1 ${activeDropdown === 'services' ? 'flex' : 'hidden lg:group-hover:flex'}`}>
@@ -63,7 +63,7 @@ export function SiteHeader() {
               <div className="flex items-center justify-between lg:justify-start w-full cursor-pointer" onClick={() => toggleDropdown('destinations')}>
                 <Link href="/destinations" className={`nav-link font-semibold transition-colors hover:text-brand-orange ${pathname.startsWith("/destinations") ? "text-brand-orange" : "text-slate-700"}`}>Destinations</Link>
                 <button type="button" className="lg:hidden p-2 text-slate-500">
-                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width={10} height={6} viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
               <ul className={`lg:absolute top-full left-0 mt-2 w-full lg:w-56 bg-white lg:shadow-xl rounded-xl py-2 flex-col gap-1 ${activeDropdown === 'destinations' ? 'flex' : 'hidden lg:group-hover:flex'}`}>

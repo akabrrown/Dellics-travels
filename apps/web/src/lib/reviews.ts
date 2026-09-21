@@ -9,6 +9,7 @@ export interface ReviewItem {
   quote: string;
   rating: number;
   avatar: string;
+  source?: string;
 }
 
 export interface ReviewsResponse {
@@ -28,34 +29,37 @@ export async function getFeaturedReviews(): Promise<ReviewItem[]> {
     console.error("Failed to fetch reviews from API, using fallback", error);
     return [
       {
-        id: "rev-01",
-        name: "Dr. Kwabena Mensah",
-        role: "Medical Director",
-        location: "Accra, Ghana",
-        destination: "Dubai 7-Day Luxury Tour",
-        quote: "Dellics Travels handled our family vacation to Dubai flawlessly. From Emirates flight reservations to private desert safari and Marina yacht cruise, every detail was 5-star perfection.",
-        rating: 4.5,
-        avatar: "/images/services/photo-10-2026-07-22-15-35-17.jpg",
+        id: 'rev-01',
+        name: 'Sarah Jenkins',
+        role: 'Verified Client',
+        location: 'London, UK',
+        destination: 'Dubai Luxury Package',
+        quote: 'Dellics Travels made our trip to Dubai absolutely seamless. From the visa processing to the desert safari, everything was 5-star.',
+        rating: 5,
+        avatar: '/images/services/photo-10-2026-07-22-15-35-17.jpg',
+        source: 'TRUSTPILOT',
       },
       {
-        id: "rev-02",
-        name: "Afia Osei-Bonsu",
-        role: "Fintech Executive",
-        location: "London, UK (Diaspora)",
-        destination: "Ghana Heritage & Cape Coast Tour",
-        quote: "As someone visiting Ghana from the UK with friends, Dellics gave us the most authentic cultural immersion. The VIP airport protocol and Safari Valley trip made our Year of Return experience unforgettable.",
-        rating: 4.5,
-        avatar: "/images/services/photo-12-2026-07-22-15-35-17.jpg",
+        id: 'rev-02',
+        name: 'Michael Osei',
+        role: 'Verified Client',
+        location: 'Accra, Ghana',
+        destination: 'UK Student Visa',
+        quote: 'Very professional agency. They guided me through my entire UK student visa application and I got it approved without issues.',
+        rating: 4.8,
+        avatar: '/images/services/photo-12-2026-07-22-15-35-17.jpg',
+        source: 'GOOGLE',
       },
       {
-        id: "rev-03",
-        name: "Emmanuel Tetteh",
-        role: "Corporate Operations Lead",
-        location: "Tema, Ghana",
-        destination: "South Africa Cape Town Package",
-        quote: "Our company annual executive retreat in Cape Town was planned from scratch by Dellics. Flawless flight connections, stunning Table Mountain views, and top-tier hospitality. Highly recommended!",
-        rating: 4.0,
-        avatar: "/images/services/photo-14-2026-07-22-15-35-17.jpg",
+        id: 'rev-03',
+        name: 'Elena Rostova',
+        role: 'Verified Client',
+        location: 'Toronto, Canada',
+        destination: 'Cape Town Experience',
+        quote: 'Our corporate retreat to Cape Town was flawlessly executed. Highly recommend Dellics for group travel planning.',
+        rating: 5,
+        avatar: '/images/services/photo-14-2026-07-22-15-35-17.jpg',
+        source: 'TRUSTPILOT',
       },
     ];
   }

@@ -93,6 +93,7 @@ export default async function HomePage() {
       </HeroSlider>
 
             {/* 5. Featured Destinations Showcase */}
+      {featuredDestinations.length > 0 && (
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
           <SectionHeading
@@ -151,8 +152,10 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+      )}
 
       {/* 6. Popular Tour Packages */}
+      {popularTours.length > 0 && (
       <section className="bg-slate-50 py-24 border-y border-slate-200/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
@@ -221,6 +224,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      )}
+
       {/* 7. Trust & Reliability */}
       <TrustSection />
 
@@ -233,6 +238,33 @@ export default async function HomePage() {
             subtitle="Read verified reviews from executives, families, and solo adventurers who booked with Dellics Travels."
           />
 
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 pb-8 border-b border-slate-200/60 max-w-4xl mx-auto">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center size-10 rounded-full bg-[#00B67A] text-white font-bold text-xl">★</div>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-800 leading-tight">Trustpilot</span>
+                <div className="flex text-[#00B67A] text-sm tracking-widest">
+                  ★★★★★
+                </div>
+              </div>
+            </div>
+            <div className="h-10 w-px bg-slate-300 hidden sm:block"></div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center size-10 rounded-full bg-white shadow-sm border border-slate-100 font-bold text-xl text-blue-600">G</div>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-800 leading-tight">Google</span>
+                <div className="flex text-amber-400 text-sm tracking-widest">
+                  ★★★★★
+                </div>
+              </div>
+            </div>
+            <div className="h-10 w-px bg-slate-300 hidden sm:block"></div>
+            <div className="flex flex-col text-center sm:text-left">
+              <span className="font-bold text-slate-800 leading-tight">Excellent 4.9 out of 5</span>
+              <span className="text-sm text-slate-500">Based on 250+ verified reviews</span>
+            </div>
+          </div>
+
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {testimonials.map((review) => (
               <div
@@ -244,14 +276,15 @@ export default async function HomePage() {
                     <div className="flex items-center gap-0.5 text-amber-400">
                       {[1, 2, 3, 4, 5].map((starIndex) => {
                         const r = Number(review.rating) || 5;
+                        const starColor = review.source === 'TRUSTPILOT' ? 'text-[#00B67A]' : 'text-amber-400';
                         if (r >= starIndex) {
-                          return <Star key={starIndex} className="size-4 fill-current text-amber-400" />;
+                          return <Star key={starIndex} className={`size-4 fill-current ${starColor}`} />;
                         } else if (r >= starIndex - 0.5) {
                           return (
                             <span key={starIndex} className="relative inline-block size-4">
                               <Star className="absolute inset-0 size-4 text-slate-200 fill-slate-200" />
                               <span className="absolute inset-0 w-1/2 overflow-hidden">
-                                <Star className="size-4 text-amber-400 fill-current" />
+                                <Star className={`size-4 fill-current ${starColor}`} />
                               </span>
                             </span>
                           );
@@ -269,16 +302,39 @@ export default async function HomePage() {
                   </p>
                 </div>
 
-                <div className="mt-6 border-t border-slate-100 pt-4">
-                  <p className="font-display text-sm font-bold text-navy">
-                    {review.name}
-                  </p>
-                  <p className="text-xs text-brand-orange font-medium">
-                    {review.destination}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {review.role} · {review.location}
-                  </p>
+                <div className="mt-6 border-t border-slate-100 pt-4 flex items-end justify-between">
+                  <div>
+                    <p className="font-display text-sm font-bold text-navy">
+                      {review.name}
+                    </p>
+                    <p className="text-xs text-brand-orange font-medium mt-0.5">
+                      {review.destination}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {review.role} · {review.location}
+                    </p>
+                  </div>
+                  {review.source === 'TRUSTPILOT' && (
+                    <div className="flex flex-col items-end gap-1">
+                      <div className="bg-[#00B67A] text-white text-[10px] font-bold px-2 py-0.5 rounded-sm flex items-center gap-1">
+                        ★ Trustpilot
+                      </div>
+                      <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium"><CheckCircle2 className="size-3 text-[#00B67A]" /> Verified</span>
+                    </div>
+                  )}
+                  {review.source === 'GOOGLE' && (
+                    <div className="flex flex-col items-end gap-1">
+                      <div className="text-slate-700 text-[11px] font-bold px-2 py-0.5 border border-slate-200 rounded-sm flex items-center gap-1 bg-white shadow-sm">
+                        <span className="text-blue-600 font-extrabold text-[12px]">G</span> Google
+                      </div>
+                      <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium"><CheckCircle2 className="size-3 text-blue-500" /> Verified</span>
+                    </div>
+                  )}
+                  {(!review.source || review.source === 'INTERNAL') && (
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium"><CheckCircle2 className="size-3 text-brand-orange" /> Verified Booking</span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
