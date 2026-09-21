@@ -5,6 +5,7 @@ import { HeroSlider } from "@/components/home/hero-slider";
 import { QuickBook } from "@/components/home/quick-book";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
+import { TrustSection } from "@/components/home/trust-section";
 import { Button } from "@/components/ui/button";
 import { HERO_SLIDES } from "@/data/home";
 import { getLiveHomeDeals } from "@/lib/flights";
@@ -220,6 +221,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      {/* 7. Trust & Reliability */}
+      <TrustSection />
+
       {/* 8. Traveler Reviews & Testimonials */}
       <section className="bg-slate-50 py-24 border-t border-slate-200/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
