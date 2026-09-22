@@ -51,6 +51,7 @@ async function createNestServer(): Promise<{
       /^https:\/\/dellics.*\.vercel\.app$/,
       'https://dellicstravels.com',
       'https://www.dellicstravels.com',
+      'https://consult.dellicstravels.com',
       'https://admin.dellicstravels.com',
     ],
     credentials: true,
