@@ -58,6 +58,15 @@ export class ReviewsController {
     return this.reviewsService.syncGoogleReviews();
   }
 
+  /**
+   * Admin: trigger a live sync of Trustpilot reviews → DB.
+   */
+  @Post('admin/sync-trustpilot')
+  @UseGuards(AdminAuthGuard, PermissionsGuard)
+  @RequirePermissions('reviews.manage')
+  async syncTrustpilotReviews() {
+    return this.reviewsService.syncTrustpilotReviews();
+  }
   /** Public: approved featured reviews for website social proof */
   @Get('featured')
   async getFeaturedReviews() {

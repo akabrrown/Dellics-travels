@@ -150,6 +150,103 @@ export class ReviewsService {
   }
 
   /**
+   * Fetch live Trustpilot reviews and upsert them into the DB.
+   * Called on demand (GET /reviews/sync-trustpilot) and cached for 1 hour.
+   */
+  async syncTrustpilotReviews(): Promise<{ synced: number; errors: string[] }> {
+    const cacheKey = 'reviews:trustpilot:sync';
+    const cached = this.cache.get<{ synced: number; errors: string[] }>(cacheKey);
+    if (cached) return cached;
+
+    const apiKey = this.config.get<string>('TRUSTPILOT_API_KEY');
+    const buId = this.config.get<string>('TRUSTPILOT_BUSINESS_UNIT_ID');
+
+    if (!apiKey || !buId) {
+      this.logger.warn('TRUSTPILOT_API_KEY or TRUSTPILOT_BUSINESS_UNIT_ID not set — skipping sync');
+      return { synced: 0, errors: ['Trustpilot credentials not configured'] };
+    }
+
+    const errors: string[] = [];
+    let synced = 0;
+
+    try {
+      // Trustpilot B2B API — get reviews for a business unit
+      const url = "https://api.trustpilot.com/v1/business-units/" + buId + "/reviews?stars=4,5&perPage=50;
+      const res = await fetch(url, {
+        headers: {
+          'apikey': apiKey,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        this.logger.error(Trustpilot API error : );
+        return { synced: 0, errors: [Trustpilot API : ] };
+      }
+
+      const data = await res.json() as {
+        reviews?: Array<{
+          id: string;
+          text: string;
+          stars: number;
+          createdAt: string;
+          consumer: { displayName: string };
+        }>;
+      };
+
+      const reviews = data.reviews || [];
+      this.logger.log(Trustpilot returned  reviews for buId );
+
+      for (const r of reviews) {
+        if (!r.text?.trim()) continue; // skip empty reviews
+
+        const externalId = 	rustpilot-;
+
+        try {
+          const existing = await this.prisma.review.findFirst({
+            where: { external_id: externalId },
+          });
+
+          const payload: any = {
+            source: 'TRUSTPILOT',
+            reviewer_name: r.consumer?.displayName || 'Trustpilot Reviewer',
+            rating: r.stars,
+            text: r.text,
+            external_id: externalId,
+            created_at: new Date(r.createdAt),
+            sub_scores: {
+              target: 'Dellics Travels',
+              status: 'APPROVED',
+              verifiedStay: true,
+              sourceId: r.id,
+            },
+          };
+
+          if (existing) {
+            await this.prisma.review.update({ where: { id: existing.id }, data: payload });
+          } else {
+            await this.prisma.review.create({ data: payload });
+          }
+          synced++;
+        } catch (upsertErr: any) {
+          this.logger.warn(Failed to upsert Trustpilot review : );
+          errors.push(upsertErr.message);
+        }
+      }
+
+      this.cache.invalidatePrefix('reviews:');
+      const result = { synced, errors };
+      this.cache.set(cacheKey, result, 60 * 60 * 1000); // 1 hour cache
+      return result;
+    } catch (err: any) {
+      this.logger.error(syncTrustpilotReviews failed: );
+      return { synced: 0, errors: [err.message] };
+    }
+  }
+
+
+  /**
    * Admin view: get all reviews with status filtering and search (cached with 2m TTL)
    */
   async getAllReviews(params?: { status?: string; search?: string }): Promise<{
