@@ -178,12 +178,11 @@ export default function ESIMOrders() {
       if (res && Array.isArray(res.data) && res.data.length > 0) {
         setOrders(res.data);
       } else {
-        // Use realistic operational demo data when API is offline or returns empty records
-        setOrders(DEMO_ESIM_ORDERS);
+        setOrders([]);
       }
     } catch (err) {
-      console.warn("[eSIM] Live sync unavailable, using cached operational records:", err);
-      setOrders(DEMO_ESIM_ORDERS);
+      console.warn("[eSIM] Live sync unavailable:", err);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -584,7 +583,7 @@ export default function ESIMOrders() {
             </div>
 
             {/* Data and Airtime Allowances Breakdown */}
-            <div className="grid grid-cols-2 gap-3 min-w-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
               <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/70 text-center">
                 <Wifi className="size-5 text-blue-600 mx-auto mb-1" />
                 <span className="text-[10px] uppercase tracking-wider font-bold text-blue-800">

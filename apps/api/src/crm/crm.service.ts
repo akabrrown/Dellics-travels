@@ -274,6 +274,13 @@ export class CrmService {
     });
   }
 
+  async getInteractionsByInquiry(inquiryId: string) {
+    return this.prisma.customerInteraction.findMany({
+      where: { inquiry_id: inquiryId },
+      orderBy: { created_at: 'asc' },
+    });
+  }
+
   async getCustomerRevenue(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

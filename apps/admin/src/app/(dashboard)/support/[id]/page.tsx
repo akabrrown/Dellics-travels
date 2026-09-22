@@ -58,18 +58,44 @@ export default function SupportTicketDetail() {
     (async () => {
       try {
         setLoading(true);
-        const res = await adminApi.get<{ data: InquiryRecord }>(`/inquiries/${ticketId}`);
+        const [res, interactionsRes] = await Promise.all([
+          adminApi.get<{ data: InquiryRecord }>(`/inquiries/${ticketId}`),
+          adminApi.get<{ data: any[] }>(`/crm/interactions/inquiry/${ticketId}`).catch(() => ({ data: [] }))
+        ]);
+        
         if (res?.data) {
           setInquiry(res.data);
-          setMessages([
-            {
-              id: "initial",
-              sender: "TRAVELER",
-              name: res.data.name,
-              content: res.data.message,
-              timestamp: new Date(res.data.created_at).toLocaleString(),
-            },
-          ]);
+          
+          if (interactionsRes?.data && interactionsRes.data.length > 0) {
+            setMessages(interactionsRes.data.map((interaction: any) => {
+              const isInternal = interaction.channel === 'NOTE';
+              const isSystem = interaction.channel === 'SYSTEM';
+              let sender = isInternal ? 'AGENT' : (isSystem ? 'SYSTEM' : 'AGENT');
+              if (interaction.channel === 'WEB_INQUIRY') sender = 'TRAVELER';
+              
+              let name = isInternal ? 'Support Desk' : (isSystem ? 'Dellics Desk' : 'Support Desk');
+              if (interaction.channel === 'WEB_INQUIRY') name = res.data.name;
+              
+              return {
+                id: interaction.id,
+                sender: sender as "TRAVELER" | "AGENT" | "SYSTEM",
+                name: name,
+                content: interaction.content,
+                timestamp: new Date(interaction.created_at).toLocaleString(),
+                isInternalNote: isInternal,
+              };
+            }));
+          } else {
+            setMessages([
+              {
+                id: "initial",
+                sender: "TRAVELER",
+                name: res.data.name,
+                content: res.data.message,
+                timestamp: new Date(res.data.created_at).toLocaleString(),
+              },
+            ]);
+          }
         }
       } catch (err: any) {
         setError(err?.message ?? "Failed to load inquiry.");
@@ -79,35 +105,56 @@ export default function SupportTicketDetail() {
     })();
   }, [ticketId]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!replyText.trim()) return;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        sender: "AGENT",
-        name: "Support Desk",
+    
+    try {
+      await adminApi.post("/crm/interactions", {
+        inquiry_id: ticketId,
+        channel: activeReplyMode === "INTERNAL" ? "NOTE" : "EMAIL",
+        subject: activeReplyMode === "INTERNAL" ? "Internal Note" : "Reply",
         content: replyText.trim(),
-        timestamp: new Date().toLocaleString(),
-        isInternalNote: activeReplyMode === "INTERNAL",
-      },
-    ]);
-    setReplyText("");
+      });
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          sender: "AGENT",
+          name: "Support Desk",
+          content: replyText.trim(),
+          timestamp: new Date().toLocaleString(),
+          isInternalNote: activeReplyMode === "INTERNAL",
+        },
+      ]);
+      setReplyText("");
+    } catch (err) {
+      console.error("Failed to post message", err);
+    }
   };
 
-  const handleResolve = () => {
-    setStatus("RESOLVED");
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        sender: "SYSTEM",
-        name: "Dellics Desk",
+  const handleResolve = async () => {
+    try {
+      await adminApi.post("/crm/interactions", {
+        inquiry_id: ticketId,
+        channel: "SYSTEM",
+        subject: "Ticket Resolved",
         content: "Ticket marked as RESOLVED by Support Agent.",
-        timestamp: new Date().toLocaleString(),
-      },
-    ]);
+      });
+      setStatus("RESOLVED");
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          sender: "SYSTEM",
+          name: "Dellics Desk",
+          content: "Ticket marked as RESOLVED by Support Agent.",
+          timestamp: new Date().toLocaleString(),
+        },
+      ]);
+    } catch (err) {
+      console.error("Failed to post resolve", err);
+    }
   };
 
   const initials = inquiry

@@ -52,6 +52,11 @@ export class CrmController {
     );
   }
 
+  @Get('interactions/inquiry/:inquiryId')
+  async getInteractionsByInquiry(@Param('inquiryId') inquiryId: string) {
+    return this.crmService.getInteractionsByInquiry(inquiryId);
+  }
+
   @Get('customers/:id/revenue')
   async getCustomerRevenue(@Param('id') id: string) {
     const revenue = await this.crmService.getCustomerRevenue(id);
