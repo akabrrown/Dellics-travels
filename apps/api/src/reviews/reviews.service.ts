@@ -171,7 +171,7 @@ export class ReviewsService {
 
     try {
       // Trustpilot B2B API — get reviews for a business unit
-      const url = "https://api.trustpilot.com/v1/business-units/" + buId + "/reviews?stars=4,5&perPage=50;
+      const url = `https://api.trustpilot.com/v1/business-units/${buId}/reviews?stars=4,5&perPage=50`;
       const res = await fetch(url, {
         headers: {
           'apikey': apiKey,
@@ -181,27 +181,19 @@ export class ReviewsService {
 
       if (!res.ok) {
         const errText = await res.text();
-        this.logger.error(Trustpilot API error : );
-        return { synced: 0, errors: [Trustpilot API : ] };
+        this.logger.error(`Trustpilot API error ${res.status}: ${errText}`);
+        return { synced: 0, errors: [`Trustpilot API ${res.status}: ${errText.slice(0, 200)}`] };
       }
 
-      const data = await res.json() as {
-        reviews?: Array<{
-          id: string;
-          text: string;
-          stars: number;
-          createdAt: string;
-          consumer: { displayName: string };
-        }>;
-      };
+      const data = await res.json() as any;
 
       const reviews = data.reviews || [];
-      this.logger.log(Trustpilot returned  reviews for buId );
+      this.logger.log(`Trustpilot returned ${reviews.length} reviews for buId ${buId}`);
 
       for (const r of reviews) {
         if (!r.text?.trim()) continue; // skip empty reviews
 
-        const externalId = 	rustpilot-;
+        const externalId = `trustpilot-${r.id}`;
 
         try {
           const existing = await this.prisma.review.findFirst({
@@ -230,7 +222,7 @@ export class ReviewsService {
           }
           synced++;
         } catch (upsertErr: any) {
-          this.logger.warn(Failed to upsert Trustpilot review : );
+          this.logger.warn(`Failed to upsert Trustpilot review ${externalId}: ${upsertErr.message}`);
           errors.push(upsertErr.message);
         }
       }
@@ -240,11 +232,10 @@ export class ReviewsService {
       this.cache.set(cacheKey, result, 60 * 60 * 1000); // 1 hour cache
       return result;
     } catch (err: any) {
-      this.logger.error(syncTrustpilotReviews failed: );
+      this.logger.error(`syncTrustpilotReviews failed: ${err.message}`);
       return { synced: 0, errors: [err.message] };
     }
   }
-
 
   /**
    * Admin view: get all reviews with status filtering and search (cached with 2m TTL)
