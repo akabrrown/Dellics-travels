@@ -1,116 +1,112 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RoleGuard } from "@/components/role-guard";
+import { adminApi } from "@/lib/api";
 import { 
   Users, 
   Target, 
   FolderOpen, 
   Plane,
   Search,
-  Filter,
-  MoreVertical,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
   X,
-  FileText,
-  MessageSquare,
   ArrowRight,
-  ShieldCheck,
   Send
 } from "lucide-react";
 
 type TabType = "crm" | "tests" | "docs" | "visa";
 
-// Mock Data Types
+// Schema Types
+type StudyDocument = { id: string; name: string; file_url: string; status: "PENDING" | "APPROVED" | "REJECTED"; updated_at: string };
+type StudyTest = { id: string; test_type: string; status: string; score?: string; notes?: string };
+type StudyNote = { id: string; author_name: string; text: string; created_at: string };
+
 type Student = {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
+  applicant_name: string;
+  applicant_email: string;
+  applicant_phone: string;
   city: string;
-  dest: string;
+  destination: string;
+  course: string;
   intake: string;
   stage: string;
-  tests: string;
-  docs: string;
-  status: "In Progress" | "Action Required" | "Completed";
-  documents: Array<{ id: string, name: string, file: string, date: string, status: "pending" | "approved" | "rejected" }>;
-  testDetails: Array<{ id: string, type: string, status: string, score?: string, notes: string }>;
-  visaStatus: string;
-  internalNotes: Array<{ author: string, text: string, date: string }>;
+  status: string;
+  visa_status: string;
+  documents: StudyDocument[];
+  tests: StudyTest[];
+  notes: StudyNote[];
+  updated_at: string;
 };
-
-const MOCK_STUDENTS: Student[] = [
-  { 
-    id: "s1", name: "John Doe", email: "john@example.com", phone: "+233 24 123 4567", city: "Accra", dest: "UK - MSc Data Science", intake: "Sept 2026", stage: "Document Collation", tests: "Pending IELTS", docs: "2/5 Uploaded", status: "In Progress",
-    documents: [
-      { id: "d1", name: "Passport Scan", file: "john_passport.pdf", date: "2 days ago", status: "approved" },
-      { id: "d2", name: "Undergraduate Transcript", file: "transcript_final.pdf", date: "1 day ago", status: "pending" }
-    ],
-    testDetails: [
-      { id: "t1", type: "IELTS Academic", status: "Preparation arranged with tutor", notes: "Target score: 7.0 band" }
-    ],
-    visaStatus: "Not Started",
-    internalNotes: [
-      { author: "Kwame Asante", text: "Student prefers universities in London or Manchester.", date: "Oct 12, 2023" }
-    ]
-  },
-  { 
-    id: "s2", name: "Ama Serwaa", email: "ama.s@example.com", phone: "+233 20 987 6543", city: "Kumasi", dest: "Canada - BSc Nursing", intake: "Jan 2027", stage: "Offer Received", tests: "IELTS Passed", docs: "Complete", status: "Action Required",
-    documents: [
-      { id: "d3", name: "WASSCE Certificate", file: "wassce_ama.pdf", date: "1 week ago", status: "approved" },
-      { id: "d4", name: "Financial Statement", file: "bank_statement.pdf", date: "2 days ago", status: "rejected" }
-    ],
-    testDetails: [
-      { id: "t2", type: "IELTS General", status: "Test completed", score: "7.5", notes: "Met minimum requirements." }
-    ],
-    visaStatus: "Document Collation",
-    internalNotes: [
-      { author: "Kwame Asante", text: "Needs to resubmit bank statements with correct date range.", date: "Oct 15, 2023" }
-    ]
-  },
-  { 
-    id: "s3", name: "Kwasi Mensah", email: "kwasi.m@example.com", phone: "+233 55 555 5555", city: "Tema", dest: "USA - MBA", intake: "Sept 2026", stage: "Visa Application", tests: "GMAT Passed", docs: "Complete", status: "In Progress",
-    documents: [
-      { id: "d5", name: "Passport", file: "passport_kwasi.pdf", date: "1 month ago", status: "approved" }
-    ],
-    testDetails: [
-      { id: "t3", type: "GMAT", status: "Test completed", score: "680", notes: "Submitted to Stanford." }
-    ],
-    visaStatus: "Interview Scheduled (Nov 15)",
-    internalNotes: []
-  },
-  { 
-    id: "s4", name: "Fatima Ali", email: "fatima@example.com", phone: "+233 27 777 7777", city: "Tamale", dest: "UK - LLB Law", intake: "Sept 2026", stage: "Initial Consultation", tests: "Not Required", docs: "0/3 Uploaded", status: "In Progress",
-    documents: [],
-    testDetails: [],
-    visaStatus: "Not Started",
-    internalNotes: [
-      { author: "Sarah Osei", text: "Awaiting high school final results.", date: "Oct 20, 2023" }
-    ]
-  },
-];
-
-const METRICS = [
-  { label: "Total Students", value: "248", color: "text-slate-900" },
-  { label: "Active Applications", value: "137", color: "text-brand-orange" },
-  { label: "Tests Pending", value: "42", color: "text-slate-900" },
-  { label: "Uni Submissions", value: "89", color: "text-slate-900" },
-  { label: "Visa Processing", value: "31", color: "text-blue-600" },
-  { label: "Appointments Today", value: "7", color: "text-emerald-600" },
-];
 
 export default function ConsultantPage() {
   const [activeTab, setActiveTab] = useState<TabType>("crm");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [students, setStudents] = useState<Student[]>([]);
+  const [metrics, setMetrics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredStudents = MOCK_STUDENTS.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    s.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const fetchStudents = async () => {
+    try {
+      const res = await adminApi.get<{ status: string, data: Student[] }>('/study/applications');
+      setStudents(res.data);
+    } catch (e) {
+      console.error('Failed to fetch students', e);
+    }
+  };
+
+  const fetchMetrics = async () => {
+    try {
+      const res = await adminApi.get<any>('/study/metrics');
+      setMetrics(res);
+    } catch (e) {
+      console.error('Failed to fetch metrics', e);
+    }
+  };
+
+  useEffect(() => {
+    Promise.all([fetchStudents(), fetchMetrics()]).then(() => setLoading(false));
+  }, []);
+
+  const refreshData = async () => {
+    await fetchStudents();
+    await fetchMetrics();
+    if (selectedStudent) {
+      const updated = students.find(s => s.id === selectedStudent.id);
+      if (updated) setSelectedStudent(updated);
+    }
+  };
+
+  const handleAdvanceStage = async (id: string, newStage: string) => {
+    await adminApi.patch(`/study/applications/${id}`, { stage: newStage });
+    await refreshData();
+  };
+
+  const handleUpdateDocument = async (appId: string, docId: string, status: string) => {
+    await adminApi.patch(`/study/applications/${appId}/documents/${docId}`, { status });
+    await refreshData();
+  };
+
+  const handleAddNote = async (appId: string, text: string) => {
+    if (!text.trim()) return;
+    await adminApi.post(`/study/applications/${appId}/notes`, { author_name: 'Consultant', text });
+    await refreshData();
+  };
+
+  const filteredStudents = students.filter(s => 
+    s.applicant_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    s.applicant_email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const METRICS = [
+    { label: "Total Students", value: metrics?.total || 0, color: "text-slate-900" },
+    { label: "Active Applications", value: metrics?.active || 0, color: "text-brand-orange" },
+    { label: "Tests Pending", value: metrics?.testsPending || 0, color: "text-slate-900" },
+    { label: "Uni Submissions", value: metrics?.submissions || 0, color: "text-slate-900" },
+    { label: "Visa Processing", value: metrics?.visa || 0, color: "text-blue-600" },
+    { label: "Appointments Today", value: metrics?.appointments || 0, color: "text-emerald-600" },
+  ];
 
   return (
     <RoleGuard permission="consultant.view" moduleName="Consultant CRM">
@@ -126,8 +122,8 @@ export default function ConsultantPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-4 py-2 text-xs font-bold text-[#0A0060] bg-white border border-[#0A0060]/20 rounded-lg shadow-sm hover:bg-slate-50">
-              Reset Demo Data
+            <button onClick={refreshData} className="px-4 py-2 text-xs font-bold text-[#0A0060] bg-white border border-[#0A0060]/20 rounded-lg shadow-sm hover:bg-slate-50">
+              Refresh Data
             </button>
           </div>
         </div>
@@ -136,7 +132,7 @@ export default function ConsultantPage() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           {METRICS.map((m, i) => (
             <div key={i} className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-center">
-              <span className={`font-display text-2xl font-extrabold ${m.color}`}>{m.value}</span>
+              <span className={`font-display text-2xl font-extrabold ${m.color}`}>{loading ? '-' : m.value}</span>
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">{m.label}</span>
             </div>
           ))}
@@ -198,12 +194,6 @@ export default function ConsultantPage() {
                         className="pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#0A0060] w-64"
                       />
                     </div>
-                    <select className="px-4 py-2 text-xs font-semibold border border-slate-200 rounded-lg focus:outline-none bg-white text-slate-700">
-                      <option value="all">All Destinations</option>
-                      <option value="uk">United Kingdom</option>
-                      <option value="ca">Canada</option>
-                      <option value="us">United States</option>
-                    </select>
                   </div>
                 </div>
 
@@ -221,39 +211,43 @@ export default function ConsultantPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {filteredStudents.map((s) => (
+                      {loading ? (
+                        <tr><td colSpan={7} className="px-4 py-12 text-center text-slate-500 text-sm">Loading...</td></tr>
+                      ) : filteredStudents.map((s) => (
                         <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
                           <td className="px-4 py-4">
                             <div className="flex items-center gap-3">
                               <div className="size-8 rounded-full bg-[#0A0060] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                                {s.name.substring(0, 2).toUpperCase()}
+                                {s.applicant_name.substring(0, 2).toUpperCase()}
                               </div>
                               <div>
-                                <div className="font-semibold text-slate-900 text-sm">{s.name}</div>
-                                <div className="text-[11px] text-slate-500">{s.email}</div>
+                                <div className="font-semibold text-slate-900 text-sm">{s.applicant_name}</div>
+                                <div className="text-[11px] text-slate-500">{s.applicant_email}</div>
                               </div>
                             </div>
                           </td>
                           <td className="px-4 py-4">
-                            <div className="text-xs text-slate-900 font-bold">{s.dest.split(' - ')[0]}</div>
-                            <div className="text-[11px] text-slate-500">{s.dest.split(' - ')[1]}</div>
+                            <div className="text-xs text-slate-900 font-bold">{s.destination}</div>
+                            <div className="text-[11px] text-slate-500">{s.course || '-'}</div>
                           </td>
                           <td className="px-4 py-4 text-xs text-slate-700 font-medium">{s.intake}</td>
                           <td className="px-4 py-4">
                             <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-bold">
-                              {s.stage}
+                              {s.stage.replace(/_/g, ' ')}
                             </span>
                           </td>
                           <td className="px-4 py-4">
-                            {s.tests === "Not Required" ? (
+                            {s.tests.length === 0 ? (
                                <span className="text-[11px] text-slate-400">None</span>
                             ) : (
                                <span className="inline-flex items-center px-2 py-1 rounded border border-slate-200 bg-white text-[10px] font-bold text-slate-700 shadow-sm">
-                                 {s.tests.replace('Pending ', '').replace(' Passed', '')}
+                                 {s.tests[0].test_type}
                                </span>
                             )}
                           </td>
-                          <td className="px-4 py-4 text-xs font-bold text-slate-700">{s.docs}</td>
+                          <td className="px-4 py-4 text-xs font-bold text-slate-700">
+                            {s.documents.filter(d => d.status === 'APPROVED').length}/{s.documents.length}
+                          </td>
                           <td className="px-4 py-4 text-right">
                             <button 
                               onClick={() => setSelectedStudent(s)}
@@ -264,13 +258,6 @@ export default function ConsultantPage() {
                           </td>
                         </tr>
                       ))}
-                      {filteredStudents.length === 0 && (
-                        <tr>
-                          <td colSpan={7} className="px-4 py-12 text-center text-slate-500 text-sm">
-                            No students found matching your search.
-                          </td>
-                        </tr>
-                      )}
                     </tbody>
                   </table>
                 </div>
@@ -299,19 +286,19 @@ export default function ConsultantPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {MOCK_STUDENTS.filter(s => s.testDetails.length > 0).map(s => (
-                        s.testDetails.map(t => (
+                      {students.filter(s => s.tests.length > 0).map(s => (
+                        s.tests.map(t => (
                           <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
                             <td className="px-4 py-4">
-                              <div className="font-semibold text-slate-900 text-sm">{s.name}</div>
-                              <div className="text-[11px] text-slate-500">{s.dest.split(' - ')[0]}</div>
+                              <div className="font-semibold text-slate-900 text-sm">{s.applicant_name}</div>
+                              <div className="text-[11px] text-slate-500">{s.destination}</div>
                             </td>
                             <td className="px-4 py-4">
                               <span className="inline-flex items-center px-2 py-1 rounded border border-slate-200 bg-white text-[10px] font-bold text-slate-700 shadow-sm">
-                                {t.type}
+                                {t.test_type}
                               </span>
                             </td>
-                            <td className="px-4 py-4 text-xs text-slate-700 font-medium">{t.status}</td>
+                            <td className="px-4 py-4 text-xs text-slate-700 font-medium">{t.status.replace(/_/g, ' ')}</td>
                             <td className="px-4 py-4 text-xs font-bold text-slate-900">{t.score || "—"}</td>
                             <td className="px-4 py-4 text-right">
                               <button 
@@ -347,39 +334,37 @@ export default function ConsultantPage() {
                         <th className="px-4 py-3">Student</th>
                         <th className="px-4 py-3">Document Type</th>
                         <th className="px-4 py-3">File Name</th>
-                        <th className="px-4 py-3">Uploaded</th>
                         <th className="px-4 py-3">Status</th>
                         <th className="px-4 py-3 text-right">Verification Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {MOCK_STUDENTS.flatMap(s => s.documents.map(d => ({ student: s, doc: d }))).map((item, idx) => (
+                      {students.flatMap(s => s.documents.map(d => ({ student: s, doc: d }))).map((item, idx) => (
                         <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-4 py-4 font-semibold text-slate-900 text-sm">{item.student.name}</td>
+                          <td className="px-4 py-4 font-semibold text-slate-900 text-sm">{item.student.applicant_name}</td>
                           <td className="px-4 py-4 text-xs text-slate-700 font-medium">{item.doc.name}</td>
-                          <td className="px-4 py-4 text-[11px] text-slate-500 font-mono">{item.doc.file}</td>
-                          <td className="px-4 py-4 text-xs text-slate-500">{item.doc.date}</td>
+                          <td className="px-4 py-4 text-[11px] text-slate-500 font-mono">{item.doc.file_url}</td>
                           <td className="px-4 py-4">
                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold ${
-                               item.doc.status === 'approved' ? 'bg-emerald-50 text-emerald-700' :
-                               item.doc.status === 'rejected' ? 'bg-rose-50 text-rose-700' :
+                               item.doc.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700' :
+                               item.doc.status === 'REJECTED' ? 'bg-rose-50 text-rose-700' :
                                'bg-amber-50 text-amber-700'
                              }`}>
-                               {item.doc.status.toUpperCase()}
+                               {item.doc.status}
                              </span>
                           </td>
                           <td className="px-4 py-4 text-right space-x-2">
-                            {item.doc.status === 'pending' && (
+                            {item.doc.status === 'PENDING' && (
                               <>
-                                <button className="px-3 py-1.5 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 transition-colors">
+                                <button onClick={() => handleUpdateDocument(item.student.id, item.doc.id, 'APPROVED')} className="px-3 py-1.5 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 transition-colors">
                                   Approve ✓
                                 </button>
-                                <button className="px-3 py-1.5 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition-colors">
-                                  Request Edit
+                                <button onClick={() => handleUpdateDocument(item.student.id, item.doc.id, 'REJECTED')} className="px-3 py-1.5 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition-colors">
+                                  Reject
                                 </button>
                               </>
                             )}
-                            {item.doc.status !== 'pending' && (
+                            {item.doc.status !== 'PENDING' && (
                                <button 
                                 onClick={() => setSelectedStudent(item.student)}
                                 className="px-3 py-1.5 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition-colors"
@@ -417,11 +402,11 @@ export default function ConsultantPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {MOCK_STUDENTS.map((s) => (
+                      {students.map((s) => (
                         <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-4 py-4 font-semibold text-slate-900 text-sm">{s.name}</td>
-                          <td className="px-4 py-4 text-xs text-slate-700 font-medium">{s.dest.split(' - ')[0]} Student Visa</td>
-                          <td className="px-4 py-4 text-xs font-bold text-slate-700">{s.visaStatus}</td>
+                          <td className="px-4 py-4 font-semibold text-slate-900 text-sm">{s.applicant_name}</td>
+                          <td className="px-4 py-4 text-xs text-slate-700 font-medium">{s.destination} Student Visa</td>
+                          <td className="px-4 py-4 text-xs font-bold text-slate-700">{s.visa_status || 'Not Started'}</td>
                           <td className="px-4 py-4 text-right">
                              <button 
                               onClick={() => setSelectedStudent(s)}
@@ -443,195 +428,192 @@ export default function ConsultantPage() {
 
         {/* Student Drawer Overlay */}
         {selectedStudent && (
-          <>
-            <div 
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100]" 
-              onClick={() => setSelectedStudent(null)}
-            />
-            <div className="fixed inset-y-0 right-0 w-full sm:w-[600px] bg-slate-50 shadow-2xl z-[110] flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-300">
-              
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between p-6 bg-white border-b border-slate-200 shrink-0">
-                <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-full bg-[#0A0060] text-white flex items-center justify-center font-bold text-lg">
-                    {selectedStudent.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <h2 className="font-display font-bold text-xl text-slate-900 leading-tight">
-                      {selectedStudent.name}
-                    </h2>
-                    <div className="text-xs text-slate-500 mt-1 flex items-center gap-2">
-                      <span>{selectedStudent.email}</span>
-                      <span>•</span>
-                      <span>{selectedStudent.phone}</span>
-                      <span>•</span>
-                      <span>{selectedStudent.city}</span>
-                    </div>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setSelectedStudent(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
-                >
-                  <X className="size-6" />
-                </button>
-              </div>
-
-              {/* Drawer Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                
-                {/* Stage Progression */}
-                <section>
-                  <h3 className="font-display font-bold text-slate-900 text-sm mb-3">Application Stage Progression</h3>
-                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
-                    <div className="flex items-center gap-3">
-                      <label className="text-xs font-bold text-slate-700 shrink-0">Current Stage:</label>
-                      <select className="flex-1 bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0A0060]/20">
-                        <option>1. Initial Consultation (Completed)</option>
-                        <option>2. Document Collation (Active)</option>
-                        <option>3. University Submissions (Pending)</option>
-                        <option>4. Offer Received (Pending)</option>
-                        <option>5. Visa Application (Pending)</option>
-                      </select>
-                      <button className="px-4 py-2 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 whitespace-nowrap">
-                        Advance Stage
-                      </button>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Document Compliance */}
-                <section>
-                  <h3 className="font-display font-bold text-slate-900 text-sm mb-3 flex items-center justify-between">
-                    <span>Documents Compliance Verification</span>
-                    <span className="text-xs font-normal text-slate-500 bg-white px-2 py-1 rounded border border-slate-200">{selectedStudent.documents.length} Files</span>
-                  </h3>
-                  <div className="space-y-3">
-                    {selectedStudent.documents.length === 0 && (
-                      <div className="p-4 bg-white border border-slate-200 border-dashed rounded-xl text-center text-sm text-slate-500">
-                        No documents uploaded yet.
-                      </div>
-                    )}
-                    {selectedStudent.documents.map(d => (
-                      <div key={d.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex items-center justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-bold text-slate-900 text-sm truncate">{d.name}</p>
-                          <p className="text-xs text-slate-500 font-mono truncate mt-0.5">{d.file} • {d.date}</p>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {d.status === 'pending' ? (
-                            <>
-                              <button className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold rounded-lg transition-colors">
-                                Approve ✓
-                              </button>
-                              <button className="px-3 py-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 text-xs font-bold rounded-lg transition-colors">
-                                Revise
-                              </button>
-                            </>
-                          ) : (
-                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                              d.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
-                            }`}>
-                              {d.status.toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                {/* Test Coordination */}
-                <section>
-                  <h3 className="font-display font-bold text-slate-900 text-sm mb-3">Tests Coordination Status</h3>
-                  {selectedStudent.testDetails.length === 0 && (
-                    <div className="p-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-500">
-                      No standardized tests required for this application.
-                    </div>
-                  )}
-                  {selectedStudent.testDetails.map(t => (
-                    <div key={t.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs mb-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-bold text-slate-900 text-sm">{t.type}</span>
-                        <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
-                          {t.status}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 mb-4">{t.notes}</p>
-                      <div className="flex flex-wrap gap-2">
-                        <button className="px-3 py-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 text-xs font-bold rounded-lg transition-colors">
-                          Mark Prep Arranged
-                        </button>
-                        <button className="px-3 py-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 text-xs font-bold rounded-lg transition-colors">
-                          Set Test Date
-                        </button>
-                        <button className="px-3 py-1.5 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 transition-colors">
-                          Record Score
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </section>
-
-                {/* Dispatch Alert */}
-                <section>
-                   <h3 className="font-display font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                     <Send className="size-4 text-brand-orange" />
-                     Dispatch In-App Alert
-                   </h3>
-                   <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
-                     <input 
-                        type="text" 
-                        placeholder="Alert Title (e.g. Offer Letter Received)" 
-                        className="w-full bg-slate-50 border border-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#0A0060] mb-3"
-                     />
-                     <textarea 
-                        rows={2} 
-                        placeholder="Alert message details..." 
-                        className="w-full bg-slate-50 border border-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#0A0060] mb-3 resize-none"
-                     />
-                     <button className="px-4 py-2 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 transition-colors w-full sm:w-auto">
-                       Send Notification to Student Portal
-                     </button>
-                   </div>
-                </section>
-
-                {/* Internal Notes */}
-                <section>
-                  <h3 className="font-display font-bold text-slate-900 text-sm mb-3 flex items-center justify-between">
-                    <span>Internal Case Notes</span>
-                    <span className="text-[10px] uppercase font-bold text-slate-400">Staff Only</span>
-                  </h3>
-                  <div className="flex gap-2 mb-4">
-                    <input 
-                      type="text" 
-                      placeholder="Add confidential consultant note..." 
-                      className="flex-1 bg-white border border-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#0A0060]"
-                    />
-                    <button className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-200 transition-colors shrink-0">
-                      Add Note
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {selectedStudent.internalNotes.length === 0 && (
-                      <p className="text-xs text-slate-500 text-center py-4">No internal notes yet.</p>
-                    )}
-                    {selectedStudent.internalNotes.map((note, idx) => (
-                      <div key={idx} className="p-3 bg-yellow-50 border border-yellow-100 rounded-lg">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-[10px] font-bold text-slate-700">{note.author}</span>
-                          <span className="text-[10px] text-slate-500">{note.date}</span>
-                        </div>
-                        <p className="text-xs text-slate-800">{note.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              </div>
-            </div>
-          </>
+          <StudentDrawer 
+            student={selectedStudent} 
+            onClose={() => {
+              setSelectedStudent(null);
+              refreshData();
+            }}
+            onAdvanceStage={(s: string) => handleAdvanceStage(selectedStudent.id, s)}
+            onUpdateDoc={(dId: string, s: string) => handleUpdateDocument(selectedStudent.id, dId, s)}
+            onAddNote={(t: string) => handleAddNote(selectedStudent.id, t)}
+          />
         )}
       </div>
     </RoleGuard>
+  );
+}
+
+function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNote }: any) {
+  const [noteText, setNoteText] = useState("");
+  const [selectedStage, setSelectedStage] = useState(student.stage);
+
+  return (
+    <>
+      <div 
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100]" 
+        onClick={onClose}
+      />
+      <div className="fixed inset-y-0 right-0 w-full sm:w-[600px] bg-slate-50 shadow-2xl z-[110] flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-300">
+        
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between p-6 bg-white border-b border-slate-200 shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="size-12 rounded-full bg-[#0A0060] text-white flex items-center justify-center font-bold text-lg">
+              {student.applicant_name.substring(0, 2).toUpperCase()}
+            </div>
+            <div>
+              <h2 className="font-display font-bold text-xl text-slate-900 leading-tight">
+                {student.applicant_name}
+              </h2>
+              <div className="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                <span>{student.applicant_email}</span>
+                <span>•</span>
+                <span>{student.applicant_phone}</span>
+                <span>•</span>
+                <span>{student.city}</span>
+              </div>
+            </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+          >
+            <X className="size-6" />
+          </button>
+        </div>
+
+        {/* Drawer Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+          
+          {/* Stage Progression */}
+          <section>
+            <h3 className="font-display font-bold text-slate-900 text-sm mb-3">Application Stage Progression</h3>
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+              <div className="flex items-center gap-3">
+                <label className="text-xs font-bold text-slate-700 shrink-0">Current Stage:</label>
+                <select 
+                  value={selectedStage}
+                  onChange={e => setSelectedStage(e.target.value)}
+                  className="flex-1 bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0A0060]/20"
+                >
+                  <option value="INITIAL_CONSULTATION">1. Initial Consultation</option>
+                  <option value="DOCUMENT_COLLATION">2. Document Collation</option>
+                  <option value="UNIVERSITY_SUBMISSION">3. University Submissions</option>
+                  <option value="OFFER_RECEIVED">4. Offer Received</option>
+                  <option value="VISA_APPLICATION">5. Visa Application</option>
+                  <option value="COMPLETED">6. Completed</option>
+                </select>
+                <button 
+                  onClick={() => onAdvanceStage(selectedStage)}
+                  className="px-4 py-2 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 whitespace-nowrap"
+                >
+                  Update Stage
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Document Compliance */}
+          <section>
+            <h3 className="font-display font-bold text-slate-900 text-sm mb-3 flex items-center justify-between">
+              <span>Documents Compliance Verification</span>
+              <span className="text-xs font-normal text-slate-500 bg-white px-2 py-1 rounded border border-slate-200">{student.documents.length} Files</span>
+            </h3>
+            <div className="space-y-3">
+              {student.documents.length === 0 && (
+                <div className="p-4 bg-white border border-slate-200 border-dashed rounded-xl text-center text-sm text-slate-500">
+                  No documents uploaded yet.
+                </div>
+              )}
+              {student.documents.map((d: any) => (
+                <div key={d.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex items-center justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-slate-900 text-sm truncate">{d.name}</p>
+                    <p className="text-xs text-slate-500 font-mono truncate mt-0.5">{d.file_url}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {d.status === 'PENDING' ? (
+                      <>
+                        <button onClick={() => onUpdateDoc(d.id, 'APPROVED')} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold rounded-lg transition-colors">
+                          Approve ✓
+                        </button>
+                        <button onClick={() => onUpdateDoc(d.id, 'REJECTED')} className="px-3 py-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 text-xs font-bold rounded-lg transition-colors">
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                        d.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}>
+                        {d.status}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Test Coordination */}
+          <section>
+            <h3 className="font-display font-bold text-slate-900 text-sm mb-3">Tests Coordination Status</h3>
+            {student.tests.length === 0 && (
+              <div className="p-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-500">
+                No standardized tests required for this application.
+              </div>
+            )}
+            {student.tests.map((t: any) => (
+              <div key={t.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs mb-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-slate-900 text-sm">{t.test_type}</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
+                    {t.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mb-4">{t.notes}</p>
+              </div>
+            ))}
+          </section>
+
+          {/* Internal Notes */}
+          <section>
+            <h3 className="font-display font-bold text-slate-900 text-sm mb-3 flex items-center justify-between">
+              <span>Internal Case Notes</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">Staff Only</span>
+            </h3>
+            <div className="flex gap-2 mb-4">
+              <input 
+                type="text" 
+                placeholder="Add confidential consultant note..." 
+                value={noteText}
+                onChange={e => setNoteText(e.target.value)}
+                className="flex-1 bg-white border border-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#0A0060]"
+              />
+              <button 
+                onClick={() => { onAddNote(noteText); setNoteText(""); }}
+                className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-200 transition-colors shrink-0"
+              >
+                Add Note
+              </button>
+            </div>
+            <div className="space-y-2">
+              {student.notes.length === 0 && (
+                <p className="text-xs text-slate-500 text-center py-4">No internal notes yet.</p>
+              )}
+              {student.notes.map((note: any) => (
+                <div key={note.id} className="p-3 bg-yellow-50 border border-yellow-100 rounded-lg">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-[10px] font-bold text-slate-700">{note.author_name}</span>
+                    <span className="text-[10px] text-slate-500">{new Date(note.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-xs text-slate-800">{note.text}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
   );
 }

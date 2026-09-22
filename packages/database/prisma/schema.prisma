@@ -131,6 +131,8 @@ model User {
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
   tourBookings TourBooking[]
+  study_applications    StudyApplication[]
+
 }
 
 model Trip {
@@ -426,4 +428,95 @@ model AdminRole {
   users       User[]   @relation("UserAdminRole")
 
 
+}
+
+
+enum StudyApplicationStage {
+  INITIAL_CONSULTATION
+  DOCUMENT_COLLATION
+  UNIVERSITY_SUBMISSION
+  OFFER_RECEIVED
+  VISA_APPLICATION
+  COMPLETED
+}
+
+enum StudyApplicationStatus {
+  IN_PROGRESS
+  ACTION_REQUIRED
+  COMPLETED
+  CANCELLED
+}
+
+enum StudyDocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum StudyTestStatus {
+  NOT_REQUIRED
+  PREP_ARRANGED
+  TEST_SCHEDULED
+  COMPLETED
+}
+
+model StudyApplication {
+  id               String               @id @default(uuid())
+  user_id          String?
+  user             User?                @relation(fields: [user_id], references: [id])
+  applicant_name   String
+  applicant_email  String
+  applicant_phone  String?
+  city             String?
+  destination      String
+  course           String?
+  intake           String
+  stage            StudyApplicationStage @default(INITIAL_CONSULTATION)
+  status           StudyApplicationStatus @default(IN_PROGRESS)
+  visa_status      String?
+  
+  documents        StudyDocument[]
+  tests            StudyTest[]
+  notes            StudyNote[]
+
+  created_at       DateTime             @default(now())
+  updated_at       DateTime             @updatedAt
+
+  @@index([applicant_email])
+  @@index([stage])
+}
+
+model StudyDocument {
+  id                   String           @id @default(uuid())
+  study_application_id String
+  study_application    StudyApplication @relation(fields: [study_application_id], references: [id], onDelete: Cascade)
+  name                 String
+  file_url             String
+  status               StudyDocumentStatus @default(PENDING)
+  
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+}
+
+model StudyTest {
+  id                   String           @id @default(uuid())
+  study_application_id String
+  study_application    StudyApplication @relation(fields: [study_application_id], references: [id], onDelete: Cascade)
+  test_type            String           // e.g., "IELTS Academic", "GMAT"
+  status               StudyTestStatus  @default(PREP_ARRANGED)
+  score                String?
+  notes                String?
+  
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+}
+
+model StudyNote {
+  id                   String           @id @default(uuid())
+  study_application_id String
+  study_application    StudyApplication @relation(fields: [study_application_id], references: [id], onDelete: Cascade)
+  author_name          String
+  text                 String
+  
+  created_at           DateTime         @default(now())
 }
