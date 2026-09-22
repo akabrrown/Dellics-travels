@@ -63,7 +63,7 @@ export default function ReviewsModeration() {
   const handleSyncGoogle = async () => {
     try {
       setActionLoading('sync-google');
-      await adminApi.post('/reviews/admin/sync-google');
+      await adminApi.post('/reviews/admin/sync-google', {});
       alert('Google Reviews synced successfully.');
       fetchReviews();
     } catch (err: any) {
@@ -76,7 +76,7 @@ export default function ReviewsModeration() {
   const handleSyncTrustpilot = async () => {
     try {
       setActionLoading('sync-trustpilot');
-      await adminApi.post('/reviews/admin/sync-trustpilot');
+      await adminApi.post('/reviews/admin/sync-trustpilot', {});
       alert('Trustpilot Reviews synced successfully.');
       fetchReviews();
     } catch (err: any) {
