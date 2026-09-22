@@ -152,7 +152,7 @@ model Trip {
 model Booking {
   id           String        @id @default(uuid())
   trip_id      String
-  trip         Trip          @relation(fields: [trip_id], references: [id])
+  trip         Trip          @relation(fields: [trip_id], references: [id], onDelete: Cascade)
   type         BookingType
   status       BookingStatus @default(HELD)
   supplier_ref String?
