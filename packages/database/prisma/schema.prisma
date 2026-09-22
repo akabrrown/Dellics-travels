@@ -245,6 +245,7 @@ model Review {
   id            String       @id @default(uuid())
   source        ReviewSource @default(INTERNAL)
   source_ref    String?
+  external_id   String?      @unique
   reviewer_name String?
 
   user_id       String?

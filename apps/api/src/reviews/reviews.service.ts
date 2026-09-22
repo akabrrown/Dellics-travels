@@ -1,9 +1,10 @@
-import {
+﻿import {
   Injectable,
   Logger,
   NotFoundException,
   Optional,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -29,11 +30,123 @@ export class ReviewsService {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
     @Optional() injectedCache?: CacheService,
   ) {
     this.cache =
       injectedCache ||
       new CacheService({ maxEntries: 200, defaultTtlMs: 2 * 60 * 1000 });
+  }
+
+  /**
+   * Fetch live Google Place reviews and upsert them into the DB.
+   * Called on demand (GET /reviews/sync-google) and cached for 1 hour.
+   * The API key NEVER leaves the server — it is read from env vars only.
+   */
+  async syncGoogleReviews(): Promise<{ synced: number; errors: string[] }> {
+    const cacheKey = 'reviews:google:sync';
+    const cached = this.cache.get<{ synced: number; errors: string[] }>(cacheKey);
+    if (cached) return cached;
+
+    const apiKey = this.config.get<string>('GOOGLE_PLACES_API_KEY');
+    const placeId = this.config.get<string>('GOOGLE_PLACE_ID');
+
+    if (!apiKey || !placeId) {
+      this.logger.warn('GOOGLE_PLACES_API_KEY or GOOGLE_PLACE_ID not set — skipping sync');
+      return { synced: 0, errors: ['Google Places credentials not configured'] };
+    }
+
+    const errors: string[] = [];
+    let synced = 0;
+
+    try {
+      // Google Places API (New) — placeDetails endpoint
+      const url = `https://places.googleapis.com/v1/places/${placeId}`;
+      const res = await fetch(url, {
+        headers: {
+          'X-Goog-Api-Key': apiKey,
+          'X-Goog-FieldMask': 'id,displayName,rating,userRatingCount,reviews',
+        },
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        this.logger.error(`Google Places API error ${res.status}: ${errText}`);
+        return { synced: 0, errors: [`Google API ${res.status}: ${errText.slice(0, 200)}`] };
+      }
+
+      const place = await res.json() as {
+        id?: string;
+        displayName?: { text?: string };
+        rating?: number;
+        userRatingCount?: number;
+        reviews?: Array<{
+          name?: string;
+          relativePublishTimeDescription?: string;
+          rating?: number;
+          text?: { text?: string; languageCode?: string };
+          originalText?: { text?: string };
+          authorAttribution?: { displayName?: string; photoUri?: string; uri?: string };
+          publishTime?: string;
+        }>;
+      };
+
+      const reviews = place.reviews || [];
+      this.logger.log(`Google Places returned ${reviews.length} reviews for place ${placeId}`);
+
+      for (const r of reviews) {
+        const reviewText = r.text?.text || r.originalText?.text || '';
+        const authorName = r.authorAttribution?.displayName || 'Google Reviewer';
+        const rating = r.rating ?? 5;
+        const publishTime = r.publishTime ? new Date(r.publishTime) : new Date();
+        // Use the review name (e.g. "places/xxx/reviews/yyy") as an idempotency key
+        const externalId = r.name || `google-${placeId}-${authorName}`;
+
+        if (!reviewText.trim()) continue; // skip rating-only reviews with no text
+
+        try {
+          // Upsert: if a review with the same external ID already exists, update it
+          const existing = await this.prisma.review.findFirst({
+            where: { external_id: externalId },
+          });
+
+          const data: any = {
+            source: 'GOOGLE',
+            reviewer_name: authorName,
+            rating,
+            text: reviewText,
+            external_id: externalId,
+            created_at: publishTime,
+            sub_scores: {
+              target: 'Dellics Travels',
+              status: 'APPROVED',
+              verifiedStay: false,
+              placeId,
+              authorUri: r.authorAttribution?.uri,
+              relativeTime: r.relativePublishTimeDescription,
+            },
+          };
+
+          if (existing) {
+            await this.prisma.review.update({ where: { id: existing.id }, data });
+          } else {
+            await this.prisma.review.create({ data });
+          }
+          synced++;
+        } catch (upsertErr: any) {
+          this.logger.warn(`Failed to upsert review ${externalId}: ${upsertErr.message}`);
+          errors.push(upsertErr.message);
+        }
+      }
+
+      this.cache.invalidatePrefix('reviews:');
+      const result = { synced, errors };
+      this.cache.set(cacheKey, result, 60 * 60 * 1000); // 1 hour cache
+      return result;
+    } catch (err: any) {
+      this.logger.error(`syncGoogleReviews failed: ${err.message}`);
+      return { synced: 0, errors: [err.message] };
+    }
   }
 
   /**
@@ -75,7 +188,7 @@ export class ReviewsService {
           id: r.id,
           bookingId: r.booking_id,
           bookingType: r.booking?.type || 'HOTEL',
-          travelerName: r.user?.name || 'Verified Traveler',
+          travelerName: r.reviewer_name || r.user?.name || 'Verified Traveler',
           travelerEmail: r.user?.email || '',
           rating: r.rating,
           text: r.text || '',
@@ -119,7 +232,6 @@ export class ReviewsService {
 
   /**
    * Moderate review status: APPROVED, FLAGGED, PENDING
-   * Automatically invalidates review caches to guarantee consistency
    */
   async moderateReview(
     id: string,
@@ -147,7 +259,6 @@ export class ReviewsService {
         },
       });
 
-      // Invalidate all review cache keys
       const purged = this.cache.invalidatePrefix('reviews:');
       this.logger.log(
         `[Cache INVALIDATION] Purged ${purged} review cache entries after moderating review ${id}`,
@@ -164,10 +275,6 @@ export class ReviewsService {
     }
   }
 
-  /**
-   * Public: get approved high-rating reviews for website social proof (cached with 10m TTL)
-   */
-  
   async addExternalReview(dto: {
     travelerName: string;
     rating: number;
@@ -194,6 +301,9 @@ export class ReviewsService {
     }
   }
 
+  /**
+   * Public: get approved high-rating reviews for website social proof (cached with 10m TTL)
+   */
   async getFeaturedReviews(): Promise<{
     status: string;
     count: number;
@@ -211,10 +321,20 @@ export class ReviewsService {
     }
 
     const res = await this.getAllReviews({ status: 'APPROVED' });
+    // Prioritize Google reviews (real), then sort by rating desc
+    const sorted = res.data
+      .filter((r) => r.rating >= 4)
+      .sort((a, b) => {
+        const aIsGoogle = a.source === 'GOOGLE' ? 1 : 0;
+        const bIsGoogle = b.source === 'GOOGLE' ? 1 : 0;
+        if (bIsGoogle !== aIsGoogle) return bIsGoogle - aIsGoogle;
+        return b.rating - a.rating;
+      });
+
     const result = {
       status: 'success',
-      count: res.data.length,
-      data: res.data.slice(0, 6),
+      count: sorted.length,
+      data: sorted.slice(0, 6),
     };
 
     this.cache.set(cacheKey, result, 10 * 60 * 1000);
