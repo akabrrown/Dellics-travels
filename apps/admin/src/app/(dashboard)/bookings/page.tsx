@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { RoleGuard } from "@/components/role-guard";
 import React, { useEffect, useState } from "react";
@@ -344,7 +344,7 @@ export default function BookingsManagement() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <form
             onSubmit={handleCreateOffline}
-            className="bg-white rounded-3xl p-6 max-w-lg w-full border border-slate-200 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-6 w-full max-w-lg border border-slate-200 shadow-2xl space-y-4 max-h-[90dvh] overflow-y-auto mx-auto"
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
@@ -389,7 +389,7 @@ export default function BookingsManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Traveler Email</label>
                   <input
@@ -428,7 +428,7 @@ export default function BookingsManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     Amount (GHS) <span className="text-rose-500">*</span>

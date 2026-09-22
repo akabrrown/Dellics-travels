@@ -699,7 +699,7 @@ export default function RolesAndTeam() {
       {/* INVITE ADMIN USER MODAL */}
       {inviteModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl space-y-5">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl space-y-5 max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="font-display text-base font-bold text-[#0A0060]">
                 Invite Administrative Operator

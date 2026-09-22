@@ -540,7 +540,7 @@ export default function ESIMOrders() {
           onClick={() => setSelectedOrder(null)}
         >
           <div
-            className="bg-white rounded-3xl shadow-xl max-w-lg w-full p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200"
+            className="bg-white rounded-3xl shadow-xl max-w-lg w-full p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200 max-h-[90dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -584,7 +584,7 @@ export default function ESIMOrders() {
             </div>
 
             {/* Data and Airtime Allowances Breakdown */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 min-w-0">
               <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/70 text-center">
                 <Wifi className="size-5 text-blue-600 mx-auto mb-1" />
                 <span className="text-[10px] uppercase tracking-wider font-bold text-blue-800">

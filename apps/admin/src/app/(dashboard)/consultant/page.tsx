@@ -454,7 +454,7 @@ function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNot
         className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100]" 
         onClick={onClose}
       />
-      <div className="fixed inset-y-0 right-0 w-full sm:w-[600px] bg-slate-50 shadow-2xl z-[110] flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-300">
+      <div className="fixed inset-y-0 right-0 w-full sm:w-[600px] max-w-full bg-slate-50 shadow-2xl z-[110] flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-300 overflow-hidden">
         
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-6 bg-white border-b border-slate-200 shrink-0">
@@ -466,11 +466,11 @@ function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNot
               <h2 className="font-display font-bold text-xl text-slate-900 leading-tight">
                 {student.applicant_name}
               </h2>
-              <div className="text-xs text-slate-500 mt-1 flex items-center gap-2">
-                <span>{student.applicant_email}</span>
-                <span>•</span>
+              <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="truncate max-w-[180px]">{student.applicant_email}</span>
+                <span aria-hidden>•</span>
                 <span>{student.applicant_phone}</span>
-                <span>•</span>
+                <span aria-hidden>•</span>
                 <span>{student.city}</span>
               </div>
             </div>

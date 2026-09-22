@@ -274,10 +274,10 @@ export default function ReviewsModeration() {
     
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-xl border border-slate-200">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-xl border border-slate-200 max-h-[90dvh] overflow-y-auto">
             <h2 className="font-display font-bold text-xl text-[#0A0060] mb-4">Add External Review</h2>
             <form onSubmit={handleAddSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Traveler Name</label>
                   <input required value={newReview.travelerName} onChange={e=>setNewReview({...newReview, travelerName: e.target.value})} type="text" className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]" />
@@ -290,7 +290,7 @@ export default function ReviewsModeration() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Rating (1-5)</label>
                   <input required type="number" min="1" max="5" value={newReview.rating} onChange={e=>setNewReview({...newReview, rating: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]" />
