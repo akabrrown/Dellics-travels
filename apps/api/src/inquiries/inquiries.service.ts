@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+﻿import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { ZohoService } from '../zoho/zoho.service';
@@ -164,7 +164,7 @@ export class InquiriesService {
           from: 'Dellics Travels Website <website@dellicstravels.com>',
           to: [to],
           subject: `New ${dto.kind.toLowerCase()} submission (${id})`,
-          text: `${dto.name} <${dto.email}>${dto.phone ? ` · ${dto.phone}` : ''}\n\n${dto.message}`,
+          text: `${dto.name} <${dto.email}>${dto.phone ? ` Â· ${dto.phone}` : ''}\n\n${dto.message}`,
         }),
       });
       if (!res.ok) throw new Error(`Resend responded ${res.status}`);
@@ -198,5 +198,14 @@ export class InquiriesService {
       status: 'success',
       data: { total, inquiries, contacts },
     };
+  }
+
+  async findOne(id: string) {
+    const item = await this.prisma.inquiry.findUnique({ where: { id } });
+    if (!item) {
+      const { NotFoundException } = await import('@nestjs/common');
+      throw new NotFoundException(`Inquiry ${id} not found`);
+    }
+    return { status: 'success', data: item };
   }
 }
