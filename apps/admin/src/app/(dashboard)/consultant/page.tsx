@@ -50,7 +50,11 @@ export default function ConsultantPage() {
   const fetchStudents = async () => {
     try {
       const res = await adminApi.get<{ status: string, data: Student[] }>('/study/applications');
-      setStudents(res.data);
+      if (res && Array.isArray(res.data)) {
+        setStudents(res.data);
+      } else {
+        setStudents([]);
+      }
     } catch (e) {
       console.error('Failed to fetch students', e);
     }
