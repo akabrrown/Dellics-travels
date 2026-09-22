@@ -9,8 +9,8 @@ import { CacheService } from '../cache/cache.service';
 
 export interface ReviewItem {
   id: string;
-  bookingId: string;
-  bookingType: string;
+  bookingId: string | null;
+  bookingType: string | null;
   travelerName: string;
   travelerEmail: string;
   rating: number;
@@ -19,7 +19,7 @@ export interface ReviewItem {
   status: 'APPROVED' | 'PENDING' | 'FLAGGED';
   verifiedStay: boolean;
   createdAt: string;
-  source?: string;
+  source?: string | null;
 }
 
 @Injectable()
@@ -98,7 +98,7 @@ export class ReviewsService {
           (i) =>
             i.travelerName.toLowerCase().includes(q) ||
             i.target.toLowerCase().includes(q) ||
-            i.bookingId.toLowerCase().includes(q) ||
+            (i.bookingId && i.bookingId.toLowerCase().includes(q)) ||
             i.text.toLowerCase().includes(q),
         );
       }
