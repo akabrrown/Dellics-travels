@@ -28,7 +28,19 @@ export class AuthController {
       throw new UnauthorizedException('Password is required.');
     }
     
-    const isPasswordValid = await bcrypt.compare(body.password, user.password_hash || '');
+    let isPasswordValid = false;
+    const hash = user.password_hash || '';
+    if (hash.includes(':') && !hash.startsWith('$2')) {
+       const crypto = require('crypto');
+       const [salt, expectedHex] = hash.split(':');
+       if (salt && expectedHex) {
+           const expectedBuffer = Buffer.from(expectedHex, "hex");
+           const derivedBuffer = crypto.scryptSync(body.password, salt, 64);
+           isPasswordValid = crypto.timingSafeEqual(expectedBuffer, derivedBuffer);
+       }
+    } else {
+       isPasswordValid = await bcrypt.compare(body.password, hash);
+    }
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials.');
     }
@@ -88,7 +100,19 @@ export class AuthController {
       throw new UnauthorizedException('Password is required.');
     }
     
-    const isPasswordValid = await bcrypt.compare(body.password, user.password_hash || '');
+    let isPasswordValid = false;
+    const hash = user.password_hash || '';
+    if (hash.includes(':') && !hash.startsWith('$2')) {
+       const crypto = require('crypto');
+       const [salt, expectedHex] = hash.split(':');
+       if (salt && expectedHex) {
+           const expectedBuffer = Buffer.from(expectedHex, "hex");
+           const derivedBuffer = crypto.scryptSync(body.password, salt, 64);
+           isPasswordValid = crypto.timingSafeEqual(expectedBuffer, derivedBuffer);
+       }
+    } else {
+       isPasswordValid = await bcrypt.compare(body.password, hash);
+    }
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials.');
     }
