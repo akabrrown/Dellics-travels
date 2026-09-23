@@ -36,7 +36,7 @@ export class AuthController {
        if (salt && expectedHex) {
            const expectedBuffer = Buffer.from(expectedHex, "hex");
            const derivedBuffer = crypto.scryptSync(body.password, salt, 64);
-           isPasswordValid = crypto.timingSafeEqual(expectedBuffer, derivedBuffer);
+           isPasswordValid = expectedBuffer.length === derivedBuffer.length && crypto.timingSafeEqual(expectedBuffer, derivedBuffer);
        }
     } else {
        isPasswordValid = await bcrypt.compare(body.password, hash);

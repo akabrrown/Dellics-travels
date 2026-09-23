@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 
 /**
@@ -17,7 +18,7 @@ export function verifyPassword(password: string, combinedHash: string): boolean 
   try {
     if (!combinedHash || typeof combinedHash !== "string") return false;
     if (combinedHash.startsWith("$2a$") || combinedHash.startsWith("$2b$") || combinedHash.startsWith("$2y$")) {
-      const bcrypt = require("bcryptjs");
+      
       return bcrypt.compareSync(password, combinedHash);
     }
     const parts = combinedHash.split(":");
