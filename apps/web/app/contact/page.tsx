@@ -21,7 +21,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact Dellics Travels - US & Ghana Offices, Phone & Inquiries",
   description:
-    "Contact Dellics Travels in Sheridan, Wyoming, USA and GN-0490-2450, Tema, Greater Accra, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
+    "Contact Dellics Travels in Sheridan, Wyoming, USA and GN-0490-2450, Community 25 Tema, Greater Accra, Ghana. Reach us via online inquiry, phone, email, or schedule an office consultation.",
 };
 
 const LAT = "5.734937466165215";
@@ -58,7 +58,7 @@ const CONTACT_CHANNELS = [
   {
     icon: MapPin,
     title: "Ghana - Headquarters",
-    value: "GN-0490-2450, Tema, Greater Accra",
+    value: "GN-0490-2450, Community 25 Tema, Greater Accra",
     href: "#live-map",
     action: "View On Live Map",
     primary: false,
@@ -181,7 +181,7 @@ export default function ContactPage() {
                       <Building2 className="size-4 shrink-0" />
                       <span>Dellics Travels (Ghana HQ)</span>
                     </div>
-                    <p className="text-white/80">GN-0490-2450, Tema, Greater Accra</p>
+                    <p className="text-white/80">GN-0490-2450, Community 25 Tema, Greater Accra</p>
                     <p className="text-white/60">Greater Accra, Ghana</p>
                     <p className="text-white/80 pt-1">Tel: +233 55 205 4174</p>
                     <p className="text-white/60">Email: help@dellicstravels.com</p>
@@ -232,7 +232,7 @@ export default function ContactPage() {
               align="left"
               eyebrow="Interactive Location Map"
               title="Visit Our Ghana Corporate Headquarters"
-              subtitle="Located at GN-0490-2450, Tema, Greater Accra. Drop in for in-person consultations, corporate ticketing, and bespoke tour planning."
+              subtitle="Located at GN-0490-2450, Community 25 Tema, Greater Accra. Drop in for in-person consultations, corporate ticketing, and bespoke tour planning."
             />
 
             <div className="flex flex-wrap items-center gap-3 shrink-0">
@@ -272,7 +272,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="font-bold text-white">Dellics Travels Corporate HQ</p>
-                  <p className="text-white/70">GN-0490-2450, Tema, Greater Accra, Greater Accra, Ghana</p>
+                  <p className="text-white/70">GN-0490-2450, Community 25 Tema, Greater Accra, Greater Accra, Ghana</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 text-white/60 font-mono text-[11px]">

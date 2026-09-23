@@ -58,10 +58,10 @@ const FAQ_ITEMS: FAQItem[] = [
     category: "all",
     categoryLabel: "General & Licensing",
     question: "Where are Dellics Travels physical offices located?",
-    answer: "Our Ghana corporate headquarters is located at GN-0490-2450, Tema, Greater Accra . Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel consultant on WhatsApp.",
+    answer: "Our Ghana corporate headquarters is located at GN-0490-2450, Community 25 Tema, Greater Accra . Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel consultant on WhatsApp.",
     badge: "Global Headquarters",
     keyPoints: [
-      "Ghana HQ: GN-0490-2450, Tema, Greater Accra",
+      "Ghana HQ: GN-0490-2450, Community 25 Tema, Greater Accra",
       "USA Office: 30 N Gould ST, Sheridan, WY 82801",
       "Chat with Travel Consultant on WhatsApp",
     ],

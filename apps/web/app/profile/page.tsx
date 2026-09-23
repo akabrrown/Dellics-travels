@@ -1281,7 +1281,7 @@ export default function ProfilePage() {
                   Dellics Travels · IATA Accredited
                 </p>
                 <p className="text-xs text-slate-500">
-                  GN-0490-2450, Tema, Greater Accra, Ghana
+                  GN-0490-2450, Community 25 Tema, Greater Accra, Ghana
                 </p>
                 <p className="text-xs text-slate-500">
                   Hotline: +233 55 205 4174
