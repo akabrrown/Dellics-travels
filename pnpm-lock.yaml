@@ -472,9 +472,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.20
         version: 0.5.20(tailwindcss@4.3.3)
-      '@types/bcryptjs':
-        specifier: ^3.0.0
-        version: 3.0.0
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -536,6 +533,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/dompurify':
         specifier: ^3.2.0
         version: 3.2.0
