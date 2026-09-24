@@ -90,7 +90,7 @@ export function SiteHeader() {
 
           <div className="hidden lg:flex items-center gap-4">
             <Link href="/login" className="font-bold text-sm text-slate-700 hover:text-brand-orange transition-colors">🎓 Login</Link>
-            <Link href="/signup" className="font-bold text-sm text-white bg-gradient-to-r from-brand-orange to-brand-orange-hover px-6 py-2.5 rounded-full shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">Start Application</Link>
+            <Link href="/signup" className="font-bold text-sm text-white bg-gradient-to-r from-brand-orange to-brand-orange-hover px-6 py-2.5 rounded-full shadow-lg hover:-translate-y-0.5 hover:shadow-md transition-all">Start Application</Link>
           </div>
 
           <button 

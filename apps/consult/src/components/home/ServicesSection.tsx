@@ -22,7 +22,7 @@ export function ServicesSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((svc, idx) => (
-            <div key={idx} className={`relative p-8 rounded-3xl border transition-all ${svc.featured ? 'bg-brand-blue border-brand-blue text-white shadow-xl shadow-brand-blue/20 hover:-translate-y-1' : 'bg-white border-slate-200 text-slate-900 hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1 group'}`}>
+            <div key={idx} className={`relative p-8 rounded-3xl border transition-all ${svc.featured ? 'bg-brand-blue border-brand-blue text-white shadow-xl shadow-brand-blue/20 hover:-translate-y-1' : 'bg-white border-slate-200 text-slate-900 hover:shadow-md hover:shadow-brand-blue/5 hover:-translate-y-1 group'}`}>
               {svc.featured && <div className="absolute -top-4 right-8 bg-brand-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">High Demand</div>}
               
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${svc.featured ? 'bg-white/10' : 'bg-slate-50 group-hover:bg-brand-blue/5 transition-colors'}`}>

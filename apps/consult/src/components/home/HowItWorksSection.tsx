@@ -20,7 +20,7 @@ export function HowItWorksSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((step, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1 transition-all group">
+            <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:shadow-brand-blue/5 hover:-translate-y-1 transition-all group">
               <div className="text-5xl font-display font-black text-slate-100 group-hover:text-brand-orange/10 transition-colors mb-4">{step.num}</div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">{step.title}</h3>
               <p className="text-slate-600 text-sm leading-relaxed">{step.desc}</p>

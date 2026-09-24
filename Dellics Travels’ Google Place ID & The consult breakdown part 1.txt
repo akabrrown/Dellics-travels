@@ -1,0 +1,28 @@
+Dellics Travels’ Google Place ID
+DELLICS TRAVELS
+Place ID: ChIJr0avQg2BIBARdcdSU6ofrjU
+Community 25 Devtraco Courts Rd, Tema, Ghana
+
+
+Use this key in your application by passing it with the key=API_KEY parameter.
+
+Your API key
+AIzaSyCGcJsUz4T8dBkZO90W01TtP-4LTNI4X6A
+
+The consult breakdown idea
+
+ .The consult Public interface can have the contents of that off https://edge.edvoy.com/ but not too the same , and consult must retain the original color theme, simply but straight forward 
+.the heropage of the index /landing page should have a video behind like relating to a dynamic collage life
+ .feel free to use similar animated images for what make us different , ensuring there are perks of using dellics consult and getting benefits from delics travels as a whole 
+.don't use number those 1000+ it limits the expectations   
+.Our university partners across the globe , don't you can use the countries that we used in dellics travels , and let the universities images flow as it does on edvoy global including some gh noticed unis and foreign ones 
+instead of What our agents say use what students say and use the reviews like we did on the consult 
+.Add FAQs
+.in the hero page let it have the container that filters the universities from what the admin dashboard so we don't end up looking for an api 
+ the container should include Courses
+Scholarships
+Universities
+Events
+Guide me
+ Check https://www.idp.com/ghana/  to get the concept , s the data displayed in the filter would be form what the admin in the dashboard buts there under the courses scholarships universities , events and guide me 
+. You can add these form the idp site Explore recommended services for your journey abroad Explore recommended services for your journey abroad

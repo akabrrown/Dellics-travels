@@ -21,7 +21,7 @@ export function DestinationsSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {dests.map((dest, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1 transition-all group flex flex-col">
+            <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:shadow-brand-blue/5 hover:-translate-y-1 transition-all group flex flex-col">
               <div className="text-4xl mb-4">{dest.flag}</div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">{dest.name}</h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-6 flex-1">{dest.desc}</p>

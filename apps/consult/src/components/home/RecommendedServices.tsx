@@ -56,7 +56,7 @@ export function RecommendedServices() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, idx) => (
-            <div key={idx} className="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-brand-blue/20 flex flex-col h-full">
+            <div key={idx} className="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 hover:border-brand-blue/20 flex flex-col h-full">
               <div className={`w-14 h-14 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                 <service.icon className="w-7 h-7" />
               </div>
