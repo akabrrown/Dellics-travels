@@ -84,24 +84,44 @@ const DEFAULT_ROUTES = [
 
 const FLIGHT_BENEFITS = [
   {
-    icon: ShieldCheck,
-    title: "Official IATA Accredited",
-    description: "Your bookings are issued directly through accredited airline Global Distribution Systems (GDS) with verifiable airline PNR references.",
-  },
-  {
-    icon: Clock,
-    title: "Dedicated Ticketing Desk",
-    description: "Get prompt human assistance for date changes, emergency cancellations, baggage add-ons, and re-routing.",
-  },
-  {
-    icon: Luggage,
-    title: "Full Baggage Allowance Guarantees",
-    description: "We verify transparent 2x23kg or 2x32kg luggage limits so you never get surprised by airport excess baggage fees.",
-  },
-  {
     icon: Tag,
-    title: "Unpublished Corporate & Group Fares",
-    description: "Access discounted private fares for families (3+ travelers), church groups, student admissions, and corporate delegations.",
+    title: "Competitive Airfares",
+    description: "Access flight options from multiple airlines and routes.",
+  },
+  {
+    icon: Globe,
+    title: "Global Flight Options",
+    description: "Search and book domestic, regional and international flights.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Secure Payments",
+    description: "Safe and reliable payment processing for your bookings.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Trusted Ticketing",
+    description: "Receive confirmed booking and ticketing support from a licensed travel agency.",
+  },
+  {
+    icon: Headphones,
+    title: "Expert Travel Support",
+    description: "Our team is available to assist before, during and after your booking.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Changes & Cancellations Support",
+    description: "Get assistance with applicable airline changes, refunds and rebooking.",
+  },
+  {
+    icon: Smartphone,
+    title: "Easy Online Booking",
+    description: "Search, compare and book conveniently through the Dellics OTA.",
+  },
+  {
+    icon: MapPin,
+    title: "Ghana-Based Travel Expertise",
+    description: "Local support combined with international travel solutions.",
   },
 ];
 
