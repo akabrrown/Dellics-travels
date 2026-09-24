@@ -20,7 +20,10 @@ async function createNestServer(): Promise<{
 
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
-  app.use(helmet());
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: { policy: 'unsafe-none' },
+  }));
 
 
   // URL normalization middleware: strip any accidental /n/ prefix from rogue env vars or escaped paths
@@ -41,11 +44,7 @@ async function createNestServer(): Promise<{
 
   app.enableCors({
     origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-      'http://localhost:8081',
-      /^http:\/\/localhost:[0-9]+$/,
+      /^http:\/\/(localhost|127\.0\.0\.1):[0-9]+$/,
       /^http:\/\/192\.168\.[0-9]+\.[0-9]+:[0-9]+$/,
       /^http:\/\/10\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$/,
       /^https:\/\/dellics.*\.vercel\.app$/,
@@ -87,7 +86,7 @@ if (!process.env.VERCEL) {
   async function bootstrap(): Promise<void> {
     const { app } = await createNestServer();
     const port = Number(process.env.PORT ?? 3000);
-    await app.listen(port, '0.0.0.0');
+    await app.listen(port);
     console.log(
       `[Dellics API] Server running locally on http://localhost:${port}`,
     );
