@@ -1,47 +1,27 @@
-"use client";
+﻿"use client";
 
 import { ShieldCheck, Award, BadgeCheck, Lock, Wallet, Headset, Globe2, Clock } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 
 const features = [
   {
-    name: "IATA Accredited",
-    description: "Internationally recognized and certified to issue airline tickets globally.",
-    icon: Award,
-  },
-  {
-    name: "Licensed Travel Agency in Ghana",
-    description: "Fully registered and compliant with all local tourism and business regulations.",
+    name: "Accredited & Certified",
+    description: "IATA accredited and fully licensed travel agency in Ghana.",
     icon: ShieldCheck,
   },
   {
-    name: "TOUGHA Member",
-    description: "Proud member of the Tour Operators Union of Ghana, upholding high industry standards.",
-    icon: BadgeCheck,
-  },
-  {
-    name: "Secure Online Booking",
-    description: "Enterprise-grade encryption protecting your personal and payment data.",
-    icon: Lock,
-  },
-  {
     name: "Transparent Pricing",
-    description: "No hidden fees or surprise charges. What you see is exactly what you pay.",
+    description: "No hidden fees or surprise charges. You pay exactly what you see.",
     icon: Wallet,
   },
   {
-    name: "Dedicated Travel Support",
-    description: "A personal consultant assigned to manage your end-to-end travel experience.",
+    name: "Dedicated Support",
+    description: "A personal consultant assigned to manage your travel experience end-to-end.",
     icon: Headset,
   },
   {
-    name: "Ghana & International Operations",
-    description: "Local expertise paired with a strong global network of premium suppliers.",
-    icon: Globe2,
-  },
-  {
-    name: "24/7 Concierge Support",
-    description: "Round-the-clock assistance for flight changes, emergencies, or last-minute requests.",
+    name: "24/7 Concierge",
+    description: "Round-the-clock assistance for flight changes or emergencies.",
     icon: Clock,
   },
 ];
@@ -53,7 +33,7 @@ export function TrustSection() {
         <div className="text-center">
           <SectionHeading
             eyebrow="Trust & Reliability"
-            title="Why Thousands of Travelers Choose Dellics"
+            title="Why Travelers Choose Dellics"
             dark={true}
             subtitle="We are committed to delivering secure, premium, and stress-free travel experiences."
           />
@@ -84,3 +64,4 @@ export function TrustSection() {
     </section>
   );
 }
+
