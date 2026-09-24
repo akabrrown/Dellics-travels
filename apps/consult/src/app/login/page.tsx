@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, Info } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,11 +11,17 @@ export default function LoginPage() {
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+    setTimeout(() => {
+      setIsLoading(false);
+      if (!showForgot) {
+        router.push("/portal");
+      }
+    }, 1500);
   };
 
   return (
@@ -173,3 +180,4 @@ export default function LoginPage() {
     </main>
   );
 }
+

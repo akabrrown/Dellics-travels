@@ -15,30 +15,19 @@ export function HeroSection() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <section className="bg-navy pt-24 pb-20 border-b border-navy-light">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+    <section className="bg-navy pt-32 pb-24 border-b border-navy-light relative overflow-hidden">
+      {/* Optional background image or styling to match the main site */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="flex flex-col items-center justify-center text-center gap-10">
           
-          {/* Left Text Content */}
-          <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-navy-light text-brand-orange text-xs font-bold uppercase tracking-wider mb-8">
-              <span className="w-2 h-2 rounded-full bg-brand-orange"></span>
-              Admissions Open 2026
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight mb-6">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.1] tracking-tight">
               Your Journey to a Global Education.
             </h1>
-            
-            <p className="text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-10">
-              Expert guidance for Ghanaian and African students aspiring to study abroad. Discover programs, secure scholarships, and manage your applications with confidence.
-            </p>
-
-
           </div>
 
-          {/* Right Search Box */}
-          <div className="w-full lg:w-[500px] shrink-0">
+          {/* Centered Search Box */}
+          <div className="w-full max-w-3xl shrink-0 mx-auto">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               
               {/* Tabs */}
@@ -129,4 +118,5 @@ export function HeroSection() {
     </section>
   );
 }
+
 

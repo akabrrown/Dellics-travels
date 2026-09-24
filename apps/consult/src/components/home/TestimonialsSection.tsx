@@ -1,10 +1,10 @@
-import { Star } from "lucide-react";
+﻿import { Star } from "lucide-react";
 
 export function TestimonialsSection() {
   const reviews = [
-    { name: "Ama Kyei", school: "University of Manchester, UK", init: "AK", text: "Dellics made my dream of studying in the UK a reality. They guided me through every step — from IELTS prep to my Tier 4 visa. I'm now at the University of Manchester!" },
-    { name: "Kwame Boateng", school: "University of Calgary, Canada", init: "KB", text: "I had tried twice before with other agents and failed. Dellics Education Consult got my Canadian study permit approved in just 6 weeks! Professional and thorough." },
-    { name: "Abena Frimpong", school: "Chevening Scholar, LSE London", init: "AF", text: "The scholarship guidance from Dellics was phenomenal. They helped me secure a Chevening Scholarship worth £25,000. I couldn't have done it without their expert help!" },
+    { name: "Ama Kyei", school: "University of Manchester, UK", init: "AK", text: "Dellics made my UK study dream a reality. They guided me through every step to my Tier 4 visa." },
+    { name: "Kwame Boateng", school: "University of Calgary, Canada", init: "KB", text: "After failing twice with other agents, Dellics got my Canadian permit approved in just 6 weeks!" },
+    { name: "Abena Frimpong", school: "Chevening Scholar, LSE London", init: "AF", text: "The scholarship guidance was phenomenal. They helped me secure a £25,000 Chevening Scholarship." },
   ];
 
   return (
