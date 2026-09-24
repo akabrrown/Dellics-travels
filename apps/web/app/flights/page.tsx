@@ -9,6 +9,12 @@ import {
   Tag,
   ArrowRight,
   HelpCircle,
+  Globe,
+  Plane,
+  Headphones,
+  RefreshCw,
+  Smartphone,
+  MapPin,
 } from "lucide-react";
 import { HeroSlider } from "@/components/home/hero-slider";
 import { SectionHeading } from "@/components/section-heading";
