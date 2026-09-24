@@ -272,7 +272,7 @@ function HotelSearchFormInner({
         <div className="flex items-center gap-4 text-slate-500 text-xs font-medium">
           <span className="flex items-center gap-1.5">
             <CheckCircle2 className="size-3.5 text-emerald-600" />
-            RateHawk Wholesale Rates
+            Global Wholesale Rates
           </span>
           <span className="hidden sm:inline-flex items-center gap-1.5">
             <CheckCircle2 className="size-3.5 text-emerald-600" />
@@ -386,7 +386,7 @@ export function HotelSearchResults({
                 Checking Live Rates in {targetCity}...
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Querying direct RateHawk wholesale inventory
+                Querying direct global wholesale inventory
               </p>
             </div>
           </div>
@@ -507,7 +507,7 @@ export function HotelSearchResults({
                 </h3>
 
                 <p className="text-sm text-white/80 leading-relaxed">
-                  While our automated RateHawk Sandbox currently serves instant test bookings in <strong className="text-white font-semibold">Dubai, Paris, and Los Angeles</strong>, Dellics Travels holds contracted direct GDS wholesale rates for verified 5-star hotels, serviced suites, and private resorts in <strong className="text-white font-semibold">{targetCity}</strong>.
+                  Dellics Travels holds contracted direct GDS wholesale rates for verified 5-star hotels, serviced suites, and private resorts in <strong className="text-white font-semibold">{targetCity}</strong>.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -540,7 +540,7 @@ export function HotelSearchResults({
 
                 <div className="pt-6 border-t border-white/10 text-xs text-white/60">
                   <p className="font-semibold text-white/80 mb-3">
-                    Explore live instant RateHawk inventory in active sandbox test destinations:
+                    Explore live instant inventory in active test destinations:
                   </p>
                   <div className="flex items-center justify-center gap-2 flex-wrap">
                     {[
@@ -591,7 +591,7 @@ export function HotelSearchResults({
                         <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
                           <Building2 className="size-12 opacity-40 text-white" />
                           <span className="text-[11px] font-semibold text-white/60">
-                            RateHawk Verified Property
+                            Verified Global Property
                           </span>
                         </div>
                       )}
@@ -605,7 +605,7 @@ export function HotelSearchResults({
 
                       {/* Live Supplier Badge */}
                       <div className="absolute top-3.5 right-3.5 rounded-full bg-emerald-500/90 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
-                        RateHawk Direct
+                        Global Direct
                       </div>
                     </div>
 

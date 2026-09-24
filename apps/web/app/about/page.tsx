@@ -62,7 +62,7 @@ export default function AboutPage() {
                 Dellics Travels was founded with a singular conviction: that travel should be transparent, deeply enriching, and completely free from stress. Whether an executive traveling for urgent international trade meetings, a family booking their dream Dubai vacation, or a member of the diaspora walking through the historic Door of Return in Cape Coast Castle - our team stands beside you every step of the way.
               </p>
               <p>
-                Headquartered at <strong className="text-navy">GN-0490-2450, Community 25 Tema, Greater Accra</strong>, we combine official <strong className="text-brand-orange">IATA Accreditation</strong> with enterprise Global Distribution Systems (Amadeus, RateHawk, and Travelport).
+                Headquartered at <strong className="text-navy">GN-0490-2450, Community 25 Tema, Greater Accra</strong>, we combine official <strong className="text-brand-orange">IATA Accreditation</strong> with enterprise Global Distribution Systems (Amadeus, Travelport, and Global Hotel Networks).
               </p>
               <p>
                 When you book with Dellics, you are not dealing with an anonymous algorithm or an unverified broker. You work with certified, passionate travel consultants who actively protect your schedule, your budget, and your safety.

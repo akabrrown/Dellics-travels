@@ -88,7 +88,7 @@ export default async function HotelConfirmationPage({
             <CheckCircle2 className="size-8" />
           </div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            RateHawk Direct Confirmation · B2B Guaranteed
+            Direct Confirmation · B2B Guaranteed
           </span>
           <h1 className="font-display text-3xl font-extrabold text-navy">
             Room Reservation Confirmed!

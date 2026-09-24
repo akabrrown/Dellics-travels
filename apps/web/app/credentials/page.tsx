@@ -8,7 +8,7 @@ import { CtaBanner } from "@/components/cta-banner";
 export const metadata: Metadata = {
   title: "Industry Credentials & Global Accreditations",
   description:
-    "Dellics Travels accreditations: IATA Accredited, RateHawk, Amadeus, Travelport, TOUGHA, Airalo, and Paystack secured.",
+    "Dellics Travels accreditations: IATA Accredited, Amadeus, Travelport, TOUGHA, Airalo, and Paystack secured.",
 };
 
 const CREDENTIALS = [
@@ -36,15 +36,7 @@ const CREDENTIALS = [
     copy: "Proud member of the Tour Operators Union of Ghana, upholding strict ethical guidelines and highest standards of tour operation.",
     guarantee: "Vetted tour quality and professional code of conduct.",
   },
-  {
-    badge: "Global Inventory Partner",
-    name: "RateHawk",
-    id: "Direct API Partner",
-    logo: "/badges/rate-hawk.png",
-    copy: "B2B partnership providing instant booking access to over 3.3 million verified hotels, luxury apartments, and boutique stays across 190+ countries.",
-
-    guarantee: "Wholesale room rates with verified instant confirmation.",
-  },
+  
   {
     badge: "Global Distribution System",
     name: "Amadeus IT Group",

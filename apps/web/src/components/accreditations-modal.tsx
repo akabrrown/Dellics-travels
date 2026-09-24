@@ -47,14 +47,7 @@ export const ACCREDITATION_BADGES: AccreditationBadge[] = [
     description: "Real-time airline inventory, live schedule tracking, instant PNR issuance, and automated fare calculations across 500+ global carriers.",
     highlight: "Real-Time Seat Inventory",
   },
-  {
-    src: "/badges/rate-hawk.png",
-    alt: "RateHawk Hotel Network",
-    name: "RateHawk B2B",
-    category: "Wholesale Hotel Network",
-    description: "B2B partnership providing instant booking access to over 3.3 million verified hotels, luxury apartments, and boutique stays across 190+ countries.",
-    
-  },
+  
   {
     src: "/badges/travel-port.png",
     alt: "Travelport Partner",

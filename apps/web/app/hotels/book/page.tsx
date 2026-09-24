@@ -278,7 +278,7 @@ function HotelBookingContent() {
   const rating = parseFloat(searchParams.get("rating") || "4.5") || 4.5;
   const image = searchParams.get("image") || "";
 
-  // Parse live RateHawk room rates passed from search
+  // Parse live room rates passed from search
   const liveRates: HotelRoomRate[] = useMemo(() => {
     const rawRates = searchParams.get("rates");
     if (!rawRates) return [];
@@ -471,13 +471,13 @@ function HotelBookingContent() {
           <div>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-50 text-brand-orange border border-orange-200 mb-2">
               <Building2 className="size-3.5" />
-              Verified RateHawk B2B Partner Property
+              Verified Global B2B Partner Property
             </span>
             <h1 className="font-display text-2xl sm:text-3xl font-black text-navy tracking-tight">
               Reserve Your Room
             </h1>
             <p className="text-sm text-slate-600 mt-1">
-              Live inventory verified directly from RateHawk B2B global database.
+              Live inventory verified directly from global B2B database.
             </p>
           </div>
           <div className="flex items-center gap-3 self-start md:self-auto">
@@ -563,7 +563,7 @@ function HotelBookingContent() {
                 </div>
               </div>
 
-              {/* Room Category Selection (Live RateHawk Inventory) */}
+              {/* Room Category Selection (Live Inventory) */}
               <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
                 <div className="flex items-center justify-between">
                   <div>
@@ -573,7 +573,7 @@ function HotelBookingContent() {
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
                       {liveRates.length > 0
-                        ? `${liveRates.length} live room rate options returned directly from RateHawk for your stay`
+                        ? `${liveRates.length} live room rate options returned directly from our global network for your stay`
                         : "Select your preferred room category for this accommodation"}
                     </p>
                   </div>
@@ -1170,7 +1170,7 @@ function HotelBookingContent() {
                 <div className="pt-2 text-[11px] text-slate-500 space-y-2 text-center">
                   <div className="flex items-center justify-center gap-1.5 text-emerald-700 font-semibold">
                     <ShieldCheck className="size-4 text-emerald-600" />
-                    <span>RateHawk Direct B2B Confirmation</span>
+                    <span>Direct B2B Confirmation</span>
                   </div>
                   <p className="text-[10px] text-slate-400">
                     Reservation details are transmitted via 256-bit encrypted SSL directly to hotel reception.
