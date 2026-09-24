@@ -128,7 +128,7 @@ const FLIGHT_BENEFITS = [
 const FAQS = [
   {
     q: "How do I book a flight on Dellics Travels?",
-    a: "Search for your departure and destination, select your preferred flight, enter passenger details exactly as shown on the travel document, and complete payment. Once the ticket is successfully issued, your booking confirmation and e-ticket will be sent to your email."
+    a: "When you search or submit your flight inquiry, our certified ticketing agents query Live GDS, NDC & Direct Connect, LCC, Private fares, Global fares and more contents or inventory and present to you with optimal flight combinations, timings, Ancillaries and fares. Once confirmed, we issue your official e-ticket and send your airline PNR reference immediately."
   },
   {
     q: "Can I book a one-way or round-trip flight?",
