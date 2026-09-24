@@ -108,7 +108,7 @@ export default function FAQPage() {
   return (
     <>
       <PageHero
-        title="Frequently Asked Questions & Help Center"
+        title="FAQs & Knowledgebase"
         subtitle="Clear, authoritative answers regarding our IATA flight ticketing, 3.3M+ verified hotel stays, diaspora heritage tours, visa advisory, and secure payments."
         image="/images/services/corporate-travel-management.jpg"
         breadcrumbs={[{ label: "FAQs" }]}
