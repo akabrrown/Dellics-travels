@@ -12,7 +12,7 @@ export function DashboardShowcase() {
           <p className="text-slate-300 text-lg">Experience how Dellics tracks your study abroad application, test coordination, documents, and visa milestones in real time — zero guesswork, 100% transparency.</p>
         </div>
 
-        <div className="max-w-5xl mx-auto bg-slate-900 rounded-[2rem] border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+        <div className="max-w-5xl mx-auto bg-slate-900 rounded-[2rem] border border-slate-700 shadow-sm border border-neutral-200 overflow-hidden flex flex-col md:flex-row relative">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-orange via-yellow-500 to-brand-orange"></div>
           
           <div className="w-full md:w-64 bg-slate-800/50 p-6 border-r border-slate-700/50 flex flex-col gap-2">

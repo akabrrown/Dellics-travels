@@ -322,7 +322,7 @@ return (
                   ← Previous
                 </button>
                 <button type="button" className="portal-btn portal-btn-primary" id="btn-finish-onboarding">
-                  Complete Profile (100%) &amp; Unlock Portal ✓
+                  Complete Profile (100%) &amp; access Portal ✓
                 </button>
               </div>
             </div>
@@ -400,7 +400,7 @@ return (
               </div>
             </div>
             <p style={{ fontSize: "0.84rem", color: "var(--portal-text-secondary)", margin: "0 0 12px" }}>
-              Once your offer is confirmed, unlock discounted student flight baggage allowances, vetted student housing, and free UK/US pre-departure eSIM cards.
+              Once your offer is confirmed, access discounted student flight baggage allowances, vetted student housing, and free UK/US pre-departure eSIM cards.
             </p>
             <div className="portal-perk-card" style={{ marginBottom: "12px" }}>
               <div className="portal-perk-title">Student Flight Fares (46kg Baggage)</div>

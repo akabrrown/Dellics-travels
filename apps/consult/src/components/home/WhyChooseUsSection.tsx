@@ -22,7 +22,7 @@ export function WhyChooseUsSection() {
             {/* Visual Graphic Representation */}
             <div className="relative w-full max-w-md mx-auto aspect-square">
               {/* Central Element */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-white shadow-2xl shadow-brand-blue/10 border border-slate-100 flex items-center justify-center z-20 overflow-hidden">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-white shadow-md shadow-brand-blue/10 border border-slate-100 flex items-center justify-center z-20 overflow-hidden">
                 <Image src="/logo.jpg" width={120} height={120} alt="Dellics Consult" className="rounded-xl object-contain" />
               </div>
               

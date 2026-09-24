@@ -57,7 +57,7 @@ export function HeroSection() {
         </div>
 
         {/* Search Container */}
-        <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl md:rounded-full p-2 shadow-2xl">
+        <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl md:rounded-full p-2 shadow-md border border-neutral-200/50">
           {/* Tabs */}
           <div className="flex flex-wrap md:flex-nowrap items-center gap-2 p-2 border-b border-white/10 md:border-none md:bg-white/5 md:rounded-full md:p-1 mb-4 md:mb-0 md:absolute md:-top-16 md:left-1/2 md:-translate-x-1/2">
             {tabs.map((tab) => {

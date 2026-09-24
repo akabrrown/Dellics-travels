@@ -39,7 +39,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <ul className={`nav-list fixed lg:static top-0 right-0 h-screen lg:h-auto w-[280px] lg:w-auto bg-white lg:bg-transparent shadow-2xl lg:shadow-none flex flex-col lg:flex-row items-start lg:items-center p-8 lg:p-0 gap-6 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}`}>
+          <ul className={`nav-list fixed lg:static top-0 right-0 h-screen lg:h-auto w-[280px] lg:w-auto bg-white lg:bg-transparent shadow-sm lg:shadow-none flex flex-col lg:flex-row items-start lg:items-center p-8 lg:p-0 gap-6 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}`}>
             <li>
               <Link href="/" className={`nav-link font-semibold transition-colors hover:text-brand-orange ${pathname === "/" ? "text-brand-orange" : "text-slate-700"}`} onClick={() => setMobileMenuOpen(false)}>Home</Link>
             </li>

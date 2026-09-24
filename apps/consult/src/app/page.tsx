@@ -9,10 +9,12 @@ export const metadata: Metadata = {
 export default function ConsultHome() {
   return (
     <main className="min-h-screen font-sans">
-      <HeroSection />\n      <UniversityPartners />
+      <HeroSection />
+<UniversityPartners />
       <TrustStrip />
       <HowItWorksSection />
-      <ServicesSection />\n      <RecommendedServices />
+      <ServicesSection />
+<RecommendedServices />
       <DashboardShowcase />
       <DestinationsSection />
       <WhyChooseUsSection />
