@@ -77,7 +77,7 @@ export default function InquirePage() {
                   Speak Directly With an Advisor
                 </h3>
                 <p className="text-xs leading-relaxed text-white/80">
-                  Prefer to speak or Visit Our Office, Remember we have one main office but have two global presence
+                  Prefer to speak or visit our office?
                 </p>
 
                 <div className="pt-2">
