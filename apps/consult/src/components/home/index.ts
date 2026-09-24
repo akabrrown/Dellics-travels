@@ -9,3 +9,4 @@ export { FaqSection } from './FaqSection';
 export { WhyChooseUsSection } from './WhyChooseUsSection';
 export { ContactSection } from './ContactSection';
 export { CtaBanner } from './CtaBanner';
+\nexport * from "./UniversityPartners";\nexport * from "./RecommendedServices";\n

@@ -100,10 +100,9 @@ function SignInContent() {
     <div className="min-h-screen w-full bg-slate-950 flex">
       {/* Left Column: Editorial Travel Backdrop (Desktop) */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 text-white overflow-hidden">
-        <Image
-          src="/images/services/plane.jpg"
+        <Image src="/images/services/plane.jpg"
           alt="Dellics Travels Aviation & Stays"
-          fill
+          fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover opacity-35"
           priority
         />
@@ -175,7 +174,7 @@ function SignInContent() {
                       className="object-contain"
                       priority
                       unoptimized
-                    />
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   </div>
                 </Link>
                 <Link

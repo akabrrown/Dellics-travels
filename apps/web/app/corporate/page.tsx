@@ -203,7 +203,7 @@ export default function CorporatePage() {
                 alt="Corporate Travel Services"
                 fill
                 className="object-cover"
-              />
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/90 via-navy-dark/40 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 text-white">
                 <p className="text-xs font-bold uppercase tracking-wider text-brand-orange">

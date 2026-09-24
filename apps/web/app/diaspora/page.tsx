@@ -133,7 +133,7 @@ export default function DiasporaPage() {
                   alt={exp.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-transparent to-transparent" />
                 <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3.5 py-1 text-xs font-bold text-white shadow-md">
                   {exp.badge}

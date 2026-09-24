@@ -85,7 +85,7 @@ export default function AboutPage() {
               alt="Dellics Travels Heritage"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             <div className="absolute top-6 right-6 size-16 rounded-2xl bg-white/95 backdrop-blur-md p-1.5 shadow-2xl border border-white/40 flex items-center justify-center z-10">
               <Image
                 src="/logo.jpeg"

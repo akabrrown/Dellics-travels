@@ -88,7 +88,7 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
               alt={item.alt}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-108"
-            />
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/90 via-navy-dark/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
 
             <div className="absolute inset-x-0 bottom-0 p-5 text-left text-white">
@@ -147,7 +147,7 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
                 alt={openItem.alt}
                 fill
                 className="object-contain"
-              />
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             </div>
             <div className="mt-4 text-center text-white">
               <p className="font-display text-base font-bold">{openItem.alt}</p>

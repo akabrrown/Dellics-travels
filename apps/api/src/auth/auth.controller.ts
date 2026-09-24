@@ -1,4 +1,5 @@
 import { AuthTokenService } from './auth-token.service';
+import { buildAdminOtpHtml, buildAdminForgotPasswordHtml } from './email';
 import * as crypto from 'crypto';
 import { Controller, Post, Get, Body, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
@@ -60,7 +61,7 @@ export class AuthController {
 
     const apiKey = process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY;
     if (apiKey) {
-      const { buildAdminOtpHtml } = require('./email');
+      
       const html = buildAdminOtpHtml({ name: user.name, otpCode: otp });
       await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -352,4 +353,105 @@ export class AuthController {
     return { status: 'success', message: 'Account setup successfully.' };
   }
 
+
+  
+  @Post('admin/forgot-password-init')
+  async adminForgotPasswordInit(
+    @Body() body: { email: string },
+  ) {
+    const cleanEmail = (body.email || '').trim().toLowerCase();
+    if (!cleanEmail) throw new UnauthorizedException('Email is required.');
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: cleanEmail }
+    });
+
+    if (!user || user.role !== 'ADMIN' || !user.admin_role_id) {
+      throw new UnauthorizedException('Access Denied: Unrecognized operations account.');
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await bcrypt.hash(otp, 10);
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        admin_otp_hash: hashedOtp,
+        admin_otp_expires_at: expiresAt,
+      },
+    });
+
+    const htmlContent = buildAdminForgotPasswordHtml({
+      name: user.name,
+      otpCode: otp,
+    });
+
+    const apiKey = process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY;
+    if (apiKey) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: process.env.RESEND_FROM_EMAIL || "Dellics Operations <support@dellicstravels.com>",
+          to: [user.email],
+          subject: "Password Reset Request",
+          html: htmlContent,
+        }),
+      }).catch(err => console.error("Failed to send forgot password email:", err));
+    } else {
+      console.log(`[DEV OTP] Password Reset Code for ${user.email} is ${otp}`);
+    }
+
+    return { status: 'success', message: 'Password reset code sent' };
+  }
+
+  @Post('admin/forgot-password-reset')
+  async adminForgotPasswordReset(
+    @Body() body: { email: string; otp: string; newPassword: string },
+  ) {
+    const cleanEmail = (body.email || '').trim().toLowerCase();
+    if (!cleanEmail || !body.otp || !body.newPassword) {
+      throw new UnauthorizedException('Missing required fields.');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: cleanEmail }
+    });
+
+    if (!user || user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Access Denied: Unrecognized operations account.');
+    }
+
+    if (!user.admin_otp_hash || !user.admin_otp_expires_at) {
+      throw new UnauthorizedException('No reset request found or code expired.');
+    }
+
+    if (new Date() > user.admin_otp_expires_at) {
+      throw new UnauthorizedException('Access code has expired.');
+    }
+
+    const isValid = await bcrypt.compare(body.otp, user.admin_otp_hash);
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid access code.');
+    }
+
+    const hashedNewPassword = await bcrypt.hash(body.newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password_hash: hashedNewPassword,
+        admin_otp_hash: null,
+        admin_otp_expires_at: null,
+      },
+    });
+
+    return { status: 'success', message: 'Password reset successful.' };
+  }
 }

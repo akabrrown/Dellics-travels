@@ -93,7 +93,7 @@ export function SiteFooter() {
                     fill
                     className="object-contain"
                     unoptimized
-                  />
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 </div>
               </Link>
               <div className="space-y-2 text-sm leading-relaxed text-white/75 max-w-sm">

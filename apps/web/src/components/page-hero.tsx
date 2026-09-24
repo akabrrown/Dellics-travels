@@ -49,7 +49,7 @@ export function PageHero({
             fill
             className="object-cover opacity-80 scale-105 transform motion-safe:animate-subtle-zoom"
             priority
-          />
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A0060]/85 via-[#0A0060]/40 to-black/25" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0A0060]/50 via-transparent to-[#0A0060]/50" />
         </div>

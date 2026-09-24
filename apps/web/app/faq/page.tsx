@@ -38,192 +38,45 @@ interface FAQItem {
 }
 
 const FAQ_ITEMS: FAQItem[] = [
-  // 1. General & Licensing
   {
     id: "g1",
     category: "all",
-    categoryLabel: "General & Licensing",
-    question: "Is Dellics Travels an officially certified and licensed travel agency?",
-    answer: "Yes. Dellics Travels is fully licensed and regulated by the Ghana Tourism Authority (GTA) and holds active international certification with the International Air Transport Association (IATA). We are also active members of the Tour Operators Union of Ghana (TOUGHA) and operate with enterprise direct connections to global distribution systems (Amadeus, RateHawk, Travelport).",
-    badge: "GTA & IATA Accredited",
-    keyPoints: [
-      "Ghana Tourism Authority (GTA) Statutory License",
-      "IATA Accredited Travel Management Partner",
-      "Tour Operators Union of Ghana (TOUGHA) Member",
-      "Physical offices in Tema, Greater Accra (Ghana) and Sheridan, WY (USA)",
-    ],
+    categoryLabel: "General",
+    question: "Is Dellics Travels a legitimate travel agency?",
+    answer: "Dellics Travels is a registered travel agency serving customers with flight bookings, holidays, tours and other travel services. Where applicable, display your GTA licence, IATA accreditation and TOUGHA membership with genuine verification information.",
   },
   {
     id: "g2",
     category: "all",
-    categoryLabel: "General & Licensing",
-    question: "Where are Dellics Travels physical offices located?",
-    answer: "Our Ghana corporate headquarters is located at GN-0490-2450, Community 25 Tema, Greater Accra . Our North American office is located at 30 N Gould ST, STER, Sheridan, WY 82801, USA. Clients can visit us in person or reach our dedicated travel consultant on WhatsApp.",
-    badge: "Global Headquarters",
-    keyPoints: [
-      "Ghana HQ: GN-0490-2450, Community 25 Tema, Greater Accra",
-      "USA Office: 30 N Gould ST, Sheridan, WY 82801",
-      "Chat with Travel Consultant on WhatsApp",
-    ],
-  },
-
-  // 2. Flights & Ticketing
-  {
-    id: "f1",
-    category: "flights",
-    categoryLabel: "Flights & Ticketing",
-    question: "How are flight tickets issued and how do I receive my booking reference (PNR)?",
-    answer: "Because Dellics Travels is IATA accredited and integrated directly with Amadeus and Travelport GDS, electronic tickets (e-tickets) and official airline 6-character PNR codes are generated instantly on genuine airline inventories with zero middleman markup. You receive your ticket and receipt via email and WhatsApp within minutes of payment.",
-    badge: "Direct GDS Issuance",
-    keyPoints: [
-      "Instant airline PNR and official electronic ticket (e-ticket)",
-      "Tickets verified on airline websites (Emirates, Delta, Qatar, etc.)",
-      "Automated WhatsApp e-ticket dispatch",
-    ],
+    categoryLabel: "General",
+    question: "Is my payment secure?",
+    answer: "Payments are processed through the payment method presented at checkout. Dellics Travels does not recommend sending card details, PINs or passwords through WhatsApp, email or social media.",
   },
   {
-    id: "f2",
-    category: "flights",
-    categoryLabel: "Flights & Ticketing",
-    question: "Which global airlines can I book through Dellics Travels?",
-    answer: "We issue tickets for over 500 scheduled global airlines across Africa, Europe, the Americas, the Middle East, and Asia. Major partner airlines include Emirates, Qatar Airways, Delta Air Lines, British Airways, KLM Royal Dutch Airlines, Ethiopian Airlines, RwandAir, Turkish Airlines, Virgin Atlantic, and Air France.",
-    badge: "500+ Global Carriers",
+    id: "g3",
+    category: "all",
+    categoryLabel: "General",
+    question: "When is my booking actually confirmed?",
+    answer: "A flight search or temporary reservation does not necessarily mean a ticket has been issued. Your booking should be considered ticketed only when Dellics Travels provides the applicable confirmed booking/e-ticket information.",
   },
   {
-    id: "f3",
-    category: "flights",
-    categoryLabel: "Flights & Ticketing",
-    question: "Can Dellics Travels handle seat selection, extra baggage, and schedule rebooking?",
-    answer: "Yes. Our travel consultant assists with advance preferred seat selection (extra legroom, window, aisle), purchasing discounted prepaid excess baggage allowances, special in-flight meal requests (Halal, Kosher, Vegetarian, Gluten-Free), and managing urgent airline schedule changes or voluntary date modifications.",
-    badge: "24/7 Flight Support",
-  },
-
-  // 3. Hotels & Global Stays
-  {
-    id: "h1",
-    category: "hotels",
-    categoryLabel: "Hotels & Stays",
-    question: "How many hotel properties are available and what is your RateHawk B2B partnership?",
-    answer: "Through our enterprise partnership with RateHawk, Dellics Travels provides direct booking access to a global network of verified hotels, boutique apartments, and luxury villas across 190+ countries. This B2B integration delivers wholesale contracted room rates with instant server-side confirmation and zero surprise resort fees.",
-    badge: "3.3M+ Verified Stays",
-    keyPoints: [
-      "Wholesale contracted rates below standard public OTAs",
-      "Instant electronic stay voucher issued upon checkout",
-      "Guaranteed room reservations confirmed directly with hotels",
-    ],
+    id: "g4",
+    category: "all",
+    categoryLabel: "General",
+    question: "Why did the flight price change after I selected it?",
+    answer: "Airline inventory and fares can change before ticket issuance. The final price is the price confirmed at the time of ticket issuance.",
   },
   {
-    id: "h2",
-    category: "hotels",
-    categoryLabel: "Hotels & Stays",
-    question: "What is your hotel cancellation and modification policy?",
-    answer: "Each hotel listing clearly displays its specific cancellation policy (Free Cancellation until a set date vs. Non-Refundable Promotional Rate). If you book a flexible rate, you can cancel or amend your travel dates directly through your traveler profile or by contacting your assigned concierge.",
-    badge: "Flexible Options",
-  },
-
-  // 4. Visa Advisory & Document Support
-  {
-    id: "v1",
-    category: "visa",
-    categoryLabel: "Visa Advisory",
-    question: "How does the Dellics Travels Visa Advisory process work?",
-    answer: "Our visa specialists conduct a rigorous 4-step consular preparation: 1) Initial profile and financial capability audit, 2) Comprehensive checklist curation tailored to your destination, 3) Verified document review and appointment scheduling, and 4) Mock consular interview coaching to prepare you for common questions with confidence.",
-    badge: "99.4% Approval Record",
-    keyPoints: [
-      "Pre-assessment of financial profiles & employment ties",
-      "Consular interview coaching & mock Q&A sessions",
-      "Assistance for UK, USA (B1/B2), Canada TRV, Schengen, Dubai & South Africa",
-    ],
-  },
-  {
-    id: "v2",
-    category: "visa",
-    categoryLabel: "Visa Advisory",
-    question: "Does Dellics Travels guarantee visa approval?",
-    answer: "By international law, all visa issuance decisions rest solely with the consular officers of the respective embassy or high commission. However, our high approval success rate is achieved because we rigorously audit every document, detect discrepancies beforehand, and ensure 100% compliance with statutory immigration regulations before submission.",
-    badge: "Strict Ethical Standards",
-  },
-
-  // 5. Diaspora Homecoming & Heritage Tours
-  {
-    id: "d1",
-    category: "diaspora",
-    categoryLabel: "Diaspora & Heritage Tours",
-    question: "What makes Dellics Travels Ghana Heritage & Diaspora tours unique?",
-    answer: "As an official partner of Ghana's 'Beyond The Return' initiative, our diaspora itineraries are curated with deep historical reverence and cultural sensitivity. We guide pilgrimages to Cape Coast Castle and Elmina Castle (including the Door of Return ceremony), the sacred Assin Manso Slave River, traditional village chieftaincy naming ceremonies, and the Ashanti Kingdom.",
-    badge: "Beyond The Return Partner",
-    keyPoints: [
-      "Historically honest, trauma-informed local Ghanaian guides",
-      "Door of Return ancestral prayer and libation ceremonies",
-      "Traditional Akan naming ceremonies with chiefs & elders",
-      "Vetted luxury air-conditioned transport & boutique stays",
-    ],
-  },
-  {
-    id: "d2",
-    category: "diaspora",
-    categoryLabel: "Diaspora & Heritage Tours",
-    question: "Can diaspora tour packages be customized for private families, alumni, or church groups?",
-    answer: "Yes. In addition to our scheduled group departures, our tour managers design bespoke private group itineraries for families, universities, organizations, and corporate retreats, complete with private executive transit, VIP Kotoka airport protocol, and flexible split-payment options through WeTravel.",
-    badge: "Custom Group Itineraries",
-  },
-
-  // 6. Airport Transfers, Cars & eSIM
-  {
-    id: "e1",
-    category: "esim_transfers",
-    categoryLabel: "Transfers, Cars & eSIM",
-    question: "How do Kotoka International Airport (ACC) transfers work and what if my flight is delayed?",
-    answer: "When you book an airport pickup with Dellics, our operations team tracks your inbound flight in real time. If your flight arrives early or is delayed, your dedicated driver automatically adjusts arrival timing at no extra charge. Our executive drivers hold a personalized name placard at the arrivals hall and assist with luggage.",
-    badge: "Live Flight Delay Tracking",
-    keyPoints: [
-      "Executive sedans, luxury 4x4 SUVs (Prado/Land Cruiser), and group coasters",
-      "Real-time flight radar tracking with zero delay penalties",
-      "Sanitized, air-conditioned executive fleet",
-    ],
-  },
-  {
-    id: "e2",
-    category: "esim_transfers",
-    categoryLabel: "Transfers, Cars & eSIM",
-    question: "How does the Airalo eSIM digital mobile connectivity work?",
-    answer: "Through our integration with Airalo, travelers can purchase affordable international high-speed mobile data for over 200+ countries. You receive an instant digital QR code via email-simply scan it in your smartphone settings before departure to enjoy high-speed 4G/5G data immediately upon landing without paying exorbitant roaming fees.",
-    badge: "200+ Countries Coverage",
-  },
-
-  // 7. Payments, Currencies & Security
-  {
-    id: "p1",
-    category: "payments",
-    categoryLabel: "Payments & Security",
-    question: "What payment methods does Dellics Travels accept?",
-    answer: "We support seamless local and international payment methods secured by Paystack PCI-DSS Level 1 encryption: Ghana Mobile Money (MTN MoMo, Telecel Cash), Visa, Mastercard, American Express, and direct wire transfers for corporate accounts.",
-    badge: "PCI-DSS Level 1 Secured",
-    keyPoints: [
-      "Ghana Mobile Money: MTN MoMo & Telecel Cash",
-      "International Credit/Debit Cards: Visa & Mastercard",
-      "256-bit bank-grade SSL encrypted checkout",
-      "Instant electronic tax invoices & automated receipts",
-    ],
-  },
-  {
-    id: "p2",
-    category: "payments",
-    categoryLabel: "Payments & Security",
-    question: "Which currencies can I pay in?",
-    answer: "Our booking engine dynamically supports multi-currency settlement. You can view prices and complete checkout in Ghanaian Cedi (GHS), US Dollars (USD), British Pounds (GBP), or Euros (EUR) with live mid-market exchange rates and transparent pricing.",
-    badge: "Multi-Currency Settlement",
+    id: "g5",
+    category: "all",
+    categoryLabel: "General",
+    question: "Can I contact Dellics Travels before booking?",
+    answer: "Yes. Customers can contact Dellics Travels for assistance with flight selection, itinerary questions, baggage, changes, cancellations and other travel services.",
   },
 ];
 
 const CATEGORIES = [
   { id: "all", label: "All Questions", icon: HelpCircle },
-  { id: "flights", label: "Flights & Ticketing", icon: Plane },
-  { id: "hotels", label: "Hotels & Stays", icon: Building2 },
-  { id: "visa", label: "Visa Advisory", icon: FileCheck2 },
-  { id: "diaspora", label: "Diaspora Tours", icon: Heart },
-  { id: "esim_transfers", label: "Transfers & eSIM", icon: Smartphone },
-  { id: "payments", label: "Payments & Safety", icon: CreditCard },
 ];
 
 export default function FAQPage() {

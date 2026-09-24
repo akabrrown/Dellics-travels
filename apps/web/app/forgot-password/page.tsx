@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
           fill
           className="object-cover opacity-35"
           priority
-        />
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
         <div className="relative z-10">
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
                     fill
                     className="object-contain"
                     priority
-                  />
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 </div>
               </Link>
               <Link

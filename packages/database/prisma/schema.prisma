@@ -521,3 +521,99 @@ model StudyNote {
   
   created_at           DateTime         @default(now())
 }
+
+
+model UserDevice {
+  id                 String   @id @default(uuid())
+  user_id            String
+  device_fingerprint String
+  device_name        String
+  browser            String
+  os                 String
+  ip_address         String
+  location           String
+  is_primary         Boolean  @default(false)
+  is_active          Boolean  @default(true)
+  last_active_at     DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([device_fingerprint])
+}
+
+model DeviceLoginChallenge {
+  id                 String   @id @default(uuid())
+  user_id            String
+  challenge_token    String   @unique
+  device_fingerprint String
+  device_name        String
+  browser            String
+  os                 String
+  ip_address         String
+  location           String
+  status             String   @default("PENDING")
+  verification_code  String
+  expires_at         DateTime
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([challenge_token])
+}
+
+
+model StudyUniversity {
+  id          String   @id @default(uuid())
+  name        String
+  country     String
+  region      String?
+  logoUrl     String?
+  isFeatured  Boolean  @default(false)
+  
+  courses     StudyCourse[]
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model StudyCourse {
+  id           String          @id @default(uuid())
+  title        String
+  universityId String
+  university   StudyUniversity @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  level        String          // e.g., "Undergraduate", "Postgraduate"
+  duration     String          // e.g., "3 Years", "4 Years"
+  tuitionFee   String?         // e.g., "$15,000/year"
+  intake       String?
+
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+  
+  @@index([universityId])
+}
+
+model StudyScholarship {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  amount      String?
+  deadline    DateTime?
+  country     String?
+  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model StudyEvent {
+  id          String   @id @default(uuid())
+  title       String
+  date        DateTime
+  location    String   // e.g., "Online", "Accra, Ghana"
+  type        String   // e.g., "Webinar", "Fair", "Seminar"
+  description String?
+  imageUrl    String?
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}

@@ -107,17 +107,105 @@ const FLIGHT_BENEFITS = [
 
 const FAQS = [
   {
-    q: "How does booking through Dellics Travels work?",
-    a: "When you search or submit your flight inquiry, our certified ticketing agents query live GDS inventory and present you with the optimal flight combinations, timings, and fares. Once confirmed, we issue your official e-ticket and send your airline PNR reference immediately.",
+    q: "How do I book a flight on Dellics Travels?",
+    a: "Search for your departure and destination, select your preferred flight, enter passenger details exactly as shown on the travel document, and complete payment. Once the ticket is successfully issued, your booking confirmation and e-ticket will be sent to your email."
   },
   {
-    q: "Can I pay with Ghanaian Cedi (GHS) or Mobile Money?",
-    a: "Yes! We accept Ghanaian Cedi via MTN Mobile Money, Telecel Cash, Bank Transfer, Visa, and Mastercard through our secured Paystack integration, as well as USD/EUR transfers.",
+    q: "Can I book a one-way or round-trip flight?",
+    a: "Yes. Dellics Travels allows customers to search and book one-way and round-trip flights, subject to airline availability."
   },
   {
-    q: "Do you assist with transit and entry visas for connecting flights?",
-    a: "Absolutely. Our visa consulting team checks all transit visa requirements (e.g., UK DATV, Schengen Airport Transit, Dubai 48h/96h transit) for your route.",
+    q: "Which airlines can I book through Dellics Travels?",
+    a: "Dellics Travels provides access to flights from participating airlines and airline content available through its booking systems. Airline availability varies by route, date and inventory."
   },
+  {
+    q: "Are the prices displayed on the website final?",
+    a: "Displayed fares are subject to availability and can change until the booking is confirmed and the ticket is issued. Airline fares and inventory can change in real time."
+  },
+  {
+    q: "What is included in the flight price?",
+    a: "The fare inclusions depend on the airline and fare type. Depending on the selected fare, the price may include taxes and certain baggage allowances, while checked baggage, seats, meals and other optional services may cost extra."
+  },
+  {
+    q: "How do I know my baggage allowance?",
+    a: "Your baggage allowance is determined by the airline and the fare purchased. Always check the baggage information displayed during booking and on your e-ticket."
+  },
+  {
+    q: "Can I choose my seat?",
+    a: "Seat selection depends on the airline and fare. Some airlines allow free seat selection, while others charge an additional fee."
+  },
+  {
+    q: "Can I change my flight after booking?",
+    a: "In many cases, yes, but changes depend on the airline’s fare rules. Additional airline fees and any fare difference may apply."
+  },
+  {
+    q: "Can I cancel my flight and get a refund?",
+    a: "Refund eligibility depends on the airline’s fare conditions and the type of ticket purchased. Some fares are refundable, while others may be partially refundable or non-refundable."
+  },
+  {
+    q: "How do I request a refund or cancellation?",
+    a: "Contact Dellics Travels with your booking reference/PNR, passenger name and ticket details. We will review the applicable airline fare rules and advise you of the available options."
+  },
+  {
+    q: "How long does a refund take?",
+    a: "Refund processing time depends on the airline and payment method. Dellics Travels will process eligible refunds according to the applicable airline and booking conditions."
+  },
+  {
+    q: "What happens if the airline cancels my flight?",
+    a: "If an airline cancels or significantly changes a flight, the options available will depend on the airline’s policy and applicable passenger-rights rules. Dellics Travels can assist you with available rebooking or refund options."
+  },
+  {
+    q: "What happens if my flight is delayed?",
+    a: "Flight delays are generally handled according to the operating airline’s procedures and applicable passenger-rights regulations. Dellics Travels can assist with available information and rebooking options where applicable."
+  },
+  {
+    q: "Can I correct a passenger’s name after booking?",
+    a: "Name corrections are subject to the airline’s rules. Changing the ticket from one passenger to another is generally not the same as correcting a spelling error. Customers should carefully verify all passenger names before payment and ticket issuance."
+  },
+  {
+    q: "What if I entered the wrong passenger details?",
+    a: "Contact Dellics Travels immediately before the ticket is issued. Once a ticket has been issued, correction options may be limited and airline charges may apply."
+  },
+  {
+    q: "Will I receive an e-ticket?",
+    a: "Yes. After successful ticket issuance, the applicable booking confirmation and e-ticket information will be sent to the email address provided during booking."
+  },
+  {
+    q: "What is a PNR or booking reference?",
+    a: "A PNR/booking reference is the code associated with your flight reservation. You may need it when checking your booking, contacting the airline or requesting assistance from Dellics Travels."
+  },
+  {
+    q: "Can I book a flight for another person?",
+    a: "Yes. You can book a ticket for another passenger. However, ensure that the passenger’s name and other required information are entered exactly as shown on their travel document."
+  },
+  {
+    q: "Do I need a visa to travel?",
+    a: "Flight booking does not automatically guarantee permission to enter a country. Visa, passport, transit and other entry requirements depend on your nationality, destination and itinerary. Customers should verify the applicable requirements before travelling. IATA notes that travel-document rules can change frequently."
+  },
+  {
+    q: "Can Dellics Travels help me with visa requirements?",
+    a: "Yes. Dellics Travels can provide visa assistance and travel-document guidance as an additional service. However, visa approval is determined by the relevant embassy, consulate or immigration authority."
+  },
+  {
+    q: "What if I miss my flight?",
+    a: "Contact Dellics Travels and/or the airline as soon as possible. Your options depend on the airline’s fare rules and no-show policy. Failure to cancel or change before departure can result in loss of the ticket value under some fares."
+  },
+  {
+    q: "Can I book flights for children or infants?",
+    a: "Yes, subject to the airline’s rules. Passenger categories, fares, documentation and seating requirements may differ for infants and children."
+  },
+  {
+    q: "Can I request special assistance?",
+    a: "Yes. Special assistance requests can be submitted where supported by the airline. Customers should make requests as early as possible because requirements and procedures vary between airlines."
+  },
+  {
+    q: "Can I add extra baggage after booking?",
+    a: "For many airlines, additional baggage can be purchased after booking, subject to airline availability and applicable charges."
+  },
+  {
+    q: "How can I contact Dellics Travels about my flight?",
+    a: "Customers should provide their booking reference, passenger name and travel date when contacting support so that the booking can be identified quickly."
+  }
 ];
 
 export default async function FlightsPage() {
@@ -150,7 +238,7 @@ export default async function FlightsPage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
         <SectionHeading
           eyebrow="Top Routes"
-          title="Popular Flight Deals from Accra"
+          title="Popular Flight Deals"
           subtitle="Explore our most frequently booked domestic, regional and international routes with guaranteed seat availability."
         />
 
@@ -167,7 +255,7 @@ export default async function FlightsPage() {
                   alt={`${route.from} to ${route.to}`}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/80 via-transparent to-transparent" />
                 <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy backdrop-blur-md">
                   {route.duration}

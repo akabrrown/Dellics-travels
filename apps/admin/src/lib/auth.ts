@@ -116,3 +116,51 @@ export async function loginAdminAccount(
   }
 }
 
+
+export async function forgotAdminPasswordInit(
+  email: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { adminApi } = require("./api");
+    const res = await adminApi.post("/auth/admin/forgot-password-init", {
+      email: email.trim().toLowerCase(),
+    });
+    
+    if (res?.status === 'success') {
+      return { success: true };
+    }
+    return { success: false, error: res?.message || 'Failed to initiate reset' };
+  } catch (err: any) {
+    console.error("Backend forgot password init error:", err);
+    return { 
+      success: false, 
+      error: err.response?.data?.message || err.message || "An unexpected error occurred." 
+    };
+  }
+}
+
+export async function resetAdminPassword(
+  email: string,
+  otp: string,
+  newPassword?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { adminApi } = require("./api");
+    const res = await adminApi.post("/auth/admin/forgot-password-reset", {
+      email: email.trim().toLowerCase(),
+      otp,
+      newPassword
+    });
+    
+    if (res?.status === 'success') {
+      return { success: true };
+    }
+    return { success: false, error: res?.message || 'Failed to reset password' };
+  } catch (err: any) {
+    console.error("Backend forgot password reset error:", err);
+    return { 
+      success: false, 
+      error: err.response?.data?.message || err.message || "An unexpected error occurred." 
+    };
+  }
+}

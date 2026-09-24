@@ -119,7 +119,7 @@ export function SiteHeader() {
               className="object-contain"
               priority
               unoptimized
-            />
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
 
           </div>
         </Link>
@@ -389,7 +389,7 @@ export function SiteHeader() {
                       fill
                       className="object-contain"
                       unoptimized
-                    />
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
 
                   </div>
                   <div>
