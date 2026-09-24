@@ -757,3 +757,4 @@ export function HotelSearch() {
   return <HotelSearchPage />;
 }
 
+
