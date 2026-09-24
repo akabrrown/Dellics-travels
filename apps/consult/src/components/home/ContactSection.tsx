@@ -48,15 +48,15 @@ export function ContactSection() {
                 <label className="block text-sm font-bold text-slate-700 mb-2">Tell Us About Your Goals</label>
                 <textarea rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all resize-none" placeholder="Share your study abroad goals, current qualification level..."></textarea>
               </div>
-              <button type="button" className="w-full py-4 rounded-xl bg-brand-blue text-white font-bold hover:bg-brand-blue-light transition-colors shadow-lg shadow-brand-blue/20">
+              <button type="button" className="w-full py-4 rounded-xl bg-navy text-white font-bold hover:bg-navy-light transition-colors shadow-lg shadow-brand-blue/20">
                 Submit & Book Consultation
               </button>
             </form>
           </div>
 
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-brand-blue text-white rounded-2xl p-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/20 rounded-full blur-2xl"></div>
+            <div className="bg-navy text-white rounded-2xl p-8 relative overflow-hidden">
+              
               <div className="relative z-10 text-center mb-8">
                 <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center mx-auto mb-4">
                   <Image src="/logo.jpg" width={48} height={48} alt="Dellics Logo" className="rounded-lg" />

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
 import Image from "next/image";
@@ -756,3 +756,4 @@ export function HotelSearchPage() {
 export function HotelSearch() {
   return <HotelSearchPage />;
 }
+

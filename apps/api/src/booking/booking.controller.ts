@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Get,
   Post,
@@ -7,8 +7,12 @@ import {
   UseGuards,
   Req,
   Headers,
-} from '@nestjs/common';
-import type { RawBodyRequest } from '@nestjs/common';
+} from '  Delete,
+  Param,
+@nestjs/common';
+import type { RawBodyRequest } from '  Delete,
+  Param,
+@nestjs/common';
 import { BookingService } from './booking.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -44,6 +48,11 @@ export class BookingController {
   @Get('admin/analytics')
   async getAdminAnalytics(@Query('range') range?: string) {
     return this.bookingService.getAdminAnalytics(range);
+  }
+
+  @Delete('admin/offline/:id')
+  async deleteOfflineBooking(@Param('id') id: string) {
+    return this.bookingService.deleteOfflineBooking(id);
   }
 
   @Post('admin/create-offline')
@@ -88,3 +97,4 @@ export class BookingController {
     );
   }
 }
+

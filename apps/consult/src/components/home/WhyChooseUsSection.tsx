@@ -17,7 +17,7 @@ export function WhyChooseUsSection() {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="order-2 lg:order-1 relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-orange/5 blur-3xl -z-10"></div>
+            
             
             {/* Visual Graphic Representation */}
             <div className="relative w-full max-w-md mx-auto aspect-square">
@@ -46,7 +46,7 @@ export function WhyChooseUsSection() {
                   <Plane className="w-5 h-5 text-brand-orange" />
                 </div>
                 <div className="pr-2">
-                  <div className="text-xs font-bold text-slate-900">Seamless</div>
+                  <div className="text-xs font-bold text-slate-900">Integrated</div>
                   <div className="text-[10px] text-slate-500">Travel</div>
                 </div>
               </div>
@@ -74,7 +74,7 @@ export function WhyChooseUsSection() {
           </div>
 
           <div className="order-1 lg:order-2">
-            <span className="inline-block py-1.5 px-4 rounded-full bg-brand-blue/5 text-brand-blue text-xs font-bold uppercase tracking-widest mb-4">Why Choose Dellics</span>
+            <span className="inline-block py-1.5 px-4 rounded-full bg-navy/5 text-navy text-xs font-bold uppercase tracking-widest mb-4">Why Choose Dellics</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6">Guiding Students from <span className="text-brand-orange">Application to Arrival</span></h2>
             <p className="text-slate-600 text-lg leading-relaxed mb-10">At Dellics Education Consult, we combine deep expertise in international education with genuine care for every student. We are not just consultants &mdash; we are your end-to-end partners with a dedicated digital platform to keep you informed at every milestone.</p>
             
@@ -94,7 +94,7 @@ export function WhyChooseUsSection() {
 
             <div className="flex flex-wrap gap-4">
               <Link href="/signup" className="px-8 py-4 rounded-full bg-brand-orange text-white font-bold hover:bg-brand-orange-light transition-all shadow-lg shadow-brand-orange/20 hover:-translate-y-1">Start Your Application</Link>
-              <Link href="/contact" className="px-8 py-4 rounded-full bg-white text-brand-blue font-bold border-2 border-slate-200 hover:border-brand-blue/30 transition-all hover:bg-slate-50">Book Free Consultation</Link>
+              <Link href="/contact" className="px-8 py-4 rounded-full bg-white text-navy font-bold border-2 border-slate-200 hover:border-navy/30 transition-all hover:bg-slate-50">Book Free Consultation</Link>
             </div>
           </div>
         </div>

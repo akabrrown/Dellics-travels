@@ -1,4 +1,4 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+﻿import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient } from '@supabase/supabase-js';
 import * as crypto from 'crypto';
@@ -884,3 +884,33 @@ export class BookingService {
     }
   }
 }
+
+  async deleteOfflineBooking(id: string) {
+    try {
+      const booking = await this.prisma.booking.findUnique({
+        where: { id },
+        include: { payments: true }
+      });
+      if (!booking) {
+        throw new Error('Booking not found');
+      }
+      
+      // Delete payments first due to foreign key constraints
+      if (booking.payments.length > 0) {
+        await this.prisma.payment.deleteMany({
+          where: { booking_id: id }
+        });
+      }
+      
+      await this.prisma.booking.delete({
+        where: { id }
+      });
+      
+      return { status: 'success', message: 'Offline booking deleted successfully' };
+    } catch (err: any) {
+      this.logger.error(deleteOfflineBooking failed: );
+      throw err;
+    }
+  }
+}
+

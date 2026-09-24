@@ -11,7 +11,7 @@ export function FaqSection() {
     <section id="faqs" className="py-24 bg-slate-50">
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="text-center mb-16">
-          <span className="inline-block py-1.5 px-4 rounded-full bg-brand-blue/5 text-brand-blue text-xs font-bold uppercase tracking-widest mb-4">Got Questions?</span>
+          <span className="inline-block py-1.5 px-4 rounded-full bg-navy/5 text-navy text-xs font-bold uppercase tracking-widest mb-4">Got Questions?</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900">Frequently Asked <span className="text-brand-orange">Questions</span></h2>
         </div>
         <div className="space-y-4">
@@ -28,8 +28,8 @@ export function FaqSection() {
           ))}
         </div>
         
-        <div className="mt-20 bg-brand-blue rounded-3xl p-12 text-center text-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-orange via-yellow-500 to-brand-orange"></div>
+        <div className="mt-20 bg-navy rounded-3xl p-12 text-center text-white relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-brand-orange"></div>
           <h3 className="text-3xl font-display font-bold mb-4">Ready to Study Abroad?</h3>
           <p className="text-slate-300 mb-8 max-w-xl mx-auto">Book your free consultation today and take the first step toward your global future.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">

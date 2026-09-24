@@ -137,6 +137,16 @@ export default function BookingsManagement() {
     }
   };
 
+  const handleDeleteOffline = async (bookingId: string) => {
+    if (!window.confirm("Are you sure you want to delete this offline booking record? This action cannot be undone.")) return;
+    try {
+      await adminApi.delete(`/booking/admin/offline/${bookingId}`);
+      fetchBookings();
+    } catch (err: any) {
+      alert(`Failed to delete booking: ${err.message}`);
+    }
+  };
+
   const getProductIcon = (type: string) => {
     switch (type?.toUpperCase()) {
       case "FLIGHT":
@@ -480,3 +490,4 @@ export default function BookingsManagement() {
     </RoleGuard>
   );
 }
+

@@ -1,8 +1,8 @@
 import Link from "next/link";
 export function CtaBanner({ title = "Ready to Start Your Journey?", desc = "Book your free consultation today and let us help you achieve your study abroad dreams." }: { title?: string, desc?: string }) {
   return (
-    <section className="py-24 bg-brand-blue text-white text-center relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-orange via-yellow-500 to-brand-orange"></div>
+    <section className="py-24 bg-navy text-white text-center relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-brand-orange"></div>
       <div className="container mx-auto px-6 relative z-10">
         <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">{title}</h2>
         <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">{desc}</p>

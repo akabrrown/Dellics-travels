@@ -22,17 +22,17 @@ export function ServicesSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((svc, idx) => (
-            <div key={idx} className={`relative p-8 rounded-3xl border transition-all ${svc.featured ? 'bg-brand-blue border-brand-blue text-white shadow-xl shadow-brand-blue/20 hover:-translate-y-1' : 'bg-white border-slate-200 text-slate-900 hover:shadow-md hover:shadow-brand-blue/5 hover:-translate-y-1 group'}`}>
+            <div key={idx} className={`relative p-8 rounded-3xl border transition-all ${svc.featured ? 'bg-navy border-navy text-white shadow-lg hover:-translate-y-1' : 'bg-white border-slate-200 text-slate-900 hover:shadow-md hover:shadow-brand-blue/5 hover:-translate-y-1 group'}`}>
               {svc.featured && <div className="absolute -top-4 right-8 bg-brand-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">High Demand</div>}
               
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${svc.featured ? 'bg-white/10' : 'bg-slate-50 group-hover:bg-brand-blue/5 transition-colors'}`}>
-                <svc.icon className={`w-7 h-7 ${svc.featured ? 'text-brand-orange' : 'text-brand-blue'}`} />
+                <svc.icon className={`w-7 h-7 ${svc.featured ? 'text-brand-orange' : 'text-navy'}`} />
               </div>
               
               <h3 className="text-xl font-bold mb-3">{svc.title}</h3>
               <p className={`mb-8 leading-relaxed text-sm ${svc.featured ? 'text-slate-300' : 'text-slate-600'}`}>{svc.desc}</p>
               
-              <Link href={svc.link} className={`inline-flex items-center gap-2 font-bold text-sm transition-colors ${svc.featured ? 'text-brand-orange hover:text-white' : 'text-brand-blue group-hover:text-brand-orange'}`}>
+              <Link href={svc.link} className={`inline-flex items-center gap-2 font-bold text-sm transition-colors ${svc.featured ? 'text-brand-orange hover:text-white' : 'text-navy group-hover:text-brand-orange'}`}>
                 {svc.cta} <span aria-hidden="true">&rarr;</span>
               </Link>
             </div>

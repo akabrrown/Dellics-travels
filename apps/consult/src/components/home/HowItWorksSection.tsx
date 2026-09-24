@@ -13,7 +13,7 @@ export function HowItWorksSection() {
     <section id="how-it-works" className="py-24 bg-slate-50">
       <div className="container mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="inline-block py-1.5 px-4 rounded-full bg-brand-blue/5 text-brand-blue text-xs font-bold uppercase tracking-widest mb-4">Transparent Roadmap</span>
+          <span className="inline-block py-1.5 px-4 rounded-full bg-navy/5 text-navy text-xs font-bold uppercase tracking-widest mb-4">Transparent Roadmap</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6">Our <span className="text-brand-orange">7-Step</span> Journey</h2>
           <p className="text-slate-600 text-lg">Consult → Assess → Select → Apply → Offer → Visa → Travel</p>
         </div>

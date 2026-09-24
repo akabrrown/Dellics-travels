@@ -30,7 +30,7 @@ export function DestinationsSection() {
                   <span key={i} className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider">{tag}</span>
                 ))}
               </div>
-              <Link href={dest.link} className="inline-flex font-bold text-sm text-brand-blue group-hover:text-brand-orange transition-colors">
+              <Link href={dest.link} className="inline-flex font-bold text-sm text-navy group-hover:text-brand-orange transition-colors">
                 Explore {dest.name} &rarr;
               </Link>
             </div>

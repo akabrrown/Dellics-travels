@@ -1,17 +1,85 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  
-  --color-brand-blue: #0A0060;
-  --color-brand-blue-light: #140882;
-  --color-brand-orange: #F4740D;
-  --color-brand-orange-light: #FF8A29;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-poppins);
 }
 
-@layer base {
-  body {
-    @apply bg-slate-50 text-slate-900 antialiased font-sans;
-  }
+@theme {
+  --color-navy: #0a0060;
+  --color-navy-dark: #06003d;
+  --color-navy-light: #140882;
+  --color-brand-blue: #26299c;
+  --color-brand-blue-dark: #1a1d70;
+  --color-brand-blue-light: #3438b8;
+  --color-ink: #030067;
+  --color-brand-orange: #f4740d;
+  --color-brand-orange-hover: #e06505;
+  --color-brand-orange-light: #FF8A29;
+  --color-slate-body: #3a3a3a;
+  --color-slate-muted: #64748b;
+  --color-confirm: #1e7a34;
+  --color-confirm-tint: #e7f5ea;
+  --color-alert: #b5540b;
+  --color-alert-tint: #fdeee2;
+  --radius-card: 20px;
+  --radius-field: 8px;
+  --radius-pill: 100px;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, select, textarea {
+  color: #0f172a !important;
+  accent-color: #f4740d;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+button, a, input, select, textarea {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
 }
