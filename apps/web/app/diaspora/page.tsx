@@ -1,4 +1,4 @@
-import type { Metadata } from "next/types";
+﻿import type { Metadata } from "next/types";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -226,3 +226,4 @@ export default function DiasporaPage() {
     </>
   );
 }
+

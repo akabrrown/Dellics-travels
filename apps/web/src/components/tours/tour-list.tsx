@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -160,3 +160,4 @@ export function TourList({ tours }: TourListProps) {
     </>
   );
 }
+

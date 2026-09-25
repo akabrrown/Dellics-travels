@@ -1,4 +1,4 @@
-import type { Metadata } from "next/types";
+﻿import type { Metadata } from "next/types";
 import Link from "next/link";
 import {
   Wifi,
@@ -329,3 +329,4 @@ export default function EsimPage() {
     </>
   );
 }
+
