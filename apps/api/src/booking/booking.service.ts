@@ -883,8 +883,6 @@ export class BookingService {
       throw err;
     }
   }
-}
-
   async deleteOfflineBooking(id: string) {
     try {
       const booking = await this.prisma.booking.findUnique({
@@ -908,9 +906,10 @@ export class BookingService {
       
       return { status: 'success', message: 'Offline booking deleted successfully' };
     } catch (err: any) {
-      this.logger.error(deleteOfflineBooking failed: );
+      this.logger.error("deleteOfflineBooking failed: " + err.message);
       throw err;
     }
   }
 }
+
 

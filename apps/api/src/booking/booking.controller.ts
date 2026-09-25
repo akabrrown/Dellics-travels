@@ -7,12 +7,10 @@
   UseGuards,
   Req,
   Headers,
-} from '  Delete,
+  Delete,
   Param,
-@nestjs/common';
-import type { RawBodyRequest } from '  Delete,
-  Param,
-@nestjs/common';
+} from '@nestjs/common';
+import type { RawBodyRequest } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -97,4 +95,5 @@ export class BookingController {
     );
   }
 }
+
 

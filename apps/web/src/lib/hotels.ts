@@ -1,4 +1,4 @@
-import { postJson } from "./api";
+﻿import { postJson } from "./api";
 import type { HotelSearchInput } from "./schemas";
 
 export interface HotelRoomRate {
@@ -25,7 +25,7 @@ export interface Hotel {
   images: string[];
   amenities: string[];
   description: string;
-  rates?: HotelRoomRate[];
+  rates: HotelRoomRate[];
 }
 
 export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {
@@ -72,3 +72,4 @@ export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {
 
   return [];
 }
+

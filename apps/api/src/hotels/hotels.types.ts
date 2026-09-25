@@ -1,4 +1,4 @@
-export interface HotelRoomRate {
+﻿export interface HotelRoomRate {
   matchHash: string;
   roomName: string;
   meal: string;
@@ -31,5 +31,6 @@ export interface HotelResult {
   images: string[];
   amenities: string[];
   description: string;
-  rates?: HotelRoomRate[];
+  rates: HotelRoomRate[];
 }
+
