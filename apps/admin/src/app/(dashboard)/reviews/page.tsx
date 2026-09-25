@@ -40,7 +40,7 @@ export default function ReviewsModeration() {
     rating: 5,
     text: "",
     target: "",
-    source: "TRUSTPILOT"
+    source: "GOOGLE"
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,7 +51,7 @@ export default function ReviewsModeration() {
       await adminApi.post("/reviews/admin/external", newReview);
       setIsAddModalOpen(false);
       fetchReviews();
-      setNewReview({ travelerName: "", rating: 5, text: "", target: "", source: "TRUSTPILOT" });
+      setNewReview({ travelerName: "", rating: 5, text: "", target: "", source: "GOOGLE" });
     } catch (err: any) {
       alert("Failed to add review: " + err.message);
     } finally {
@@ -73,18 +73,7 @@ export default function ReviewsModeration() {
     }
   };
 
-  const handleSyncTrustpilot = async () => {
-    try {
-      setActionLoading('sync-trustpilot');
-      await adminApi.post('/reviews/admin/sync-trustpilot', {});
-      alert('Trustpilot Reviews synced successfully.');
-      fetchReviews();
-    } catch (err: any) {
-      alert('Failed to sync Trustpilot Reviews: ' + err.message);
-    } finally {
-      setActionLoading(null);
-    }
-  };
+
 
   const fetchReviews = async () => {
     try {
@@ -311,7 +300,6 @@ export default function ReviewsModeration() {
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Source</label>
                   <select value={newReview.source} onChange={e=>setNewReview({...newReview, source: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-[#0A0060]">
-                    <option value="TRUSTPILOT">Trustpilot</option>
                     <option value="GOOGLE">Google</option>
                   </select>
                 </div>
@@ -343,3 +331,4 @@ export default function ReviewsModeration() {
     </RoleGuard>
   );
 }
+

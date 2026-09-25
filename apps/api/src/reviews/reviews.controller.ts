@@ -30,7 +30,7 @@ export class ReviewsController {
     return this.reviewsService.moderateReview(id, status);
   }
 
-  /** Admin: manually add an external review (Trustpilot / Google) */
+  /** Admin: manually add an external review (Google) */
   @Post('admin/external')
   @UseGuards(AdminAuthGuard, PermissionsGuard)
   @RequirePermissions('reviews.manage')
@@ -40,7 +40,7 @@ export class ReviewsController {
       rating: number;
       text: string;
       target: string;
-      source: 'TRUSTPILOT' | 'GOOGLE';
+      source: 'GOOGLE';
     }
   ) {
     return this.reviewsService.addExternalReview(dto);
@@ -58,15 +58,7 @@ export class ReviewsController {
     return this.reviewsService.syncGoogleReviews();
   }
 
-  /**
-   * Admin: trigger a live sync of Trustpilot reviews → DB.
-   */
-  @Post('admin/sync-trustpilot')
-  @UseGuards(AdminAuthGuard, PermissionsGuard)
-  @RequirePermissions('reviews.manage')
-  async syncTrustpilotReviews() {
-    return this.reviewsService.syncTrustpilotReviews();
-  }
+
   /** Public: approved featured reviews for website social proof */
   @Get('featured')
   async getFeaturedReviews() {

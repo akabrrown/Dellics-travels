@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { Star, CheckCircle2, ArrowRight } from "lucide-react";
 import { HeroSlider } from "@/components/home/hero-slider";
@@ -239,16 +239,7 @@ export default async function HomePage() {
           />
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 pb-8 border-b border-slate-200/60 max-w-4xl mx-auto">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center size-10 rounded-full bg-[#00B67A] text-white font-bold text-xl">★</div>
-              <div className="flex flex-col">
-                <span className="font-bold text-slate-800 leading-tight">Trustpilot</span>
-                <div className="flex text-[#00B67A] text-sm tracking-widest">
-                  ★★★★★
-                </div>
-              </div>
-            </div>
-            <div className="h-10 w-px bg-slate-300 hidden sm:block"></div>
+
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center size-10 rounded-full bg-white shadow-sm border border-slate-100 font-bold text-xl text-blue-600">G</div>
               <div className="flex flex-col">
@@ -276,7 +267,7 @@ export default async function HomePage() {
                     <div className="flex items-center gap-0.5 text-amber-400">
                       {[1, 2, 3, 4, 5].map((starIndex) => {
                         const r = Number(review.rating) || 5;
-                        const starColor = review.source === 'TRUSTPILOT' ? 'text-[#00B67A]' : 'text-amber-400';
+                        const starColor = 'text-amber-400';
                         if (r >= starIndex) {
                           return <Star key={starIndex} className={`size-4 fill-current ${starColor}`} />;
                         } else if (r >= starIndex - 0.5) {
@@ -314,14 +305,7 @@ export default async function HomePage() {
                       {review.role} · {review.location}
                     </p>
                   </div>
-                  {review.source === 'TRUSTPILOT' && (
-                    <div className="flex flex-col items-end gap-1">
-                      <div className="bg-[#00B67A] text-white text-[10px] font-bold px-2 py-0.5 rounded-sm flex items-center gap-1">
-                        ★ Trustpilot
-                      </div>
-                      <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium"><CheckCircle2 className="size-3 text-[#00B67A]" /> Verified</span>
-                    </div>
-                  )}
+
                   {review.source === 'GOOGLE' && (
                     <div className="flex flex-col items-end gap-1">
                       <div className="text-slate-700 text-[11px] font-bold px-2 py-0.5 border border-slate-200 rounded-sm flex items-center gap-1 bg-white shadow-sm">
@@ -353,3 +337,4 @@ export default async function HomePage() {
     </>
   );
 }
+
