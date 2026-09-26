@@ -65,6 +65,7 @@ export class AppService {
       }
 
       const latencyMs = Date.now() - start;
+      const errText = res.ok ? '' : await res.text().catch(()=>'');
       const isOnline = res && (res.ok || res.status === 200 || res.status === 401 || res.status === 403);
       
       results.push({
@@ -135,7 +136,7 @@ export class AppService {
         lastChecked: new Date().toISOString(),
         details: res.ok
           ? 'Global accommodation inventory live'
-          : `HTTP ${res.status}`,
+          : `HTTP ${res.status} - ${errText}`,
       });
     } catch (err: any) {
       results.push({
