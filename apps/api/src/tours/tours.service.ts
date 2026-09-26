@@ -1,45 +1,41 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ToursService {
   constructor(private prisma: PrismaService) {}
 
-  async getTours(query: any) {
-    return this.prisma.tourPackage.findMany({
-      where: {
-        // filter logic
-      },
-    });
-  }
+    async getTours(query: any) {
+    const where: any = {};
+    if (query.featured) where.is_featured = query.featured === 'true';
+    if (query.destination) where.destination = { contains: query.destination, mode: 'insensitive' };
+    if (query.segment) where.segment = query.segment;
 
-  async getTourBySlug(slug: string) {
-    const tour = await this.prisma.tourPackage.findUnique({
-      where: { slug },
-    });
-    if (!tour) throw new NotFoundException('Tour not found');
-    return tour;
-  }
-
-  
-  async createTour(body: any) {
-    return this.prisma.tourPackage.create({
-      data: {
-        title: body.title,
-        slug: body.slug,
-        destination: body.destination,
-        price: body.price,
-        currency: body.currency,
-        duration: body.duration,
-        badge: body.badge,
-        segment: body.segment,
-        image_url: body.image,
-        overview: body.overview,
-        includes: body.includes,
-        highlights: body.highlights,
-        is_featured: body.isFeatured,
-      }
-    });
+    const data = await this.prisma.tourPackage.findMany({ where });
+    
+    // Map to frontend expected format
+    return {
+      status: 'success',
+      provider: 'database',
+      count: data.length,
+      data: data.map(d => ({
+        id: d.id,
+        name: d.title,
+        slug: d.slug,
+        destination: d.destination,
+        price: d.price.toString(),
+        rawPrice: Number(d.price),
+        currency: d.currency,
+        duration: d.duration,
+        badge: d.badge,
+        segment: d.segment,
+        image: d.image_url,
+        copy: d.overview,
+        includes: d.includes,
+        highlights: d.highlights,
+        isFeatured: d.is_featured
+      }))
+    };
   }
 
   async updateTour(id: string, body: any) {

@@ -42,10 +42,12 @@ export function buildViatorUrl(destination: string, activity?: string): string {
 export async function getTours(params?: {
   featured?: boolean;
   destination?: string;
+  segment?: string;
 }): Promise<TourPackage[]> {
   const query = new URLSearchParams();
   if (params?.featured) query.set("featured", "true");
   if (params?.destination) query.set("destination", params.destination);
+  if (params?.segment) query.set("segment", params.segment);
   const qs = query.toString() ? `?${query.toString()}` : "";
 
   try {
@@ -72,4 +74,5 @@ export async function getTours(params?: {
   // If we get here, either no API data or it failed, return empty array.
   return [];
 }
+
 

@@ -14,6 +14,7 @@ import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
 import { CtaBanner } from "@/components/cta-banner";
 import { SITE } from "@/lib/site";
+import { getTours } from "@/lib/tours";
 
 export const metadata: Metadata = {
   title: "Diaspora Homecoming & Heritage Tourism Ghana",
@@ -21,89 +22,8 @@ export const metadata: Metadata = {
     "Connect with your ancestral roots through Dellics Travels heritage tours in Ghana. Cape Coast Castle, Door of Return, traditional naming ceremonies, and Ashanti Kingdom.",
 };
 
-const HERITAGE_EXPERIENCES = [
-  {
-    title: "Cape Coast & Elmina Castle Pilgrimage",
-    subtitle: "The Door of Return & Ancestral Remembrance",
-    image: "/images/africa/cape-coast-castle.jpg",
-    badge: "UNESCO Heritage",
-    description:
-      "Walk the historic stone corridors, stand inside the dungeons, and step through the transformative Door of Return. Our certified heritage guides provide historically truthful, deeply moving narratives honoring our shared resilience.",
-    highlights: [
-      "Door of Return ceremony & prayer libation",
-      "Elmina Castle & historic fishing harbor",
-      "Private guided historical narrative",
-      "Emotional debrief & ancestral sanctuary",
-    ],
-  },
-  {
-    title: "Assin Manso Slave River Memorial",
-    subtitle: "The Sacred Site of 'Donkor Nsuo' (The Last Bath)",
-    image: "/images/africa/kakum-canopy-walkway.jpg",
-    badge: "Sacred Memorial",
-    description:
-      "Visit the sacred river where enslaved ancestors had their final bath before the march to coastal slave dungeons. Dip your feet into the waters for healing, spiritual connection, and ancestral reverence.",
-    highlights: [
-      "Sacred river foot immersion & prayer",
-      "Memorial wall of return & tribute garden",
-      "Meditation under ancient baobab trees",
-      "Reverent floral wreath offerings",
-    ],
-  },
-  {
-    title: "Ashanti Kingdom & Royal Heritage",
-    subtitle: "Kumasi, Manhyia Palace & Golden Stool Legacy",
-    image: "/images/africa/accra-city-experience.jpg",
-    badge: "Royal Culture",
-    description:
-      "Immerse yourself in the living royalty of the Ashanti Kingdom. Visit the Manhyia Palace Museum, witness the sacred Golden Stool history, and participate in authentic craft villages.",
-    highlights: [
-      "Bonwire Kente weaving village masterclass",
-      "Ntonso Adinkra symbol stamping workshop",
-      "Manhyia Palace & Prempeh II museum",
-      "Traditional Akan royal court protocol",
-    ],
-  },
-  {
-    title: "Traditional Ghanaian Naming Ceremony",
-    subtitle: "Receive Your Soul Name & Clan Lineage",
-    image: "/images/services/ghana-heritage-airbnb.jpg",
-    badge: "Spiritual Homecoming",
-    description:
-      "Be formally welcomed back to the motherland in an authentic village naming ceremony led by traditional chiefs and queen mothers. Receive your Akan day name, certificates, and ancestral blessings.",
-    highlights: [
-      "Traditional drumming & cultural dances",
-      "Custom woven Kente cloth presentation",
-      "Official certificate of Ghanaian name",
-      "Community feast & elder blessings",
-    ],
-  },
-];
-
-const DIASPORA_PILLARS = [
-  {
-    icon: Heart,
-    title: "Emotional & Cultural Sensitivity",
-    description: "Our guides are specially trained in trauma-informed heritage storytelling, creating safe, sacred spaces for reflection and connection.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Safe, Air-Conditioned VIP Transport",
-    description: "Explore Ghana's historic routes in executive sedans, 4x4 SUVs, and luxury passenger coaches with flight-tracked airport pickups.",
-  },
-  {
-    icon: Crown,
-    title: "Vetted Heritage Accommodations",
-    description: "Stay in top-rated boutique hotels, eco-retreats, and beachfront resorts that celebrate authentic African design and cuisine.",
-  },
-  {
-    icon: Trees,
-    title: "Custom Family & Group Dates",
-    description: "Whether traveling solo, with family, or with an organization, we tailor every day to your pace, energy, and ancestral curiosity.",
-  },
-];
-
-export default function DiasporaPage() {
+export default async function DiasporaPage() {
+  const diasporaPackages = await getTours({ segment: 'DIASPORA' }).catch(() => []);
   return (
     <>
       <PageHero
@@ -122,33 +42,33 @@ export default function DiasporaPage() {
         />
 
         <div className="mt-14 grid gap-8 md:grid-cols-2">
-          {HERITAGE_EXPERIENCES.map((exp) => (
+          {diasporaPackages.length > 0 ? diasporaPackages.map((exp) => (
             <article
-              key={exp.title}
+              key={exp.id}
               className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
             >
               <div className="relative h-64 w-full overflow-hidden">
                 <Image
-                  src={exp.image}
-                  alt={exp.title}
+                  src={exp.image || "/images/africa/cape-coast-castle.jpg"}
+                  alt={exp.name}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-transparent to-transparent" />
                 <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3.5 py-1 text-xs font-bold text-white shadow-md">
-                  {exp.badge}
+                  {exp.badge || "Heritage Tour"}
                 </span>
               </div>
 
               <div className="flex flex-1 flex-col p-8">
                 <p className="text-xs font-bold uppercase tracking-wider text-brand-orange">
-                  {exp.subtitle}
+                  {exp.destination}
                 </p>
                 <h3 className="mt-1 font-display text-2xl font-bold text-navy">
-                  {exp.title}
+                  {exp.name}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  {exp.description}
+                  {exp.copy}
                 </p>
 
                 <div className="mt-6 border-t border-slate-100 pt-6 flex-1">
@@ -226,4 +146,5 @@ export default function DiasporaPage() {
     </>
   );
 }
+
 
