@@ -327,6 +327,8 @@ export default async function HomePage() {
       </section>
 
 
+      )}
+
       {/* 9. Full Width CTA Banner */}
       <CtaBanner
         title="Ready To Plan Your Next Trip?"
@@ -337,4 +339,5 @@ export default async function HomePage() {
     </>
   );
 }
+
 

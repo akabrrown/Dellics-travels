@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   Logger,
   HttpException,
@@ -1041,46 +1041,13 @@ export class SearchService {
       this.logger.warn(`Reviews DB lookup error: ${err.message}`);
     }
 
-    // Mock data for Trustpilot and Google
+        // Temporary empty array until live reviews are provided
     return {
       status: 'success',
-      provider: 'mock',
-      count: 3,
-      data: [
-        {
-          id: 'rev-01',
-          name: 'Sarah Jenkins',
-          role: 'Verified Client',
-          location: 'London, UK',
-          destination: 'Dubai Luxury Package',
-          quote: 'Dellics Travels made our trip to Dubai absolutely seamless. From the visa processing to the desert safari, everything was 5-star.',
-          rating: 5,
-          avatar: '/images/services/photo-10-2026-07-22-15-35-17.jpg',
-          source: 'TRUSTPILOT',
-        },
-        {
-          id: 'rev-02',
-          name: 'Michael Osei',
-          role: 'Verified Client',
-          location: 'Accra, Ghana',
-          destination: 'UK Student Visa',
-          quote: 'Very professional agency. They guided me through my entire UK student visa application and I got it approved without issues.',
-          rating: 4.8,
-          avatar: '/images/services/photo-12-2026-07-22-15-35-17.jpg',
-          source: 'GOOGLE',
-        },
-        {
-          id: 'rev-03',
-          name: 'Elena Rostova',
-          role: 'Verified Client',
-          location: 'Toronto, Canada',
-          destination: 'Cape Town Experience',
-          quote: 'Our corporate retreat to Cape Town was flawlessly executed. Highly recommend Dellics for group travel planning.',
-          rating: 5,
-          avatar: '/images/services/photo-14-2026-07-22-15-35-17.jpg',
-          source: 'TRUSTPILOT',
-        },
-      ],
+      provider: 'empty',
+      count: 0,
+      data: [],
     };
   }
 }
+
