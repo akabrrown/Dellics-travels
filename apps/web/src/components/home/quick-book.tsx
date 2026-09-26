@@ -312,19 +312,21 @@ export function QuickBook() {
                   </div>
                 </div>
                 
-                <div className="flex items-end w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
-                  <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden shrink-0">
-                    {["RO", "BB", "HB", "FB", "AI"].map(s => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setHotelBoard(s)}
-                        className={`h-full px-4 text-xs font-medium border-r border-slate-200 last:border-r-0 transition-colors ${hotelBoard === s ? "bg-slate-100 text-slate-900 font-bold shadow-inner" : "text-slate-600 hover:bg-slate-50"}`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
+                                <div className="w-full lg:w-48 pb-1 lg:pb-0">
+                  <Label htmlFor="hotel-board" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Meal Plan</Label>
+                  <select
+                    id="hotel-board"
+                    value={hotelBoard}
+                    onChange={(e) => setHotelBoard(e.target.value)}
+                    className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
+                  >
+                    <option value="">Any meal plan</option>
+                    <option value="RO">Room Only (RO)</option>
+                    <option value="BB">Bed & Breakfast (BB)</option>
+                    <option value="HB">Half Board (HB)</option>
+                    <option value="FB">Full Board (FB)</option>
+                    <option value="AI">All-Inclusive (AI)</option>
+                  </select>
                 </div>
               </div>
 
@@ -649,6 +651,7 @@ export function QuickBook() {
     </div>
   );
 }
+
 
 
 
