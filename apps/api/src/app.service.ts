@@ -100,8 +100,21 @@ export class AppService {
         rhUrl += '/api/b2b/v3';
       }
       
-      const rhKeyId = this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494';
-      const rhKey = this.config.get<string>('RATEHAWK_API_KEY') || '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
+      
+      let rhKeyId = this.config.get<string>('RATEHAWK_KEY_ID');
+      if (!rhKeyId || !/^\d+$/.test(rhKeyId.trim())) {
+        rhKeyId = this.config.get<string>('RATEHAWK_API_ID');
+      }
+      if (!rhKeyId || !/^\d+$/.test(rhKeyId.trim())) {
+        rhKeyId = '494';
+      }
+      rhKeyId = rhKeyId.trim();
+      
+      let rhKey = this.config.get<string>('RATEHAWK_API_KEY');
+      if (!rhKey || rhKey.trim() === '') {
+        rhKey = '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
+      }
+      rhKey = rhKey.trim();
       
       const start = Date.now();
       const headers: Record<string, string> = {
