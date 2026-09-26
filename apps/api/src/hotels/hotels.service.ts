@@ -208,6 +208,26 @@ export class HotelsService {
       rawHotels = serpBody?.data?.hotels ?? [];
     }
 
+    if (isSandbox) {
+      try {
+        const testSerp = await this.fetchJson(`${this.baseUrl}/search/serp/hotels/`, {
+          checkin: input.checkIn,
+          checkout: input.checkOut,
+          residency: 'gb',
+          language: 'en',
+          guests: [{ adults: adultsCount, children: childrenAges }],
+          ids: ['10004834', '8819557'],
+          currency: 'USD',
+        });
+        const testHotels = testSerp?.data?.hotels || [];
+        const existingIds = new Set(rawHotels.map((h: any) => h.id));
+        const filteredTestHotels = testHotels.filter((h: any) => !existingIds.has(h.id));
+        rawHotels = [...filteredTestHotels, ...rawHotels];
+      } catch (e: any) {
+        this.logger.warn('Failed to fetch RateHawk test hotels: ' + e.message);
+      }
+    }
+
     if (Array.isArray(rawHotels) && rawHotels.length > 0) {
       const topHotels = rawHotels.slice(0, 10);
       const enriched = await Promise.allSettled(
