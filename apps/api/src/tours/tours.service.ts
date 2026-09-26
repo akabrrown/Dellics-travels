@@ -38,6 +38,32 @@ export class ToursService {
     };
   }
 
+  async getTourBySlug(slug: string) {
+    const tour = await this.prisma.tourPackage.findUnique({ where: { slug } });
+    if (!tour) throw new NotFoundException('Tour not found');
+    return tour;
+  }
+
+  async createTour(body: any) {
+    return this.prisma.tourPackage.create({
+      data: {
+        title: body.title,
+        slug: body.slug,
+        destination: body.destination,
+        price: body.price,
+        currency: body.currency || 'USD',
+        duration: body.duration,
+        badge: body.badge,
+        segment: body.segment,
+        image_url: body.image,
+        overview: body.overview,
+        includes: body.includes || [],
+        highlights: body.highlights || [],
+        is_featured: body.isFeatured || false,
+      }
+    });
+  }
+
   async updateTour(id: string, body: any) {
     return this.prisma.tourPackage.update({
       where: { id },
