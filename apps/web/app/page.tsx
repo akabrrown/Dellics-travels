@@ -56,10 +56,14 @@ const DEFAULT_DESTINATIONS = [
 ];
 
 export default async function HomePage() {
-  const [homeDealsData, popularTours, testimonials] = await Promise.all([
+    // Hardcode testimonials to empty to forcefully hide dummy reviews
+  let [homeDealsData, popularTours, testimonials] = await Promise.all([
     getLiveHomeDeals("ACC").catch(() => null),
     getTours({ featured: true }).catch(() => []),
-    getFeaturedReviews().catch(() => []),
+        getFeaturedReviews().catch(() => []),
+  ]);
+  
+  testimonials = []; // Force hide reviews
   ]);
 
   // Enrich featured destinations with live lowest fares if available
@@ -339,5 +343,6 @@ export default async function HomePage() {
     </>
   );
 }
+
 
 
