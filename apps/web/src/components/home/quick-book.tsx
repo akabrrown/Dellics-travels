@@ -269,7 +269,7 @@ export function QuickBook() {
               </div>
 
               <div className="flex items-end mt-4 lg:mt-0">
-                <Button type="submit" className="w-full lg:w-auto h-12 px-8 rounded-lg bg-[#EBB41E] hover:bg-[#d4a014] text-slate-900 font-bold text-sm transition-colors shadow-sm">
+                <Button type="submit" className="w-full lg:w-auto h-12 px-8 rounded-lg bg-brand-orange hover:bg-[#d84b1d] text-white font-bold text-sm transition-colors shadow-sm">
                   Search
                 </Button>
               </div>
@@ -659,6 +659,7 @@ export function QuickBook() {
     </div>
   );
 }
+
 
 
 
