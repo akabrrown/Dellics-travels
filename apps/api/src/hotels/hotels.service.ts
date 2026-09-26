@@ -394,10 +394,10 @@ export class HotelsService {
   }
 
   private get apiId(): string {
-    return this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494';
+    return (this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494').trim();
   }
 
   private get apiKey(): string {
-    return this.config.get<string>('RATEHAWK_API_KEY') || '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
+    return (this.config.get<string>('RATEHAWK_API_KEY') || '2ecbeeb9-cc38-4b7e-a415-94300adff21f').trim();
   }
 }
