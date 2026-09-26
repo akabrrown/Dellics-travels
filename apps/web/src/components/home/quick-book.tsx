@@ -340,9 +340,10 @@ export function QuickBook() {
                       className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
                     >
                       <option value="">Select the time</option>
-                      <option value="06:00">06:00</option>
-                      <option value="08:00">08:00</option>
-                      <option value="10:00">10:00</option>
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const time = ${i.toString().padStart(2, '0')}:00;
+                        return <option key={time} value={time}>{time}</option>;
+                      })}
                     </select>
                   </div>
                   
@@ -355,9 +356,10 @@ export function QuickBook() {
                       className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
                     >
                       <option value="">Select the time</option>
-                      <option value="14:00">14:00</option>
-                      <option value="16:00">16:00</option>
-                      <option value="18:00">18:00</option>
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const time = ${i.toString().padStart(2, '0')}:00;
+                        return <option key={time} value={time}>{time}</option>;
+                      })}
                     </select>
                   </div>
                 </div>
@@ -657,6 +659,8 @@ export function QuickBook() {
     </div>
   );
 }
+
+
 
 
 
