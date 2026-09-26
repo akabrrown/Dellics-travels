@@ -22,6 +22,29 @@ export const metadata: Metadata = {
     "Connect with your ancestral roots through Dellics Travels heritage tours in Ghana. Cape Coast Castle, Door of Return, traditional naming ceremonies, and Ashanti Kingdom.",
 };
 
+const DIASPORA_PILLARS = [
+  {
+    icon: Heart,
+    title: "Emotional & Cultural Sensitivity",
+    description: "Our guides are specially trained in trauma-informed heritage storytelling, creating safe, sacred spaces for reflection and connection.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Safe, Air-Conditioned VIP Transport",
+    description: "Explore Ghana's historic routes in executive sedans, 4x4 SUVs, and luxury passenger coaches with flight-tracked airport pickups.",
+  },
+  {
+    icon: Crown,
+    title: "Vetted Heritage Accommodations",
+    description: "Stay in top-rated boutique hotels, eco-retreats, and beachfront resorts that celebrate authentic African design and cuisine.",
+  },
+  {
+    icon: Trees,
+    title: "Custom Family & Group Dates",
+    description: "Whether traveling solo, with family, or with an organization, we tailor every day to your pace, energy, and ancestral curiosity.",
+  },
+];
+
 export default async function DiasporaPage() {
   const diasporaPackages = await getTours({ segment: 'DIASPORA' }).catch(() => []);
   return (
@@ -91,7 +114,7 @@ export default async function DiasporaPage() {
                     Available All Year Round
                   </span>
                   <Link
-                    href={`/inquire?service=diaspora&package=${encodeURIComponent(exp.title)}`}
+                    href={`/inquire?service=diaspora&package=${encodeURIComponent(exp.name)}`}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-orange hover:text-brand-orange-hover"
                   >
                     <span>Plan Pilgrimage</span>
@@ -150,6 +173,7 @@ export default async function DiasporaPage() {
     </>
   );
 }
+
 
 
 
