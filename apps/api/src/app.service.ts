@@ -94,17 +94,22 @@ export class AppService {
 
     // 2. RateHawk Hotels B2B v3
     try {
-      const rhUrl =
-        this.config.get<string>('RATEHAWK_BASE_URL') ||
-        'https://api-sandbox.ratehawk.com/api/b2b/v3';
-      const rhKey = this.config.get<string>('RATEHAWK_API_KEY') || '';
+      let rhUrl = this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api-sandbox.ratehawk.com/api/b2b/v3';
+      rhUrl = rhUrl.trim().replace(/\/$/, '');
+      if (!rhUrl.includes('/api/b2b/v3')) {
+        rhUrl += '/api/b2b/v3';
+      }
+      
+      const rhKeyId = this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494';
+      const rhKey = this.config.get<string>('RATEHAWK_API_KEY') || '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
+      
       const start = Date.now();
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
+      
       if (rhKey) {
-        headers['Authorization'] =
-          `Basic ${Buffer.from(`${rhKey}:`).toString('base64')}`;
+        headers['Authorization'] = `Basic ${Buffer.from(`${rhKeyId}:${rhKey}`).toString('base64')}`;
       }
       const res = await fetch(`${rhUrl}/search/multicomplete/`, {
         method: 'POST',

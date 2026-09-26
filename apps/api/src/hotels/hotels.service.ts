@@ -366,11 +366,15 @@ export class HotelsService {
   }
 
   private get baseUrl(): string {
-    return (this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api-sandbox.ratehawk.com/api/b2b/v3').trim().replace(/\/$/, '');
+    let url = (this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api-sandbox.ratehawk.com/api/b2b/v3').trim().replace(/\/$/, '');
+    if (!url.includes('/api/b2b/v3')) {
+      url += '/api/b2b/v3';
+    }
+    return url;
   }
 
   private get apiId(): string {
-    return this.config.get<string>('RATEHAWK_API_ID') || '494';
+    return this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494';
   }
 
   private get apiKey(): string {
