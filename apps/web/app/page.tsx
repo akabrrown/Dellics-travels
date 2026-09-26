@@ -64,7 +64,6 @@ export default async function HomePage() {
   ]);
   
   testimonials = []; // Force hide reviews
-  ]);
 
   // Enrich featured destinations with live lowest fares if available
   const trendingMap = new Map(
@@ -343,6 +342,7 @@ export default async function HomePage() {
     </>
   );
 }
+
 
 
 

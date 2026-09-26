@@ -100,7 +100,11 @@ export default async function DiasporaPage() {
                 </div>
               </div>
             </article>
-          ))}
+          )) : (
+            <div className="col-span-full py-12 text-center border border-slate-200 border-dashed rounded-3xl bg-slate-50/50">
+               <p className="text-slate-500 font-medium">No diaspora packages available at the moment. Please check back later.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -146,5 +150,6 @@ export default async function DiasporaPage() {
     </>
   );
 }
+
 
 
