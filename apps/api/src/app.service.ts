@@ -65,7 +65,6 @@ export class AppService {
       }
 
       const latencyMs = Date.now() - start;
-      const errText = res.ok ? '' : await res.text().catch(()=>'');
       const isOnline = res && (res.ok || res.status === 200 || res.status === 401 || res.status === 403);
       
       results.push({
@@ -121,6 +120,7 @@ export class AppService {
         signal: AbortSignal.timeout(5000),
       });
       const latencyMs = Date.now() - start;
+        const errText = res.ok ? '' : await res.text().catch(()=>'');
       results.push({
         id: 'ratehawk-hotels',
         name: 'RateHawk B2B v3 Hotels',
