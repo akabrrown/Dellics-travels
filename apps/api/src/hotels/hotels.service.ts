@@ -394,10 +394,19 @@ export class HotelsService {
   }
 
   private get apiId(): string {
-    return (this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494').trim();
+    let id = this.config.get<string>('RATEHAWK_KEY_ID');
+    if (!id || !/^\d+$/.test(id.trim())) {
+      id = this.config.get<string>('RATEHAWK_API_ID');
+    }
+    if (!id || !/^\d+$/.test(id.trim())) {
+      id = '494';
+    }
+    return id.trim();
   }
 
   private get apiKey(): string {
-    return (this.config.get<string>('RATEHAWK_API_KEY') || '2ecbeeb9-cc38-4b7e-a415-94300adff21f').trim();
+    let key = this.config.get<string>('RATEHAWK_API_KEY');
+    if (!key || key.trim() === '') return '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
+    return key.trim();
   }
 }
