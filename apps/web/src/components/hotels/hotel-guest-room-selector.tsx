@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Users, ChevronDown, Minus, Plus, Bed, Check } from "lucide-react";
@@ -81,7 +81,7 @@ export function HotelGuestRoomSelector({
           <Button
             type="button"
             variant="outline"
-            className="h-10 sm:h-9 flex-1 min-w-[130px] px-3 rounded-xl sm:rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 flex items-center justify-between gap-1.5 transition-all truncate"
+            className="h-12 flex-1 min-w-[130px] px-3 rounded-lg text-xs font-medium border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-[#EBB41E] flex items-center justify-between gap-1.5 transition-all truncate"
           >
             <Users className="size-3.5 text-slate-500 shrink-0" />
             <span className="font-medium text-slate-800">{formatGuestsLabel()}</span>
@@ -215,7 +215,7 @@ export function HotelGuestRoomSelector({
           value={value.roomType || "Standard"}
           onValueChange={(val) => setRoomType(val)}
         >
-          <SelectTrigger className="h-10 sm:h-9 flex-1 min-w-[110px] px-3 rounded-xl sm:rounded-full text-xs font-medium border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-1.5 focus:ring-0 focus:ring-offset-0 truncate">
+          <SelectTrigger className="h-12 flex-1 min-w-[110px] px-3 rounded-lg text-xs font-medium border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-[#EBB41E] transition-all flex items-center gap-1.5 focus:ring-0 focus:ring-offset-0 truncate">
             <SelectValue placeholder="Economy" />
           </SelectTrigger>
           <SelectContent className="rounded-2xl border-slate-200/90 shadow-xl">
@@ -230,3 +230,4 @@ export function HotelGuestRoomSelector({
     </div>
   );
 }
+

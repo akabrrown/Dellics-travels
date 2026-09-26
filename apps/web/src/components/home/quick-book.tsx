@@ -263,11 +263,9 @@ export function QuickBook() {
                 </div>
               </div>
 
-              <div className="w-full lg:w-48">
+              <div className="w-full lg:min-w-[280px]">
                  <Label className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">{hotelGuestsData.rooms} room{hotelGuestsData.rooms > 1 ? 's' : ''} for</Label>
-                 <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
-                    <HotelGuestRoomSelector value={hotelGuestsData} onChange={setHotelGuestsData} />
-                 </div>
+                 <HotelGuestRoomSelector value={hotelGuestsData} onChange={setHotelGuestsData} />
               </div>
 
               <div className="flex items-end mt-4 lg:mt-0">
@@ -364,7 +362,7 @@ export function QuickBook() {
                   </div>
                 </div>
                 
-                <div className="flex items-center mt-3 lg:mt-5 lg:ml-2">
+                <div className="flex items-center mt-3 lg:mt-[22px] lg:ml-2">
                   <label className="flex items-center gap-2.5 cursor-pointer group">
                     <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${hotelFreeCancellation ? "bg-[#EBB41E] border-[#EBB41E]" : "border-slate-300 bg-white group-hover:border-[#EBB41E]"}`}>
                       {hotelFreeCancellation && <CheckCircle2 className="w-3 h-3 text-white" />}
@@ -659,6 +657,8 @@ export function QuickBook() {
     </div>
   );
 }
+
+
 
 
 
