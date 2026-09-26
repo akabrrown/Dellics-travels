@@ -233,6 +233,7 @@ export default async function HomePage() {
       <TrustSection />
 
       {/* 8. Traveler Reviews & Testimonials */}
+      {testimonials.length > 0 && (
       <section className="bg-slate-50 py-24 border-t border-slate-200/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
@@ -342,6 +343,7 @@ export default async function HomePage() {
     </>
   );
 }
+
 
 
 
