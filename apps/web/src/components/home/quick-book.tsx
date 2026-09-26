@@ -333,34 +333,24 @@ export function QuickBook() {
                 <div className="flex gap-3 w-full lg:w-auto">
                   <div className="w-1/2 lg:w-48">
                     <Label htmlFor="hotel-early" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Early check-in</Label>
-                    <select
+                    <input
                       id="hotel-early"
+                      type="time"
                       value={hotelEarlyCheckIn}
                       onChange={(e) => setHotelEarlyCheckIn(e.target.value)}
-                      className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
-                    >
-                      <option value="">Select the time</option>
-                      {Array.from({ length: 24 }).map((_, i) => {
-                        const time = ${i.toString().padStart(2, '0')}:00;
-                        return <option key={time} value={time}>{time}</option>;
-                      })}
-                    </select>
+                      className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                    />
                   </div>
                   
                   <div className="w-1/2 lg:w-48">
                     <Label htmlFor="hotel-late" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Late check-out</Label>
-                    <select
+                    <input
                       id="hotel-late"
+                      type="time"
                       value={hotelLateCheckOut}
                       onChange={(e) => setHotelLateCheckOut(e.target.value)}
-                      className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
-                    >
-                      <option value="">Select the time</option>
-                      {Array.from({ length: 24 }).map((_, i) => {
-                        const time = ${i.toString().padStart(2, '0')}:00;
-                        return <option key={time} value={time}>{time}</option>;
-                      })}
-                    </select>
+                      className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                    />
                   </div>
                 </div>
                 
@@ -659,6 +649,7 @@ export function QuickBook() {
     </div>
   );
 }
+
 
 
 
