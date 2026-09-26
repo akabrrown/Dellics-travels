@@ -31,10 +31,16 @@ import { buildViatorUrl } from "@/lib/tours";
 export function QuickBook() {
   const router = useRouter();
 
-  // Hotels State
+    // Hotels State
   const [hotelDestination, setHotelDestination] = useState("");
   const [hotelCheckIn, setHotelCheckIn] = useState("");
   const [hotelCheckOut, setHotelCheckOut] = useState("");
+  const [hotelCitizenship, setHotelCitizenship] = useState("");
+  const [hotelStars, setHotelStars] = useState("");
+  const [hotelBoard, setHotelBoard] = useState("");
+  const [hotelEarlyCheckIn, setHotelEarlyCheckIn] = useState("");
+  const [hotelLateCheckOut, setHotelLateCheckOut] = useState("");
+  const [hotelFreeCancellation, setHotelFreeCancellation] = useState(false);
   const [hotelGuestsData, setHotelGuestsData] = useState<HotelGuestsRooms>({
     adults: 1,
     children: 0,
@@ -653,5 +659,6 @@ export function QuickBook() {
     </div>
   );
 }
+
 
 
