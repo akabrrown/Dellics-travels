@@ -110,6 +110,8 @@ export class AppService {
       
       if (rhKey) {
         headers['Authorization'] = `Basic ${Buffer.from(`${rhKeyId}:${rhKey}`).toString('base64')}`;
+        headers['X-API-ID'] = rhKeyId;
+        headers['X-API-Key'] = rhKey;
       }
       const res = await fetch(`${rhUrl}/search/multicomplete/`, {
         method: 'POST',
