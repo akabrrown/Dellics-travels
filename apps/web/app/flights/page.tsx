@@ -66,7 +66,7 @@ const DEFAULT_ROUTES = [
     airline: "South African Airways / ASKY",
     price: "From $620",
     duration: "5h 55m Direct",
-    image: "/images/africa/safari.jpg",
+    image: "/images/africa/cape-town-and-table-mountain.jpg",
   },
   {
     from: "Accra (ACC)",

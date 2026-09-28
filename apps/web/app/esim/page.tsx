@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next/types";
+import type { Metadata } from "next/types";
 import Link from "next/link";
 import {
   Wifi,
@@ -145,28 +145,22 @@ const POPULAR_PLANS: EsimPlan[] = [
 
 const ESIM_FEATURES = [
   {
-    icon: Zap,
-    title: "Instant Digital QR Delivery",
-    description:
-      "Delivered to your email and WhatsApp within 60 seconds of checkout. Ready before your flight takes off.",
-  },
-  {
-    icon: Smartphone,
-    title: "Keep Your Existing Number",
-    description:
-      "Your physical SIM stays active for WhatsApp calls, banking OTPs, and text messages. No physical swaps required.",
-  },
-  {
     icon: Globe2,
-    title: "200+ Destinations Covered",
+    title: "Global Connectivity",
     description:
-      "Powered by tier-1 global carriers through our Airalo roaming partnership, giving you 4G and 5G local speeds.",
+      "Stay connected across your destination with flexible travel eSIM options.",
+  },
+  {
+    icon: Zap,
+    title: "Instant & Convenient",
+    description:
+      "Purchase digitally and prepare your eSIM before departure, so you can get connected when you arrive.",
   },
   {
     icon: ShieldCheck,
-    title: "Zero Roaming Shock Fees",
+    title: "Travel Without Unexpected Roaming Costs",
     description:
-      "Prepaid digital data. No hidden charges, no bill shock on your return. What you see is exactly what you pay.",
+      "Choose a prepaid plan that fits your itinerary and data needs.",
   },
 ];
 
@@ -192,10 +186,12 @@ export default function EsimPage() {
         <SectionHeading
           eyebrow="Modern Travel Connectivity"
           title="Why Global Travelers Choose Dellics eSIM"
-          subtitle="Arrive at any international airport connected the moment your plane wheels touch down."
+          subtitle="Your Journey. Your Connection. Wherever You Go.
+
+Travel with confidence and stay connected wherever your adventure takes you. Dellics eSIM gives you a convenient digital way to access mobile data while traveling—without the need for a physical SIM card."
         />
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-8 sm:grid-cols-1 md:grid-cols-3">
           {ESIM_FEATURES.map((feat) => {
             const Icon = feat.icon;
             return (

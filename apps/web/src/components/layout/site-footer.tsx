@@ -58,7 +58,7 @@ const LEGAL_LINKS = [
   { label: "Terms of Service", href: "/terms" },
   { label: "Cookie Policy", href: "/cookies" },
   { label: "Payment Policy", href: "/payment-policy" },
-  { label: "Refund & Cancellation Policy", href: "/refund-policy" },
+  { label: "Refund Policy", href: "/refund-policy" },
 ];
 
 export function SiteFooter() {

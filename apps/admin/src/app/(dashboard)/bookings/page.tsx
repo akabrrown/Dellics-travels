@@ -3,7 +3,7 @@
 import { RoleGuard } from "@/components/role-guard";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {
+import { 
   Search,
   Filter,
   RefreshCw,
@@ -20,7 +20,7 @@ import {
   User,
   X,
   Eye,
-} from "lucide-react";
+  Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 interface BookingRecord {
@@ -340,6 +340,13 @@ export default function BookingsManagement() {
                         <Eye className="size-3" />
                         <span>Detail</span>
                       </Link>
+                      <button
+                        onClick={() => handleDeleteOffline(booking.id)}
+                        className="px-3 py-1 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                      >
+                        <Trash2 className="size-3" />
+                        <span>Delete</span>
+                      </button>
                     </td>
                   </tr>
                 ))

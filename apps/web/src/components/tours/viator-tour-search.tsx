@@ -39,13 +39,13 @@ export function ViatorTourSearch() {
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/15 px-3 py-0.5 text-xs font-bold text-brand-orange">
             <Compass className="size-3.5" />
-            <span>Global Experiences · 300,000+ Curated Tours Worldwide</span>
+            <span>Global Experiences · Search curated activities...</span>
           </div>
           <h2 className="font-display text-xl sm:text-2xl font-bold text-navy mt-1.5">
             Find Any Global Tour, Excursion or Day Trip
           </h2>
           <p className="text-xs sm:text-sm text-slate-600">
-            Search 300,000+ curated activities with instant booking and free cancellation.
+            Search curated activities with instant booking and free cancellation.
           </p>
         </div>
       </div>

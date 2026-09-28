@@ -1,11 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback } from "react";
 import {
-  CreditCard,
+  Building,
+  Search,
   ShieldCheck,
-  Star,
-  Headphones,
+  Smartphone,
+  Globe,
 } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { SectionHeading } from "@/components/section-heading";
@@ -20,28 +21,34 @@ type Status =
 
 const HOTEL_PERKS = [
   {
-    icon: CreditCard,
-    title: "Direct Wholesale Rates",
+    icon: Building,
+    title: "Wide Range of Accommodation",
     description:
-      "Enjoy exclusive B2B agency pricing negotiated across 3.3+ million properties globally with zero retail surcharges.",
+      "Discover hotels, resorts, apartments, guesthouses and other accommodation options to suit different travel needs and budgets.",
+  },
+  {
+    icon: Search,
+    title: "Competitive Accommodation Options",
+    description:
+      "Compare available properties, room types, prices and amenities to find an option that matches your trip and budget.",
   },
   {
     icon: ShieldCheck,
-    title: "100% Verified Accommodation",
+    title: "Secure Online Booking",
     description:
-      "Every property is verified for cleanliness, location accuracy, safety, and certified amenities before arrival.",
+      "Book through the Dellics OTA platform with a secure online booking and payment experience.",
   },
   {
-    icon: Star,
-    title: "Zero Hidden City Taxes",
+    icon: Smartphone,
+    title: "Simple & Convenient",
     description:
-      "Transparent pricing upfront - all tourism taxes, service charges, and resort fees are clearly itemized before checkout.",
+      "Search, compare and book your accommodation online from your phone, tablet or computer — whenever you need it.",
   },
   {
-    icon: Headphones,
-    title: "Chat with Travel Consultant",
+    icon: Globe,
+    title: "Ghana & Worldwide",
     description:
-      "Our direct booking desk coordinates airport transfers, check-in requests, and schedule adjustments around the clock.",
+      "Whether you're planning a weekend in Accra, a business trip to Dubai, a holiday in Europe or an international adventure.",
   },
 ];
 
@@ -79,8 +86,8 @@ export default function HotelsPage() {
   return (
     <>
       <PageHero
-        title="Verified Hotels, Resorts & Global Stays"
-        subtitle="Access negotiated wholesale rates across 3.3+ million properties worldwide with guaranteed zero hidden city fees."
+        title="Why Book Accommodation with Dellics?"
+        subtitle="Access negotiated wholesale rates across properties worldwide with guaranteed zero hidden city fees."
         image="/images/services/hotel-and-airbnb.jpg"
         breadcrumbs={[{ label: "Hotels & Stays" }]}
       >
@@ -104,8 +111,10 @@ export default function HotelsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Why Book With Dellics"
-            title="Verified Accommodation Guarantee"
-            subtitle="Never worry about misleading photos, cancelled host reservations, or surprise checkout fees."
+            title="Why Book Accommodation with Dellics?"
+            subtitle="Your stay. Your choice. Our travel expertise.
+
+Book your hotel or accommodation with Dellics Travels and enjoy a convenient, secure and reliable way to arrange your stay — whether you're travelling within Ghana or exploring destinations around the world."
           />
 
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

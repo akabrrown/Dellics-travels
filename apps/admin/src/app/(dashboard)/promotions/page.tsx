@@ -1,7 +1,7 @@
 "use client";
 
 import { RoleGuard } from "@/components/role-guard";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   X,
@@ -83,6 +83,20 @@ export default function PromotionsManager() {
   const [promos, setPromos] = useState<PromoCodeItem[]>(INITIAL_PROMOS);
   const [promoModal, setPromoModal] = useState(false);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('dellics_promos');
+    if (saved) {
+      try {
+        setPromos(JSON.parse(saved));
+      } catch (e) {}
+    }
+  }, []);
+
+  const savePromos = (newPromos: PromoCodeItem[]) => {
+    setPromos(newPromos);
+    localStorage.setItem('dellics_promos', JSON.stringify(newPromos));
+  };
+
   // New Promo Form State
   const [code, setCode] = useState("");
   const [discountType, setDiscountType] = useState<"PERCENTAGE" | "FIXED">("PERCENTAGE");
@@ -121,7 +135,7 @@ export default function PromotionsManager() {
       status: "ACTIVE",
     };
 
-    setPromos([newPromo, ...promos]);
+    savePromos([newPromo, ...promos]);
     setPromoModal(false);
     setCode("");
   };
@@ -135,7 +149,7 @@ export default function PromotionsManager() {
   };
 
   const handleDeletePromo = (id: string) => {
-    setPromos(promos.filter((p) => p.id !== id));
+    savePromos(promos.filter((p) => p.id !== id));
   };
 
   const handlePublishUrgency = () => {

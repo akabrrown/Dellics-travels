@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { SearchHotelsDto } from './dto/search-hotels.dto';
+import { BookHotelDto } from './dto/book-hotel.dto';
 import { HotelsService } from './hotels.service';
 
 @Controller('hotels')
@@ -9,5 +10,10 @@ export class HotelsController {
   @Post('search')
   search(@Body() dto: SearchHotelsDto) {
     return this.hotels.search(dto);
+  }
+
+  @Post('book')
+  book(@Body() dto: BookHotelDto) {
+    return this.hotels.createBooking(dto);
   }
 }

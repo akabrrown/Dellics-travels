@@ -1,11 +1,17 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { HotelsService } from '../hotels/hotels.service';
+import { forwardRef, Inject } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class WebhooksService {
   private readonly logger = new Logger(WebhooksService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => HotelsService))
+    private hotelsService: HotelsService
+  ) {}
 
   /**
    * Processes verified Paystack webhook payloads

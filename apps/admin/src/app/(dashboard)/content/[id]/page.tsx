@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { ImageUploader } from "@/components/image-uploader";
 import {
   ArrowLeft,
   Save,
@@ -491,13 +492,11 @@ export default function PackageEditor() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Hero Image Path / CDN URL
+                  Hero Image
                 </label>
-                <input
-                  type="text"
+                <ImageUploader
                   value={heroImage}
-                  onChange={(e) => setHeroImage(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono text-[11px]"
+                  onChange={setHeroImage}
                   placeholder="/images/packages/cape-coast.jpg"
                 />
               </div>

@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next/types";
 import {
@@ -28,24 +28,29 @@ export const metadata: Metadata = {
 
 const TOUR_PROMISES = [
   {
+    icon: Compass,
+    title: "Carefully Curated Experiences",
+    description: "Every tour is thoughtfully selected to combine must-see attractions with authentic experiences, culture, nature, adventure and local discovery.",
+  },
+  {
     icon: ShieldCheck,
-    title: "100% Guaranteed Departures",
-    description: "Once your booking is confirmed, your tour is guaranteed to operate without sudden minimum-group cancellations.",
+    title: "Designed Around You",
+    description: "Whether you’re travelling solo, as a couple, with family, friends or as a group, we offer experiences that can be tailored to your interests, pace and travel style.",
+  },
+  {
+    icon: MapPin,
+    title: "Authentic Local Experiences",
+    description: "Go beyond the typical tourist itinerary and discover destinations through their culture, history, cuisine, people and unique stories.",
   },
   {
     icon: Plane,
-    title: "All-Inclusive Flight & Visa Options",
-    description: "Unlike standard tour companies, we handle your return flights, transit logistics, and visa processing directly under one booking.",
+    title: "Expertly Planned Itineraries",
+    description: "From activities and sightseeing to transportation and timing, we take care of the important details so you can focus on enjoying your journey.",
   },
   {
     icon: Building2,
-    title: "Hand-Picked 4 & 5-Star Accommodations",
-    description: "Every hotel and safari lodge in our packages is vetted for cleanliness, security, scenic location, and world-class hospitality.",
-  },
-  {
-    icon: Car,
-    title: "Private Executive Fleet & Local Hosts",
-    description: "Enjoy private air-conditioned transport and licensed local English-speaking guides who know the culture and hidden gems intimately.",
+    title: "Trusted Local Partners",
+    description: "We work with carefully selected guides, drivers, activity providers and hospitality",
   },
 ];
 
@@ -55,8 +60,8 @@ export default async function ToursPage() {
   return (
     <>
       <PageHero
-        title="Curated Tours & Safari Holiday Packages"
-        subtitle="Discover breathtaking safaris, luxury beach retreats, and cultural heritage itineraries across Africa and the world."
+        title="Curated Tour Packages & Day Escapes"
+        subtitle="Explore More. Experience More. Travel Better. Discover carefully curated Tour Packages & Day Escapes with Dellics Travels�designed to make exploring new destinations easy, convenient and memorable."
         image="/images/africa/serengeti-national-park.jpg"
         breadcrumbs={[{ label: "Tours & Holidays" }]}
       >
@@ -69,7 +74,10 @@ export default async function ToursPage() {
         <SectionHeading
           eyebrow="Dellics Signature & Global Experiences"
           title="Curated Tour Packages & Day Escapes"
-          subtitle="Book Dellics Signature Tours directly on our website via Paystack (Mobile Money & Cards), or explore 300,000+ verified worldwide day-trips through our global tour directory."
+          subtitle="Explore More. Experience More. Travel Better.
+Discover carefully curated Tour Packages & Day Escapes with Dellics Travels—designed to make exploring new destinations easy, convenient and memorable.
+
+Book your next experience with Dellics Travels."
         />
 
         <TourList tours={tours} />
@@ -80,11 +88,11 @@ export default async function ToursPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="The Dellics Guarantee"
-            title="What Makes Our Tours Exceptional"
-            subtitle="Every detail from your first airport welcome to your return departure is managed with care."
+            title="What Makes Our Tours Exceptional?"
+            subtitle={`Travel Beyond the Ordinary. Experience More.\n\nAt Dellics Travels, we don’t just create tours—we curate memorable experiences designed around the way you want to travel.`}
           />
 
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {TOUR_PROMISES.map((promise) => {
               const Icon = promise.icon;
               return (
@@ -104,6 +112,24 @@ export default async function ToursPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Diaspora Tours */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+        <div className="rounded-3xl bg-navy p-8 sm:p-12 text-center text-white shadow-xl relative overflow-hidden border border-navy-300/20">
+          <div className="absolute inset-0 bg-brand-orange/5 mix-blend-overlay"></div>
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4">
+              Why Book Curated Diaspora Tours with Dellics?
+            </h2>
+            <p className="text-brand-orange font-bold text-lg mb-6 tracking-wide">
+              Reconnect. Rediscover. Remember.
+            </p>
+            <p className="text-slate-300 leading-relaxed sm:text-lg">
+              Our Curated Diaspora Tours take you beyond traditional sightseeing into meaningful journeys of heritage, culture, history, and connection. From ancestral landmarks and cultural communities to local cuisine, traditions, and authentic encounters, every experience is thoughtfully designed to help you discover the destination—and your connection to it.
+            </p>
           </div>
         </div>
       </section>

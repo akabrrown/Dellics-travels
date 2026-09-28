@@ -47,7 +47,7 @@ export class EsimService implements OnModuleInit, OnModuleDestroy {
           this.logger.error(`Hourly catalog sync error: ${err.message}`),
         );
       },
-      60 * 60 * 1000,
+      45 * 60 * 1000, // 45 minutes to safely stay under the 60-minute limit
     );
   }
 

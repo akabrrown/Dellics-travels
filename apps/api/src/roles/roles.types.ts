@@ -23,8 +23,8 @@ export interface AdminTeamMember {
   roleId: string;
   roleTitle: string;
   status: 'ACTIVE' | 'INVITED' | 'SUSPENDED';
-  twoFactorEnforced: boolean;
-  lastActive: string;
+  otpEnabled: boolean;
+  lastLogin: string;
 }
 
 export class CreateRoleDto {

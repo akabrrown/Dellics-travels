@@ -2,14 +2,14 @@
 
 import { RoleGuard } from "@/components/role-guard";
 import React, { useState, useEffect } from "react";
-import {
+import { 
   Star,
   Search,
   CheckCircle2,
   AlertTriangle,
   XCircle,
   RefreshCw,
-} from "lucide-react";
+  Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 interface ReviewItem {
@@ -74,6 +74,17 @@ export default function ReviewsModeration() {
   };
 
 
+
+  
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+    try {
+      await adminApi.delete(`/reviews/${id}`);
+      setReviews(reviews.filter((item: any) => item.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete review');
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -267,6 +278,13 @@ export default function ReviewsModeration() {
             </div>
 
             <div className="flex justify-end gap-2 pt-1">
+              <button
+                onClick={() => handleDelete(rev.id)}
+                className="px-4 py-2 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 text-xs font-bold transition-colors flex items-center gap-1.5"
+              >
+                <Trash2 className="size-3.5" />
+                <span>Delete</span>
+              </button>
               <button
                 onClick={() => handleModerate(rev.id, "FLAGGED")}
                 disabled={actionLoading === rev.id || rev.status === "FLAGGED"}

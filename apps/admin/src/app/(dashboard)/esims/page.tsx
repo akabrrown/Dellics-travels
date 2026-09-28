@@ -3,7 +3,7 @@
 import { RoleGuard } from "@/components/role-guard";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {
+import { 
   CheckCircle2,
   AlertTriangle,
   RefreshCw,
@@ -20,7 +20,7 @@ import {
   ShieldCheck,
   Eye,
   Filter,
-} from "lucide-react";
+  Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 export interface ESIMOrderItem {
@@ -170,6 +170,17 @@ export default function ESIMOrders() {
   const [orders, setOrders] = useState<ESIMOrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<ESIMOrderItem | null>(null);
+
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this eSIM order?')) return;
+    try {
+      await adminApi.delete(`/esim/admin/orders/${id}`);
+      setOrders(orders.filter((o) => o.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete eSIM order');
+    }
+  };
 
   const fetchOrders = async () => {
     try {

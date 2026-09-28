@@ -13,6 +13,7 @@ import {
   MessageSquare,
   Eye,
   CheckCircle2,
+  Trash2,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
@@ -58,6 +59,17 @@ export default function SupportQueue() {
       console.warn("[Support] Live sync unavailable, using cached records:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this support ticket? This action cannot be undone.")) return;
+    try {
+      await adminApi.delete(`/inquiries/${id}`);
+      fetchInquiries();
+    } catch (err) {
+      console.error("Failed to delete inquiry", err);
+      alert("Failed to delete the ticket. Please try again.");
     }
   };
 
@@ -247,13 +259,22 @@ export default function SupportQueue() {
                       {new Date(item.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link
-                        href={`/support/${item.id}`}
-                        className="px-3 py-1 rounded-full bg-slate-100 hover:bg-[#0A0060] hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
-                      >
-                        <Eye className="size-3" />
-                        <span>Open Thread</span>
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/support/${item.id}`}
+                          className="px-3 py-1 rounded-full bg-slate-100 hover:bg-[#0A0060] hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                        >
+                          <Eye className="size-3" />
+                          <span>Open Thread</span>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="p-1.5 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          title="Delete Ticket"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

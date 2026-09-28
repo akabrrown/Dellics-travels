@@ -64,6 +64,10 @@ export class ToursService {
     });
   }
 
+  async deleteTour(id: string) {
+    return this.prisma.tourPackage.delete({ where: { id } });
+  }
+
   async updateTour(id: string, body: any) {
     return this.prisma.tourPackage.update({
       where: { id },

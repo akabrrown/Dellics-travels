@@ -3,7 +3,7 @@
 import { RoleGuard } from "@/components/role-guard";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, MapPin, Eye, RefreshCw, XCircle } from "lucide-react";
+import {  Plus, Search, MapPin, Eye, RefreshCw, XCircle , Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 interface TourPackageItem {
@@ -25,6 +25,17 @@ export default function ContentList() {
   const [segmentFilter, setSegmentFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this package?')) return;
+    try {
+      await adminApi.delete(`/tours/${id}`);
+      setPackages(packages.filter((item: any) => item.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete package');
+    }
+  };
 
   const fetchPackages = async () => {
     try {
@@ -216,6 +227,13 @@ export default function ContentList() {
                       >
                         <span>Edit</span>
                       </Link>
+                      <button
+                        onClick={() => handleDelete(pkg.id)}
+                        className="px-3 py-1 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                      >
+                        <Trash2 className="size-3" />
+                        <span>Delete</span>
+                      </button>
                     </td>
                   </tr>
                 ))}

@@ -2,13 +2,13 @@
 
 import { RoleGuard } from "@/components/role-guard";
 import React, { useState } from "react";
-import {
+import { 
   ShieldCheck,
   Crown,
   Award,
   CheckCircle2,
   Save,
-} from "lucide-react";
+  Trash2 } from "lucide-react";
 
 export default function MembershipConfig() {
   const [saved, setSaved] = useState(false);

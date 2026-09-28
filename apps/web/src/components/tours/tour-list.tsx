@@ -60,7 +60,7 @@ export function TourList({ tours }: TourListProps) {
                 {tour.isDellicsSignature && (
                   <span className="rounded-full bg-brand-orange px-3 py-1 text-xs font-bold text-white shadow-xs flex items-center gap-1">
                     <CreditCard className="size-3" />
-                    Paystack Direct
+                    Secure Checkout
                   </span>
                 )}
               </div>
@@ -116,7 +116,7 @@ export function TourList({ tours }: TourListProps) {
                         className="rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-2.5 text-xs shadow-md flex items-center gap-1.5 active:scale-95 transition-transform cursor-pointer"
                       >
                         <CreditCard className="size-3.5" />
-                        <span>Book with Paystack</span>
+                        <span>Book Now</span>
                         <ArrowRight className="size-3.5 ml-0.5" />
                       </Button>
 

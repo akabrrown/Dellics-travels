@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { RoleGuard } from "@/components/role-guard";
 import { adminApi } from "@/lib/api";
-import { 
+import {  
   Users, 
   Target, 
   FolderOpen, 
@@ -11,8 +11,8 @@ import {
   Search,
   X,
   ArrowRight,
-  Send
-} from "lucide-react";
+  Send,
+  Trash2 } from "lucide-react";
 
 type TabType = "crm" | "tests" | "docs" | "visa";
 
@@ -46,6 +46,17 @@ export default function ConsultantPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  
+  const handleDeleteStudent = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this student record?')) return;
+    try {
+      await adminApi.delete(`/study/applications/${id}`);
+      setStudents(students.filter((item: any) => item.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete student');
+    }
+  };
 
   const fetchStudents = async () => {
     try {
@@ -252,13 +263,20 @@ export default function ConsultantPage() {
                           <td className="px-4 py-4 text-xs font-bold text-slate-700">
                             {s.documents.filter(d => d.status === 'APPROVED').length}/{s.documents.length}
                           </td>
-                          <td className="px-4 py-4 text-right">
+                          <td className="px-4 py-4 text-right flex items-center justify-end gap-2">
                             <button 
                               onClick={() => setSelectedStudent(s)}
                               className="px-3 py-1.5 bg-[#0A0060] text-white text-xs font-bold rounded-lg hover:bg-[#0A0060]/90 transition-colors inline-flex items-center gap-1"
                             >
                               Manage <ArrowRight className="size-3" />
                             </button>
+                            <button
+                        onClick={() => handleDeleteStudent(s.id)}
+                        className="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white text-xs font-bold rounded-lg transition-colors inline-flex items-center gap-1"
+                        title="Delete Student"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
                           </td>
                         </tr>
                       ))}

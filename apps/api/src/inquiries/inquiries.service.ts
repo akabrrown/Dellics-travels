@@ -1,4 +1,4 @@
-﻿import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { ZohoService } from '../zoho/zoho.service';
@@ -207,5 +207,25 @@ export class InquiriesService {
       throw new NotFoundException(`Inquiry ${id} not found`);
     }
     return { status: 'success', data: item };
+  }
+
+  async remove(id: string) {
+    const item = await this.prisma.inquiry.findUnique({ where: { id } });
+    if (!item) {
+      const { NotFoundException } = await import('@nestjs/common');
+      throw new NotFoundException(`Inquiry ${id} not found`);
+    }
+
+    // Delete related customer interactions and lead pipelines if they exist
+    await this.prisma.customerInteraction.deleteMany({
+      where: { inquiry_id: id }
+    });
+    
+    await this.prisma.leadPipeline.deleteMany({
+      where: { inquiry_id: id }
+    });
+
+    await this.prisma.inquiry.delete({ where: { id } });
+    return { status: 'success', message: 'Inquiry deleted successfully' };
   }
 }

@@ -113,6 +113,17 @@ export default function RolesAndTeam() {
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
 
   // Load team members from live API
+  
+  const handleDeleteMember = async (id: string) => {
+    if (!confirm('Are you sure you want to remove this team member?')) return;
+    try {
+      await adminApi.delete(`/roles/team/members/${id}`);
+      setMembers(members.filter((item: any) => item.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to remove team member');
+    }
+  };
+
   const fetchMembers = async () => {
     try {
       setLoadingMembers(true);
@@ -426,7 +437,7 @@ export default function RolesAndTeam() {
                       {member.lastLogin}
                     </td>
 
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                       <button
                         onClick={() =>
                           setEditingMemberId(isEditing ? null : member.id)
@@ -434,6 +445,14 @@ export default function RolesAndTeam() {
                         className="text-xs font-bold text-[#0A0060] hover:text-[#F4740D] transition-colors"
                       >
                         {isEditing ? "Done" : "Reassign Role"}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteMember(member.id)}
+                        className="text-xs font-bold text-rose-600 hover:text-rose-800 transition-colors inline-flex items-center gap-1"
+                        title="Remove Member"
+                      >
+                        <Trash2 className="size-3.5" />
+                        <span>Delete</span>
                       </button>
                     </td>
                   </tr>

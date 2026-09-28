@@ -1,31 +1,46 @@
-﻿import {
+import {
   BadRequestException,
   Injectable,
   Logger,
   Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../prisma/prisma.service';
+import { PaymentsService } from '../payments/payments.service';
+import { BookHotelDto } from './dto/book-hotel.dto';
 import { HotelResult, HotelRoomRate, HotelSearchInput } from './hotels.types';
 import { CacheService } from '../cache/cache.service';
+import { RateHawkProvider } from '../providers/hotels/ratehawk/ratehawk.provider';
+import { HotelbedsProvider } from '../providers/hotels/hotelbeds/hotelbeds.provider';
+import { ExpediaProvider } from '../providers/hotels/expedia/expedia.provider';
+import { NormalizedHotelWithRates, HotelSearchCriteria } from '../providers/hotels/interfaces/hotel.types';
 
 const REQUEST_TIMEOUT_MS = 14_000;
 const HOTEL_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-// Dellics Markup Configuration
-const DELLICS_MARKUP_PERCENTAGE = 0.12; // 12% markup
+
 
 @Injectable()
 export class HotelsService {
   private readonly logger = new Logger(HotelsService.name);
   private readonly cache: CacheService;
+  private readonly providers: any[];
 
   constructor(
     private readonly config: ConfigService,
+    private readonly rateHawkProvider: RateHawkProvider,
+    private readonly hotelbedsProvider: HotelbedsProvider,
+    private readonly expediaProvider: ExpediaProvider,
+    private readonly prisma: PrismaService,
+    private readonly paymentsService: PaymentsService,
     @Optional() injectedCache?: CacheService,
   ) {
     this.cache =
       injectedCache ||
       new CacheService({ maxEntries: 500, defaultTtlMs: HOTEL_CACHE_TTL_MS });
+    
+    // Register active providers
+    this.providers = [this.rateHawkProvider, this.hotelbedsProvider, this.expediaProvider];
   }
 
   /**
@@ -53,28 +68,31 @@ export class HotelsService {
 
     this.logger.log(`[Aggregation Engine] Starting parallel fetch for ${input.destination}`);
 
-    // 1. Parallel Fetching
-    const [rateHawkOffers, hotelBedsOffers, expediaOffers] = await Promise.all([
-      this.fetchFromRateHawk(sanitizedInput).catch((e) => {
-        this.logger.warn(`RateHawk Fetch Error: ${e.message}`);
-        return [];
-      }),
-      this.fetchFromHotelbeds(sanitizedInput).catch((e) => {
-        this.logger.warn(`Hotelbeds Fetch Error: ${e.message}`);
-        return [];
-      }),
-      this.fetchFromExpedia(sanitizedInput).catch((e) => {
-        this.logger.warn(`Expedia Fetch Error: ${e.message}`);
-        return [];
-      }),
-    ]);
+    const criteria: HotelSearchCriteria = {
+      destination: input.destination,
+      checkInDate: checkIn,
+      checkOutDate: checkOut,
+      guests: [{ adults: input.adults || input.guests || 2, children: input.children || 0 }],
+      currency: 'USD',
+    };
 
-    // 2. Normalization (Already handled by the fetchers mapping to HotelResult)
-    const allOffers = [...rateHawkOffers, ...hotelBedsOffers, ...expediaOffers];
+    // 1. Parallel Fetching from all providers
+    const providerPromises = this.providers.map(provider => 
+      provider.search(criteria).catch((e: Error) => {
+        this.logger.warn(`${provider.name} Fetch Error: ${e.message}`);
+        return [];
+      })
+    );
+
+    const resultsArray = await Promise.all(providerPromises);
+    const allNormalizedOffers = resultsArray.flat();
     
-    if (allOffers.length === 0) {
+    if (allNormalizedOffers.length === 0) {
        return [];
     }
+
+    // Map NormalizedHotelWithRates to frontend HotelResult format
+    const allOffers = allNormalizedOffers.map(offer => this.mapToHotelResult(offer));
 
     // 3. Duplicate Removal / Mapping (Merge rates for same hotels)
     const deduplicated = this.removeDuplicates(allOffers);
@@ -83,10 +101,37 @@ export class HotelsService {
     const ranked = this.compareAndRank(deduplicated);
 
     // 5. Dellics Markup Engine
-    const finalOffers = this.applyMarkup(ranked);
+    const markupValue = await this.getMarkupPercentage();
+    const finalOffers = this.applyMarkup(ranked, markupValue);
 
     this.cache.set(cacheKey, finalOffers, HOTEL_CACHE_TTL_MS);
     return finalOffers;
+  }
+
+  private mapToHotelResult(normalized: NormalizedHotelWithRates): HotelResult {
+    return {
+      id: normalized.hotelId,
+      name: normalized.name,
+      rating: normalized.rating,
+      address: normalized.location.address,
+      city: normalized.location.city,
+      country: normalized.location.country,
+      price: normalized.rates.length > 0 ? normalized.rates[0].price : 0,
+      currency: normalized.rates.length > 0 ? normalized.rates[0].currency : 'USD',
+      images: normalized.images,
+      amenities: normalized.amenities,
+      description: normalized.description,
+      rates: normalized.rates.map(r => ({
+        matchHash: r.rateId,
+        roomName: r.roomName,
+        meal: r.boardType,
+        price: r.price,
+        currency: r.currency,
+        freeCancellationBefore: r.cancellationPolicy?.freeCancellationUntil,
+        beddingType: 'Standard', // Not normalized yet
+        amenities: [],
+      })),
+    };
   }
 
   /**
@@ -154,200 +199,166 @@ export class HotelsService {
    * Dellics Markup Engine
    * Applies the fixed profit margin to the normalized net rates.
    */
-  private applyMarkup(offers: HotelResult[]): HotelResult[] {
+  private applyMarkup(offers: HotelResult[], markupPercentage: number): HotelResult[] {
     return offers.map(offer => {
-      offer.price = Math.ceil(offer.price * (1 + DELLICS_MARKUP_PERCENTAGE));
+      offer.price = Math.ceil(offer.price * (1 + markupPercentage));
       offer.rates = offer.rates.map(rate => ({
         ...rate,
-        price: Math.ceil(rate.price * (1 + DELLICS_MARKUP_PERCENTAGE))
+        price: Math.ceil(rate.price * (1 + markupPercentage))
       }));
       return offer;
     });
   }
 
-  // =====================================================================
-  // PROVIDER FETCHERS (API Layer)
-  // =====================================================================
-
-  private async fetchFromRateHawk(input: HotelSearchInput): Promise<HotelResult[]> {
-    const adultsCount = input.adults || input.guests || 2;
-    const childrenCount = input.children || 0;
-    const childrenAges = Array.from({ length: childrenCount }, () => 7);
-
-    const searchDest = (input.destination || '').trim();
-    const cleanCity = searchDest.split(',')[0].trim();
-
-    const multi = await this.fetchJson(`${this.baseUrl}/search/multicomplete/`, {
-      query: cleanCity || searchDest,
-      language: 'en',
-    }).catch(() => null);
-
-    const regions = multi?.data?.regions || [];
-    const multiHotels = multi?.data?.hotels || [];
-    
-    // Sandbox fallback regions
-    const isSandbox = (this.baseUrl || '').includes('sandbox');
-    let regionId = regions[0]?.id || multiHotels[0]?.region_id;
-    if (!regionId && isSandbox) {
-        if (searchDest.toLowerCase().includes('dubai')) regionId = 6053839;
-        else if (searchDest.toLowerCase().includes('paris')) regionId = 2734;
+  
+  
+  /**
+   * Hotel Booking Initialization
+   */
+  async createBooking(dto: BookHotelDto) {
+    const provider = this.providers.find(p => p.name.toLowerCase() === dto.provider.toLowerCase());
+    if (!provider) {
+      throw new BadRequestException(`Provider ${dto.provider} not found`);
     }
 
-    let rawHotels: any[] = [];
-
-    if (regionId) {
-      const serpBody = await this.fetchJson(`${this.baseUrl}/search/serp/region/`, {
-        checkin: input.checkIn,
-        checkout: input.checkOut,
-        residency: 'gb',
-        language: 'en',
-        guests: [{ adults: adultsCount, children: childrenAges }],
-        region_id: regionId,
-        currency: 'USD',
-      });
-      rawHotels = serpBody?.data?.hotels ?? [];
+    // 1. Verify Rate hasn't changed (OTA pre-book)
+    const isRateValid = await provider.verifyRate(dto.rateId).catch(() => false);
+    if (!isRateValid) {
+       throw new BadRequestException('The selected rate is no longer available. Please search again.');
     }
 
-    if (isSandbox) {
-      try {
-        const testSerp = await this.fetchJson(`${this.baseUrl}/search/serp/hotels/`, {
-          checkin: input.checkIn,
-          checkout: input.checkOut,
-          residency: 'gb',
-          language: 'en',
-          guests: [{ adults: adultsCount, children: childrenAges }],
-          ids: ['10004834', '8819557'],
-          currency: 'USD',
-        });
-        const testHotels = testSerp?.data?.hotels || [];
-        const existingIds = new Set(rawHotels.map((h: any) => h.id));
-        const filteredTestHotels = testHotels.filter((h: any) => !existingIds.has(h.id));
-        rawHotels = [...filteredTestHotels, ...rawHotels];
-      } catch (e: any) {
-        this.logger.warn('Failed to fetch RateHawk test hotels: ' + e.message);
-      }
-    }
-
-    if (Array.isArray(rawHotels) && rawHotels.length > 0) {
-      const topHotels = rawHotels.slice(0, 10);
-      const enriched = await Promise.allSettled(
-        topHotels.map(async (h: any) => {
-          let info: any = null;
-          try {
-            const infoRes = await this.fetchJson(`${this.baseUrl}/hotel/info/`, { id: h.id, language: 'en' });
-            info = infoRes?.data;
-          } catch {}
-
-          const liveRates: HotelRoomRate[] = (h.rates || []).map((r: any) => ({
-            matchHash: r.match_hash || '',
-            roomName: r.room_data_trans?.main_name || r.room_name || 'Standard Room',
-            meal: r.meal === 'breakfast' ? 'Breakfast Included' : r.meal === 'all-inclusive' ? 'All Inclusive' : 'Room Only',
-            price: Math.round(parseFloat(r.payment_options?.payment_types?.[0]?.amount || r.daily_prices?.[0] || '180')),
-            currency: r.payment_options?.payment_types?.[0]?.currency_code || 'USD',
-            freeCancellationBefore: r.payment_options?.payment_types?.[0]?.cancellation_penalties?.free_cancellation_before || undefined,
-            beddingType: r.room_data_trans?.bedding_type || r.amenities_data?.[0] || '1 Double Bed',
-            amenities: Array.isArray(r.amenities_data) ? r.amenities_data : [],
-          }));
-
-          const apiImages: string[] = [];
-          if (Array.isArray(info?.images)) {
-             info.images.forEach((img: any) => {
-                const url = typeof img === 'string' ? img : img?.url || '';
-                if (url) apiImages.push(this.sanitizeImageUrl(url));
-             });
+    // 2. Create OTABooking Record (PENDING)
+    const dellics_reference = `HTL-${Date.now()}`;
+    const booking = await this.prisma.oTABooking.create({
+      data: {
+        dellics_reference,
+        customer_name: `${dto.guests[0].firstName} ${dto.guests[0].lastName}`,
+        customer_email: dto.contactDetails.email,
+        customer_phone: dto.contactDetails.phone || '',
+        total_amount: dto.amount,
+        currency: dto.currency || 'USD',
+        status: 'PAYMENT_PENDING',
+        items: {
+          create: {
+            provider_name: dto.provider,
+            provider_type: 'HOTEL',
+            item_details: JSON.parse(JSON.stringify(dto)),
+            base_price: dto.amount, // Needs precise calculation if we separate base/markup at this stage
+            markup_applied: 0, 
+            final_price: dto.amount,
+            currency: dto.currency || 'USD',
           }
-
-          const baseRateAmount = parseFloat(h.rates?.[0]?.payment_options?.payment_types?.[0]?.amount || h.rates?.[0]?.daily_prices?.[0] || '180');
-
-          return {
-            id: String(h.id || h.hid),
-            name: String(info?.name || this.formatHotelName(h.id)),
-            rating: Number(info?.star_rating || 4),
-            address: String(info?.address || `${input.destination} Central`),
-            city: String(info?.region?.name || input.destination),
-            country: String(info?.region?.country_code || 'International'),
-            price: Math.round(baseRateAmount),
-            currency: 'USD',
-            images: apiImages,
-            amenities: this.extractAmenities(info?.amenity_groups),
-            description: String(info?.description || `Premium accommodation in ${input.destination}.`),
-            rates: liveRates,
-          } as HotelResult;
-        })
-      );
-
-      return enriched
-        .filter((r): r is PromiseFulfilledResult<HotelResult> => r.status === 'fulfilled' && r.value !== null)
-        .map(r => r.value);
-    }
-    return [];
-  }
-
-  private async fetchFromHotelbeds(input: HotelSearchInput): Promise<HotelResult[]> {
-    // TODO: Implement actual Hotelbeds Apitude XML/JSON integration
-    // For now, this returns mock data structurally identical to the pipeline
-    if (input.destination.toLowerCase().includes('dubai')) {
-       return [{
-         id: 'hb-1001',
-         name: 'Atlantis The Palm',
-         rating: 5,
-         address: 'Crescent Road, The Palm Jumeirah',
-         city: 'Dubai',
-         country: 'AE',
-         price: 520, // Net rate before markup
-         currency: 'USD',
-         images: ['https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'],
-         amenities: ['Private Beach', 'Waterpark Access', 'Spa'],
-         description: 'Iconic resort on the Palm Jumeirah.',
-         rates: [
-           {
-             matchHash: 'hb-rate-1',
-             roomName: 'Ocean King Room',
-             meal: 'Breakfast Included',
-             price: 520,
-             currency: 'USD',
-             freeCancellationBefore: '2026-10-01',
-             beddingType: '1 King Bed',
-             amenities: ['Ocean View', 'Balcony']
-           }
-         ]
-       }];
-    }
-    return [];
-  }
-
-  private async fetchFromExpedia(input: HotelSearchInput): Promise<HotelResult[]> {
-    // TODO: Implement actual Expedia EPS Rapid integration
-    return [];
-  }
-
-  // =====================================================================
-  // UTILITIES
-  // =====================================================================
-
-  private sanitizeImageUrl(url: string): string {
-    if (!url || typeof url !== 'string') return '';
-    return url.replace('{size}', '1024x768').replace('%7Bsize%7D', '1024x768');
-  }
-
-  private formatHotelName(id: string): string {
-    if (!id) return 'Boutique Hotel';
-    return id.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-  }
-
-  private extractAmenities(amenityGroups?: any[]): string[] {
-    if (!Array.isArray(amenityGroups)) return ['Free WiFi', 'Air Conditioning'];
-    const list: string[] = [];
-    for (const group of amenityGroups) {
-      if (Array.isArray(group?.amenities)) {
-        for (const item of group.amenities) {
-          if (typeof item === 'string' && item.trim() && !list.includes(item)) list.push(item);
-          if (list.length >= 5) break;
         }
       }
-      if (list.length >= 5) break;
+    });
+
+    // 3. Initialize Paystack Transaction
+    const payment = await this.paymentsService.initializePaystack({
+      email: dto.contactDetails.email,
+      amount: dto.amount,
+      currency: dto.currency || 'USD',
+      reference: `PAY_${booking.id}`,
+      metadata: {
+        bookingId: booking.id,
+        type: 'HOTEL',
+      }
+    });
+
+    // Update with Paystack reference
+    await this.prisma.oTABooking.update({
+      where: { id: booking.id },
+      data: { paystack_reference: payment.reference }
+    });
+
+    return {
+      success: true,
+      bookingId: booking.id,
+      paymentUrl: payment.authorizationUrl,
+      reference: payment.reference,
+    };
+  }
+
+  
+  async finalizeOTABooking(bookingId: string) {
+    this.logger.log(`Finalizing OTA Booking ${bookingId}`);
+    const booking = await this.prisma.oTABooking.findUnique({
+      where: { id: bookingId },
+      include: { items: true }
+    });
+
+    if (!booking) throw new BadRequestException('Booking not found');
+    if (booking.status === 'CONFIRMED') return booking; // Already confirmed
+    
+    // Update to payment success first
+    await this.prisma.oTABooking.update({
+      where: { id: bookingId },
+      data: { status: 'PAYMENT_SUCCESS' }
+    });
+
+    // We only have one item for hotels currently
+    const item = booking.items[0];
+    const details = item.item_details as any;
+
+    const provider = this.providers.find(p => p.name.toLowerCase() === item.provider_name.toLowerCase());
+    if (!provider) {
+      this.logger.error(`Provider ${item.provider_name} not found for booking ${bookingId}`);
+      await this.prisma.oTABooking.update({ where: { id: bookingId }, data: { status: 'FAILED' }});
+      return;
     }
-    return list.length > 0 ? list : ['Free WiFi', 'Air Conditioning'];
+
+    try {
+      const response = await provider.book({
+        rateId: details.rateId,
+        guests: details.guests,
+        contactDetails: details.contactDetails,
+      });
+
+      if (response.success) {
+        await this.prisma.oTABooking.update({
+          where: { id: bookingId },
+          data: { status: 'CONFIRMED' }
+        });
+        
+        await this.prisma.oTABookingItem.update({
+          where: { id: item.id },
+          data: { supplier_reference: response.bookingId, supplier_status: response.status }
+        });
+        
+        this.logger.log(`Successfully confirmed booking ${bookingId} with provider ${provider.name}`);
+      } else {
+        throw new Error(response.error || 'Provider booking failed');
+      }
+    } catch (e) {
+      this.logger.error(`Provider booking failed for ${bookingId}`, e);
+      await this.prisma.oTABooking.update({ where: { id: bookingId }, data: { status: 'FAILED' }});
+      // In a real system, we'd trigger a manual refund or retry queue here.
+    }
+  }
+
+  private async getMarkupPercentage(): Promise<number> {
+    const cacheKey = 'markup:hotels:global';
+    const cached = this.cache.get<number>(cacheKey);
+    if (cached !== undefined) return cached;
+
+    try {
+      // Find the active global or hotel specific markup rule
+      const rule = await this.prisma.markupRule.findFirst({
+        where: {
+          isActive: true,
+          // You could add providerType: 'HOTEL' if you added that enum value, 
+          // but assuming a global default for now or finding by name.
+        },
+        orderBy: { created_at: 'desc' }
+      });
+      
+      // Default to 12% if no rule is found
+      const markup = rule ? Number(rule.value) / 100 : 0.12;
+      this.cache.set(cacheKey, markup, 5 * 60 * 1000); // 5 mins cache
+      return markup;
+    } catch (e) {
+      this.logger.error('Failed to fetch markup from DB, using fallback', e);
+      return 0.12;
+    }
   }
 
   private assertDates(input: HotelSearchInput): void {
@@ -358,55 +369,5 @@ export class HotelsService {
     if (!input.checkOut || input.checkOut <= input.checkIn) {
       throw new BadRequestException('checkOut date must be after checkIn date');
     }
-  }
-
-  private async fetchJson(url: string, payload: unknown): Promise<any> {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-    const basicAuth = Buffer.from(`${this.apiId}:${this.apiKey}`).toString('base64');
-
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          Authorization: `Basic ${basicAuth}`,
-          'X-API-ID': this.apiId,
-          'X-API-Key': this.apiKey,
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  private get baseUrl(): string {
-    let url = (this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api-sandbox.ratehawk.com/api/b2b/v3').trim().replace(/\/$/, '');
-    if (!url.includes('/api/b2b/v3')) {
-      url += '/api/b2b/v3';
-    }
-    return url;
-  }
-
-  private get apiId(): string {
-    let id = this.config.get<string>('RATEHAWK_KEY_ID');
-    if (!id || !/^\d+$/.test(id.trim())) {
-      id = this.config.get<string>('RATEHAWK_API_ID');
-    }
-    if (!id || !/^\d+$/.test(id.trim())) {
-      id = '494';
-    }
-    return id.trim();
-  }
-
-  private get apiKey(): string {
-    let key = this.config.get<string>('RATEHAWK_API_KEY');
-    if (!key || key.trim() === '') return '2ecbeeb9-cc38-4b7e-a415-94300adff21f';
-    return key.trim();
   }
 }

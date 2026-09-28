@@ -146,7 +146,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-orange bg-orange-50 px-2 py-0.5 rounded-md">
                   Dellics Signature Tour
                 </span>
-                <span className="text-[11px] text-slate-400 font-semibold">Paystack Direct</span>
+                <span className="text-[11px] text-slate-400 font-semibold">Secure Checkout</span>
               </div>
               <h3 className="font-display text-base font-bold text-navy mt-0.5 line-clamp-1">
                 {tour.name}
@@ -291,7 +291,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
               <div className="rounded-xl bg-blue-50/60 border border-blue-100 p-3 text-xs text-blue-900 flex items-start gap-2.5">
                 <ShieldCheck className="size-4 text-blue-600 shrink-0 mt-0.5" />
                 <span>
-                  Payments are processed securely via Paystack. You can pay with MTN MoMo, Telecel Cash, or any Visa/Mastercard.
+                  Payments are processed securely. You can pay with MTN MoMo, Telecel Cash, or any Visa/Mastercard.
                 </span>
               </div>
 
@@ -347,7 +347,7 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
 
               {/* Currency Selector */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Preferred Paystack Payment Currency</label>
+                <label className="text-xs font-bold text-slate-700 block">Preferred Payment Currency</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -396,13 +396,13 @@ export function TourBookingModal({ isOpen, onClose, tour }: TourBookingModalProp
                   {loading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
-                      <span>Opening Paystack...</span>
+                      <span>Opening Secure Checkout...</span>
                     </>
                   ) : (
                     <>
                       <CreditCard className="size-4" />
                       <span>
-                        Pay with Paystack ({currency === "GHS" ? `GH₵ ${totalGhs.toLocaleString()}` : `$${totalUsd.toLocaleString()}`})
+                        Pay Now ({currency === "GHS" ? `GH₵ ${totalGhs.toLocaleString()}` : `$${totalUsd.toLocaleString()}`})
                       </span>
                       <ArrowRight className="size-4" />
                     </>

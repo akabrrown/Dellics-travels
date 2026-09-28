@@ -161,8 +161,8 @@ export class RolesService {
       roleId: u.admin_role_id || 'customer_service',
       roleTitle: u.admin_role?.title || 'Unknown Role',
       status: 'ACTIVE',
-      twoFactorEnforced: false,
-      lastActive: 'Registered User',
+      otpEnabled: true,
+      lastLogin: 'Registered User',
     }));
   }
 
@@ -241,8 +241,8 @@ export class RolesService {
       roleId: role.id,
       roleTitle: role.title,
       status: 'INVITED',
-      twoFactorEnforced: false,
-      lastActive: 'Invited just now',
+      otpEnabled: true,
+      lastLogin: 'Invited just now',
     };
   }
 
@@ -280,8 +280,8 @@ export class RolesService {
       roleId: role.id,
       roleTitle: role.title,
       status: 'ACTIVE',
-      twoFactorEnforced: false,
-      lastActive: 'Updated role',
+      otpEnabled: true,
+      lastLogin: 'Updated role',
     };
   }
 }

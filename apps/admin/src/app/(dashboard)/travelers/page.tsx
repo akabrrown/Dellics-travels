@@ -3,7 +3,7 @@
 import { RoleGuard } from "@/components/role-guard";
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import {
+import { 
   Search,
   Filter,
   RefreshCw,
@@ -40,7 +40,7 @@ import {
   Users,
   Zap,
   BarChart3,
-} from "lucide-react";
+  Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 /* ─── Types ─── */
@@ -175,6 +175,17 @@ export default function CustomerCRMCommandCenter() {
   const [serviceFilter, setServiceFilter] = useState("ALL");
   const [viewMode, setViewMode] = useState<ViewMode>("TABLE");
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
+
+  
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this traveler?')) return;
+    try {
+      await adminApi.delete(`/users/${id}`);
+      setTravelers(travelers.filter((item: any) => item.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete traveler');
+    }
+  };
 
   const fetchCRMData = async () => {
     try {
@@ -524,7 +535,14 @@ export default function CustomerCRMCommandCenter() {
                           <Eye className="size-3.5" />
                           <ChevronRight className="size-3" />
                         </Link>
-                      </td>
+                      <button
+                        onClick={() => handleDelete(t.id)}
+                        className="px-3 py-1 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                      >
+                        <Trash2 className="size-3" />
+                        <span>Delete</span>
+                      </button>
+                    </td>
                     </tr>
                   );
                 })}

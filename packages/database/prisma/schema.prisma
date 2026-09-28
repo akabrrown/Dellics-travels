@@ -131,6 +131,7 @@ model User {
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
   tourBookings TourBooking[]
+  ota_bookings OTABooking[]
   study_applications    StudyApplication[]
 
 }
@@ -616,4 +617,105 @@ model StudyEvent {
 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+
+// ==========================================
+// OTA PLATFORM MODELS
+// ==========================================
+
+enum ProviderType {
+  HOTEL
+  FLIGHT
+  TOUR
+  ESIM
+  TRANSFER
+}
+
+enum OTABookingStatus {
+  SEARCHED
+  SELECTED
+  PAYMENT_PENDING
+  PAYMENT_SUCCESS
+  BOOKING_PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+}
+
+model ProviderConnection {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  type        ProviderType
+  isActive    Boolean      @default(true)
+  priority    Int          @default(1)
+  config      Json?
+  
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  @@index([type, isActive])
+}
+
+model MarkupRule {
+  id             String        @id @default(uuid())
+  name           String
+  providerType   ProviderType?
+  providerName   String?
+  markupType     String
+  value          Decimal       @db.Decimal(10, 2)
+  currency       String        @default("USD")
+  isActive       Boolean       @default(true)
+  
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+}
+
+model OTABooking {
+  id                  String           @id @default(uuid())
+  dellics_reference   String           @unique
+  user_id             String?
+  user                User?            @relation(fields: [user_id], references: [id])
+  customer_email      String
+  customer_phone      String?
+  customer_name       String
+  
+  total_amount        Decimal          @db.Decimal(10, 2)
+  currency            String           @default("USD")
+  paystack_reference  String?          @unique
+  
+  status              OTABookingStatus @default(SEARCHED)
+  
+  items               OTABookingItem[]
+
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  @@index([user_id])
+  @@index([customer_email])
+}
+
+model OTABookingItem {
+  id                  String        @id @default(uuid())
+  ota_booking_id      String
+  ota_booking         OTABooking    @relation(fields: [ota_booking_id], references: [id], onDelete: Cascade)
+  
+  provider_name       String
+  provider_type       ProviderType
+  
+  supplier_reference  String?
+  supplier_status     String?
+  
+  item_details        Json
+  
+  base_price          Decimal       @db.Decimal(10, 2)
+  markup_applied      Decimal       @db.Decimal(10, 2)
+  final_price         Decimal       @db.Decimal(10, 2)
+  currency            String        @default("USD")
+
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+
+  @@index([ota_booking_id])
+  @@index([provider_name])
 }

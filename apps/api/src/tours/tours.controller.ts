@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminAuthGuard } from '../auth/guards/admin-auth.guard';
 
 @Controller('tours')
 export class ToursController {
@@ -17,16 +18,22 @@ export class ToursController {
   }
 
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post()
   async createTour(@Body() body: any) {
     return this.toursService.createTour(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put(':id')
   async updateTour(@Param('id') id: string, @Body() body: any) {
     return this.toursService.updateTour(id, body);
+  }
+
+  @UseGuards(AdminAuthGuard)
+  @Delete(':id')
+  async deleteTour(@Param('id') id: string) {
+    return this.toursService.deleteTour(id);
   }
 
   @UseGuards(JwtAuthGuard)

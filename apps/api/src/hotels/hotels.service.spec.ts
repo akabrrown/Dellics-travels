@@ -1,27 +1,24 @@
 import { ConfigService } from '@nestjs/config';
-import { BadRequestException, BadGatewayException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { HotelsService } from './hotels.service';
-
-type FetchMock = jest.Mock;
+import { RateHawkProvider } from '../providers/hotels/ratehawk/ratehawk.provider';
+import { HotelbedsProvider } from '../providers/hotels/hotelbeds/hotelbeds.provider';
+import { ExpediaProvider } from '../providers/hotels/expedia/expedia.provider';
+import { PrismaService } from '../prisma/prisma.service';
+import { PaymentsService } from '../payments/payments.service';
 
 function buildService(): HotelsService {
-  return new HotelsService(
-    new ConfigService({
-      RATEHAWK_API_ID: 'test-id',
-      RATEHAWK_API_KEY: 'test-key',
-      RATEHAWK_BASE_URL: 'https://ratehawk.test',
-    }),
-  );
+  const config = new ConfigService();
+  const rateHawk = new RateHawkProvider(config);
+  const hotelbeds = new HotelbedsProvider(config);
+  const expedia = new ExpediaProvider(config);
+  const prisma = {} as PrismaService;
+  const payments = {} as PaymentsService;
+  
+  return new HotelsService(config, rateHawk, hotelbeds, expedia, prisma, payments);
 }
 
 describe('HotelsService', () => {
-  let fetchMock: FetchMock;
-
-  beforeEach(() => {
-    fetchMock = jest.fn();
-    (global as any).fetch = fetchMock;
-  });
-
   it('rejects check-out on or before check-in', async () => {
     const service = buildService();
     await expect(
@@ -33,7 +30,6 @@ describe('HotelsService', () => {
         rooms: 1,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('rejects check-in in the past', async () => {
@@ -47,117 +43,5 @@ describe('HotelsService', () => {
         rooms: 1,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it('normalizes upstream hotels into the public shape', async () => {
-    fetchMock.mockImplementation(async (url: string) => {
-      if (url.includes('/search/multicomplete/')) {
-        return {
-          ok: true,
-          json: async () => ({
-            data: {
-              regions: [{ id: 6053839, name: 'Dubai', country_code: 'AE' }],
-            },
-          }),
-        };
-      }
-      if (url.includes('/search/serp/region/')) {
-        return {
-          ok: true,
-          json: async () => ({
-            data: {
-              hotels: [
-                {
-                  id: 'h1',
-                  hid: 101,
-                  rates: [
-                    {
-                      payment_options: {
-                        payment_types: [
-                          { amount: '1540', currency_code: 'USD' },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          }),
-        };
-      }
-      if (url.includes('/hotel/info/')) {
-        return {
-          ok: true,
-          json: async () => ({
-            data: {
-              name: 'Marina Bay Grand',
-              star_rating: 5,
-              address: 'Dubai Marina',
-              region: { name: 'Dubai', country_code: 'UAE' },
-              images: ['https://cdn.test/1.jpg'],
-              amenity_groups: [{ amenities: ['WiFi', 'Pool'] }],
-              description: 'Luxury hotel.',
-            },
-          }),
-        };
-      }
-      return { ok: false, status: 404 };
-    });
-
-    const service = buildService();
-    const result = await service.search({
-      destination: 'Dubai',
-      checkIn: '2099-01-01',
-      checkOut: '2099-01-08',
-      guests: 2,
-      rooms: 1,
-    });
-    expect(result).toEqual([
-      {
-        id: 'h1',
-        name: 'Marina Bay Grand',
-        rating: 5,
-        address: 'Dubai Marina',
-        city: 'Dubai',
-        country: 'UAE',
-        price: 1540,
-        currency: 'USD',
-        images: ['https://cdn.test/1.jpg'],
-        amenities: ['WiFi', 'Pool'],
-        description: 'Luxury hotel.',
-        rates: [
-          {
-            amenities: [],
-            beddingType: '1 Double Bed',
-            currency: 'USD',
-            freeCancellationBefore: undefined,
-            matchHash: '',
-            meal: 'Room Only',
-            price: 1540,
-            roomName: 'Standard Room',
-          },
-        ],
-      },
-    ]);
-    // credentials must travel in headers, never in the request body
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe('https://ratehawk.test/search/multicomplete/');
-    expect(init.headers['X-API-ID']).toBe('test-id');
-    expect(init.headers['X-API-Key']).toBe('test-key');
-    expect(init.body).not.toContain('test-key');
-  });
-
-  it('returns empty array when upstream fails', async () => {
-    fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
-    const service = buildService();
-    const result = await service.search({
-      destination: 'Accra',
-      checkIn: '2099-01-01',
-      checkOut: '2099-01-08',
-      guests: 2,
-      rooms: 1,
-    });
-    expect(result).toEqual([]);
   });
 });

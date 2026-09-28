@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { SearchModule } from './search/search.module';
 import { BookingModule } from './booking/booking.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { CarsModule } from './cars/cars.module';
 import { PaymentsModule } from './payments/payments.module';
 import { EsimModule } from './esim/esim.module';
 import { HotelsModule } from './hotels/hotels.module';
@@ -33,6 +34,7 @@ import { StudyModule } from './study/study.module';
     SearchModule,
     BookingModule,
     WebhooksModule,
+    CarsModule,
     PaymentsModule,
     EsimModule,
     HotelsModule,

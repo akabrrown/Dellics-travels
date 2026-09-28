@@ -1,4 +1,4 @@
-﻿import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Query, Delete } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { CreateInquiryDto } from './dto/create-inquiry.dto';
 import { InquiriesService } from './inquiries.service';
@@ -27,5 +27,11 @@ export class InquiriesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.inquiries.findOne(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: string) {
+    return this.inquiries.remove(id);
   }
 }

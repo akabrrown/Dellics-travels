@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import {
   SlidersHorizontal,
   ShieldCheck,
   MessageSquare,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +63,12 @@ function HotelSearchFormInner({
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [citizenship, setCitizenship] = useState("");
+  const [stars, setStars] = useState("");
+  const [board, setBoard] = useState("");
+  const [earlyCheckIn, setEarlyCheckIn] = useState("");
+  const [lateCheckOut, setLateCheckOut] = useState("");
+  const [freeCancellation, setFreeCancellation] = useState(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -150,156 +157,185 @@ function HotelSearchFormInner({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-3xl bg-white/95 backdrop-blur-xl p-5 sm:p-6 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left w-full max-w-6xl"
-      aria-label="Hotel search"
-    >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <Label
-            htmlFor="hotel-destination"
-            className="text-[11px] font-bold text-slate-700 mb-1 block"
-          >
-            Destination or Hotel Name
-          </Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input
-              id="hotel-destination"
-              placeholder="e.g. Dubai, London, Accra, Paris, New York"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              className="pl-9 h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
-            />
-          </div>
-          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Test Stays:
-            </span>
-            {[
-              { label: "Dubai, UAE", query: "Dubai" },
-              { label: "Paris, France", query: "Paris" },
-              { label: "Los Angeles, USA", query: "Los Angeles" },
-            ].map((chip) => {
-              const active = destination.toLowerCase().includes(chip.query.toLowerCase());
-              return (
-                <button
-                  key={chip.query}
-                  type="button"
-                  onClick={() => {
-                    setDestination(chip.query);
-                    executeSearch(chip.query, checkIn, checkOut, adults, children, rooms, true);
-                  }}
-                  className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium transition-all cursor-pointer ${
-                    active
-                      ? "bg-navy text-white shadow-xs font-semibold"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {chip.label}
+    <div className="w-full max-w-5xl rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-xl p-2.5 sm:p-4.5 shadow-2xl border border-white/60 ring-1 ring-black/5 overflow-hidden">
+      {fieldError && (
+        <div className="mb-4 rounded-xl bg-rose-50 border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-700">
+          {fieldError}
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-4 bg-[#f2f2f2] rounded-xl p-4 md:p-6 shadow-inner border border-slate-200 text-left">
+        {/* ROW 1: Main Search */}
+        <div className="flex flex-col lg:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Label htmlFor="hotel-dest" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Destination</Label>
+            <div className="relative border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+              <input
+                id="hotel-dest"
+                placeholder="Dubai, United Arab Emirates"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                className="w-full text-sm font-medium outline-none bg-transparent"
+              />
+              {destination && (
+                <button type="button" onClick={() => setDestination("")} className="text-slate-400 hover:text-slate-600 transition-colors">
+                  <X className="w-4 h-4" />
                 </button>
-              );
-            })}
+              )}
+            </div>
           </div>
-        </div>
+          
+          <div className="flex gap-3">
+            <div className="w-full sm:w-36">
+              <Label htmlFor="hotel-in" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Check-in</Label>
+              <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                <input
+                  id="hotel-in"
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="w-full text-sm font-medium outline-none bg-transparent"
+                />
+              </div>
+            </div>
+            <div className="w-full sm:w-36">
+              <Label htmlFor="hotel-out" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Check-out</Label>
+              <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                <input
+                  id="hotel-out"
+                  type="date"
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  className="w-full text-sm font-medium outline-none bg-transparent"
+                />
+              </div>
+            </div>
+          </div>
 
-        <div>
-          <Label
-            htmlFor="hotel-checkin"
-            className="text-[11px] font-bold text-slate-700 mb-1 block"
-          >
-            Check-in Date
-          </Label>
-          <Input
-            id="hotel-checkin"
-            type="date"
-            value={checkIn}
-            onChange={(e) => setCheckIn(e.target.value)}
-            className="h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
-          />
-        </div>
-
-        <div>
-          <Label
-            htmlFor="hotel-checkout"
-            className="text-[11px] font-bold text-slate-700 mb-1 block"
-          >
-            Check-out Date
-          </Label>
-          <Input
-            id="hotel-checkout"
-            type="date"
-            value={checkOut}
-            onChange={(e) => setCheckOut(e.target.value)}
-            className="h-11 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 focus:bg-white focus:border-navy focus:ring-2 focus:ring-navy/15 shadow-2xs"
-          />
-        </div>
-
-        <div>
-          <Label className="text-[11px] font-bold text-slate-700 mb-1 block">
-            Guests & Rooms
-          </Label>
-          <div className="flex items-center h-11">
-            <HotelGuestRoomSelector
-              value={{
-                adults,
-                children,
-                rooms,
-                roomType: "Standard",
-              }}
+          <div className="w-full lg:min-w-[280px]">
+            <Label className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">{rooms} room{rooms > 1 ? 's' : ''} for</Label>
+            <HotelGuestRoomSelector 
+              value={{ adults, children, rooms, roomType: "Economy" }} 
               onChange={(next) => {
                 setAdults(next.adults);
                 setChildren(next.children);
                 setRooms(next.rooms);
-              }}
-              showRoomType={false}
+              }} 
             />
           </div>
-        </div>
-      </div>
 
-      {fieldError ? (
-        <p
-          role="alert"
-          className="mt-3 rounded-xl bg-rose-50 border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-700"
-        >
-          {fieldError}
-        </p>
-      ) : null}
-
-      <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
-        <div className="flex items-center gap-4 text-slate-500 text-xs font-medium">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="size-3.5 text-emerald-600" />
-            Global Wholesale Rates
-          </span>
-          <span className="hidden sm:inline-flex items-center gap-1.5">
-            <CheckCircle2 className="size-3.5 text-emerald-600" />
-            Instant B2B Confirmation
-          </span>
+          <div className="flex items-end mt-4 lg:mt-0">
+            <Button disabled={isSearching} type="submit" className="w-full lg:w-auto h-12 px-8 rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-sm transition-colors shadow-sm">
+              {isSearching ? (
+                <>
+                  <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin mr-2" />
+                  <span>Searching...</span>
+                </>
+              ) : (
+                "Search"
+              )}
+            </Button>
+          </div>
         </div>
 
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isSearching}
-          className="w-full sm:w-auto px-8 h-11 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
-        >
-          {isSearching ? (
-            <>
-              <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-              <span>Checking Live Inventory...</span>
-            </>
-          ) : (
-            <>
-              <span>Search Stays & Suites</span>
-              <ArrowRight className="size-3.5" />
-            </>
-          )}
-        </Button>
-      </div>
-    </form>
+        <div className="pt-3">
+          <h4 className="text-[13px] font-semibold text-slate-600 mb-3 px-1">Additional parameters</h4>
+          
+          {/* ROW 2 */}
+          <div className="flex flex-col lg:flex-row gap-3">
+            <div className="w-full lg:w-64">
+              <Label htmlFor="hotel-citizen" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Guests' citizenship</Label>
+              <div className="relative border border-slate-300 rounded-lg bg-white h-10 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                <input
+                  id="hotel-citizen"
+                  value={citizenship}
+                  onChange={(e) => setCitizenship(e.target.value)}
+                  className="w-full text-sm font-medium outline-none bg-transparent"
+                />
+                {citizenship && (
+                  <button type="button" onClick={() => setCitizenship("")} className="text-slate-400 hover:text-slate-600 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-end w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
+              <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden shrink-0">
+                {["No stars", "2 stars", "3 stars", "4 stars", "5 stars"].map(s => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setStars(s)}
+                    className={`h-full px-3.5 text-xs font-medium border-r border-slate-200 last:border-r-0 transition-colors ${stars === s ? "bg-slate-100 text-slate-900 font-bold shadow-inner" : "text-slate-600 hover:bg-slate-50"}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="w-full lg:w-48 pb-1 lg:pb-0">
+              <Label htmlFor="hotel-board" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Meal Plan</Label>
+              <select
+                id="hotel-board"
+                value={board}
+                onChange={(e) => setBoard(e.target.value)}
+                className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
+              >
+                <option value="">Any meal plan</option>
+                <option value="RO">Room Only (RO)</option>
+                <option value="BB">Bed & Breakfast (BB)</option>
+                <option value="HB">Half Board (HB)</option>
+                <option value="FB">Full Board (FB)</option>
+                <option value="AI">All-Inclusive (AI)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* ROW 3 */}
+          <div className="flex flex-col lg:flex-row gap-3 mt-4 lg:mt-3">
+            <div className="flex gap-3 w-full lg:w-auto">
+              <div className="w-1/2 lg:w-48">
+                <Label htmlFor="hotel-early" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Early check-in</Label>
+                <input
+                  id="hotel-early"
+                  type="time"
+                  value={earlyCheckIn}
+                  onChange={(e) => setEarlyCheckIn(e.target.value)}
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                />
+              </div>
+              
+              <div className="w-1/2 lg:w-48">
+                <Label htmlFor="hotel-late" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Late check-out</Label>
+                <input
+                  id="hotel-late"
+                  type="time"
+                  value={lateCheckOut}
+                  onChange={(e) => setLateCheckOut(e.target.value)}
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center mt-3 lg:mt-[22px] lg:ml-2">
+              <label className="flex items-center gap-2.5 cursor-pointer group">
+                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${freeCancellation ? "bg-[#EBB41E] border-[#EBB41E]" : "border-slate-300 bg-white group-hover:border-[#EBB41E]"}`}>
+                  {freeCancellation && <CheckCircle2 className="w-3 h-3 text-white" />}
+                </div>
+                <input 
+                  type="checkbox" 
+                  className="hidden"
+                  checked={freeCancellation} 
+                  onChange={(e) => setFreeCancellation(e.target.checked)}
+                />
+                <span className="text-[13px] font-medium text-slate-700">Free cancellation</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
 
