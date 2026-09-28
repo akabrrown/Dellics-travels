@@ -99,7 +99,7 @@ export class StudyService {
       testsPending,
       submissions,
       visa,
-      appointments: 7 // static for now
+      appointments: 0 // static for now until appointments feature is built
     };
   }
 }
