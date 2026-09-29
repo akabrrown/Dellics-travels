@@ -209,6 +209,9 @@ export async function POST(req: NextRequest) {
       const enriched = await Promise.allSettled(
         topHotels.map(async (h: any) => {
           let info: any = null;
+          /* 
+          // RateHawk Integration Launch Specialist (Anna) requested removing /hotel/info/ 
+          // calls from SERP iterations due to 429 errors. We must rely on dumps later.
           try {
             const infoRes = await fetchRatehawk("/hotel/info/", {
               id: h.id,
@@ -218,6 +221,7 @@ export async function POST(req: NextRequest) {
           } catch {
             // Ignore individual info failure
           }
+          */
 
           const rateAmount = parseFloat(
             h.rates?.[0]?.payment_options?.payment_types?.[0]?.amount ||

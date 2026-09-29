@@ -90,10 +90,14 @@ export class RateHawkProvider implements IHotelProvider {
       const enriched = await Promise.allSettled(
         topHotels.map(async (h: any) => {
           let info: any = null;
+          /*
+          // RateHawk Integration Launch Specialist (Anna) requested removing /hotel/info/ 
+          // calls from SERP iterations due to 429 errors. We must rely on dumps later.
           try {
             const infoRes = await this.fetchJson(`${this.baseUrl}/hotel/info/`, { id: h.id, language: 'en' });
             info = infoRes?.data;
           } catch {}
+          */
 
           const liveRates: NormalizedRoomRate[] = (h.rates || []).map((r: any) => {
             const amount = parseFloat(r.payment_options?.payment_types?.[0]?.amount || r.daily_prices?.[0] || '180');
