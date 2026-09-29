@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, Headset, Globe2, PlaneTakeoff, PiggyBank, Smartphone, Suitcase, Users } from "lucide-react";
+import { ShieldCheck, Headset, Globe2, PlaneTakeoff, PiggyBank, Smartphone, Luggage, Users } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 
 const features = [
@@ -37,7 +37,7 @@ const features = [
   {
     name: "Curated Travel Experiences",
     description: "Discover carefully selected holiday packages, tours, day escapes and Diaspora tourism experiences designed to make your trip more memorable.",
-    icon: Suitcase,
+    icon: Luggage,
   },
   {
     name: "Built for Modern Travellers",
