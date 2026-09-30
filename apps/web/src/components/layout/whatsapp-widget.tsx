@@ -41,6 +41,7 @@ export function WhatsappWidget() {
           </p>
         </div>
         <button
+          aria-label="Close tooltip"
           onClick={(e) => {
             e.preventDefault();
             setShowTooltip(false);
@@ -53,6 +54,7 @@ export function WhatsappWidget() {
 
       {/* WhatsApp Button */}
       <a
+        aria-label="Contact us on WhatsApp"
         href={`https://wa.me/${SITE.whatsappNumber?.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
           "Hello Dellics Travels, I need assistance with a booking or inquiry."
         )}`}

@@ -4,6 +4,7 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { WhatsappWidget } from "@/components/layout/whatsapp-widget";
+import { AiWidget } from "@/components/layout/ai-widget";
 import { AuthProvider } from "@/context/auth-context";
 import { LocaleCurrencyProvider } from "@/context/locale-currency-context";
 import { Toaster } from "@/components/ui/sonner";
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${poppins.variable}`}>
       <head>
+        <link rel="preconnect" href="https://flagcdn.com" />
         <TrustedTypesInjector />
       </head>
       <body className="flex min-h-screen flex-col antialiased" suppressHydrationWarning>
@@ -47,6 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <main className="flex-1">{children}</main>
             <SiteFooter />
             <WhatsappWidget />
+            <AiWidget />
             <Toaster richColors position="top-center" />
           </LocaleCurrencyProvider>
         </AuthProvider>

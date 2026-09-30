@@ -146,6 +146,7 @@ export function HeroSlider({
                 alt={slide.caption || "Dellics Travels Destination"}
                 fill
                 priority={i === 0}
+                fetchPriority={i === 0 ? "high" : "auto"}
                 className={cn(
                   "object-cover scale-105 transform motion-safe:animate-subtle-zoom transition-opacity duration-700",
                   slide.type === "video" && videoReady ? "opacity-0" : "opacity-100"
