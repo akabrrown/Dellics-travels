@@ -21,6 +21,7 @@ import { CacheModule } from './cache/cache.module';
 import { ZohoModule } from './zoho/zoho.module';
 import { CrmModule } from './crm/crm.module';
 import { StudyModule } from './study/study.module';
+import { HotelDumpModule } from './hotel-dump/hotel-dump.module';
 
 @Module({
   imports: [

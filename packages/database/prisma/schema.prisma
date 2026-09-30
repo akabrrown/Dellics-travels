@@ -719,3 +719,24 @@ model OTABookingItem {
   @@index([ota_booking_id])
   @@index([provider_name])
 }
+
+// RateHawk static hotel data synced from /hotel/info/dump/ and /hotel/info/incremental_dump/
+// Eliminates live /hotel/info/ calls per search result which exceed rate limits (429).
+model HotelStaticCache {
+  id           String   @id
+  name         String
+  star_rating  Int      @default(0)
+  address      String?
+  city         String?
+  country_code String?
+  latitude     Float?
+  longitude    Float?
+  images       Json     @default("[]")
+  amenities    Json     @default("[]")
+  description  String?
+  synced_at    DateTime @default(now())
+
+  @@index([city])
+  @@index([country_code])
+  @@map("hotel_static_cache")
+}

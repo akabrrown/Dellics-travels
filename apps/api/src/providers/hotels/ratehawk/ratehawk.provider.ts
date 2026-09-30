@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { IHotelProvider } from '../interfaces/hotel-provider.interface';
 import {
@@ -17,7 +18,10 @@ export class RateHawkProvider implements IHotelProvider {
   public readonly name = 'ratehawk';
   private readonly logger = new Logger(RateHawkProvider.name);
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
   async search(criteria: HotelSearchCriteria): Promise<NormalizedHotelWithRates[]> {
     this.logger.log(`Searching RateHawk for destination: ${criteria.destination}`);
@@ -87,17 +91,16 @@ export class RateHawkProvider implements IHotelProvider {
 
     if (Array.isArray(rawHotels) && rawHotels.length > 0) {
       const topHotels = rawHotels.slice(0, 10);
+      // Single batch query — no N+1, no live /hotel/info/ calls
+      const hotelIds = topHotels.map((h: any) => String(h.id || h.hid));
+      const cachedRows = await this.prisma.hotelStaticCache.findMany({
+        where: { id: { in: hotelIds } },
+      });
+      const staticCache = new Map(cachedRows.map((r) => [r.id, r]));
+
       const enriched = await Promise.allSettled(
         topHotels.map(async (h: any) => {
-          let info: any = null;
-          /*
-          // RateHawk Integration Launch Specialist (Anna) requested removing /hotel/info/ 
-          // calls from SERP iterations due to 429 errors. We must rely on dumps later.
-          try {
-            const infoRes = await this.fetchJson(`${this.baseUrl}/hotel/info/`, { id: h.id, language: 'en' });
-            info = infoRes?.data;
-          } catch {}
-          */
+          const info = staticCache.get(String(h.id || h.hid)) ?? null;
 
           const liveRates: NormalizedRoomRate[] = (h.rates || []).map((r: any) => {
             const amount = parseFloat(r.payment_options?.payment_types?.[0]?.amount || r.daily_prices?.[0] || '180');
@@ -119,26 +122,28 @@ export class RateHawkProvider implements IHotelProvider {
           });
 
           const apiImages: string[] = [];
-          if (Array.isArray(info?.images)) {
-             info.images.forEach((img: any) => {
-                const url = typeof img === 'string' ? img : img?.url || '';
-                if (url) apiImages.push(this.sanitizeImageUrl(url));
-             });
+          const rawImages = typeof info?.images === 'string'
+            ? JSON.parse(info.images || '[]')
+            : Array.isArray(info?.images) ? info.images : [];
+          for (const url of rawImages) {
+            if (url) apiImages.push(this.sanitizeImageUrl(url));
           }
 
           return {
             hotelId: String(h.id || h.hid),
             provider: this.name,
-            name: String(info?.name || this.formatHotelName(h.id)),
-            rating: Number(info?.star_rating || 4),
-            description: String(info?.description || `Premium accommodation in ${criteria.destination}.`),
+            name: String(info?.name || this.formatHotelName(String(h.id || h.hid))),
+            rating: Number((info as any)?.star_rating || 4),
+            description: String((info as any)?.description || `Premium accommodation in ${criteria.destination}.`),
             location: {
-              address: String(info?.address || `${criteria.destination} Central`),
-              city: String(info?.region?.name || criteria.destination),
-              country: String(info?.region?.country_code || 'International'),
+              address: String((info as any)?.address || `${criteria.destination} Central`),
+              city: String((info as any)?.city || criteria.destination),
+              country: String((info as any)?.country_code || 'International'),
             },
             images: apiImages,
-            amenities: this.extractAmenities(info?.amenity_groups),
+            amenities: typeof info?.amenities === 'string'
+              ? JSON.parse((info as any).amenities || '[]')
+              : this.extractAmenities((info as any)?.amenity_groups),
             rates: liveRates,
           } as NormalizedHotelWithRates;
         })
