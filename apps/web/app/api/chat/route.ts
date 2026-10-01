@@ -1,7 +1,7 @@
 import { openai } from '@ai-sdk/openai';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
-import crypto from 'node:crypto';
+import * as crypto from 'node:crypto';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const result = streamText({
+  const result = await streamText({
     model: openai('gpt-4o-mini'),
     system: 'You are Dellics Travels AI Agent, powered by RouteStack. You can help users book flights, hotels, and cars. Be concise, polite, and helpful.',
     messages,
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
           checkIn: z.string().describe('Check-in date in YYYY-MM-DD format'),
           checkOut: z.string().describe('Check-out date in YYYY-MM-DD format'),
         }),
-        execute: async ({ city, checkIn, checkOut }) => {
+        execute: async ({ city, checkIn, checkOut }: { city: string; checkIn: string; checkOut: string }) => {
           if (!routeStackToken) {
             return { error: 'RouteStack authentication failed or keys are missing.' };
           }
@@ -89,5 +89,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toDataStreamResponse();
+  return result.toAIStreamResponse();
 }
