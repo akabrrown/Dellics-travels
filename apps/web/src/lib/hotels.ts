@@ -1,4 +1,4 @@
-﻿import { postJson } from "./api";
+import { postJson } from "./api";
 import type { HotelSearchInput } from "./schemas";
 
 export interface HotelRoomRate {
@@ -12,7 +12,6 @@ export interface HotelRoomRate {
   amenities?: string[];
 }
 
-// Must stay in sync with HotelResult in apps/api/src/hotels/hotels.types.ts
 export interface Hotel {
   id: string;
   name: string;
@@ -43,33 +42,24 @@ export async function searchHotels(input: HotelSearchInput): Promise<Hotel[]> {
     checkOut: normalizedCheckOut,
   };
 
-  // 1. Query Next.js direct RateHawk API route
   try {
     const res = await fetch("/api/hotels/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(sanitizedInput),
     });
+    
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         return data;
       }
+    } else {
+      console.error("Next.js API returned error:", await res.text().catch(() => ""));
     }
-  } catch {
-    // Proceed to backend fallback
-  }
-
-  // 2. Query NestJS API backend
-  try {
-    const data = await postJson<Hotel[]>("/hotels/search", sanitizedInput);
-    if (Array.isArray(data) && data.length > 0) {
-      return data;
-    }
-  } catch {
-    // Return empty on failure
+  } catch (error) {
+    console.error("Fetch failed:", error);
   }
 
   return [];
 }
-
