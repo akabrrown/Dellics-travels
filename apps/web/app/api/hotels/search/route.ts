@@ -295,7 +295,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json([]);
+    return NextResponse.json({ debug: true, rawHotelsLength: rawHotels?.length, serpRes, multi, isSandbox, regionId, url: RATEHAWK_BASE_URL });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to search hotels" },
