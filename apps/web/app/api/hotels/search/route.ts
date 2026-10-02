@@ -133,9 +133,7 @@ export async function POST(req: NextRequest) {
     let isSandbox = false;
     try {
       const parsedUrl = new URL(RATEHAWK_BASE_URL || "https://api-sandbox.ratehawk.com");
-      isSandbox = parsedUrl.hostname === "api-sandbox.ratehawk.com";
-    } catch {
-      isSandbox = false;
+      isSandbox = parsedUrl.hostname === "api-sandbox.ratehawk.com"; } catch { isSandbox = false;
     }
     let sandboxRegionId: number | null = null;
     if (isSandbox) {
@@ -160,7 +158,7 @@ export async function POST(req: NextRequest) {
         query: cleanCity || searchDest,
         language: "en",
       });
-    } catch {
+    } catch (e) { throw e;
       // Ignore multicomplete failure
     }
 
@@ -182,7 +180,7 @@ export async function POST(req: NextRequest) {
           region_id: regionId,
           currency: "USD",
         });
-      } catch {
+      } catch (e) { throw e;
         // Fall through
       }
     } else if (multiHotels.length > 0) {
@@ -197,7 +195,7 @@ export async function POST(req: NextRequest) {
           ids: hotelIds,
           currency: "USD",
         });
-      } catch {
+      } catch (e) { throw e;
         // Fall through
       }
     }
