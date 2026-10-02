@@ -5,6 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import * as https from 'https';
 import * as zlib from 'zlib';
+import fetch from 'node-fetch';
+import { ZstdTransform } from './ZstdTransform';
 import * as readline from 'readline';
 
 const BATCH_SIZE = 500;
@@ -106,16 +108,14 @@ export class HotelDumpService {
     }
   }
 
-  private async flushBatch(rows: CacheRow[]): Promise<number> {
-    await Promise.all(
-      rows.map((row) =>
-        this.prisma.hotelStaticCache.upsert({
-          where: { id: row.id as string },
-          update: { ...row, synced_at: new Date() } as Prisma.HotelStaticCacheUpdateInput,
-          create: { ...row, synced_at: new Date() } as Prisma.HotelStaticCacheCreateInput,
-        }),
-      ),
-    );
+    private async flushBatch(rows: CacheRow[]): Promise<number> {
+    for (const row of rows) {
+      await this.prisma.hotelStaticCache.upsert({
+        where: { id: row.id as string },
+        update: { ...row, synced_at: new Date() } as Prisma.HotelStaticCacheUpdateInput,
+        create: { ...row, synced_at: new Date() } as Prisma.HotelStaticCacheCreateInput,
+      });
+    }
     return rows.length;
   }
 
@@ -171,51 +171,46 @@ export class HotelDumpService {
     return url.replace('{size}', '1024x768').replace('%7Bsize%7D', '1024x768');
   }
 
-  private fetchDumpStream(endpoint: string): Promise<NodeJS.ReadableStream> {
-    return new Promise((resolve, reject) => {
-      const rawBase = this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api.ratehawk.com/api/b2b/v3';
-      const cleanBase = rawBase.replace(/\/api\/b2b\/v3.*$/, '');
-      const fullUrl = `${cleanBase}/api/b2b/v3${endpoint}`;
-      const parsedUrl = new URL(fullUrl);
+    private async fetchDumpStream(endpoint: string): Promise<NodeJS.ReadableStream> {
+    const rawBase = this.config.get<string>('RATEHAWK_BASE_URL') || 'https://api.ratehawk.com/api/b2b/v3';
+    const cleanBase = rawBase.replace(/\/api\/b2b\/v3.*$/, '');
+    const fullUrl = cleanBase + '/api/b2b/v3' + endpoint;
 
-      const apiId = this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494';
-      const apiKey = this.config.get<string>('RATEHAWK_API_KEY') || '';
-      const auth = Buffer.from(`${apiId}:${apiKey}`).toString('base64');
+    const apiId = this.config.get<string>('RATEHAWK_KEY_ID') || this.config.get<string>('RATEHAWK_API_ID') || '494';
+    const apiKey = this.config.get<string>('RATEHAWK_API_KEY') || '';
+    const auth = Buffer.from(apiId + ':' + apiKey).toString('base64');
 
-      const body = JSON.stringify({ language: 'en' });
+    const body = JSON.stringify({ language: 'en' });
 
-      const req = https.request(
-        {
-          hostname: parsedUrl.hostname,
-          path: parsedUrl.pathname,
-          method: 'POST',
-          headers: {
-            Authorization: `Basic ${auth}`,
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body),
-            Accept: 'application/octet-stream',
-          },
-          timeout: REQUEST_TIMEOUT_MS,
-        },
-        (res) => {
-          if (res.statusCode && res.statusCode >= 400) {
-            reject(new Error(`Dump endpoint HTTP ${res.statusCode}`));
-            return;
-          }
-          const contentEncoding = res.headers['content-encoding'];
-          const stream: NodeJS.ReadableStream =
-            contentEncoding === 'gzip' ? (res.pipe(zlib.createGunzip()) as any) : res;
-          resolve(stream);
-        },
-      );
-
-      req.on('error', reject);
-      req.on('timeout', () => {
-        req.destroy();
-        reject(new Error('Dump request timed out'));
-      });
-      req.write(body);
-      req.end();
+    const res = await fetch(fullUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Basic ' + auth,
+        'Content-Type': 'application/json',
+      },
+      body
     });
+
+    if (!res.ok) {
+      throw new Error('Dump endpoint HTTP ' + res.status);
+    }
+
+    const json = await res.json() as any;
+    const dumpUrl = json?.data?.url;
+    
+    if (!dumpUrl) {
+      throw new Error('No dump URL in response: ' + JSON.stringify(json));
+    }
+
+    const dumpRes = await fetch(dumpUrl);
+    if (!dumpRes.ok) {
+      throw new Error('Dump download HTTP ' + dumpRes.status);
+    }
+
+    if (dumpUrl.endsWith('.gz')) {
+        return (dumpRes.body as any).pipe(zlib.createGunzip());
+    }
+
+    return (dumpRes.body as any).pipe(new ZstdTransform());
   }
 }

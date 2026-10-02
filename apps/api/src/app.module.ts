@@ -46,6 +46,7 @@ import { HotelDumpModule } from './hotel-dump/hotel-dump.module';
     ZohoModule,
     CrmModule,
     StudyModule,
+    HotelDumpModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
