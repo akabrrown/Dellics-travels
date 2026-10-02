@@ -234,7 +234,6 @@ export async function POST(req: NextRequest) {
           for (const url of rawImages) {
             if (url) apiImages.push(sanitizeImageUrl(url));
           }
-          }
 
           // Extract real live room rates from RateHawk SERP response
           const liveRates = (h.rates || []).map((r: any) => ({
@@ -270,12 +269,12 @@ export async function POST(req: NextRequest) {
             name: String(info?.name || formatHotelName(h.id)),
             rating: Number(info?.star_rating || 4),
             address: String(info?.address || `${destination} Central`),
-            city: String(info?.region?.name || destination),
-            country: String(info?.region?.country_code || "International"),
+            city: String(info?.city || destination),
+            country: String(info?.country_code || "International"),
             price: Math.round(rateAmount),
             currency: rateCurrency,
             images: apiImages,
-            amenities: typeof info?.amenities === "string" ? JSON.parse(info.amenities || "[]") : extractAmenities(info?.amenity_groups),
+            amenities: typeof info?.amenities === "string" ? JSON.parse(info.amenities || "[]") : (Array.isArray((info as any)?.amenities) ? (info as any).amenities : []),
             description: String(
               info?.description ||
                 `Live verified accommodation in ${destination} via direct RateHawk B2B partnership.`
