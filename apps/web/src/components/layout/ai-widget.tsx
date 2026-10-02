@@ -6,8 +6,7 @@ import { useChat } from "ai/react";
 
 export function AiWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-  
+    
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: "/api/chat",
   });
@@ -20,46 +19,9 @@ export function AiWidget() {
     }
   }, [messages]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!isOpen) setShowTooltip(true);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [isOpen]);
-
+  
   return (
     <div className="fixed bottom-28 right-6 z-50 flex flex-col items-end group">
-      {/* Tooltip */}
-      {!isOpen && (
-        <div
-          className={`mb-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-slate-100 flex items-start gap-3 max-w-[260px] transition-all duration-500 origin-bottom-right ${
-            showTooltip
-              ? "scale-100 opacity-100 translate-y-0"
-              : "scale-95 opacity-0 translate-y-2 pointer-events-none"
-          }`}
-        >
-          <div className="size-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-            <Sparkles className="size-4 text-blue-600" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-slate-800 mb-0.5">RouteStack AI</p>
-            <p className="text-[11px] text-slate-500 leading-tight">
-              Book flights, hotels & Cars through Our AI Agent.
-            </p>
-          </div>
-          <button
-            aria-label="Close tooltip"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowTooltip(false);
-            }}
-            className="text-slate-400 hover:text-slate-600 transition-colors shrink-0 -mt-1 -mr-1"
-          >
-            <X className="size-3" />
-          </button>
-        </div>
-      )}
-
       {/* Chat Window */}
       {isOpen && (
         <div className="mb-4 bg-white border border-slate-200 rounded-2xl shadow-2xl w-[350px] sm:w-[400px] h-[500px] flex flex-col overflow-hidden origin-bottom-right animate-in zoom-in-95 duration-200">
@@ -141,8 +103,7 @@ export function AiWidget() {
           aria-label="Open AI Agent chat"
           onClick={() => {
             setIsOpen(true);
-            setShowTooltip(false);
-          }}
+                      }}
           className="relative flex items-center justify-center size-14 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:scale-110 hover:-translate-y-1 transition-all duration-300 group"
         >
           <Sparkles className="size-6" />

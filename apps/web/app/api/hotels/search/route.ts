@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@dellics/database";
 
 const rawBaseUrl = (
   process.env.RATEHAWK_BASE_URL || "https://api-sandbox.ratehawk.com/api/b2b/v3"
@@ -206,22 +207,15 @@ export async function POST(req: NextRequest) {
     if (Array.isArray(rawHotels) && rawHotels.length > 0) {
       const topHotels = rawHotels.slice(0, 12);
       
+      const hotelIds = topHotels.map((h) => String(h.id || h.hid));
+      const cachedRows = await prisma.hotelStaticCache.findMany({
+        where: { id: { in: hotelIds } },
+      });
+      const staticCache = new Map(cachedRows.map((r) => [r.id, r]));
+
       const enriched = await Promise.allSettled(
-        topHotels.map(async (h: any) => {
-          let info: any = null;
-          /* 
-          // RateHawk Integration Launch Specialist (Anna) requested removing /hotel/info/ 
-          // calls from SERP iterations due to 429 errors. We must rely on dumps later.
-          try {
-            const infoRes = await fetchRatehawk("/hotel/info/", {
-              id: h.id,
-              language: "en",
-            });
-            info = infoRes?.data;
-          } catch {
-            // Ignore individual info failure
-          }
-          */
+        topHotels.map(async (h) => {
+          const info = staticCache.get(String(h.id || h.hid)) ?? null;
 
           const rateAmount = parseFloat(
             h.rates?.[0]?.payment_options?.payment_types?.[0]?.amount ||
@@ -232,19 +226,14 @@ export async function POST(req: NextRequest) {
             h.rates?.[0]?.payment_options?.payment_types?.[0]?.currency_code ||
             "USD";
 
-          // Extract real photos directly from RateHawk API
-          const apiImages: string[] = [];
-          if (Array.isArray(info?.images)) {
-            for (const img of info.images) {
-              const url = typeof img === "string" ? img : img?.url || "";
-              if (url) apiImages.push(sanitizeImageUrl(url));
-            }
+          const apiImages = [];
+          const rawImages = typeof info?.images === 'string'
+            ? JSON.parse(info.images || '[]')
+            : Array.isArray(info?.images) ? info.images : [];
+            
+          for (const url of rawImages) {
+            if (url) apiImages.push(sanitizeImageUrl(url));
           }
-          if (Array.isArray(info?.images_ext)) {
-            for (const img of info.images_ext) {
-              const url = typeof img === "string" ? img : img?.url || "";
-              if (url && !apiImages.includes(url)) apiImages.push(sanitizeImageUrl(url));
-            }
           }
 
           // Extract real live room rates from RateHawk SERP response
@@ -286,7 +275,7 @@ export async function POST(req: NextRequest) {
             price: Math.round(rateAmount),
             currency: rateCurrency,
             images: apiImages,
-            amenities: extractAmenities(info?.amenity_groups),
+            amenities: typeof info?.amenities === "string" ? JSON.parse(info.amenities || "[]") : extractAmenities(info?.amenity_groups),
             description: String(
               info?.description ||
                 `Live verified accommodation in ${destination} via direct RateHawk B2B partnership.`

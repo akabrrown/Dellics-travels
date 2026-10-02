@@ -119,7 +119,13 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
 
     // A. Fetch Live Countries List via API
     fetch("/api/countries")
-      .then((res) => res.json())
+      .then(async (res) => {
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        return {};
+      })
       .then((data) => {
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
           const uniqueCountries: CountryOption[] = [];
@@ -146,7 +152,13 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
 
     // B. Fetch Live FX Exchange Rates via API
     fetch("/api/currency/rates")
-      .then((res) => res.json())
+      .then(async (res) => {
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        return {};
+      })
       .then((data) => {
         if (data?.rates) {
           setRates(data.rates);
@@ -157,7 +169,13 @@ export function LocaleCurrencyProvider({ children }: { children: React.ReactNode
     // C. Auto-detect Country & Currency via Live Geo API if user hasn't set custom preference
     if (!hasSavedPreference) {
       fetch("/api/geo")
-        .then((res) => res.json())
+        .then(async (res) => {
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        return {};
+      })
         .then((geo) => {
           if (geo?.country) {
             const matchedCountry = DEFAULT_COUNTRIES.find((c) => c.code === geo.country);
