@@ -4,7 +4,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import * as https from 'https';
 import * as zlib from 'zlib';
-import fetch from 'node-fetch';
 import { ZstdTransform } from './ZstdTransform';
 import * as readline from 'readline';
 
