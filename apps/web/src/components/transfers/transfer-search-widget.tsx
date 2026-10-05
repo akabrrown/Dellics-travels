@@ -55,7 +55,7 @@ export function TransferSearchWidget() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto rounded-3xl bg-white/85 backdrop-blur-xl p-4 sm:p-5 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left">
+    <div className="w-full max-w-5xl mx-auto rounded-3xl bg-white/20 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 ring-1 ring-white/20 text-left">
       <form onSubmit={handleTransferSubmit} className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
           <div className="inline-flex items-center gap-2 rounded-full bg-brand-orange/15 px-3 py-1 text-xs font-bold text-brand-orange">
@@ -76,7 +76,7 @@ export function TransferSearchWidget() {
               Pickup Location
             </Label>
             <Select value={pickup} onValueChange={setPickup}>
-              <SelectTrigger className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs">
+              <SelectTrigger className="h-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-medium focus:bg-white shadow-sm transition-colors">
                 <SelectValue placeholder="Select Pickup Location" />
               </SelectTrigger>
               <SelectContent>
@@ -96,7 +96,7 @@ export function TransferSearchWidget() {
               Drop-off Destination
             </Label>
             <Select value={dropoff} onValueChange={setDropoff}>
-              <SelectTrigger className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs">
+              <SelectTrigger className="h-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-medium focus:bg-white shadow-sm transition-colors">
                 <SelectValue placeholder="Select Destination" />
               </SelectTrigger>
               <SelectContent>
@@ -119,7 +119,7 @@ export function TransferSearchWidget() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs"
+              className="h-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-medium focus:bg-white shadow-sm transition-colors"
             />
           </div>
 
@@ -130,7 +130,7 @@ export function TransferSearchWidget() {
               Vehicle Category
             </Label>
             <Select value={vehicle} onValueChange={setVehicle}>
-              <SelectTrigger className="h-10 rounded-xl bg-white/90 border-slate-200 text-xs font-medium focus:bg-white shadow-2xs">
+              <SelectTrigger className="h-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-medium focus:bg-white shadow-sm transition-colors">
                 <SelectValue placeholder="Select Vehicle" />
               </SelectTrigger>
               <SelectContent>

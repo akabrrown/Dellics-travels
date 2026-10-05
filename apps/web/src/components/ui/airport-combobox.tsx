@@ -82,10 +82,10 @@ export function AirportCombobox({
       {/* Combobox Trigger Field */}
       <div
         onClick={() => setIsOpen(true)}
-        className={`w-full ${compact ? "h-10 px-3 py-1.5 rounded-xl text-xs" : "min-h-[44px] px-3.5 py-2 rounded-xl text-sm"} border transition-all cursor-pointer flex items-center justify-between gap-2 bg-white ${
+        className={`w-full ${compact ? "h-10 px-3 py-1.5 rounded-xl text-xs" : "min-h-[44px] px-3.5 py-2 rounded-xl text-sm"} border transition-all cursor-pointer flex items-center justify-between gap-2 bg-white/50 backdrop-blur-sm ${
           isOpen
             ? "border-navy ring-2 ring-navy/10"
-            : "border-slate-200 hover:border-slate-300 shadow-2xs"
+            : "border-white/40 hover:border-white/60 shadow-sm"
         }`}
       >
         <div className="flex items-center gap-2 overflow-hidden flex-1">
@@ -119,9 +119,9 @@ export function AirportCombobox({
 
       {/* Floating Dropdown Popover */}
       {isOpen && (
-        <div className="absolute z-50 left-0 right-0 top-full mt-1.5 bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden animate-in fade-in duration-150">
+        <div className="absolute z-50 left-0 right-0 top-full mt-1.5 bg-white/90 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden animate-in fade-in duration-150">
           {/* Live Search Input */}
-          <div className="p-2.5 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+          <div className="p-2.5 border-b border-slate-100 flex items-center gap-2 bg-white/40 backdrop-blur-md">
             <Search className="size-4 text-slate-400 shrink-0 ml-1" />
             <input
               id={id}

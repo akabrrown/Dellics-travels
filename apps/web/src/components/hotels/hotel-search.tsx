@@ -157,18 +157,18 @@ function HotelSearchFormInner({
   }
 
   return (
-    <div className="w-full max-w-5xl rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-xl p-2.5 sm:p-4.5 shadow-2xl border border-white/60 ring-1 ring-black/5 overflow-hidden">
+    <div className="w-full max-w-5xl rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-2xl p-2.5 sm:p-4.5 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 ring-1 ring-white/20 overflow-hidden">
       {fieldError && (
         <div className="mb-4 rounded-xl bg-rose-50 border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-700">
           {fieldError}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="space-y-4 bg-[#f2f2f2] rounded-xl p-4 md:p-6 shadow-inner border border-slate-200 text-left">
+      <form onSubmit={handleSubmit} className="space-y-4 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30 text-left">
         {/* ROW 1: Main Search */}
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Label htmlFor="hotel-dest" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Destination</Label>
-            <div className="relative border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+            <div className="relative border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
               <input
                 id="hotel-dest"
                 placeholder="Dubai, United Arab Emirates"
@@ -187,7 +187,7 @@ function HotelSearchFormInner({
           <div className="flex gap-3">
             <div className="w-full sm:w-36">
               <Label htmlFor="hotel-in" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Check-in</Label>
-              <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+              <div className="border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                 <input
                   id="hotel-in"
                   type="date"
@@ -199,7 +199,7 @@ function HotelSearchFormInner({
             </div>
             <div className="w-full sm:w-36">
               <Label htmlFor="hotel-out" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Check-out</Label>
-              <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+              <div className="border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                 <input
                   id="hotel-out"
                   type="date"
@@ -244,7 +244,7 @@ function HotelSearchFormInner({
           <div className="flex flex-col lg:flex-row gap-3">
             <div className="w-full lg:w-64">
               <Label htmlFor="hotel-citizen" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Guests' citizenship</Label>
-              <div className="relative border border-slate-300 rounded-lg bg-white h-10 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+              <div className="relative border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-10 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                 <input
                   id="hotel-citizen"
                   value={citizenship}
@@ -260,7 +260,7 @@ function HotelSearchFormInner({
             </div>
             
             <div className="flex items-end w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
-              <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden shrink-0">
+              <div className="h-10 flex items-center bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg overflow-hidden shrink-0">
                 {["No stars", "2 stars", "3 stars", "4 stars", "5 stars"].map(s => (
                   <button
                     key={s}
@@ -280,7 +280,7 @@ function HotelSearchFormInner({
                 id="hotel-board"
                 value={board}
                 onChange={(e) => setBoard(e.target.value)}
-                className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
+                className="w-full h-10 px-3 bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
               >
                 <option value="">Any meal plan</option>
                 <option value="RO">Room Only (RO)</option>
@@ -302,7 +302,7 @@ function HotelSearchFormInner({
                   type="time"
                   value={earlyCheckIn}
                   onChange={(e) => setEarlyCheckIn(e.target.value)}
-                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                  className="w-full h-10 px-3 bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
                 />
               </div>
               
@@ -313,14 +313,14 @@ function HotelSearchFormInner({
                   type="time"
                   value={lateCheckOut}
                   onChange={(e) => setLateCheckOut(e.target.value)}
-                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                  className="w-full h-10 px-3 bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
                 />
               </div>
             </div>
             
             <div className="flex items-center mt-3 lg:mt-[22px] lg:ml-2">
               <label className="flex items-center gap-2.5 cursor-pointer group">
-                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${freeCancellation ? "bg-[#EBB41E] border-[#EBB41E]" : "border-slate-300 bg-white group-hover:border-[#EBB41E]"}`}>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${freeCancellation ? "bg-[#EBB41E] border-[#EBB41E]" : "border-white/50 bg-white/50 backdrop-blur-sm group-hover:border-[#EBB41E] group-hover:bg-white"}`}>
                   {freeCancellation && <CheckCircle2 className="w-3 h-3 text-white" />}
                 </div>
                 <input 
@@ -358,7 +358,7 @@ export function HotelSearchForm({
   return (
     <Suspense
       fallback={
-        <div className="rounded-3xl bg-white/85 p-6 text-center text-slate-500 text-xs font-semibold">
+        <div className="rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 p-6 text-center text-slate-500 text-xs font-semibold shadow-inner">
           Loading Search Engine...
         </div>
       }

@@ -34,7 +34,7 @@ export function ViatorTourSearch() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto rounded-3xl bg-white/85 backdrop-blur-xl p-4 sm:p-6 shadow-2xl border border-white/60 ring-1 ring-black/5 text-left">
+    <div className="w-full max-w-5xl mx-auto rounded-3xl bg-white/20 backdrop-blur-2xl p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 ring-1 ring-white/20 text-left">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/15 px-3 py-0.5 text-xs font-bold text-brand-orange">
@@ -58,7 +58,7 @@ export function ViatorTourSearch() {
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             placeholder="Search by city or attraction (e.g. Dubai Desert Safari, Cape Town, Paris Louvre, Rome Colosseum)..."
-            className="h-11 pl-10 rounded-xl bg-white/90 border-slate-200 text-xs sm:text-sm font-medium focus:bg-white shadow-2xs"
+            className="h-11 pl-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs sm:text-sm font-medium focus:bg-white shadow-sm transition-colors"
           />
         </div>
 

@@ -144,11 +144,11 @@ export function QuickBook() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-xl p-2.5 sm:p-4.5 shadow-2xl border border-white/60 ring-1 ring-black/5 overflow-hidden">
+    <div className="mx-auto w-full max-w-5xl rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-2xl p-2.5 sm:p-4.5 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 ring-1 ring-white/20 overflow-hidden">
       <Tabs defaultValue="flights" className="w-full">
         {/* Compact Navigation Tabs Bar */}
         <div className="flex justify-start border-b border-white/40 pb-2 mb-3 overflow-x-auto no-scrollbar scroll-smooth -mx-1 px-1 sm:mx-0 sm:px-0">
-          <TabsList className="bg-white/70 backdrop-blur-md p-1 sm:p-1.5 rounded-xl sm:rounded-2xl flex gap-1 sm:gap-1.5 h-auto min-w-max border border-white/50 shadow-2xs">
+          <TabsList className="bg-white/20 backdrop-blur-md p-1 sm:p-1.5 rounded-xl sm:rounded-2xl flex gap-1 sm:gap-1.5 h-auto min-w-max border border-white/30 shadow-sm">
             <TabsTrigger
               value="flights"
               className="rounded-lg sm:rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 data-[state=active]:bg-brand-orange data-[state=active]:text-white data-[state=active]:shadow-md transition-all shrink-0 text-slate-700 hover:text-navy hover:bg-white/50"
@@ -214,13 +214,13 @@ export function QuickBook() {
 
         {/* 2. HOTELS TAB */}
         <TabsContent value="hotels" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleHotelSubmit} className="space-y-4 bg-[#f2f2f2] rounded-xl p-4 md:p-6 shadow-inner border border-slate-200">
+          <form onSubmit={handleHotelSubmit} className="space-y-4 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30">
             
             {/* ROW 1: Main Search */}
             <div className="flex flex-col lg:flex-row gap-3">
               <div className="flex-1 relative">
                 <Label htmlFor="hotel-dest" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Destination</Label>
-                <div className="relative border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                <div className="relative border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                   <input
                     id="hotel-dest"
                     placeholder="Dubai, United Arab Emirates"
@@ -239,7 +239,7 @@ export function QuickBook() {
               <div className="flex gap-3">
                 <div className="w-full sm:w-36">
                   <Label htmlFor="hotel-in" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Check-in</Label>
-                  <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                  <div className="border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                     <input
                       id="hotel-in"
                       type="date"
@@ -251,7 +251,7 @@ export function QuickBook() {
                 </div>
                 <div className="w-full sm:w-36">
                   <Label htmlFor="hotel-out" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Check-out</Label>
-                  <div className="border border-slate-300 rounded-lg bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                  <div className="border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-12 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                     <input
                       id="hotel-out"
                       type="date"
@@ -282,7 +282,7 @@ export function QuickBook() {
               <div className="flex flex-col lg:flex-row gap-3">
                 <div className="w-full lg:w-64">
                   <Label htmlFor="hotel-citizen" className="text-[11px] font-semibold text-slate-500 mb-1 block px-1">Guests' citizenship</Label>
-                  <div className="relative border border-slate-300 rounded-lg bg-white h-10 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
+                  <div className="relative border border-white/40 rounded-lg bg-white/50 backdrop-blur-sm transition-colors focus-within:bg-white h-10 flex items-center px-3 focus-within:border-[#EBB41E] focus-within:ring-1 focus-within:ring-[#EBB41E] transition-all">
                     <input
                       id="hotel-citizen"
                       value={hotelCitizenship}
@@ -298,7 +298,7 @@ export function QuickBook() {
                 </div>
                 
                 <div className="flex items-end w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
-                  <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden shrink-0">
+                  <div className="h-10 flex items-center bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg overflow-hidden shrink-0">
                     {["No stars", "2 stars", "3 stars", "4 stars", "5 stars"].map(s => (
                       <button
                         key={s}
@@ -318,7 +318,7 @@ export function QuickBook() {
                     id="hotel-board"
                     value={hotelBoard}
                     onChange={(e) => setHotelBoard(e.target.value)}
-                    className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
+                    className="w-full h-10 px-3 bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg text-sm text-slate-600 font-medium outline-none appearance-none cursor-pointer focus:border-[#EBB41E]"
                   >
                     <option value="">Any meal plan</option>
                     <option value="RO">Room Only (RO)</option>
@@ -340,7 +340,7 @@ export function QuickBook() {
                       type="time"
                       value={hotelEarlyCheckIn}
                       onChange={(e) => setHotelEarlyCheckIn(e.target.value)}
-                      className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                      className="w-full h-10 px-3 bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
                     />
                   </div>
                   
@@ -351,14 +351,14 @@ export function QuickBook() {
                       type="time"
                       value={hotelLateCheckOut}
                       onChange={(e) => setHotelLateCheckOut(e.target.value)}
-                      className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
+                      className="w-full h-10 px-3 bg-white/50 backdrop-blur-sm border border-white/40 transition-colors focus:bg-white rounded-lg text-sm text-slate-600 font-medium outline-none focus:border-[#EBB41E]"
                     />
                   </div>
                 </div>
                 
                 <div className="flex items-center mt-3 lg:mt-[22px] lg:ml-2">
                   <label className="flex items-center gap-2.5 cursor-pointer group">
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${hotelFreeCancellation ? "bg-[#EBB41E] border-[#EBB41E]" : "border-slate-300 bg-white group-hover:border-[#EBB41E]"}`}>
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${hotelFreeCancellation ? "bg-[#EBB41E] border-[#EBB41E]" : "border-white/50 bg-white/50 backdrop-blur-sm group-hover:border-[#EBB41E] group-hover:bg-white"}`}>
                       {hotelFreeCancellation && <CheckCircle2 className="w-3 h-3 text-white" />}
                     </div>
                     <input 
@@ -378,7 +378,7 @@ export function QuickBook() {
 
         {/* 3. TRANSFERS TAB */}
         <TabsContent value="transfers" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleTransferSubmit} className="space-y-3">
+          <form onSubmit={handleTransferSubmit} className="space-y-3 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30">
             <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <Label htmlFor="trans-pick" className="text-[11px] font-bold text-slate-700 mb-1 block">
@@ -389,7 +389,7 @@ export function QuickBook() {
                   placeholder="e.g. Kotoka Airport (ACC)"
                   value={transferPickup}
                   onChange={(e) => setTransferPickup(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
               <div>
@@ -401,7 +401,7 @@ export function QuickBook() {
                   placeholder="e.g. Accra, Tema, Cape Coast"
                   value={transferDropoff}
                   onChange={(e) => setTransferDropoff(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
               <div>
@@ -413,7 +413,7 @@ export function QuickBook() {
                   type="datetime-local"
                   value={transferDate}
                   onChange={(e) => setTransferDate(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
               <div>
@@ -445,7 +445,7 @@ export function QuickBook() {
 
         {/* 4. CARS TAB */}
         <TabsContent value="cars" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleCarSubmit} className="space-y-3">
+          <form onSubmit={handleCarSubmit} className="space-y-3 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30">
             <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <Label htmlFor="car-city" className="text-[11px] font-bold text-slate-700 mb-1 block">
@@ -456,7 +456,7 @@ export function QuickBook() {
                   placeholder="e.g. Accra / Tema, Ghana"
                   value={carCity}
                   onChange={(e) => setCarCity(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
               <div>
@@ -498,7 +498,7 @@ export function QuickBook() {
                   type="date"
                   value={carStartDate}
                   onChange={(e) => setCarStartDate(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
             </div>
@@ -515,7 +515,7 @@ export function QuickBook() {
 
         {/* 5. TOURS TAB */}
         <TabsContent value="tours" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleTourSubmit} className="space-y-3">
+          <form onSubmit={handleTourSubmit} className="space-y-3 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30">
             <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
               <div>
                 <Label htmlFor="tour-dest" className="text-[11px] font-bold text-slate-700 mb-1 block">
@@ -526,7 +526,7 @@ export function QuickBook() {
                   placeholder="e.g. Dubai, Zanzibar, Cape Town, Paris"
                   value={tourDestination}
                   onChange={(e) => setTourDestination(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
               <div>
@@ -559,7 +559,7 @@ export function QuickBook() {
 
         {/* 6. DIASPORA / PACKAGES TAB */}
         <TabsContent value="packages" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleDiasporaSubmit} className="space-y-3">
+          <form onSubmit={handleDiasporaSubmit} className="space-y-3 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30">
             <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
               <div>
                 <Label htmlFor="diaspora-pkg" className="text-[11px] font-bold text-slate-700 mb-1 block">
@@ -606,7 +606,7 @@ export function QuickBook() {
 
         {/* 7. ESIM TAB */}
         <TabsContent value="esim" className="mt-0 focus-visible:outline-none">
-          <form onSubmit={handleEsimSubmit} className="space-y-3">
+          <form onSubmit={handleEsimSubmit} className="space-y-3 bg-white/20 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-inner border border-white/30">
             <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
               <div>
                 <Label htmlFor="esim-c" className="text-[11px] font-bold text-slate-700 mb-1 block">
@@ -617,7 +617,7 @@ export function QuickBook() {
                   placeholder="e.g. Ghana, UAE, UK, USA, Schengen"
                   value={esimCountry}
                   onChange={(e) => setEsimCountry(e.target.value)}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-medium"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm focus:bg-white border-white/40 transition-colors text-xs font-medium"
                 />
               </div>
               <div>

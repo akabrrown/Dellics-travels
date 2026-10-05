@@ -103,7 +103,7 @@ export function FlightSearchWidget() {
             setError(null);
           }}
         >
-          <TabsList className="bg-white/60 backdrop-blur-md p-1 rounded-full h-9 border border-white/50 shadow-2xs">
+          <TabsList className="bg-white/20 backdrop-blur-md p-1 rounded-full h-9 border border-white/30 shadow-sm">
             <TabsTrigger
               value="roundtrip"
               className="rounded-full px-3 py-1 text-xs font-semibold text-slate-700 hover:text-navy data-[state=active]:bg-brand-orange data-[state=active]:text-white transition-all"
@@ -131,7 +131,7 @@ export function FlightSearchWidget() {
 
           {/* Cabin Class Selector */}
           <Select value={cabinClass} onValueChange={setCabinClass}>
-            <SelectTrigger className="h-9 px-3 rounded-full text-xs font-medium border-slate-200/80 bg-white/90 text-slate-700 w-32 shadow-2xs focus:bg-white">
+            <SelectTrigger className="h-9 px-3 rounded-full text-xs font-medium border-white/40 bg-white/50 backdrop-blur-sm text-slate-700 w-32 shadow-sm focus:bg-white transition-colors">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -202,7 +202,7 @@ export function FlightSearchWidget() {
                 type="date"
                 value={departDate}
                 onChange={(e) => setDepartDate(e.target.value)}
-                className="h-10 w-full min-w-0 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 shadow-2xs"
+                className="h-10 w-full min-w-0 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-semibold text-slate-900 shadow-sm focus:bg-white transition-colors"
               />
           </div>
 
@@ -217,7 +217,7 @@ export function FlightSearchWidget() {
                 type="date"
                 value={returnDate}
                 onChange={(e) => setReturnDate(e.target.value)}
-                className="h-10 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900 shadow-2xs"
+                className="h-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-semibold text-slate-900 shadow-sm focus:bg-white transition-colors"
               />
             </div>
           )}
@@ -228,7 +228,7 @@ export function FlightSearchWidget() {
           {multiCityLegs.map((leg, index) => (
             <div
               key={index}
-              className="grid gap-2.5 grid-cols-1 sm:grid-cols-3 p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 relative"
+              className="grid gap-2.5 grid-cols-1 sm:grid-cols-3 p-3 rounded-xl border border-white/30 bg-white/20 backdrop-blur-md shadow-inner relative"
             >
               <div>
                 <Label className="text-[11px] font-bold text-slate-700 mb-1 block">
@@ -269,7 +269,7 @@ export function FlightSearchWidget() {
                   type="date"
                   value={leg.departDate}
                   onChange={(e) => updateMultiCityLeg(index, { departDate: e.target.value })}
-                  className="h-10 rounded-xl bg-white border-slate-200 text-xs font-semibold text-slate-900"
+                  className="h-10 rounded-xl bg-white/50 backdrop-blur-sm border-white/40 text-xs font-semibold text-slate-900 focus:bg-white transition-colors"
                 />
               </div>
             </div>
