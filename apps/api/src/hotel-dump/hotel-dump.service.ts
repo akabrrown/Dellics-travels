@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
@@ -24,19 +23,7 @@ export class HotelDumpService {
     private readonly config: ConfigService,
   ) {}
 
-  /** Weekly full dump — Sundays at 02:00 UTC */
-  @Cron('0 2 * * 0')
-  async scheduledFullDump(): Promise<void> {
-    this.logger.log('Cron: triggering weekly full hotel dump');
-    await this.syncDump('full');
-  }
-
-  /** Daily incremental dump — every day at 03:00 UTC */
-  @Cron('0 3 * * *')
-  async scheduledIncrementalDump(): Promise<void> {
-    this.logger.log('Cron: triggering daily incremental hotel dump');
-    await this.syncDump('incremental');
-  }
+  
 
   async syncDump(type: 'full' | 'incremental'): Promise<{ upserted: number; errors: number }> {
     if (this.syncInProgress) {
