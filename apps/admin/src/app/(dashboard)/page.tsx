@@ -141,12 +141,7 @@ export default function AdminDashboardPage() {
     },
   ];
 
-  const SUPPLIERS = [
-    { name: "FX Flights GDS", status: "Operational", ping: "284ms", err: "0.00%", ok: true },
-    { name: "RateHawk Hotels", status: "Operational", ping: "410ms", err: "0.00%", ok: true },
-    { name: "Airalo eSIM API", status: "Operational", ping: "310ms", err: "0.00%", ok: true },
-    { name: "Paystack Gateway", status: "Operational", ping: "195ms", err: "0.00%", ok: true },
-  ];
+  
 
   return (
     <RoleGuard permission="dashboard.view" moduleName="Executive Dashboard">
@@ -330,44 +325,6 @@ export default function AdminDashboardPage() {
 
         {/* Right Col: Supplier Health + Support Queue */}
         <section className="space-y-6">
-          {/* Supplier Health Strip */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-              <div className="flex items-center gap-2">
-                <Activity className="size-4 text-[#0A0060]" />
-                <h3 className="font-display text-sm font-bold text-slate-900">
-                  Supplier & API Health
-                </h3>
-              </div>
-              <Link
-                href="/health"
-                className="text-xs font-bold text-[#F4740D] hover:underline"
-              >
-                Inspect →
-              </Link>
-            </div>
-
-            <ul className="space-y-3">
-              {SUPPLIERS.map((sup) => (
-                <li
-                  key={sup.name}
-                  className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100"
-                >
-                  <div>
-                    <p className="font-bold text-slate-800">{sup.name}</p>
-                    <p className="text-[11px] text-slate-500">
-                      p95 {sup.ping} · err {sup.err}
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center gap-1 font-bold text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                    <span className="size-1.5 rounded-full bg-emerald-600" />
-                    {sup.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Support Ticket Queue by SLA */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">

@@ -16,6 +16,18 @@ export function HeroSection() {
 
   return (
     <section className="bg-navy pt-32 pb-24 border-b border-navy-light relative overflow-hidden">
+      {/* Background Video */}
+      <div className="absolute inset-0 z-0">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="w-full h-full object-cover opacity-30"
+          src="https://cdn.pixabay.com/video/2019/11/24/29519-376510300_large.mp4"
+        />
+        <div className="absolute inset-0 bg-navy/70 mix-blend-multiply"></div>
+      </div>
       {/* Optional background image or styling to match the main site */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col items-center justify-center text-center gap-10">

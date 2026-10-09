@@ -15,7 +15,7 @@
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="inline-block py-1.5 px-4 rounded-full bg-navy/5 text-navy text-xs font-bold uppercase tracking-widest mb-4">Transparent Roadmap</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6">Our <span className="text-brand-orange">7-Step</span> Journey</h2>
-          <p className="text-slate-600 text-lg">Consult → Assess → Select → Apply → Offer → Visa → Travel</p>
+          
         </div>
 
         <div className="max-w-4xl mx-auto relative">
@@ -31,7 +31,7 @@
                   {/* Content Box */}
                   <div className={`w-full md:w-1/2 ${isEven ? 'md:pl-12' : 'md:pr-12'}`}>
                     <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:shadow-brand-blue/5 hover:-translate-y-1 transition-all group relative">
-                      <div className="text-4xl md:text-5xl font-display font-black text-slate-100 group-hover:text-brand-orange/10 transition-colors mb-3">{step.num}</div>
+                      <div className="text-4xl md:text-5xl font-display font-black text-brand-orange/20 group-hover:text-brand-orange/40 transition-colors mb-3">{step.num}</div>
                       <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">{step.title}</h3>
                       <p className="text-slate-600 text-sm leading-relaxed">{step.desc}</p>
                     </div>

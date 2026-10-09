@@ -14,6 +14,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Dellics Education Consult | Study Abroad Experts",
   description: "Premier education and travel consultancy helping African students study abroad. Guiding Futures. Building Success.",
+  icons: { icon: "/favicon.png", shortcut: "/favicon.png", apple: "/favicon.png" }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
