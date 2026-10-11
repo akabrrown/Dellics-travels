@@ -16,11 +16,12 @@ export const metadata: Metadata = {
   description: "Premier education and travel consultancy helping African students study abroad. Guiding Futures. Building Success.",
   icons: {
     icon: [
+      { url: "/favicon.ico" },
       { url: "/logo.jpg" },
       { url: "/favicon.png" },
       { url: "/icon.png" }
     ],
-    shortcut: "/logo.jpg",
+    shortcut: "/favicon.ico",
     apple: "/logo.jpg",
   }
 };
