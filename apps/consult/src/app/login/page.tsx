@@ -16,12 +16,19 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    try {
+      if (email) {
+        localStorage.setItem("dellics_user_email", email);
+        const namePart = (email.split("@")[0] || "").replace(/[._-]/g, " ");
+        localStorage.setItem("dellics_user_name", namePart.charAt(0).toUpperCase() + namePart.slice(1));
+      }
+    } catch (e) {}
     setTimeout(() => {
       setIsLoading(false);
       if (!showForgot) {
         router.push("/portal");
       }
-    }, 1500);
+    }, 1000);
   };
 
   return (

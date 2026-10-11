@@ -1,42 +1,48 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 
-// Placeholder data for university logos
-// Real university logos
 const universities = [
-  { name: "University of Toronto", country: "Canada", color: "bg-[#002A5C] text-white", domain: "utoronto.ca" },
-  { name: "University of Ghana", country: "Ghana", color: "bg-[#0A2240] text-[#D4AF37]", domain: "ug.edu.gh" },
-  { name: "University of Manchester", country: "UK", color: "bg-[#660099] text-white", domain: "manchester.ac.uk" },
-  { name: "Ashesi University", country: "Ghana", color: "bg-[#800000] text-white", domain: "ashesi.edu.gh" },
-  { name: "University of Sydney", country: "Australia", color: "bg-[#E03C31] text-white", domain: "sydney.edu.au" },
-  { name: "New York University", country: "USA", color: "bg-[#57068C] text-white", domain: "nyu.edu" },
-  { name: "KNUST", country: "Ghana", color: "bg-[#003366] text-[#FCD116]", domain: "knust.edu.gh" },
-  { name: "University of Edinburgh", country: "UK", color: "bg-[#041E42] text-white", domain: "ed.ac.uk" },
-  { name: "Harvard University", country: "USA", color: "bg-[#A51C30] text-white", domain: "harvard.edu" },
-  { name: "Oxford University", country: "UK", color: "bg-[#002147] text-white", domain: "ox.ac.uk" },
+  { name: "University of Oxford", country: "United Kingdom", logo: "oxford.svg", ranking: "Top 1 UK" },
+  { name: "University of Cambridge", country: "United Kingdom", logo: "cambridge.svg", ranking: "Top 2 UK" },
+  { name: "Harvard University", country: "United States", logo: "harvard.svg", ranking: "Ivy League" },
+  { name: "University of Toronto", country: "Canada", logo: "toronto.svg", ranking: "#1 in Canada" },
+  { name: "Imperial College London", country: "United Kingdom", logo: "imperial.svg", ranking: "Global Top 10" },
+  { name: "University of Manchester", country: "United Kingdom", logo: "manchester.svg", ranking: "Russell Group" },
+  { name: "University of Sydney", country: "Australia", logo: "sydney.svg", ranking: "Go8 Australia" },
+  { name: "University of Melbourne", country: "Australia", logo: "melbourne.svg", ranking: "Top 1 Australia" },
+  { name: "New York University", country: "United States", logo: "nyu.svg", ranking: "Global Top 25" },
+  { name: "University of Ghana", country: "Ghana", logo: "ug.svg", ranking: "Premier University" },
+  { name: "KNUST", country: "Ghana", logo: "knust.svg", ranking: "Top Tech University" },
+  { name: "Ashesi University", country: "Ghana", logo: "ashesi.svg", ranking: "Leadership & Ethics" },
 ];
 
 export function UniversityPartners() {
   return (
-    <section className="py-16 bg-slate-50 overflow-hidden border-y border-slate-200">
-
-
+    <section className="py-14 bg-slate-50 border-y border-slate-200 overflow-hidden">
       <div className="relative flex overflow-x-hidden group">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-12 py-4 group-hover:[animation-play-state:paused]">
-          {[...universities, ...universities, ...universities].map((uni, idx) => (
+        <div className="animate-marquee whitespace-nowrap flex items-center gap-8 py-2 group-hover:[animation-play-state:paused]">
+          {[...universities, ...universities].map((uni, idx) => (
             <div 
               key={idx} 
-              className="flex items-center gap-3 px-6 py-4 bg-white rounded-2xl shadow-sm border border-slate-100 min-w-[250px] transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
+              className="flex items-center gap-4 px-6 py-4 bg-white rounded-2xl shadow-sm border border-slate-200/80 min-w-[280px] transition-all hover:-translate-y-1 hover:shadow-md hover:border-brand-orange/40 cursor-pointer"
             >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-slate-50 border border-slate-100 overflow-hidden relative">
-                <Image src={`https://logo.clearbit.com/${uni.domain}`} alt={uni.name} fill className="object-contain p-2" unoptimized />
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 bg-slate-50 border border-slate-100 p-2 relative overflow-hidden shadow-inner">
+                <Image 
+                  src={`/universities/${uni.logo}`} 
+                  alt={`${uni.name} official logo`} 
+                  width={44} 
+                  height={44} 
+                  className="object-contain w-full h-full"
+                  unoptimized 
+                />
               </div>
               <div className="overflow-hidden">
                 <div className="font-bold text-slate-900 text-sm truncate">{uni.name}</div>
-                <div className="text-xs text-brand-blue font-medium mt-0.5 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
-                  {uni.country}
+                <div className="text-xs text-brand-blue font-medium mt-0.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange shrink-0"></span>
+                  <span className="truncate">{uni.country}</span>
+                  <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono ml-auto">{uni.ranking}</span>
                 </div>
               </div>
             </div>
@@ -44,17 +50,15 @@ export function UniversityPartners() {
         </div>
       </div>
       
-      {/* Required CSS for animation (this would typically be in globals.css) */}
       <style jsx global>{`
         @keyframes marquee {
           0% { transform: translateX(0%); }
-          100% { transform: translateX(-33.33%); }
+          100% { transform: translateX(-50%); }
         }
         .animate-marquee {
-          animation: marquee 20s linear infinite;
+          animation: marquee 28s linear infinite;
         }
       `}</style>
     </section>
   );
 }
-

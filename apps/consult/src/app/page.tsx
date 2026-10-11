@@ -1,5 +1,15 @@
 import type { Metadata } from 'next';
-import { HeroSection, HowItWorksSection, ServicesSection, DashboardShowcase, WhyChooseUsSection, TestimonialsSection, FaqSection, ContactSection, UniversityPartners, RecommendedServices } from '../components/home';
+import { 
+  HeroSection, 
+  UniversityPartners, 
+  HowItWorksSection, 
+  ServicesSection, 
+  RecommendedServices, 
+  DashboardShowcase, 
+  WhyChooseUsSection, 
+  TestimonialsSection, 
+  FaqSection 
+} from '../components/home';
 
 export const metadata: Metadata = {
   title: 'Dellics Education Consult | Study Abroad in UK, Canada, USA & Australia',
@@ -10,10 +20,10 @@ export default function ConsultHome() {
   return (
     <main className="min-h-screen font-sans">
       <HeroSection />
-<UniversityPartners />
+      <UniversityPartners />
       <HowItWorksSection />
       <ServicesSection />
-<RecommendedServices />
+      <RecommendedServices />
       <DashboardShowcase />
       <WhyChooseUsSection />
       <TestimonialsSection />

@@ -16,10 +16,17 @@ export default function SignupPage() {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) return;
     setIsLoading(true);
+    try {
+      if (formData.email) {
+        localStorage.setItem("dellics_user_email", formData.email);
+        const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
+        if (fullName) localStorage.setItem("dellics_user_name", fullName);
+      }
+    } catch (e) {}
     setTimeout(() => {
       setIsLoading(false);
       setIsSuccess(true);
-    }, 1500);
+    }, 1000);
   };
 
   const update = (field: string, value: any) => setFormData((prev) => ({ ...prev, [field]: value }));

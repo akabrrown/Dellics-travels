@@ -14,7 +14,15 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Dellics Education Consult | Study Abroad Experts",
   description: "Premier education and travel consultancy helping African students study abroad. Guiding Futures. Building Success.",
-  icons: { icon: "/favicon.png", shortcut: "/favicon.png", apple: "/favicon.png" }
+  icons: {
+    icon: [
+      { url: "/logo.jpg" },
+      { url: "/favicon.png" },
+      { url: "/icon.png" }
+    ],
+    shortcut: "/logo.jpg",
+    apple: "/logo.jpg",
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
