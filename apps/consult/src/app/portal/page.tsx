@@ -367,7 +367,7 @@ export default function StudentPortalPage() {
             <div className="bg-gradient-to-br from-navy via-slate-900 to-navy text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
               <div className="relative z-10 max-w-2xl">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-orange text-white text-xs font-bold uppercase tracking-wider mb-4">
-                  <Sparkles className="w-3.5 h-3.5" /> Seamless Ecosystem Integration
+                  <Sparkles className="w-3.5 h-3.5" /> Direct Ecosystem Integration
                 </span>
                 <h3 className="text-3xl font-display font-bold text-white mb-3">
                   Powered by Dellics Travels

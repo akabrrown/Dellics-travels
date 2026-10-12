@@ -1,21 +1,21 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react";
 
 const SERVICE_LINKS = [
-  { label: "University Admissions", href: "/services#admissions" },
-  { label: "Visa Assistance", href: "/services#visa" },
-  { label: "Scholarship Guidance", href: "/services#scholarship" },
-  { label: "Travel & Tour", href: "/services#travel" },
-  { label: "Online Counselling", href: "/services#online" },
-  { label: "Test Preparation", href: "/services#test" },
+  { label: "University Admissions", href: "/services/admissions" },
+  { label: "Visa Assistance", href: "/services/visa" },
+  { label: "Scholarship Guidance", href: "/services/scholarship" },
+  { label: "Travel & Tour", href: "/services/travel" },
+  { label: "Online Counselling", href: "/services/online" },
+  { label: "Test Preparation", href: "/services/test" },
 ];
 
 const DEST_LINKS = [
-  { label: "Study in UK", href: "/destinations#uk" },
-  { label: "Study in Canada", href: "/destinations#canada" },
-  { label: "Study in USA", href: "/destinations#usa" },
-  { label: "Study in Australia", href: "/destinations#australia" },
+  { label: "Study in UK", href: "/destinations/uk" },
+  { label: "Study in Canada", href: "/destinations/canada" },
+  { label: "Study in USA", href: "/destinations/usa" },
+  { label: "Study in Australia", href: "/destinations/australia" },
   { label: "Study in Europe", href: "/destinations#europe" },
 ];
 
@@ -70,7 +70,6 @@ export function SiteFooter() {
               </div>
             </div>
 
-            {/* Services */}
             <div className="lg:col-span-2">
               <h4 className="text-sm font-semibold text-white mb-6">
                 Our Services
@@ -89,7 +88,6 @@ export function SiteFooter() {
               </ul>
             </div>
 
-            {/* Destinations */}
             <div className="lg:col-span-3">
               <h4 className="text-sm font-semibold text-white mb-6">
                 Destinations

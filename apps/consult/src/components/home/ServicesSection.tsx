@@ -4,51 +4,63 @@ import { GraduationCap, Briefcase, Award, PlaneTakeoff, MonitorPlay, FileText } 
 export function ServicesSection() {
   const services = [
     { 
+      id: "admissions",
       title: "University Admissions", 
       desc: "Expert guidance on choosing the right university and program. We review your profile, shortlist institutions, and manage your complete application dossier.", 
       icon: GraduationCap, 
+      subpage: "/services/admissions",
       link: "/signup", 
       cta: "Start Application",
       external: false
     },
     { 
+      id: "visa",
       title: "Visa Guidance & Compliance", 
       desc: "Navigate complex visa requirements with confidence. Our visa specialists conduct rigorous financial audits and embassy interview coaching.", 
       icon: Briefcase, 
+      subpage: "/services/visa",
       link: "/contact?service=visa", 
       cta: "Get Visa Guidance", 
       featured: true,
       external: false
     },
     { 
+      id: "scholarship",
       title: "Scholarship Guidance", 
       desc: "Discover and secure scholarships worth thousands of dollars. We identify opportunities you qualify for and craft compelling applications.", 
       icon: Award, 
+      subpage: "/services/scholarship",
       link: "/contact?service=scholarship", 
       cta: "Explore Grants",
       external: false
     },
     { 
+      id: "travel",
       title: "Dellics Travels Integration", 
       desc: "Powered by Dellics Travels, we arrange student discounted airfares, verified accommodation, airport transfers, and eSIM cards.", 
       icon: PlaneTakeoff, 
+      subpage: "/services/travel",
       link: "https://dellicstravels.com", 
       cta: "View Travel Perks",
       external: true
     },
     { 
+      id: "online",
       title: "Online Counselling", 
       desc: "Connect with our qualified counsellors via video call from anywhere in Ghana or Africa for personalized guidance at your convenience.", 
       icon: MonitorPlay, 
+      subpage: "/services/online",
       link: "/contact?service=counselling", 
       cta: "Book Session",
       external: false
     },
     { 
+      id: "test",
       title: "Tests & Exam Coordination", 
       desc: "We act as your coordination service with accredited institutions and British Council/ETS partners for comprehensive IELTS, TOEFL, SAT, and GRE prep.", 
       icon: FileText, 
-      link: "/services#test", 
+      subpage: "/services/test",
+      link: "/services/test", 
       cta: "Coordinate Exam",
       external: false
     },
@@ -73,7 +85,8 @@ export function ServicesSection() {
           {services.map((svc, idx) => (
             <div 
               key={idx} 
-              className={`relative p-8 rounded-3xl border transition-all flex flex-col justify-between ${
+              id={svc.id}
+              className={`relative p-8 rounded-3xl border transition-all flex flex-col justify-between scroll-mt-28 ${
                 svc.featured 
                   ? 'bg-navy border-navy text-white shadow-xl hover:-translate-y-1' 
                   : 'bg-white border-slate-200 text-slate-900 hover:shadow-lg hover:border-brand-orange/30 hover:-translate-y-1 group'
@@ -93,31 +106,44 @@ export function ServicesSection() {
                 </div>
                 
                 <h3 className="text-xl font-bold mb-3">{svc.title}</h3>
-                <p className={`mb-8 leading-relaxed text-sm ${svc.featured ? 'text-slate-300' : 'text-slate-600'}`}>
+                <p className={`mb-6 leading-relaxed text-sm ${svc.featured ? 'text-slate-300' : 'text-slate-600'}`}>
                   {svc.desc}
                 </p>
               </div>
               
-              <div>
+              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                <Link
+                  href={svc.subpage}
+                  className={`text-xs font-bold transition-colors ${
+                    svc.featured ? 'text-slate-300 hover:text-white' : 'text-slate-500 hover:text-navy'
+                  }`}
+                >
+                  View Details &rarr;
+                </Link>
+
                 {svc.external ? (
                   <a 
                     href={svc.link} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className={`inline-flex items-center gap-2 font-bold text-sm transition-colors ${
-                      svc.featured ? 'text-brand-orange hover:text-white' : 'text-navy group-hover:text-brand-orange'
+                    className={`inline-flex items-center gap-1.5 font-bold text-xs px-3.5 py-2 rounded-xl transition-all ${
+                      svc.featured 
+                        ? 'bg-brand-orange text-white hover:bg-brand-orange-hover shadow-md' 
+                        : 'bg-navy text-white hover:bg-brand-orange shadow-sm'
                     }`}
                   >
-                    {svc.cta} <span aria-hidden="true">&rarr;</span>
+                    {svc.cta}
                   </a>
                 ) : (
                   <Link 
                     href={svc.link} 
-                    className={`inline-flex items-center gap-2 font-bold text-sm transition-colors ${
-                      svc.featured ? 'text-brand-orange hover:text-white' : 'text-navy group-hover:text-brand-orange'
+                    className={`inline-flex items-center gap-1.5 font-bold text-xs px-3.5 py-2 rounded-xl transition-all ${
+                      svc.featured 
+                        ? 'bg-brand-orange text-white hover:bg-brand-orange-hover shadow-md' 
+                        : 'bg-navy text-white hover:bg-brand-orange shadow-sm'
                     }`}
                   >
-                    {svc.cta} <span aria-hidden="true">&rarr;</span>
+                    {svc.cta}
                   </Link>
                 )}
               </div>

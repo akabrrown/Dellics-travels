@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { CheckCircle2, UserCircle2, LayoutDashboard, FileText, ClipboardList, Plane, FolderLock, ArrowRight } from "lucide-react";
 
 export function DashboardShowcase() {
@@ -81,7 +81,7 @@ export function DashboardShowcase() {
         <div className="mt-16 text-center space-y-6">
           <div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Start managing your study-abroad journey today</h3>
-            <p className="text-slate-600">Create your free student account to unlock university shortlists, test bookings, and real-time tracking.</p>
+            <p className="text-slate-600">Create your free student account to access university shortlists, test bookings, and real-time tracking.</p>
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/signup" className="px-8 py-3 rounded-lg bg-brand-orange hover:bg-brand-orange-hover text-white font-bold transition-colors">Create Student Account</Link>

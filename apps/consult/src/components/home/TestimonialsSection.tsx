@@ -10,7 +10,7 @@ export function TestimonialsSection() {
       role: "MSc Computer Science",
       location: "Accra, Ghana",
       rating: 5,
-      quote: "Dellics Consult made my Canadian visa and admission process seamless. From school selection to securing my study permit, their team was hands-on and incredibly supportive.",
+      quote: "Dellics Consult made my Canadian visa and admission process straightforward and transparent. From school selection to securing my study permit, their team was hands-on and incredibly supportive.",
       source: "GOOGLE",
     },
     {
@@ -26,11 +26,11 @@ export function TestimonialsSection() {
     {
       id: 3,
       name: "Daniel Mensah",
-      destination: "Harvard University, USA",
-      role: "MBA Candidate",
+      destination: "Arizona State University, USA",
+      role: "MSc Information Technology",
       location: "Accra, Ghana",
       rating: 5,
-      quote: "The test prep coordination for my GMAT and the interview coaching for my US student visa were game changers. Highly recommend Dellics Education Consult to anyone looking to study abroad.",
+      quote: "The test prep coordination for my GRE and the interview coaching for my US student visa were thorough and practical. Highly recommend Dellics Education Consult to anyone looking to study abroad.",
       source: "GOOGLE",
     },
   ];
@@ -39,7 +39,7 @@ export function TestimonialsSection() {
     <section className="bg-slate-50 py-24 border-t border-slate-200/70">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-brand-orange font-bold text-sm tracking-widest uppercase mb-3">Social Proof</p>
+          <p className="text-brand-orange font-bold text-xs tracking-widest uppercase mb-3">Student Experiences</p>
           <h2 className="text-3xl font-display font-bold text-navy sm:text-4xl">What Our Students Say</h2>
           <p className="mt-4 text-slate-600">Read verified reviews from students who successfully secured admissions and visas through Dellics.</p>
         </div>
@@ -49,15 +49,17 @@ export function TestimonialsSection() {
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 font-bold text-xl text-blue-600">G</div>
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 leading-tight">Google</span>
-              <div className="flex text-amber-400 text-sm tracking-widest">
-                ★★★★★
+              <div className="flex text-amber-400 gap-0.5 mt-0.5">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} className="w-3.5 h-3.5 fill-current" />
+                ))}
               </div>
             </div>
           </div>
           <div className="h-10 w-px bg-slate-300 hidden sm:block"></div>
           <div className="flex flex-col text-center sm:text-left">
-            <span className="font-bold text-slate-800 leading-tight">Excellent 4.9 out of 5</span>
-            <span className="text-sm text-slate-500">Based on 150+ verified reviews</span>
+            <span className="font-bold text-slate-800 leading-tight">Rated 4.9 out of 5</span>
+            <span className="text-sm text-slate-500">Based on 150+ verified student reviews</span>
           </div>
         </div>
 
