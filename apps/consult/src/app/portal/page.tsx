@@ -18,7 +18,8 @@ import {
   Building2, 
   ShieldCheck, 
   ArrowRight,
-  Sparkles
+  Smartphone,
+  Car
 } from "lucide-react";
 
 interface AppRecord {
@@ -367,7 +368,7 @@ export default function StudentPortalPage() {
             <div className="bg-gradient-to-br from-navy via-slate-900 to-navy text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
               <div className="relative z-10 max-w-2xl">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-orange text-white text-xs font-bold uppercase tracking-wider mb-4">
-                  <Sparkles className="w-3.5 h-3.5" /> Direct Ecosystem Integration
+                  <Plane className="w-3.5 h-3.5" /> Direct Ecosystem Integration
                 </span>
                 <h3 className="text-3xl font-display font-bold text-white mb-3">
                   Powered by Dellics Travels
@@ -378,19 +379,27 @@ export default function StudentPortalPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                   <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="font-bold text-brand-orange text-sm mb-1">✈️ Extra Baggage Allowance</div>
+                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
+                      <Plane className="w-4 h-4" /> Extra Baggage Allowance
+                    </div>
                     <p className="text-xs text-slate-300">2x 23kg checked bags on British Airways, Qatar Airways, Delta, and KLM for Dellics students.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="font-bold text-brand-orange text-sm mb-1">🏠 Verified Student Housing</div>
+                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
+                      <Building2 className="w-4 h-4" /> Verified Student Housing
+                    </div>
                     <p className="text-xs text-slate-300">Inspected accommodation options with student lease guarantee and zero booking fees.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="font-bold text-brand-orange text-sm mb-1">📱 International eSIM</div>
+                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
+                      <Smartphone className="w-4 h-4" /> International eSIM
+                    </div>
                     <p className="text-xs text-slate-300">Pre-activated high-speed data ready the minute you land at Heathrow, Pearson, or JFK.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="font-bold text-brand-orange text-sm mb-1">🚕 Airport Meet & Greet</div>
+                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
+                      <Car className="w-4 h-4" /> Airport Meet & Greet
+                    </div>
                     <p className="text-xs text-slate-300">Safe, direct campus transfer coordinated directly with university arrival teams.</p>
                   </div>
                 </div>

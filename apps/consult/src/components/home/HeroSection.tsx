@@ -13,8 +13,7 @@ import {
   MapPin, 
   CheckCircle2, 
   X, 
-  Clock,
-  Sparkles
+  Clock
 } from "lucide-react";
 
 interface UniversityItem {
@@ -149,13 +148,13 @@ export function HeroSection() {
           {/* Header Typography */}
           <div className="max-w-4xl mx-auto">
             <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider mb-4 border border-brand-orange/30">
-              <Sparkles className="w-3.5 h-3.5" /> Ghana's Premier International Education Consult
+              <GraduationCap className="w-3.5 h-3.5" /> Ghana's Premier International Education Consult
             </span>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.1] tracking-tight">
               Your Gateway to a <span className="text-brand-orange">World-Class Degree</span>.
             </h1>
             <p className="mt-4 text-slate-300 text-base md:text-lg max-w-3xl mx-auto font-light leading-relaxed">
-              Direct university placements, accredited scholarships, IELTS guidance, and visa compliance for the UK, Canada, USA, and Australia &mdash; fully integrated with Dellics Travels.
+              Direct university placements, accredited scholarships, IELTS guidance, and visa compliance for the UK, Canada, USA, and Australia - fully integrated with Dellics Travels.
             </p>
           </div>
 

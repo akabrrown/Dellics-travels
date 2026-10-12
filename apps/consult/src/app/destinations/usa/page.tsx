@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, Calendar, DollarSign, Clock, Briefcase, Award, Sparkles } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Calendar, DollarSign, Clock, Briefcase, Award, ShieldCheck } from 'lucide-react';
 import { CtaBanner } from '@/components/home';
 
 export const metadata: Metadata = {
@@ -149,7 +149,7 @@ export default function StudyInUSAPage() {
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-6">
-                <Sparkles className="w-8 h-8 text-brand-orange" />
+                <ShieldCheck className="w-8 h-8 text-brand-orange" />
                 <div>
                   <h3 className="font-bold text-white text-lg">F-1 Visa Interview Masterclass</h3>
                   <p className="text-xs text-slate-400">Embassy prep for Accra and consular posts</p>

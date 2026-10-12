@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, Users, ShieldCheck, FileKey, GraduationCap, Plane, Globe, Award, Sparkles } from "lucide-react";
+import { CheckCircle, Users, ShieldCheck, FileKey, GraduationCap, Plane, Globe, Award } from "lucide-react";
 
 export function WhyChooseUsSection() {
   const feats = [
@@ -17,57 +17,78 @@ export function WhyChooseUsSection() {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="order-2 lg:order-1 relative">
-            
-            
-            {/* Visual Graphic Representation */}
-            <div className="relative w-full max-w-md mx-auto aspect-square">
-              {/* Central Element */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-white shadow-md shadow-brand-blue/10 border border-slate-100 flex items-center justify-center z-20 overflow-hidden">
-                <Image src="/logo.jpg" width={120} height={120} alt="Dellics Consult" className="rounded-xl object-contain" />
-              </div>
-              
-              {/* Orbit Rings */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-slate-200 z-10"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-slate-100 border-dashed animate-[spin_30s_linear_infinite_reverse] z-10"></div>
-              
-              {/* Floating Perks */}
-              <div className="absolute top-[10%] left-[20%] bg-white p-3 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-3 animate-[bounce_4s_infinite] z-30">
-                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-brand-blue" />
+            {/* Institutional Trust & Agency Card */}
+            <div className="relative mx-auto w-full max-w-lg">
+              <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-800 relative overflow-hidden">
+                {/* Ambient Subtle Accent */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                {/* Card Top: Agency Brand Header */}
+                <div className="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
+                      <Image src="/logo.jpg" width={40} height={40} alt="Dellics Consult" className="rounded-lg object-contain" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-white text-base leading-tight">Dellics Education Consult</div>
+                      <div className="text-xs text-slate-400">Accredited International Advisory</div>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
+                    Verified Agency
+                  </span>
                 </div>
-                <div className="pr-2">
-                  <div className="text-xs font-bold text-slate-900">Global</div>
-                  <div className="text-[10px] text-slate-500">Reach</div>
-                </div>
-              </div>
 
-              <div className="absolute bottom-[20%] left-[10%] bg-white p-3 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-3 animate-[bounce_5s_infinite_0.5s] z-30">
-                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
-                  <Plane className="w-5 h-5 text-brand-orange" />
+                {/* 3 Key Institutional Metrics */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  <div className="bg-slate-800/60 rounded-2xl p-3.5 border border-slate-700/50 text-center">
+                    <div className="text-2xl font-display font-bold text-brand-orange">97.4%</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">Visa Success</div>
+                  </div>
+                  <div className="bg-slate-800/60 rounded-2xl p-3.5 border border-slate-700/50 text-center">
+                    <div className="text-2xl font-display font-bold text-white">150+</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">Partner Unis</div>
+                  </div>
+                  <div className="bg-slate-800/60 rounded-2xl p-3.5 border border-slate-700/50 text-center">
+                    <div className="text-2xl font-display font-bold text-white">100%</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">Continuity</div>
+                  </div>
                 </div>
-                <div className="pr-2">
-                  <div className="text-xs font-bold text-slate-900">Integrated</div>
-                  <div className="text-[10px] text-slate-500">Travel</div>
-                </div>
-              </div>
 
-              <div className="absolute top-[30%] right-[5%] bg-white p-3 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-3 animate-[bounce_6s_infinite_1s] z-30">
-                <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-amber-500" />
+                {/* Verified Operational Pillars */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30">
+                    <div className="w-8 h-8 rounded-lg bg-brand-orange/20 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-4 h-4 text-brand-orange" />
+                    </div>
+                    <div className="text-xs text-slate-200">
+                      <span className="font-semibold text-white">Consular Pre-Screening:</span> Stringent review of financial holding periods and documentation.
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+                      <Globe className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <div className="text-xs text-slate-200">
+                      <span className="font-semibold text-white">Four Study Hubs:</span> Direct placements across the UK, Canada, USA, and Australia.
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+                      <Plane className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <div className="text-xs text-slate-200">
+                      <span className="font-semibold text-white">Dellics Travels Parentage:</span> Student airfares, extra baggage allowances, and relocation support.
+                    </div>
+                  </div>
                 </div>
-                <div className="pr-2">
-                  <div className="text-xs font-bold text-slate-900">Expert</div>
-                  <div className="text-[10px] text-slate-500">Guidance</div>
-                </div>
-              </div>
-              
-              <div className="absolute bottom-[10%] right-[20%] bg-slate-900 p-3 rounded-2xl shadow-xl flex items-center gap-3 animate-[pulse_3s_infinite_1s] z-30">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
-                </div>
-                <div className="pr-2">
-                  <div className="text-xs font-bold text-white">Full</div>
-                  <div className="text-[10px] text-slate-400">Integration</div>
+
+                {/* Footer Portal Callout */}
+                <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <span>Student Portal Real-Time Tracking</span>
+                  <Link href="/portal" className="text-brand-orange hover:text-white transition-colors font-medium">
+                    Preview System &rarr;
+                  </Link>
                 </div>
               </div>
             </div>
@@ -76,7 +97,7 @@ export function WhyChooseUsSection() {
           <div className="order-1 lg:order-2">
             <span className="inline-block py-1.5 px-4 rounded-full bg-navy/5 text-navy text-xs font-bold uppercase tracking-widest mb-4">Why Choose Dellics</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6">Guiding Students from <span className="text-brand-orange">Application to Arrival</span></h2>
-            <p className="text-slate-600 text-lg leading-relaxed mb-10">At Dellics Education Consult, we combine deep expertise in international education with genuine care for every student. We are not just consultants &mdash; we are your end-to-end partners with a dedicated digital platform to keep you informed at every milestone.</p>
+            <p className="text-slate-600 text-lg leading-relaxed mb-10">At Dellics Education Consult, we combine deep expertise in international education with genuine care for every student. We are not just consultants - we are your end-to-end partners with a dedicated digital platform to keep you informed at every milestone.</p>
             
             <div className="grid sm:grid-cols-2 gap-6 mb-10">
               {feats.map((feat, idx) => (

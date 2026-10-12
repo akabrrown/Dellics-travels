@@ -51,9 +51,9 @@ export function HowItWorksSection() {
                     </div>
                   </div>
 
-                  {/* Center Node with Vibrant Glowing Orange Ring */}
-                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border-4 border-brand-orange items-center justify-center z-10 shadow-[0_0_15px_rgba(244,116,13,0.45)]">
-                    <div className="w-3.5 h-3.5 rounded-full bg-brand-orange animate-pulse"></div>
+                  {/* Center Step Node */}
+                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-2 border-brand-orange items-center justify-center z-10 shadow-sm">
+                    <div className="w-2.5 h-2.5 rounded-full bg-brand-orange"></div>
                   </div>
 
                   {/* Empty Spacer for layout */}

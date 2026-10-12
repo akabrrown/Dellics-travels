@@ -429,8 +429,8 @@ export function ContactSection() {
                   <div>
                     <div className="font-bold text-white text-sm mb-0.5">Consulting Hours</div>
                     <div className="text-slate-300 leading-relaxed">
-                      Monday &ndash; Friday: 8:30 AM &ndash; 5:30 PM GMT<br/>
-                      Saturday: 10:00 AM &ndash; 2:00 PM (By Appointment)
+                      Monday - Friday: 8:30 AM - 5:30 PM GMT<br/>
+                      Saturday: 10:00 AM - 2:00 PM (By Appointment)
                     </div>
                   </div>
                 </div>
