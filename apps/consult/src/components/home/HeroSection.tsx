@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { HeroBannerSlider } from "./HeroBannerSlider";
 import { 
   Search, 
   GraduationCap, 
@@ -126,24 +127,16 @@ export function HeroSection() {
   };
 
   return (
-    <section className="bg-navy pt-32 pb-24 border-b border-navy-light relative overflow-hidden min-h-[640px] flex items-center">
-      {/* Background Campus Video with Dark Overlay */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-          poster="/images/services/photo-10-2026-07-22-15-35-17.jpg"
-          className="w-full h-full object-cover opacity-25 scale-105 transition-transform duration-1000"
-        >
-          <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/95 via-navy/85 to-navy/95 backdrop-blur-[1px]"></div>
+    <section className="bg-navy pt-28 pb-20 sm:pt-32 sm:pb-24 border-b border-navy-light relative overflow-hidden">
+      {/* Dynamic Background Ambient Canvas */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-brand-orange/15 blur-[140px] animate-pulse"></div>
+        <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full bg-blue-600/15 blur-[140px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px]"></div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="flex flex-col items-center justify-center text-center gap-10">
+        <div className="flex flex-col items-center justify-center text-center gap-8 sm:gap-10">
           
           {/* Header Typography */}
           <div className="max-w-4xl mx-auto">
@@ -154,8 +147,13 @@ export function HeroSection() {
               Your Gateway to a <span className="text-brand-orange">World-Class Degree</span>.
             </h1>
             <p className="mt-4 text-slate-300 text-base md:text-lg max-w-3xl mx-auto font-light leading-relaxed">
-              Direct university placements, accredited scholarships, IELTS guidance, and visa compliance for the UK, Canada, USA, and Australia - fully integrated with Dellics Travels.
+              Direct university placements, accredited scholarships, SAT prep, and visa compliance for the UK, Canada, USA, and Australia — fully integrated with Dellics Travels.
             </p>
+          </div>
+
+          {/* Dellics Official Banner Slider (3 Official High-Res Slides) */}
+          <div className="w-full">
+            <HeroBannerSlider />
           </div>
 
           {/* Central IDP/Edvoy-Style Search & Filter Container */}

@@ -201,4 +201,39 @@ test.describe('Dellics Education Consult - Student Portal & Registration Suite',
     await expect(page.locator('nav').getByRole('link', { name: 'Log in' })).toBeVisible();
     await expect(page.locator('nav').getByRole('link', { name: 'Apply Now' })).toBeVisible();
   });
+
+  test('6. Homepage Hero Banner Slider displays 3 official Dellics banners in slide view', async ({ page }) => {
+    await page.goto(CONSULT_URL);
+
+    // Verify Carousel Region exists
+    const carousel = page.getByRole('region', { name: 'Dellics Education Consult Featured Highlights' });
+    await expect(carousel).toBeVisible();
+
+    // Check first slide image is present
+    const firstSlideImg = carousel.locator('img[src*="5940703325818917439_121.jpg"]');
+    await expect(firstSlideImg).toBeVisible();
+
+    // Check slide counter shows 01 / 03
+    await expect(carousel.getByText('01 / 03')).toBeVisible();
+
+    // Click Next button to advance to SAT slide
+    const nextBtn = carousel.getByRole('button', { name: 'Next slide' });
+    await nextBtn.click();
+
+    // Check second slide image and counter 02 / 03
+    const secondSlideImg = carousel.locator('img[src*="5940703325818917438_121.jpg"]');
+    await expect(secondSlideImg).toBeVisible();
+    await expect(carousel.getByText('02 / 03')).toBeVisible();
+
+    // Click Next button to advance to Dream University slide
+    await nextBtn.click();
+    const thirdSlideImg = carousel.locator('img[src*="5940703325818917440_121.jpg"]');
+    await expect(thirdSlideImg).toBeVisible();
+    await expect(carousel.getByText('03 / 03')).toBeVisible();
+
+    // Click Previous button to go back
+    const prevBtn = carousel.getByRole('button', { name: 'Previous slide' });
+    await prevBtn.click();
+    await expect(carousel.getByText('02 / 03')).toBeVisible();
+  });
 });

@@ -1,4 +1,5 @@
 export { HeroSection } from './HeroSection';
+export { HeroBannerSlider } from './HeroBannerSlider';
 export { TrustStrip } from './TrustStrip';
 export { HowItWorksSection } from './HowItWorksSection';
 export { ServicesSection } from './ServicesSection';
