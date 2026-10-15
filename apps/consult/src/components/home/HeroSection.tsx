@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { HeroBannerSlider } from "./HeroBannerSlider";
+import Image from "next/image";
 import { 
   Search, 
   GraduationCap, 
@@ -14,7 +14,9 @@ import {
   MapPin, 
   CheckCircle2, 
   X, 
-  Clock
+  Clock,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 interface UniversityItem {
@@ -82,8 +84,66 @@ const SAMPLE_EVENTS: EventItem[] = [
   { title: "Australia & US Direct Admissions Day", date: "Saturday, 21 November 2026", time: "11:00 AM - 3:00 PM GMT", format: "In-Person (Accra/Tema)", description: "Explore Post-Study Work rights (up to 4 years in Australia and 3-year STEM OPT in the US). Application fee waiver codes distributed.", spotsLeft: 42 },
 ];
 
+interface HeroBgSlide {
+  id: string;
+  image: string;
+  alt: string;
+  tag: string;
+  headline: string;
+  highlight: string;
+  subheadline: string;
+  primaryText: string;
+  primaryLink: string;
+  secondaryText: string;
+  secondaryLink: string;
+}
+
+const HERO_BG_SLIDES: HeroBgSlide[] = [
+  {
+    id: "big-future",
+    image: "/5940703325818917439_121.jpg",
+    alt: "Dellics Education Consult - Big Future, Find Your Dream College For You",
+    tag: "BigFuture™ Partner",
+    headline: "Find Your Dream College Across",
+    highlight: "500+ Global Universities",
+    subheadline: "Direct admission pathways to the USA, UK, Canada, Australia, and Germany with comprehensive scholarship guidance, visa compliance, and travel support.",
+    primaryText: "Explore BigFuture Hub",
+    primaryLink: "/portal/bigfuture",
+    secondaryText: "Compare Destinations",
+    secondaryLink: "/destinations",
+  },
+  {
+    id: "sat-registration",
+    image: "/5940703325818917438_121.jpg",
+    alt: "Dellics Education Consult - Register for the SAT, Your Next Step to a Global Future",
+    tag: "Official SAT® Test Prep",
+    headline: "Register for the SAT® — Your Next Step to a",
+    highlight: "Global Future",
+    subheadline: "Unlock prestigious admissions and merit scholarships with daily diagnostic questions, Bluebook practice tests, and personalized test prep support.",
+    primaryText: "My SAT Hub",
+    primaryLink: "/portal/sat",
+    secondaryText: "Question of the Day",
+    secondaryLink: "/portal/sat/question-of-the-day",
+  },
+  {
+    id: "dream-university",
+    image: "/5940703325818917440_121.jpg",
+    alt: "Dellics Education Consult - Your Dream University Is Closer Than You Think",
+    tag: "Global Admissions & Scholarships",
+    headline: "Your Dream University Is",
+    highlight: "Closer Than You Think",
+    subheadline: "Partnered with Harvard, Oxford, Toronto, Melbourne, McGill, and Cambridge. End-to-end guidance from application to arrival.",
+    primaryText: "Explore Admissions",
+    primaryLink: "/services/admissions",
+    secondaryText: "Book 1-on-1 Consultation",
+    secondaryLink: "/contact",
+  },
+];
+
 export function HeroSection() {
   const [activeTab, setActiveTab] = useState("courses");
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   
   // Search inputs
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,6 +168,26 @@ export function HeroSection() {
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
 
+  const totalSlides = HERO_BG_SLIDES.length;
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  }, [totalSlides]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  }, [totalSlides]);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [isPaused, nextSlide]);
+
+  const activeSlide: HeroBgSlide = HERO_BG_SLIDES[currentSlide] ?? HERO_BG_SLIDES[0]!;
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activeTab === "courses") setModalTitle("Matched University Courses");
@@ -127,38 +207,152 @@ export function HeroSection() {
   };
 
   return (
-    <section className="bg-navy pt-28 pb-20 sm:pt-32 sm:pb-24 border-b border-navy-light relative overflow-hidden">
-      {/* Dynamic Background Ambient Canvas */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-brand-orange/15 blur-[140px] animate-pulse"></div>
-        <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full bg-blue-600/15 blur-[140px]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px]"></div>
+    <section 
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Dellics Education Consult Featured Highlights"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28 border-b border-slate-800 bg-slate-950 min-h-[720px] flex items-center"
+    >
+      {/* 1. SLIDING BACKGROUND VIEW - Replaces solid blue background */}
+      <div className="absolute inset-0 z-0 overflow-hidden select-none">
+        {HERO_BG_SLIDES.map((slide, index) => {
+          const isActive = index === currentSlide;
+          return (
+            <div
+              key={slide.id}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${index + 1} of ${totalSlides}: ${slide.headline}`}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <Image
+                src={slide.image}
+                alt={slide.alt}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className={`object-cover object-center transform transition-transform duration-[7000ms] ease-out ${
+                  isActive ? "scale-105" : "scale-100"
+                }`}
+              />
+            </div>
+          );
+        })}
+
+        {/* Multi-stage calibrated overlay for maximum premium readability */}
+        <div className="absolute inset-0 z-20 bg-gradient-to-r from-slate-950/95 via-slate-950/70 to-slate-950/35 pointer-events-none" />
+        <div className="absolute inset-0 z-20 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950/90 pointer-events-none" />
+        <div className="absolute inset-0 z-20 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="flex flex-col items-center justify-center text-center gap-8 sm:gap-10">
-          
-          {/* Header Typography */}
-          <div className="max-w-4xl mx-auto">
-            <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider mb-4 border border-brand-orange/30">
-              <GraduationCap className="w-3.5 h-3.5" /> Ghana's Premier International Education Consult
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-30 w-full space-y-8 sm:space-y-10">
+        
+        {/* Top Row: Synchronized Typography & Navigation Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 max-w-5xl">
+          <div className="space-y-4 max-w-3xl text-left">
+            <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-brand-orange/40 shadow-sm">
+              <GraduationCap className="w-3.5 h-3.5" /> {activeSlide.tag}
             </span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.1] tracking-tight">
-              Your Gateway to a <span className="text-brand-orange">World-Class Degree</span>.
+
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] tracking-tight">
+              {activeSlide.headline} <span className="text-brand-orange">{activeSlide.highlight}</span>.
             </h1>
-            <p className="mt-4 text-slate-300 text-base md:text-lg max-w-3xl mx-auto font-light leading-relaxed">
-              Direct university placements, accredited scholarships, SAT prep, and visa compliance for the UK, Canada, USA, and Australia — fully integrated with Dellics Travels.
+
+            <p className="text-slate-200 text-sm sm:text-base lg:text-lg font-light leading-relaxed max-w-2xl">
+              {activeSlide.subheadline}
             </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                href={activeSlide.primaryLink}
+                className="px-6 py-3.5 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white font-bold text-xs sm:text-sm shadow-xl shadow-brand-orange/30 transition-all flex items-center gap-2 group"
+              >
+                <span>{activeSlide.primaryText}</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+
+              <Link
+                href={activeSlide.secondaryLink}
+                className="px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all"
+              >
+                <span>{activeSlide.secondaryText}</span>
+              </Link>
+            </div>
           </div>
 
-          {/* Dellics Official Banner Slider (3 Official High-Res Slides) */}
-          <div className="w-full">
-            <HeroBannerSlider />
+          {/* Slide Arrow Controls & Counter */}
+          <div className="flex items-center gap-2 self-start lg:self-end shrink-0">
+            <div className="text-xs font-mono text-slate-300 bg-black/40 backdrop-blur-md px-3 py-2 rounded-xl border border-white/15">
+              0{currentSlide + 1} / 0{totalSlides}
+            </div>
+            <button
+              type="button"
+              onClick={prevSlide}
+              aria-label="Previous slide"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={nextSlide}
+              aria-label="Next slide"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
+        </div>
 
-          {/* Central IDP/Edvoy-Style Search & Filter Container */}
-          <div className="w-full max-w-4xl shrink-0 mx-auto">
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 text-left">
+        {/* Segmented Slide Indicators: 3 Clickable Banner Switches with Live Progress */}
+        <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4">
+          {HERO_BG_SLIDES.map((slide, idx) => {
+            const isCurrent = idx === currentSlide;
+            return (
+              <button
+                key={slide.id}
+                type="button"
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Switch to slide ${idx + 1}: ${slide.tag}`}
+                className={`p-3 sm:p-4 rounded-2xl border text-left transition-all backdrop-blur-xl ${
+                  isCurrent
+                    ? "bg-slate-900/85 border-brand-orange text-white shadow-xl ring-1 ring-brand-orange/40"
+                    : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-slate-900/75 hover:border-white/25"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                    isCurrent ? "text-brand-orange" : "text-slate-400"
+                  }`}>
+                    0{idx + 1} · {slide.tag}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    {isCurrent ? "Active" : "View"}
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-white mt-1 truncate">
+                  {slide.headline}
+                </div>
+                {/* Active Indicator Bar */}
+                <div className="w-full bg-white/10 h-1 rounded-full mt-2.5 overflow-hidden">
+                  <div
+                    className={`h-full bg-brand-orange transition-all duration-500 ${
+                      isCurrent ? "w-full" : "w-0"
+                    }`}
+                  />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Central IDP/Edvoy-Style Search & Filter Container (Docked Frosted Glass) */}
+        <div className="w-full max-w-5xl shrink-0 mx-auto">
+          <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-white/40 text-left">
               
               {/* Category Tabs (Courses, Scholarships, Universities, Events, Guide Me) */}
               <div className="grid grid-cols-5 bg-slate-50 border-b border-slate-200">
@@ -636,9 +830,7 @@ export function HeroSection() {
               </div>
             </div>
           </div>
-
         </div>
-      </div>
 
       {/* ========================================================================= */}
       {/* LIVE SEARCH & FILTER RESULTS MODAL */}
