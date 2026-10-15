@@ -16,7 +16,9 @@ import {
   X, 
   Clock,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Play,
+  Pause
 } from "lucide-react";
 
 interface UniversityItem {
@@ -169,6 +171,7 @@ export function HeroSection() {
   const [modalTitle, setModalTitle] = useState("");
 
   const totalSlides = HERO_BG_SLIDES.length;
+  const SLIDE_DURATION = 5000;
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -178,13 +181,14 @@ export function HeroSection() {
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
   }, [totalSlides]);
 
+  // Automatic slide progression: cycles every 5 seconds continuously
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      nextSlide();
-    }, 5500);
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }, SLIDE_DURATION);
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide]);
+  }, [isPaused, currentSlide, totalSlides]);
 
   const activeSlide: HeroBgSlide = HERO_BG_SLIDES[currentSlide] ?? HERO_BG_SLIDES[0]!;
 
@@ -211,8 +215,6 @@ export function HeroSection() {
       role="region"
       aria-roledescription="carousel"
       aria-label="Dellics Education Consult Featured Highlights"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28 border-b border-slate-800 bg-slate-950 min-h-[720px] flex items-center"
     >
       {/* 1. SLIDING BACKGROUND VIEW - Replaces solid blue background */}
@@ -291,6 +293,15 @@ export function HeroSection() {
             </div>
             <button
               type="button"
+              onClick={() => setIsPaused((prev) => !prev)}
+              aria-label={isPaused ? "Resume slide autoplay" : "Pause slide autoplay"}
+              title={isPaused ? "Resume autoplay" : "Pause autoplay"}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
+            >
+              {isPaused ? <Play className="w-4 h-4 fill-white" /> : <Pause className="w-4 h-4" />}
+            </button>
+            <button
+              type="button"
               onClick={prevSlide}
               aria-label="Previous slide"
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
@@ -316,7 +327,10 @@ export function HeroSection() {
               <button
                 key={slide.id}
                 type="button"
-                onClick={() => setCurrentSlide(idx)}
+                onClick={() => {
+                  setCurrentSlide(idx);
+                  setIsPaused(false);
+                }}
                 aria-label={`Switch to slide ${idx + 1}: ${slide.tag}`}
                 className={`p-3 sm:p-4 rounded-2xl border text-left transition-all backdrop-blur-xl ${
                   isCurrent
@@ -331,19 +345,24 @@ export function HeroSection() {
                     0{idx + 1} · {slide.tag}
                   </span>
                   <span className="text-[10px] font-mono text-slate-400">
-                    {isCurrent ? "Active" : "View"}
+                    {isCurrent ? (isPaused ? "Paused" : "Auto-playing") : "View"}
                   </span>
                 </div>
                 <div className="text-xs sm:text-sm font-bold text-white mt-1 truncate">
                   {slide.headline}
                 </div>
-                {/* Active Indicator Bar */}
-                <div className="w-full bg-white/10 h-1 rounded-full mt-2.5 overflow-hidden">
-                  <div
-                    className={`h-full bg-brand-orange transition-all duration-500 ${
-                      isCurrent ? "w-full" : "w-0"
-                    }`}
-                  />
+                {/* Active Indicator Bar with Smooth Automatic Progress Fill */}
+                <div className="w-full bg-white/10 h-1.5 rounded-full mt-2.5 overflow-hidden">
+                  {isCurrent ? (
+                    <div
+                      key={`progress-${idx}-${currentSlide}-${isPaused}`}
+                      className={`h-full bg-brand-orange ${
+                        isPaused ? "w-full" : "animate-[heroProgress_5000ms_linear_forwards]"
+                      }`}
+                    />
+                  ) : (
+                    <div className="h-full bg-transparent w-0" />
+                  )}
                 </div>
               </button>
             );

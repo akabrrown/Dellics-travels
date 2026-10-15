@@ -83,3 +83,13 @@ button, a, input, select, textarea {
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   transition-duration: 200ms;
 }
+
+@keyframes heroProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
