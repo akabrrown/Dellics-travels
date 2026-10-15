@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/auth-context";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,23 +13,26 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      if (email) {
-        localStorage.setItem("dellics_user_email", email);
-        const namePart = (email.split("@")[0] || "").replace(/[._-]/g, " ");
-        localStorage.setItem("dellics_user_name", namePart.charAt(0).toUpperCase() + namePart.slice(1));
-      }
-    } catch (e) {}
+      login(email);
+    } catch (err) {}
     setTimeout(() => {
       setIsLoading(false);
       if (!showForgot) {
-        router.push("/portal");
+        const storedProfile = localStorage.getItem("dellics_student_profile");
+        const isComplete = storedProfile ? JSON.parse(storedProfile).isCompleted : false;
+        if (!isComplete) {
+          router.push("/portal/onboarding");
+        } else {
+          router.push("/portal");
+        }
       }
-    }, 1000);
+    }, 700);
   };
 
   return (

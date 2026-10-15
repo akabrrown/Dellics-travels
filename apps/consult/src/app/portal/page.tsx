@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -19,8 +19,17 @@ import {
   ShieldCheck, 
   ArrowRight,
   Smartphone,
-  Car
+  Car,
+  Search,
+  BookOpen,
+  Calendar,
+  Flame,
+  Award,
+  Compass,
+  ArrowUpRight,
+  Sparkles as SparklesBan
 } from "lucide-react";
+import { useAuth } from "@/components/auth/auth-context";
 
 interface AppRecord {
   id: string;
@@ -29,53 +38,47 @@ interface AppRecord {
   intake: string;
   country: string;
   status: "Offer Letter Issued" | "Under Review" | "Visa In Progress" | "Enrolled";
-  stageStep: number; // 1 to 7
+  stageStep: number;
   trackingNo: string;
 }
 
 export default function StudentPortalPage() {
-  const [userName, setUserName] = useState("Kwame Mensah");
-  const [userEmail, setUserEmail] = useState("kwame.mensah@gmail.com");
-  const [activeTab, setActiveTab] = useState<"applications" | "documents" | "travel_perks" | "counsellor">("applications");
+  const { user } = useAuth();
+  const firstName = user?.firstName || "Sam";
+  const userEmail = user?.email || "samgotnothingonme@gmail.com";
+
+  const [activeTab, setActiveTab] = useState<"ecosystem" | "applications" | "documents" | "travel_perks" | "counsellor">("ecosystem");
+  const [collegeSearch, setCollegeSearch] = useState("");
   const [uploadedDocs, setUploadedDocs] = useState([
     { name: "WASSCE Official Results Slip / Certificate", status: "Verified", date: "12 Sep 2026", size: "1.2 MB" },
-    { name: "Undergraduate Degree Transcript", status: "Verified", date: "14 Sep 2026", size: "2.4 MB" },
+    { name: "High School Academic Transcript", status: "Verified", date: "14 Sep 2026", size: "2.4 MB" },
     { name: "Ghana International Passport Bio-Data", status: "Verified", date: "15 Sep 2026", size: "900 KB" },
-    { name: "Academic Statement of Purpose (SOP)", status: "Approved", date: "18 Sep 2026", size: "350 KB" },
+    { name: "Personal Statement of Purpose (SOP)", status: "Approved", date: "18 Sep 2026", size: "350 KB" },
     { name: "Proof of Financial Funds (Bank Statement)", status: "Action Required", date: "Pending 28-day rule", size: "--" }
   ]);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [newDocName, setNewDocName] = useState("");
 
-  useEffect(() => {
-    try {
-      const storedName = localStorage.getItem("dellics_user_name");
-      const storedEmail = localStorage.getItem("dellics_user_email");
-      if (storedName) setUserName(storedName);
-      if (storedEmail) setUserEmail(storedEmail);
-    } catch (e) {}
-  }, []);
-
   const applications: AppRecord[] = [
     {
       id: "APP-UK-2026-081",
       university: "University of Manchester",
-      program: "MSc Advanced Computer Science & AI",
+      program: "BSc Computer Science with Artificial Intelligence",
       intake: "September 2026",
       country: "United Kingdom",
       status: "Offer Letter Issued",
-      stageStep: 5, // Step 5: Offer
+      stageStep: 5,
       trackingNo: "UoM-INTL-99214"
     },
     {
-      id: "APP-CA-2026-104",
-      university: "University of Toronto",
-      program: "Postgraduate Diploma in Cloud Architecture",
+      id: "APP-US-2026-104",
+      university: "Northeastern University",
+      program: "BSc Software Engineering & Co-op",
       intake: "January 2027",
-      country: "Canada",
+      country: "United States",
       status: "Under Review",
-      stageStep: 4, // Step 4: Apply
-      trackingNo: "UofT-SGS-44102"
+      stageStep: 4,
+      trackingNo: "NEU-UG-44102"
     }
   ];
 
@@ -96,415 +99,486 @@ export default function StudentPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-28 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Student Portal Header / Profile Banner */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-orange to-amber-500 text-white flex items-center justify-center font-bold text-2xl shadow-md">
-              {userName.charAt(0)}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-display font-bold text-navy">{userName}</h1>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Verified Student Profile
-                </span>
+    <div className="min-h-screen bg-slate-50">
+      {/* 1. DYNAMIC COLLEGE BOARD HERO SECTION */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0A2540] via-[#0D3866] to-[#0A2540] text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
+        {/* Dynamic Background Ambient Canvas */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-brand-orange/30 blur-[120px] animate-pulse"></div>
+          <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-500/20 blur-[100px]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px]"></div>
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10 space-y-8">
+          {/* Header Typography */}
+          <div className="max-w-3xl space-y-3">
+            <span className="inline-flex items-center gap-2 py-1 px-3.5 rounded-full bg-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider border border-brand-orange/30">
+              <GraduationCap className="w-4 h-4" /> Dellics Consult & College Board Student Hub
+            </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
+              Hi, {firstName}
+            </h1>
+            <p className="text-slate-200 text-lg sm:text-xl font-light leading-relaxed">
+              We’re here to guide you on the road to college and beyond.
+            </p>
+          </div>
+
+          {/* Core College Board / BigFuture Action Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 pt-2">
+            <Link
+              href="/portal/sat"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-brand-orange">Testing</span>
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
               </div>
-              <p className="text-xs text-slate-500 mt-1">{userEmail} · Student ID: <span className="font-mono text-slate-700 font-semibold">DEC-GH-202688</span></p>
-            </div>
-          </div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">My SAT</div>
+            </Link>
 
-          <div className="flex items-center gap-3">
-            <a 
-              href="https://wa.me/233552054174?text=Hello%20Dellics%20Education%20Consult,%20I%20am%20logged%20into%20my%20Student%20Portal%20and%20need%20assistance."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2.5 rounded-xl border border-emerald-500 text-emerald-700 hover:bg-emerald-50 text-xs font-bold flex items-center gap-2 transition-colors"
+            <Link
+              href="/portal/sat/question-of-the-day"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
             >
-              <MessageSquare className="w-4 h-4" /> Message Advisor
-            </a>
-            <button 
-              onClick={() => setShowUploadModal(true)}
-              className="px-5 py-2.5 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-hover shadow-md shadow-brand-orange/20 flex items-center gap-2 transition-colors cursor-pointer"
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-400">Daily Practice</span>
+                <Flame className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">SAT Question of the Day</div>
+            </Link>
+
+            <Link
+              href="/portal/scores"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
             >
-              <Upload className="w-4 h-4" /> Upload Document
-            </button>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-400">Reports</span>
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+              <div className="text-xs sm:text-sm font-bold text-white mt-2 leading-snug">
+                PSAT/NMSQT, PSAT 10, & PSAT 8/9 Scores
+              </div>
+            </Link>
+
+            <Link
+              href="/portal/ap-classroom"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-blue-400">Coursework</span>
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">My AP Classroom</div>
+            </Link>
+
+            <Link
+              href="/portal/bigfuture"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-brand-orange">College & Career</span>
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+              <div className="text-xs sm:text-sm font-bold text-white mt-2 leading-snug">
+                BigFuture Dashboard: College and Career Planning
+              </div>
+            </Link>
+
+            <Link
+              href="/portal/student-search"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-400">Outreach</span>
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">Student Search Service</div>
+            </Link>
+
+            <Link
+              href="/portal/profile"
+              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-300">Profile & Security</span>
+                <User className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">Account Settings</div>
+            </Link>
+
+            <Link
+              href="/portal/onboarding"
+              className="p-4 rounded-2xl bg-brand-orange hover:bg-brand-orange-light text-white font-bold transition-all shadow-lg shadow-brand-orange/20 flex flex-col justify-between min-h-[96px]"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-wider text-white/90">Registration</span>
+                <CheckCircle2 className="w-4 h-4 text-white" />
+              </div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">
+                {user?.profileCompleted ? "Edit 6-Step Profile" : "Complete Registration Form"}
+              </div>
+            </Link>
           </div>
         </div>
+      </section>
 
-        {/* 4 Metric Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center">
-              <GraduationCap className="w-6 h-6" />
+      {/* 2. THREE ANNOUNCEMENT CARDS BELOW HERO */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Card 1: Register for November SAT */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <Calendar className="w-5 h-5" />
             </div>
-            <div>
-              <div className="text-2xl font-bold text-navy">2</div>
-              <div className="text-xs text-slate-500 font-medium">Active Applications</div>
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold text-brand-orange uppercase tracking-wider">Test Deadline</div>
+              <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                Register by 10/23 for the November SAT
+              </h3>
+              <Link href="/portal/sat" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
+                <span>View Registration Dates</span> &rarr;
+              </Link>
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <CheckCircle2 className="w-6 h-6" />
+          {/* Card 2: AP Cybersecurity */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-            <div>
-              <div className="text-2xl font-bold text-navy">4 / 5</div>
-              <div className="text-xs text-slate-500 font-medium">Documents Verified</div>
-            </div>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-50 text-brand-orange flex items-center justify-center">
-              <Plane className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-navy">10% Off Airfare</div>
-              <div className="text-xs text-slate-500 font-medium">Dellics Travels Perk Active</div>
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Industry Pathway</div>
+              <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                The AP shaped by leading companies. Meet AP Cybersecurity.
+              </h3>
+              <Link href="/portal/ap-classroom" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
+                <span>Explore AP Framework</span> &rarr;
+              </Link>
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <User className="w-6 h-6" />
+          {/* Card 3: Free SAT Study Plan */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <BookOpen className="w-5 h-5" />
             </div>
-            <div>
-              <div className="text-sm font-bold text-navy">Dr. K. Osei</div>
-              <div className="text-xs text-slate-500 font-medium">Assigned UK & CA Advisor</div>
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Free Preparation</div>
+              <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                Your Free SAT Study Plan is Ready to Download
+              </h3>
+              <Link href="/portal/sat/question-of-the-day" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
+                <span>Download Study Guide</span> &rarr;
+              </Link>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 mb-6 gap-2">
-          <button
-            onClick={() => setActiveTab("applications")}
-            className={`pb-3 px-4 text-sm font-bold border-b-2 transition-all ${
-              activeTab === "applications"
-                ? "border-brand-orange text-navy"
-                : "border-transparent text-slate-400 hover:text-slate-700"
-            }`}
-          >
-            My Applications
-          </button>
-          <button
-            onClick={() => setActiveTab("documents")}
-            className={`pb-3 px-4 text-sm font-bold border-b-2 transition-all ${
-              activeTab === "documents"
-                ? "border-brand-orange text-navy"
-                : "border-transparent text-slate-400 hover:text-slate-700"
-            }`}
-          >
-            Document Vault
-          </button>
-          <button
-            onClick={() => setActiveTab("travel_perks")}
-            className={`pb-3 px-4 text-sm font-bold border-b-2 transition-all ${
-              activeTab === "travel_perks"
-                ? "border-brand-orange text-navy"
-                : "border-transparent text-slate-400 hover:text-slate-700"
-            }`}
-          >
-            Dellics Travels Perks
-          </button>
-          <button
-            onClick={() => setActiveTab("counsellor")}
-            className={`pb-3 px-4 text-sm font-bold border-b-2 transition-all ${
-              activeTab === "counsellor"
-                ? "border-brand-orange text-navy"
-                : "border-transparent text-slate-400 hover:text-slate-700"
-            }`}
-          >
-            Advisory & Support
-          </button>
+      {/* 3. BIGFUTURE COLLEGE SEARCH BANNER */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="rounded-3xl bg-gradient-to-r from-[#002D62] via-navy to-slate-900 text-white p-8 sm:p-10 border border-slate-700 shadow-xl relative overflow-hidden">
+          <div className="max-w-2xl relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold uppercase tracking-widest text-brand-orange bg-brand-orange/20 px-3 py-1 rounded-full">
+                BIGFUTURE™ SEARCH
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
+              Find your dream college for you.
+            </h2>
+            <p className="text-slate-300 text-xs sm:text-sm font-light leading-relaxed">
+              Explore university degrees, admission requirements, living costs, and merit scholarships across the United States, United Kingdom, Canada, and Australia.
+            </p>
+
+            {/* Search Bar on the Image/Banner */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search by college name, major, or country..."
+                  value={collegeSearch}
+                  onChange={e => setCollegeSearch(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 rounded-xl bg-white text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                />
+              </div>
+              <Link
+                href="/portal/bigfuture"
+                className="py-3 px-6 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light shadow-md transition-colors text-center"
+              >
+                Find Colleges
+              </Link>
+            </div>
+          </div>
+
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-15 pointer-events-none hidden lg:block">
+            <div className="w-full h-full flex items-center justify-center">
+              <GraduationCap className="w-64 h-64 text-white" />
+            </div>
+          </div>
         </div>
+      </section>
 
-        {/* TAB 1: APPLICATIONS */}
-        {activeTab === "applications" && (
-          <div className="space-y-6">
-            {applications.map((app) => (
-              <div key={app.id} className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold px-2.5 py-0.5 rounded-full uppercase bg-brand-blue/10 text-brand-blue">
-                        {app.country}
-                      </span>
-                      <span className="text-xs text-slate-400 font-mono">{app.id}</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-navy">{app.program}</h3>
-                    <p className="text-sm text-slate-600 mt-0.5">{app.university} · Intake: <span className="font-semibold text-slate-900">{app.intake}</span></p>
-                  </div>
+      {/* 4. DELLICS CONSULT APPLICATION TRACKER & PORTAL TABS */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-8">
+          {/* Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+            {[
+              { id: "ecosystem", label: "Overview & Quick Tools" },
+              { id: "applications", label: "My Applications (2)" },
+              { id: "documents", label: "Document Locker" },
+              { id: "travel_perks", label: "Dellics Travels Perks" },
+              { id: "counsellor", label: "My Advisor" }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all ${
+                  activeTab === tab.id
+                    ? "bg-navy text-white shadow-sm"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-                  <div className="flex flex-col sm:items-end">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                      <Clock className="w-3.5 h-3.5" /> {app.status}
+          {/* TAB: OVERVIEW & QUICK TOOLS */}
+          {activeTab === "ecosystem" && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Active Application Card */}
+                <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase">Primary University Offer</span>
+                    <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                      Offer Letter Issued
                     </span>
-                    <span className="text-[11px] text-slate-400 mt-1 font-mono">Ref: {app.trackingNo}</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">University of Manchester</h3>
+                    <p className="text-xs text-slate-600 mt-0.5">BSc Computer Science with Artificial Intelligence (Sept 2026)</p>
+                  </div>
+                  <div className="pt-2 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 font-mono">Ref: UoM-INTL-99214</span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("applications")}
+                      className="font-bold text-navy hover:text-brand-orange"
+                    >
+                      View Full Timeline &rarr;
+                    </button>
                   </div>
                 </div>
 
-                {/* 7-Step Roadmap Visualization for this Application */}
-                <div className="pt-6">
-                  <div className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-4">
-                    7-Step Journey Progress: Step {app.stageStep} of 7
+                {/* Test Prep Status Card */}
+                <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase">SAT & Test Preparation</span>
+                    <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
+                      Active Prep
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">Daily Question & Diagnostics</h3>
+                    <p className="text-xs text-slate-600 mt-0.5">Diagnostic Score: 1340 / 1520 · Targeted Sitting: November 2026</p>
+                  </div>
+                  <div className="pt-2 flex items-center justify-between text-xs">
+                    <Link href="/portal/sat/question-of-the-day" className="font-bold text-brand-orange hover:underline">
+                      Answer Today's Question &rarr;
+                    </Link>
+                    <Link href="/portal/sat" className="font-bold text-navy hover:underline">
+                      My SAT Hub &rarr;
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: APPLICATIONS */}
+          {activeTab === "applications" && (
+            <div className="space-y-6">
+              {applications.map(app => (
+                <div key={app.id} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                      <span className="text-[11px] font-mono text-slate-400">{app.trackingNo}</span>
+                      <h4 className="text-lg font-bold text-slate-900">{app.university}</h4>
+                      <div className="text-xs text-slate-500">{app.program} · {app.intake}</div>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold self-start sm:self-auto ${
+                      app.status === "Offer Letter Issued"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}>
+                      {app.status}
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                  {/* 7-Step Milestones */}
+                  <div className="grid grid-cols-7 gap-1 text-center pt-2">
                     {[
-                      { num: 1, name: "Consult" },
-                      { num: 2, name: "Assess" },
-                      { num: 3, name: "Select" },
-                      { num: 4, name: "Apply" },
-                      { num: 5, name: "Offer" },
-                      { num: 6, name: "Visa" },
-                      { num: 7, name: "Travel" }
-                    ].map((st) => {
-                      const isCompleted = st.num < app.stageStep;
-                      const isCurrent = st.num === app.stageStep;
+                      "Advisory", "Shortlist", "Docs", "Apply", "Offer", "Visa", "Arrival"
+                    ].map((step, idx) => {
+                      const stepNum = idx + 1;
+                      const isComplete = stepNum <= app.stageStep;
+                      const isCurrent = stepNum === app.stageStep;
+
                       return (
-                        <div key={st.num} className="flex flex-col items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-1.5 transition-all ${
-                            isCompleted 
-                              ? "bg-emerald-500 text-white shadow-sm"
-                              : isCurrent
-                              ? "bg-brand-orange text-white ring-4 ring-brand-orange/20 font-extrabold shadow-md"
-                              : "bg-slate-100 text-slate-400"
+                        <div key={step} className="space-y-1">
+                          <div className={`h-2 rounded-full ${
+                            isComplete ? "bg-emerald-500" : isCurrent ? "bg-brand-orange" : "bg-slate-200"
+                          }`}></div>
+                          <span className={`text-[10px] block ${
+                            isComplete ? "text-slate-800 font-bold" : "text-slate-400"
                           }`}>
-                            {isCompleted ? "✓" : st.num}
-                          </div>
-                          <span className={`text-[11px] font-medium hidden sm:block ${
-                            isCurrent ? "text-brand-orange font-bold" : isCompleted ? "text-slate-700" : "text-slate-400"
-                          }`}>
-                            {st.name}
+                            {step}
                           </span>
                         </div>
                       );
                     })}
                   </div>
                 </div>
-
-                <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-xs text-slate-500">
-                    Next Action: Official CAS / I-20 generation in progress with Admissions Office.
-                  </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => alert(`Official conditional offer letter for ${app.university} has been forwarded to your email (${userEmail}). Contact advisor for CAS questions.`)}
-                      className="px-4 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-colors flex items-center gap-1.5"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Download Offer Letter
-                    </button>
-                    <a
-                      href={`https://wa.me/233552054174?text=Hello%20Advisor,%20I%20have%20an%20enquiry%20regarding%20my%20application%20${app.id}%20for%20${encodeURIComponent(app.university)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
-                    >
-                      Contact Case Officer
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* TAB 2: DOCUMENT VAULT */}
-        {activeTab === "documents" && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4 mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-navy">Academic & Visa Vault</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Secure cloud repository compliant with UKVI, IRCC, and US Embassy submission standards.</p>
-              </div>
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="px-4 py-2.5 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-hover transition-colors flex items-center gap-2"
-              >
-                <Upload className="w-4 h-4" /> Add New Document
-              </button>
+              ))}
             </div>
+          )}
 
-            <div className="divide-y divide-slate-100">
-              {uploadedDocs.map((doc, idx) => (
-                <div key={idx} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
-                      <FileText className="w-5 h-5 text-brand-blue" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-800">{doc.name}</h4>
-                      <p className="text-xs text-slate-400 mt-0.5">{doc.size} · Uploaded: {doc.date}</p>
-                    </div>
-                  </div>
+          {/* TAB: DOCUMENTS */}
+          {activeTab === "documents" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Document Locker</h3>
+                  <p className="text-xs text-slate-500">Secure cloud storage for official academic transcripts, WAEC slips, and visa records.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowUploadModal(true)}
+                  className="py-2.5 px-4 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light flex items-center gap-1.5 transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Upload Document</span>
+                </button>
+              </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+              <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
+                {uploadedDocs.map((doc, idx) => (
+                  <div key={idx} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-5 h-5 text-brand-orange" />
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">{doc.name}</div>
+                        <div className="text-[11px] text-slate-400">Added {doc.date} · {doc.size}</div>
+                      </div>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                       doc.status === "Verified" || doc.status === "Approved"
                         ? "bg-emerald-100 text-emerald-800"
                         : "bg-amber-100 text-amber-800"
                     }`}>
                       {doc.status}
                     </span>
-                    <button 
-                      onClick={() => alert(`Secure file preview: ${doc.name} (Stored in Dellics Encrypted Vault)`)}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      View
-                    </button>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* TAB 3: DELLICS TRAVELS PERKS INTEGRATION */}
-        {activeTab === "travel_perks" && (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-navy via-slate-900 to-navy text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
-              <div className="relative z-10 max-w-2xl">
+          {/* TAB: TRAVEL PERKS */}
+          {activeTab === "travel_perks" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-navy via-slate-900 to-navy text-white p-8 rounded-2xl relative overflow-hidden">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-orange text-white text-xs font-bold uppercase tracking-wider mb-4">
                   <Plane className="w-3.5 h-3.5" /> Direct Ecosystem Integration
                 </span>
-                <h3 className="text-3xl font-display font-bold text-white mb-3">
+                <h3 className="text-2xl font-display font-bold text-white mb-2">
                   Powered by Dellics Travels
                 </h3>
-                <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                  Every Dellics Education Consult student is entitled to VIP concessions through our parent travel agency: discounted international student airfares with extra luggage allowance (up to 46kg), vetted student housing near your campus, pre-booked airport transfers, and pre-activated UK/Canada/US eSIM cards.
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+                  Every Dellics Education Consult student is entitled to VIP concessions: discounted international airfares, extra baggage allowances (up to 46kg), vetted student housing, and free UK/Canada/US eSIM cards.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
-                      <Plane className="w-4 h-4" /> Extra Baggage Allowance
-                    </div>
-                    <p className="text-xs text-slate-300">2x 23kg checked bags on British Airways, Qatar Airways, Delta, and KLM for Dellics students.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-white/10 border border-white/10 text-xs">
+                    <div className="font-bold text-brand-orange mb-1">✈️ Extra Baggage Allowance</div>
+                    <p className="text-slate-300">2x 23kg checked bags on British Airways, Qatar Airways, Delta, and KLM for Dellics students.</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
-                      <Building2 className="w-4 h-4" /> Verified Student Housing
-                    </div>
-                    <p className="text-xs text-slate-300">Inspected accommodation options with student lease guarantee and zero booking fees.</p>
+                  <div className="p-4 rounded-xl bg-white/10 border border-white/10 text-xs">
+                    <div className="font-bold text-brand-orange mb-1">🏠 Verified Student Housing</div>
+                    <p className="text-slate-300">Inspected accommodation options with student lease guarantee and zero booking fees.</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
-                      <Smartphone className="w-4 h-4" /> International eSIM
-                    </div>
-                    <p className="text-xs text-slate-300">Pre-activated high-speed data ready the minute you land at Heathrow, Pearson, or JFK.</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white/10 border border-white/10">
-                    <div className="flex items-center gap-2 font-bold text-brand-orange text-sm mb-1">
-                      <Car className="w-4 h-4" /> Airport Meet & Greet
-                    </div>
-                    <p className="text-xs text-slate-300">Safe, direct campus transfer coordinated directly with university arrival teams.</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <a
-                    href="https://dellicstravels.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-brand-orange text-white font-bold text-sm hover:bg-brand-orange-hover transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-orange/20"
-                  >
-                    Visit Dellics Travels Portal <ExternalLink className="w-4 h-4" />
-                  </a>
-                  <a
-                    href="https://wa.me/233552054174?text=Hello%20Dellics%20Travels,%20I%20am%20a%20Consult%20student%20ready%20to%20book%20my%20discounted%20student%20flight."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors text-center"
-                  >
-                    Book Flights via Travel Desk
-                  </a>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* TAB 4: COUNSELLOR & ADVISORY */}
-        {activeTab === "counsellor" && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-            <h3 className="text-xl font-bold text-navy mb-4">Dedicated Academic Counsel</h3>
-            <div className="flex flex-col sm:flex-row items-start gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="w-16 h-16 rounded-2xl bg-navy text-white flex items-center justify-center font-bold text-2xl shrink-0">
-                KO
-              </div>
-              <div className="space-y-2">
+          {/* TAB: COUNSELLOR */}
+          {activeTab === "counsellor" && (
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-navy text-white flex items-center justify-center font-bold text-xl">
+                  KA
+                </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900">Dr. Kofi Osei</h4>
-                  <p className="text-xs text-brand-orange font-bold uppercase tracking-wider">Head of Admissions & International Compliance</p>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed max-w-xl">
-                  Over 12 years of experience placing Ghanaian students into the UK Russell Group, Canada U15, and US Tier-1 institutions. Specialist in CAS procurement and UKVI / IRCC financial compliance audits.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-3">
-                  <a
-                    href="https://wa.me/233552054174?text=Hello%20Dr.%20Osei,%20I%20am%20enquiring%20about%20my%20university%20application."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" /> WhatsApp Direct
-                  </a>
-                  <Link
-                    href="/contact"
-                    className="px-4 py-2 rounded-xl bg-navy text-white font-bold text-xs hover:bg-navy-light transition-colors"
-                  >
-                    Book 1-on-1 In-Person Session
-                  </Link>
+                  <h4 className="font-bold text-slate-900 text-base">Kofi Asare</h4>
+                  <div className="text-xs text-brand-orange font-semibold">Senior Education & Visa Advisor</div>
+                  <div className="text-xs text-slate-500">Dellics Education Consult · Tema / Accra</div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
 
-      </div>
+              <div className="pt-2 flex flex-wrap gap-3">
+                <Link
+                  href="/contact"
+                  className="py-2.5 px-5 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-colors"
+                >
+                  Schedule 1-on-1 Consultation
+                </Link>
+                <a
+                  href="https://wa.me/233241234567"
+                  target="_blank"
+                  className="py-2.5 px-5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
+                >
+                  Chat on WhatsApp
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-navy/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
-            <h3 className="text-lg font-bold text-navy mb-1">Upload Document to Vault</h3>
-            <p className="text-xs text-slate-500 mb-4">Supported formats: PDF, JPG, PNG up to 15MB.</p>
-
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-slate-900 text-lg">Upload Student Document</h3>
             <form onSubmit={handleSimulateUpload} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Document Type / Title *
-                </label>
-                <input 
-                  type="text" 
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Document Name</label>
+                <input
+                  type="text"
                   required
-                  placeholder="e.g. Bank Statement (28-day proof), WASSCE Scratch Card..."
+                  placeholder="e.g. WASSCE Certificate / SAT Score PDF"
                   value={newDocName}
-                  onChange={(e) => setNewDocName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:border-brand-orange outline-none"
+                  onChange={e => setNewDocName(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-navy"
                 />
               </div>
-
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
-                <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <span className="text-xs text-slate-600 font-medium block">Click to select file or drag & drop</span>
-                <span className="text-[10px] text-slate-400">PDF, PNG, JPG (Max 15MB)</span>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowUploadModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-hover"
+                  className="px-5 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light"
                 >
                   Upload & Verify
                 </button>
@@ -513,7 +587,6 @@ export default function StudentPortalPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

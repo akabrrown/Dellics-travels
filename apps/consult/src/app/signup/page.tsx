@@ -3,8 +3,12 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/auth-context";
 
 export default function SignupPage() {
+  const router = useRouter();
+  const { signup } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -17,16 +21,17 @@ export default function SignupPage() {
     if (formData.password !== formData.confirmPassword) return;
     setIsLoading(true);
     try {
-      if (formData.email) {
-        localStorage.setItem("dellics_user_email", formData.email);
-        const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
-        if (fullName) localStorage.setItem("dellics_user_name", fullName);
-      }
+      signup({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone
+      });
     } catch (e) {}
     setTimeout(() => {
       setIsLoading(false);
       setIsSuccess(true);
-    }, 1000);
+    }, 700);
   };
 
   const update = (field: string, value: any) => setFormData((prev) => ({ ...prev, [field]: value }));
@@ -151,7 +156,11 @@ export default function SignupPage() {
               <p className="text-sm text-slate-600 leading-relaxed">
                 Please verify your email to continue. Click the link we sent to confirm and proceed to complete your student profile.
               </p>
-              <button type="button" className="w-full py-2.5 rounded-lg bg-navy text-white font-medium text-sm hover:bg-navy-light transition-colors">
+              <button
+                type="button"
+                onClick={() => router.push("/portal/onboarding")}
+                className="w-full py-2.5 rounded-lg bg-navy text-white font-medium text-sm hover:bg-navy-light transition-colors"
+              >
                 Continue to Profile &rarr;
               </button>
               <button type="button" className="text-xs font-medium text-slate-500 hover:text-navy transition-colors">
