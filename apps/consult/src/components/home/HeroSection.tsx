@@ -14,11 +14,7 @@ import {
   MapPin, 
   CheckCircle2, 
   X, 
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  Play,
-  Pause
+  Clock
 } from "lucide-react";
 
 interface UniversityItem {
@@ -173,14 +169,6 @@ export function HeroSection() {
   const totalSlides = HERO_BG_SLIDES.length;
   const SLIDE_DURATION = 5000;
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  }, [totalSlides]);
-
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  }, [totalSlides]);
-
   // Automatic slide progression: cycles every 5 seconds continuously
   useEffect(() => {
     if (isPaused) return;
@@ -284,38 +272,6 @@ export function HeroSection() {
                 <span>{activeSlide.secondaryText}</span>
               </Link>
             </div>
-          </div>
-
-          {/* Slide Arrow Controls & Counter */}
-          <div className="flex items-center gap-2 self-start lg:self-end shrink-0">
-            <div className="text-xs font-mono text-slate-300 bg-black/40 backdrop-blur-md px-3 py-2 rounded-xl border border-white/15">
-              0{currentSlide + 1} / 0{totalSlides}
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsPaused((prev) => !prev)}
-              aria-label={isPaused ? "Resume slide autoplay" : "Pause slide autoplay"}
-              title={isPaused ? "Resume autoplay" : "Pause autoplay"}
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
-            >
-              {isPaused ? <Play className="w-4 h-4 fill-white" /> : <Pause className="w-4 h-4" />}
-            </button>
-            <button
-              type="button"
-              onClick={prevSlide}
-              aria-label="Previous slide"
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
-              onClick={nextSlide}
-              aria-label="Next slide"
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
           </div>
         </div>
 

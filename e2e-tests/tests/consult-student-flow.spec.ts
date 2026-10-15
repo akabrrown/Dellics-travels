@@ -209,31 +209,32 @@ test.describe('Dellics Education Consult - Student Portal & Registration Suite',
     const carousel = page.getByRole('region', { name: 'Dellics Education Consult Featured Highlights' });
     await expect(carousel).toBeVisible();
 
-    // Check first slide image is present
+    // Check first slide image and heading are present
     const firstSlideImg = carousel.locator('img[src*="5940703325818917439_121.jpg"]');
     await expect(firstSlideImg).toBeVisible();
+    await expect(carousel.getByRole('heading', { name: /Find Your Dream College Across/ })).toBeVisible();
 
-    // Check slide counter shows 01 / 03
-    await expect(carousel.getByText('01 / 03')).toBeVisible();
+    // Click second slide tab: Official SAT Test Prep
+    const satTab = carousel.getByRole('button', { name: /Switch to slide 2/ });
+    await satTab.click();
 
-    // Click Next button to advance to SAT slide
-    const nextBtn = carousel.getByRole('button', { name: 'Next slide' });
-    await nextBtn.click();
-
-    // Check second slide image and counter 02 / 03
+    // Check second slide image and SAT headline
     const secondSlideImg = carousel.locator('img[src*="5940703325818917438_121.jpg"]');
     await expect(secondSlideImg).toBeVisible();
-    await expect(carousel.getByText('02 / 03')).toBeVisible();
+    await expect(carousel.getByRole('heading', { name: /Register for the SAT®/ })).toBeVisible();
 
-    // Click Next button to advance to Dream University slide
-    await nextBtn.click();
+    // Click third slide tab: Global Admissions & Scholarships
+    const admissionsTab = carousel.getByRole('button', { name: /Switch to slide 3/ });
+    await admissionsTab.click();
+
+    // Check third slide image and Dream University headline
     const thirdSlideImg = carousel.locator('img[src*="5940703325818917440_121.jpg"]');
     await expect(thirdSlideImg).toBeVisible();
-    await expect(carousel.getByText('03 / 03')).toBeVisible();
+    await expect(carousel.getByRole('heading', { name: /Your Dream University Is/ })).toBeVisible();
 
-    // Click Previous button to go back
-    const prevBtn = carousel.getByRole('button', { name: 'Previous slide' });
-    await prevBtn.click();
-    await expect(carousel.getByText('02 / 03')).toBeVisible();
+    // Click first slide tab to return to BigFuture
+    const bigFutureTab = carousel.getByRole('button', { name: /Switch to slide 1/ });
+    await bigFutureTab.click();
+    await expect(firstSlideImg).toBeVisible();
   });
 });
