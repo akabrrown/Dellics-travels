@@ -4,9 +4,6 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MapPin,
-  Phone,
-  Mail,
   Clock,
   ArrowRight,
 } from "lucide-react";
@@ -107,38 +104,6 @@ export function SiteFooter() {
               </div>
 
               <div className="flex flex-col gap-3 pt-2">
-                <div className="flex items-start gap-3 text-xs text-white/80">
-                  <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
-                  <div className="space-y-0.5">
-                    <p className="font-semibold text-white">Dellics Travels Ghana - Headquarters</p>
-                    <p className="text-white/75">GN-0490-2450, Community 25 Tema, Greater Accra</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 text-xs text-white/80">
-                  <MapPin className="size-4 text-brand-orange shrink-0 mt-0.5" />
-                  <div className="space-y-0.5">
-                    <p className="font-semibold text-white">Dellics Travels LLC - United States</p>
-                    <p className="text-white/75">30 N Gould ST, STER, SHERIDAN, WY 82801</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-white/80">
-                  <Phone className="size-4 text-brand-orange shrink-0" />
-                  <a
-                    href={`tel:${SITE.whatsappNumber}`}
-                    className="hover:text-brand-orange transition-colors"
-                  >
-                    {SITE.phoneDisplay}
-                  </a>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-white/80">
-                  <Mail className="size-4 text-brand-orange shrink-0" />
-                  <a
-                    href={`mailto:${SITE.email}`}
-                    className="hover:text-brand-orange transition-colors"
-                  >
-                    {SITE.email}
-                  </a>
-                </div>
                 <div className="flex items-center gap-3 text-xs text-white/80">
                   <Clock className="size-4 text-brand-orange shrink-0" />
                   <span>24/7 Supports and Chat with Travel Consultant</span>
