@@ -1,0 +1,68 @@
+{
+  "cookies": [
+    {
+      "name": "dellics_admin_auth",
+      "value": "mock-admin-token-123",
+      "domain": "127.0.0.1",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "dellics_admin_auth",
+      "value": "mock-admin-token-123",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3002",
+      "localStorage": [
+        {
+          "name": "dellics_admin_session_v1",
+          "value": "{\"id\":\"admin-1\",\"name\":\"Master Admin\",\"email\":\"admin@dellicstravels.com\",\"roleId\":\"master_admin\",\"roleTitle\":\"Master Admin\",\"token\":\"mock-admin-token-123\",\"otpEnabled\":true,\"loginAt\":\"2026-09-27T14:30:18.568Z\"}"
+        },
+        {
+          "name": "dellics_admin_token",
+          "value": "mock-admin-token-123"
+        },
+        {
+          "name": "dellics_active_role_id",
+          "value": "master_admin"
+        },
+        {
+          "name": "__e2e_bypass__",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "origin": "http://localhost:3002",
+      "localStorage": [
+        {
+          "name": "dellics_admin_session_v1",
+          "value": "{\"id\":\"admin-1\",\"name\":\"Master Admin\",\"email\":\"admin@dellicstravels.com\",\"roleId\":\"master_admin\",\"roleTitle\":\"Master Admin\",\"token\":\"mock-admin-token-123\",\"otpEnabled\":true,\"loginAt\":\"2026-09-27T14:30:18.568Z\"}"
+        },
+        {
+          "name": "dellics_admin_token",
+          "value": "mock-admin-token-123"
+        },
+        {
+          "name": "dellics_active_role_id",
+          "value": "master_admin"
+        },
+        {
+          "name": "__e2e_bypass__",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}

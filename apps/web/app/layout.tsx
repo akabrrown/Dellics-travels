@@ -1,0 +1,59 @@
+﻿import type { Metadata } from "next";
+import { Inter, Poppins } from "next/font/google";
+import { AnnouncementBar } from "@/components/layout/announcement-bar";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { WhatsappWidget } from "@/components/layout/whatsapp-widget";
+import { AiWidget } from "@/components/layout/ai-widget";
+import { AuthProvider } from "@/context/auth-context";
+import { LocaleCurrencyProvider } from "@/context/locale-currency-context";
+import { Toaster } from "@/components/ui/sonner";
+import { SITE } from "@/lib/site";
+import { TrustedTypesInjector } from "@/components/security/trusted-types";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-poppins",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: `${SITE.name} - Flights, Hotels, Tours & Visa Assistance`,
+    template: `%s | ${SITE.name}`,
+  },
+  description:
+    "Dellics Travels is a Ghana-based IATA-certified travel agency offering flights, hotels, tours, airport transfers and visa assistance worldwide.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
+};
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${poppins.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://flagcdn.com" />
+        <TrustedTypesInjector />
+      </head>
+      <body className="flex min-h-screen flex-col antialiased" suppressHydrationWarning>
+        <AuthProvider>
+          <LocaleCurrencyProvider>
+            <AnnouncementBar />
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+            <WhatsappWidget />
+            <AiWidget />
+            <Toaster richColors position="top-center" />
+          </LocaleCurrencyProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}

@@ -1,0 +1,742 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  CONSULTANT
+}
+
+enum MembershipTier {
+  EXPLORER
+  VOYAGER
+  ELITE
+}
+
+enum BookingType {
+  FLIGHT
+  HOTEL
+  PACKAGE
+  CAR
+  ACTIVITY
+}
+
+enum BookingStatus {
+  HELD
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum PriceAlertStatus {
+  ACTIVE
+  TRIGGERED
+  CANCELLED
+}
+
+enum ESIMOrderStatus {
+  PENDING
+  PROVISIONED
+  ACTIVE
+  EXPIRED
+  COMPLETED
+}
+
+enum InteractionChannel {
+  WEB_BOOKING
+  WEB_INQUIRY
+  WEB_ESIM
+  WHATSAPP
+  ADMIN_NOTE
+  SYSTEM_AUTO
+  PHONE
+  EMAIL
+}
+
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  WON
+  LOST
+  DORMANT
+}
+
+enum LeadSource {
+  FLIGHT_SEARCH
+  HOTEL_SEARCH
+  TOUR_INQUIRY
+  ESIM_ORDER
+  VISA_REQUEST
+  DIASPORA_PACKAGE
+  CORPORATE_INQUIRY
+  TRANSFER_REQUEST
+  CAR_HIRE
+  DIRECT_SIGNUP
+  REFERRAL
+  WALK_IN
+}
+
+model User {
+  id                   String         @id @default(uuid())
+  name                 String
+  email                String         @unique
+  phone                String?
+  role                 Role           @default(USER)
+  membership_tier      MembershipTier @default(EXPLORER)
+  points_balance       Int            @default(500)
+  nationality          String?
+  home_airport         String?
+  seat_preference      String?
+  meal_preference      String?
+  emergency_contact    String?
+  emergency_phone      String?
+  passport_number      String?
+  passport_expiry      String?
+  passport_country     String?
+  onboarding_completed Boolean        @default(false)
+  password_hash        String?
+  admin_otp_hash       String?
+  admin_otp_expires_at DateTime?
+  admin_role_id        String?
+  admin_role           AdminRole? @relation("UserAdminRole", fields: [admin_role_id], references: [id])
+
+  trips                 Trip[]
+  memberships           Membership[]
+  rewards               RewardsLedger[]
+  price_alerts          PriceAlert[]
+  fare_freezes          FareFreeze[]
+  reviews               Review[]
+  esim_orders           ESIMOrder[]
+  password_reset_tokens PasswordResetToken[]
+  interactions          CustomerInteraction[]
+  leads                 LeadPipeline[]
+
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  tourBookings TourBooking[]
+  ota_bookings OTABooking[]
+  study_applications    StudyApplication[]
+
+}
+
+model Trip {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  title      String
+  start_date DateTime
+  end_date   DateTime
+
+  bookings Booking[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Booking {
+  id           String        @id @default(uuid())
+  trip_id      String
+  trip         Trip          @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+  type         BookingType
+  status       BookingStatus @default(HELD)
+  supplier_ref String?
+
+  payments Payment[]
+  rewards  RewardsLedger[]
+  reviews  Review[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Payment {
+  id                 String        @id @default(uuid())
+  booking_id         String
+  booking            Booking       @relation(fields: [booking_id], references: [id])
+  paystack_reference String        @unique
+  amount             Decimal       @db.Decimal(10, 2)
+  currency           String
+  status             PaymentStatus @default(PENDING)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Membership {
+  id                         String         @id @default(uuid())
+  user_id                    String
+  user                       User           @relation(fields: [user_id], references: [id])
+  tier                       MembershipTier
+  paystack_subscription_code String?        @unique
+  renews_at                  DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model RewardsLedger {
+  id           String   @id @default(uuid())
+  user_id      String
+  user         User     @relation(fields: [user_id], references: [id])
+  points_delta Int
+  reason       String
+  booking_id   String?
+  booking      Booking? @relation(fields: [booking_id], references: [id])
+
+  created_at DateTime @default(now())
+}
+
+model PriceAlert {
+  id           String           @id @default(uuid())
+  user_id      String
+  user         User             @relation(fields: [user_id], references: [id])
+  origin       String
+  destination  String
+  target_price Decimal          @db.Decimal(10, 2)
+  status       PriceAlertStatus @default(ACTIVE)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model FareHistory {
+  id                String   @id @default(uuid())
+  route_or_property String
+  price             Decimal  @db.Decimal(10, 2)
+  captured_at       DateTime @default(now())
+}
+
+model FareFreeze {
+  id                 String   @id @default(uuid())
+  user_id            String
+  user               User     @relation(fields: [user_id], references: [id])
+  fare_ref           String
+  frozen_price       Decimal  @db.Decimal(10, 2)
+  paystack_reference String   @unique
+  expires_at         DateTime
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum ReviewSource {
+  INTERNAL
+  TRUSTPILOT
+  GOOGLE
+}
+
+model Review {
+  id            String       @id @default(uuid())
+  source        ReviewSource @default(INTERNAL)
+  source_ref    String?
+  external_id   String?      @unique
+  reviewer_name String?
+
+  user_id       String?
+  user          User?        @relation(fields: [user_id], references: [id])
+  booking_id    String?
+  booking       Booking?     @relation(fields: [booking_id], references: [id])
+  
+  rating        Int
+  sub_scores    Json?
+  text          String?
+  photos        String[]
+
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+}
+
+model ESIMPlan {
+  id                String  @id @default(uuid())
+  country_or_region String
+  data_gb           Decimal @db.Decimal(10, 2)
+  airtime_minutes   Int     @default(0)
+  validity_days     Int
+  price             Decimal @db.Decimal(10, 2)
+  airalo_package_id String  @unique
+
+  orders ESIMOrder[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model ESIMOrder {
+  id                 String          @id @default(uuid())
+  user_id            String
+  user               User            @relation(fields: [user_id], references: [id])
+  esim_plan_id       String
+  esim_plan          ESIMPlan        @relation(fields: [esim_plan_id], references: [id])
+  paystack_reference String          @unique
+  qr_code_url        String?
+  iccid              String?
+  airtime_minutes    Int             @default(0)
+  status             ESIMOrderStatus @default(PENDING)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum InquiryKind {
+  CONTACT
+  INQUIRY
+}
+
+model Inquiry {
+  id      String      @id @default(uuid())
+  kind    InquiryKind
+  name    String
+  email   String
+  phone   String?
+  message String
+  payload Json?
+
+  lead LeadPipeline?
+
+  created_at DateTime @default(now())
+}
+
+model TourPackage {
+  id            String        @id @default(uuid())
+  title         String
+  slug          String        @unique
+  destination   String
+  price         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  duration      String
+  badge         String?
+    segment       String?
+  image_url     String
+  overview      String
+  includes      String[]
+  highlights    String[]
+  is_featured   Boolean       @default(false)
+  tour_bookings TourBooking[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  email      String
+  token_hash String    @unique
+  expires_at DateTime
+  used_at    DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([email])
+  @@index([token_hash])
+}
+
+model CustomerInteraction {
+  id         String             @id @default(uuid())
+  user_id    String?
+  user       User?              @relation(fields: [user_id], references: [id])
+  channel    InteractionChannel
+  subject    String
+  content    String
+  metadata   Json?
+  agent_id   String?
+  inquiry_id String?
+  booking_id String?
+
+  created_at DateTime @default(now())
+
+  @@index([user_id])
+  @@index([channel])
+  @@index([created_at])
+}
+
+model LeadPipeline {
+  id              String     @id @default(uuid())
+  user_id         String?
+  user            User?      @relation(fields: [user_id], references: [id])
+  inquiry_id      String?    @unique
+  inquiry         Inquiry?   @relation(fields: [inquiry_id], references: [id])
+  stage           LeadStage  @default(NEW)
+  source          LeadSource
+  assigned_agent  String?
+  estimated_value Decimal?   @db.Decimal(10, 2)
+  currency        String     @default("GHS")
+  notes           String?
+  next_followup   DateTime?
+  won_booking_id  String?
+  lost_reason     String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([stage])
+  @@index([assigned_agent])
+  @@index([next_followup])
+}
+
+model TourBooking {
+  id                 String        @id @default(uuid())
+  user_id            String
+  user               User          @relation(fields: [user_id], references: [id])
+  tour_package_id    String
+  tour_package       TourPackage   @relation(fields: [tour_package_id], references: [id])
+  departure_date     DateTime
+  pax_count          Int
+  lead_pax_name      String
+  lead_pax_email     String
+  lead_pax_phone     String
+  special_requests   String?
+  paystack_reference String        @unique
+  amount             Decimal       @db.Decimal(10, 2)
+  currency           String        @default("USD")
+  status             BookingStatus @default(HELD)
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  @@index([user_id])
+  @@index([departure_date])
+}
+
+
+
+model AdminRole {
+  id          String   @id
+  title       String
+  description String?
+  badgeColor  String?
+  isCustom    Boolean  @default(true)
+  permissions Json
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  users       User[]   @relation("UserAdminRole")
+
+
+}
+
+
+enum StudyApplicationStage {
+  INITIAL_CONSULTATION
+  DOCUMENT_COLLATION
+  UNIVERSITY_SUBMISSION
+  OFFER_RECEIVED
+  VISA_APPLICATION
+  COMPLETED
+}
+
+enum StudyApplicationStatus {
+  IN_PROGRESS
+  ACTION_REQUIRED
+  COMPLETED
+  CANCELLED
+}
+
+enum StudyDocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum StudyTestStatus {
+  NOT_REQUIRED
+  PREP_ARRANGED
+  TEST_SCHEDULED
+  COMPLETED
+}
+
+model StudyApplication {
+  id               String               @id @default(uuid())
+  user_id          String?
+  user             User?                @relation(fields: [user_id], references: [id])
+  applicant_name   String
+  applicant_email  String
+  applicant_phone  String?
+  city             String?
+  destination      String
+  course           String?
+  intake           String
+  stage            StudyApplicationStage @default(INITIAL_CONSULTATION)
+  status           StudyApplicationStatus @default(IN_PROGRESS)
+  visa_status      String?
+  
+  documents        StudyDocument[]
+  tests            StudyTest[]
+  notes            StudyNote[]
+
+  created_at       DateTime             @default(now())
+  updated_at       DateTime             @updatedAt
+
+  @@index([applicant_email])
+  @@index([stage])
+}
+
+model StudyDocument {
+  id                   String           @id @default(uuid())
+  study_application_id String
+  study_application    StudyApplication @relation(fields: [study_application_id], references: [id], onDelete: Cascade)
+  name                 String
+  file_url             String
+  status               StudyDocumentStatus @default(PENDING)
+  
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+}
+
+model StudyTest {
+  id                   String           @id @default(uuid())
+  study_application_id String
+  study_application    StudyApplication @relation(fields: [study_application_id], references: [id], onDelete: Cascade)
+  test_type            String           // e.g., "IELTS Academic", "GMAT"
+  status               StudyTestStatus  @default(PREP_ARRANGED)
+  score                String?
+  notes                String?
+  
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+}
+
+model StudyNote {
+  id                   String           @id @default(uuid())
+  study_application_id String
+  study_application    StudyApplication @relation(fields: [study_application_id], references: [id], onDelete: Cascade)
+  author_name          String
+  text                 String
+  
+  created_at           DateTime         @default(now())
+}
+
+
+model UserDevice {
+  id                 String   @id @default(uuid())
+  user_id            String
+  device_fingerprint String
+  device_name        String
+  browser            String
+  os                 String
+  ip_address         String
+  location           String
+  is_primary         Boolean  @default(false)
+  is_active          Boolean  @default(true)
+  last_active_at     DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([device_fingerprint])
+}
+
+model DeviceLoginChallenge {
+  id                 String   @id @default(uuid())
+  user_id            String
+  challenge_token    String   @unique
+  device_fingerprint String
+  device_name        String
+  browser            String
+  os                 String
+  ip_address         String
+  location           String
+  status             String   @default("PENDING")
+  verification_code  String
+  expires_at         DateTime
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([challenge_token])
+}
+
+
+model StudyUniversity {
+  id          String   @id @default(uuid())
+  name        String
+  country     String
+  region      String?
+  logoUrl     String?
+  isFeatured  Boolean  @default(false)
+  
+  courses     StudyCourse[]
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model StudyCourse {
+  id           String          @id @default(uuid())
+  title        String
+  universityId String
+  university   StudyUniversity @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  level        String          // e.g., "Undergraduate", "Postgraduate"
+  duration     String          // e.g., "3 Years", "4 Years"
+  tuitionFee   String?         // e.g., "$15,000/year"
+  intake       String?
+
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+  
+  @@index([universityId])
+}
+
+model StudyScholarship {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  amount      String?
+  deadline    DateTime?
+  country     String?
+  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model StudyEvent {
+  id          String   @id @default(uuid())
+  title       String
+  date        DateTime
+  location    String   // e.g., "Online", "Accra, Ghana"
+  type        String   // e.g., "Webinar", "Fair", "Seminar"
+  description String?
+  imageUrl    String?
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+
+// ==========================================
+// OTA PLATFORM MODELS
+// ==========================================
+
+enum ProviderType {
+  HOTEL
+  FLIGHT
+  TOUR
+  ESIM
+  TRANSFER
+}
+
+enum OTABookingStatus {
+  SEARCHED
+  SELECTED
+  PAYMENT_PENDING
+  PAYMENT_SUCCESS
+  BOOKING_PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+}
+
+model ProviderConnection {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  type        ProviderType
+  isActive    Boolean      @default(true)
+  priority    Int          @default(1)
+  config      Json?
+  
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  @@index([type, isActive])
+}
+
+model MarkupRule {
+  id             String        @id @default(uuid())
+  name           String
+  providerType   ProviderType?
+  providerName   String?
+  markupType     String
+  value          Decimal       @db.Decimal(10, 2)
+  currency       String        @default("USD")
+  isActive       Boolean       @default(true)
+  
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+}
+
+model OTABooking {
+  id                  String           @id @default(uuid())
+  dellics_reference   String           @unique
+  user_id             String?
+  user                User?            @relation(fields: [user_id], references: [id])
+  customer_email      String
+  customer_phone      String?
+  customer_name       String
+  
+  total_amount        Decimal          @db.Decimal(10, 2)
+  currency            String           @default("USD")
+  paystack_reference  String?          @unique
+  
+  status              OTABookingStatus @default(SEARCHED)
+  
+  items               OTABookingItem[]
+
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  @@index([user_id])
+  @@index([customer_email])
+}
+
+model OTABookingItem {
+  id                  String        @id @default(uuid())
+  ota_booking_id      String
+  ota_booking         OTABooking    @relation(fields: [ota_booking_id], references: [id], onDelete: Cascade)
+  
+  provider_name       String
+  provider_type       ProviderType
+  
+  supplier_reference  String?
+  supplier_status     String?
+  
+  item_details        Json
+  
+  base_price          Decimal       @db.Decimal(10, 2)
+  markup_applied      Decimal       @db.Decimal(10, 2)
+  final_price         Decimal       @db.Decimal(10, 2)
+  currency            String        @default("USD")
+
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+
+  @@index([ota_booking_id])
+  @@index([provider_name])
+}
+
+// RateHawk static hotel data synced from /hotel/info/dump/ and /hotel/info/incremental_dump/
+// Eliminates live /hotel/info/ calls per search result which exceed rate limits (429).
+model HotelStaticCache {
+  id           String   @id
+  name         String
+  star_rating  Int      @default(0)
+  address      String?
+  city         String?
+  country_code String?
+  latitude     Float?
+  longitude    Float?
+  images       Json     @default("[]")
+  amenities    Json     @default("[]")
+  description  String?
+  synced_at    DateTime @default(now())
+
+  @@index([city])
+  @@index([country_code])
+  @@map("hotel_static_cache")
+}

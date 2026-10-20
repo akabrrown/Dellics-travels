@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+    <path d="M22 20 L78 20 L78 58 C78 76 50 88 50 88 C50 88 22 76 22 58 Z" fill="#002A5C" stroke="#D4AF37" stroke-width="2"/>
+    <!-- Top Crown -->
+    <path d="M35 30 L40 25 L50 32 L60 25 L65 30 L65 37 L35 37 Z" fill="#D4AF37"/>
+    <!-- Two Books -->
+    <rect x="30" y="43" width="17" height="13" rx="1" fill="#FFFFFF" stroke="#D4AF37" stroke-width="1"/>
+    <rect x="53" y="43" width="17" height="13" rx="1" fill="#FFFFFF" stroke="#D4AF37" stroke-width="1"/>
+    <!-- Beaver on wood -->
+    <ellipse cx="50" cy="68" rx="14" ry="7" fill="#D4AF37"/>
+    <circle cx="58" cy="65" r="4" fill="#D4AF37"/>
+  </svg>

@@ -1,0 +1,14 @@
+import { Module } from '@nestjs/common';
+import { SearchController } from './search.controller';
+import { SearchService } from './search.service';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from '../prisma/prisma.module';
+import { HotelsModule } from '../hotels/hotels.module';
+
+@Module({
+  imports: [HttpModule, ConfigModule, PrismaModule, HotelsModule],
+  controllers: [SearchController],
+  providers: [SearchService],
+})
+export class SearchModule {}

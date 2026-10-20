@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+    <rect x="8" y="8" width="84" height="84" rx="16" fill="#002147"/>
+    <path d="M24 24 L76 24 L76 56 C76 72 50 82 50 82 C50 82 24 72 24 56 Z" fill="#003E7E" stroke="#D4AF37" stroke-width="2"/>
+    <!-- Royal Lion -->
+    <path d="M42 40 C42 35 48 32 54 36 C58 40 56 46 50 48 L46 56 L58 56" stroke="#D4AF37" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="35" r="2" fill="#D4AF37"/>
+    <!-- Motto ribbon -->
+    <rect x="30" y="64" width="40" height="8" rx="2" fill="#D4AF37"/>
+    <text x="50" y="70" font-family="sans-serif" font-weight="900" font-size="4.5" fill="#002147" text-anchor="middle">IMPERIAL</text>
+  </svg>

@@ -1,0 +1,24 @@
+diff --git a/dist/runtime/native/render-component.js b/dist/runtime/native/render-component.js
+index 1234567..abcdefg 100644
+--- a/dist/runtime/native/render-component.js
++++ b/dist/runtime/native/render-component.js
+@@ -131,8 +131,17 @@ function stringify(object) {
+         }
+         seen.add(value);
+         const newValue = Array.isArray(value) ? [] : {};
+-        for (const entry of Object.entries(value)) {
+-            newValue[entry[0]] = replace(entry[0], entry[1]);
++        try {
++            for (const entry of Object.entries(value)) {
++                try {
++                    newValue[entry[0]] = replace(entry[0], entry[1]);
++                } catch (_e) {
++                    newValue[entry[0]] = "[Unserializable]";
++                }
++            }
++        } catch (_e) {
++            seen.delete(value);
++            return "[Unserializable]";
+         }
+         seen.delete(value);
+         return newValue;
