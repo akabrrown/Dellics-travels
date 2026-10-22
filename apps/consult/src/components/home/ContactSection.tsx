@@ -444,7 +444,7 @@ export function ContactSection() {
                   <span className="font-bold text-sm text-navy">Find Our Tema Office</span>
                 </div>
                 <a 
-                  href="https://www.google.com/maps/search/?api=1&query=Dellics+Travels+Tema+Ghana&query_place_id=ChIJr0avQg2BIBARdcdSU6ofrjU"
+                  href="https://maps.google.com/?q=Community+25+Devtraco+Courts+Rd+Tema+Ghana"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs font-bold text-brand-orange hover:underline flex items-center gap-1"

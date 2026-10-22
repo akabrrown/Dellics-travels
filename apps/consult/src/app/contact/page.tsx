@@ -45,7 +45,7 @@ export default function ContactPage() {
           </p>
         </div>
 
-        {/* Contact Grid: 5 Core Cards */}
+        {/* Contact Grid: 6 Core Advisory & Office Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           
           {/* Card 1: Online Inquiry Desk */}
@@ -58,7 +58,7 @@ export default function ContactPage() {
                 Online Inquiry Desk
               </h2>
               <p className="text-sm text-slate-600 mb-6">
-                Bespoke Bookings & Trips
+                University Admissions, Scholarships & Student Visa Advisory
               </p>
             </div>
             <div>
@@ -66,62 +66,84 @@ export default function ContactPage() {
                 href="/consultation"
                 className="inline-flex items-center gap-2 text-sm font-bold text-brand-orange hover:text-brand-orange-light transition-colors group-hover:translate-x-1 duration-200"
               >
-                <span>Submit Booking Inquiry</span>
+                <span>Book Free Consultation</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
 
-          {/* Card 2: Direct Telephone Line */}
+          {/* Card 2: Direct Enquiries */}
           <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
                 <Phone className="w-6 h-6" />
               </div>
               <h2 className="text-xl font-display font-bold text-navy mb-2">
-                Direct Telephone Line
+                Direct Enquiries
               </h2>
-              <p className="text-lg font-bold font-mono text-slate-900 mb-6 tracking-wide">
-                +233 55 205 4174
-              </p>
+              <div className="space-y-2 mb-6">
+                <div>
+                  <a href="tel:+233552054174" className="text-base font-bold font-mono text-slate-900 hover:text-brand-orange block">
+                    +233 55 205 4174
+                  </a>
+                  <span className="text-xs text-slate-500 font-medium">Admissions Desk</span>
+                </div>
+                <div>
+                  <a href="tel:+233244123456" className="text-base font-bold font-mono text-slate-900 hover:text-brand-orange block">
+                    +233 24 412 3456
+                  </a>
+                  <span className="text-xs text-slate-500 font-medium">Visa Compliance</span>
+                </div>
+              </div>
             </div>
             <div>
               <a
                 href="tel:+233552054174"
                 className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors group-hover:translate-x-1 duration-200"
               >
-                <span>Call Our Ticketing Desk</span>
+                <span>Call Admissions Desk</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Card 3: Official Email Address */}
+          {/* Card 3: Official Email */}
           <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
                 <Mail className="w-6 h-6" />
               </div>
               <h2 className="text-xl font-display font-bold text-navy mb-2">
-                Official Email Address
+                Official Email
               </h2>
-              <p className="text-base font-semibold text-slate-800 mb-6 truncate">
-                help@dellicstravels.com
-              </p>
+              <div className="space-y-2 mb-6">
+                <div>
+                  <a href="mailto:info@dellics.com" className="text-base font-semibold text-slate-900 hover:text-brand-orange block">
+                    info@dellics.com
+                  </a>
+                  <span className="text-xs text-slate-500">General Information</span>
+                </div>
+                <div>
+                  <a href="mailto:admissions@dellics.com" className="text-base font-semibold text-slate-900 hover:text-brand-orange block">
+                    admissions@dellics.com
+                  </a>
+                  <span className="text-xs text-slate-500">Application Submissions</span>
+                </div>
+              </div>
             </div>
             <div>
               <a
-                href="mailto:help@dellicstravels.com"
+                href="mailto:info@dellics.com"
                 className="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors group-hover:translate-x-1 duration-200"
               >
-                <span>Send an Email</span>
+                <span>Email Our Team</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Card 4: Ghana - Headquarters */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group lg:col-span-2">
+          {/* Card 4: Physical Campus / Office */}
+          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
                 <MapPin className="w-6 h-6" />
@@ -131,27 +153,63 @@ export default function ContactPage() {
                   HQ
                 </span>
                 <h2 className="text-xl font-display font-bold text-navy">
-                  Ghana - Headquarters
+                  Physical Campus / Office
                 </h2>
               </div>
-              <p className="text-sm sm:text-base text-slate-700 font-medium mb-6">
-                GN-0490-2450, Community 25 Tema, Greater Accra
+              <p className="text-sm sm:text-base text-slate-700 font-medium mb-6 leading-relaxed">
+                Community 25 Devtraco Courts Rd<br/>
+                Tema, Greater Accra, Ghana
               </p>
             </div>
             <div>
               <a
-                href="https://maps.google.com/?q=GN-0490-2450,+Community+25+Tema,+Greater+Accra,+Ghana"
+                href="https://maps.google.com/?q=Community+25+Devtraco+Courts+Rd+Tema+Ghana"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-bold text-brand-orange hover:text-brand-orange-light transition-colors group-hover:translate-x-1 duration-200"
               >
-                <span>View On Live Map</span>
+                <span>Find Our Tema Office (Maps)</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Card 5: United States */}
+          {/* Card 5: Consulting Hours */}
+          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
+                <Clock className="w-6 h-6" />
+              </div>
+              <h2 className="text-xl font-display font-bold text-navy mb-2">
+                Consulting Hours
+              </h2>
+              <div className="space-y-3 mb-6 text-sm text-slate-700">
+                <div className="flex justify-between border-b border-slate-100 pb-2">
+                  <span className="font-medium text-slate-500">Monday - Friday:</span>
+                  <span className="font-semibold text-slate-900">8:30 AM - 5:30 PM GMT</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-100 pb-2">
+                  <span className="font-medium text-slate-500">Saturday:</span>
+                  <span className="font-semibold text-slate-900">10:00 AM - 2:00 PM (Appt)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-slate-500">Sunday:</span>
+                  <span className="font-semibold text-slate-400">Closed</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Link
+                href="/consultation"
+                className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors group-hover:translate-x-1 duration-200"
+              >
+                <span>Schedule an Appointment</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 6: United States */}
           <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">

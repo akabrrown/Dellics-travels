@@ -158,11 +158,11 @@ export function HeroSection() {
           </span>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] tracking-tight">
-            Your Future. <span className="text-brand-orange">Your Global Education</span>.
+            Dellics <span className="text-brand-orange">Education Consult</span>
           </h1>
 
-          <p className="text-slate-200 text-sm sm:text-base lg:text-lg font-light leading-relaxed max-w-2xl">
-            We guide you through university admissions, scholarships, test preparation, and visa assistance to make studying abroad simpler.
+          <p className="text-brand-orange-light text-base sm:text-lg lg:text-xl font-medium italic max-w-2xl">
+            &ldquo;Guiding Futures. Building Global Success.&rdquo;
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
