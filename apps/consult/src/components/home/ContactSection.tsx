@@ -397,8 +397,7 @@ export function ContactSection() {
                     <div className="font-bold text-white text-sm mb-0.5">Physical Campus / Office</div>
                     <div className="text-slate-300 leading-relaxed">
                       Community 25 Devtraco Courts Rd<br/>
-                      Tema, Greater Accra, Ghana<br/>
-                      <span className="font-mono text-[10px] text-brand-orange">Place ID: ChIJr0avQg2BIBARdcdSU6ofrjU</span>
+                      Tema, Greater Accra, Ghana
                     </div>
                   </div>
                 </div>

@@ -49,6 +49,7 @@ const NAV_ITEMS = [
       { label: "Study in Australia", href: "/destinations/australia", icon: Globe },
     ],
   },
+  { label: "Consultation", href: "/consultation" },
   { label: "About Us", href: "/about" },
   { label: "Success Stories", href: "/success-stories" },
   { label: "Contact", href: "/contact" },
@@ -239,6 +240,12 @@ export function SiteHeader() {
                 className="text-[13px] font-semibold text-slate-700 hover:text-navy transition-colors"
               >
                 Log in
+              </Link>
+              <Link
+                href="/consultation"
+                className="text-[13px] font-semibold text-brand-orange hover:text-brand-orange-light transition-colors hidden xl:inline-block"
+              >
+                Book Consultation
               </Link>
               <Link
                 href="/signup"

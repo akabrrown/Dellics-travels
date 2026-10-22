@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-    <rect x="10" y="10" width="80" height="80" rx="16" fill="#800000"/>
-    <!-- Ashesi Stylized Star & Tree of Knowledge -->
-    <circle cx="50" cy="40" r="14" fill="#D4AF37"/>
-    <polygon points="50,28 54,36 63,37 56,43 58,52 50,47 42,52 44,43 37,37 46,36" fill="#800000"/>
-    <path d="M32 64 C40 56 60 56 68 64 L64 74 L36 74 Z" fill="#FFFFFF"/>
-    <text x="50" y="70" font-family="sans-serif" font-weight="900" font-size="6" fill="#800000" text-anchor="middle">ASHESI</text>
-  </svg>

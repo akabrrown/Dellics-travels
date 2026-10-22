@@ -74,3 +74,8 @@ scratch/deploy-temp/
 # Ignore stray npm/yarn lockfiles in pnpm monorepo
 package-lock.json
 yarn.lock
+
+# Auto-generated Next.js agent files
+AGENTS.md
+CLAUDE.md
+

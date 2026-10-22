@@ -7,9 +7,7 @@ import {
   RecommendedServices, 
   DashboardShowcase, 
   WhyChooseUsSection, 
-  TestimonialsSection, 
-  FaqSection,
-  ContactSection 
+  FaqSection
 } from '../components/home';
 
 export const metadata: Metadata = {
@@ -27,9 +25,8 @@ export default function ConsultHome() {
       <RecommendedServices />
       <DashboardShowcase />
       <WhyChooseUsSection />
-      <TestimonialsSection />
       <FaqSection />
-      <ContactSection />
     </main>
   );
 }
+
