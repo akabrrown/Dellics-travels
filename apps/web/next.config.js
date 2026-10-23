@@ -7,6 +7,52 @@ const nextConfig = {
         destination: '/signin',
         permanent: true,
       },
+      // Legacy static site redirects (prevents 404 Destination Not Found from Google)
+      {
+        source: '/pages/visa.html',
+        destination: '/visa',
+        permanent: true,
+      },
+      {
+        source: '/pages/visa',
+        destination: '/visa',
+        permanent: true,
+      },
+      {
+        source: '/pages/tours.html',
+        destination: '/tours',
+        permanent: true,
+      },
+      {
+        source: '/pages/transfers.html',
+        destination: '/transfers',
+        permanent: true,
+      },
+      {
+        source: '/pages/services.html',
+        destination: '/services',
+        permanent: true,
+      },
+      {
+        source: '/pages/corporate.html',
+        destination: '/corporate',
+        permanent: true,
+      },
+      {
+        source: '/pages/diaspora.html',
+        destination: '/diaspora',
+        permanent: true,
+      },
+      {
+        source: '/pages/:slug.html',
+        destination: '/:slug',
+        permanent: true,
+      },
+      {
+        source: '/pages/:slug',
+        destination: '/:slug',
+        permanent: true,
+      },
     ];
   },
   async headers() {
@@ -22,7 +68,19 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           { key: 'Content-Security-Policy', value: "base-uri 'none';" }
-          
+        ]
+      },
+      // De-index visa services and legacy pages from Google Search and other search engines
+      {
+        source: '/visa',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive, nosnippet' }
+        ]
+      },
+      {
+        source: '/pages/:path*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive, nosnippet' }
         ]
       }
     ];

@@ -8,7 +8,6 @@ const STATIC_ROUTES = [
   "/hotels",
   "/tours",
   "/transfers",
-  "/visa",
   "/destinations",
   "/destinations/africa",
   "/destinations/asia",

@@ -93,161 +93,8 @@ export const CONSULTANT_ROSTER = [
   }
 ];
 
-export const DEFAULT_CONSULTATION_REQUESTS: StudentConsultationRequest[] = [
-  {
-    id: "req-01",
-    referenceId: "DEC-GH-821943",
-    studentName: "Kwabena Frimpong",
-    studentEmail: "kwabena.f@gmail.com",
-    studentPhone: "+233 24 881 2299",
-    currentEducation: "WASSCE Graduate (Aggrey Memorial)",
-    desiredDegree: "Bachelor's Degree",
-    desiredProgram: "BSc Computer Science & Artificial Intelligence",
-    preferredDestination: "United Kingdom",
-    targetIntake: "September 2026",
-    consultationMode: "In-Person (Tema Campus Office)",
-    preferredDate: "2026-10-24",
-    notes: "Seeking universities offering partial tuition waivers for West African students with strong mathematics grades.",
-    status: "Pending",
-    assignedConsultant: null,
-    history: [
-      {
-        timestamp: "2026-10-23T08:15:00Z",
-        actor: "Kwabena Frimpong",
-        action: "Submitted Consultation Request",
-        notes: "Booked In-Person Session at Tema Community 25 office"
-      }
-    ],
-    createdAt: "2026-10-23T08:15:00Z",
-    updatedAt: "2026-10-23T08:15:00Z"
-  },
-  {
-    id: "req-02",
-    referenceId: "DEC-GH-749102",
-    studentName: "Ama Serwaa Ofori",
-    studentEmail: "ama.ofori@knust.edu.gh",
-    studentPhone: "+233 55 901 3344",
-    currentEducation: "Bachelor of Pharmacy (KNUST)",
-    desiredDegree: "Master's Degree",
-    desiredProgram: "MSc Public Health & Clinical Epidemiology",
-    preferredDestination: "Canada",
-    targetIntake: "January 2027",
-    consultationMode: "Virtual (Zoom / Google Meet)",
-    preferredDate: "2026-10-25",
-    notes: "Needs evaluation of post-graduate work permit (PGWP) eligibility for Alberta and Ontario medical programs.",
-    status: "Assigned",
-    assignedConsultant: {
-      id: "cons-02",
-      name: "Emmanuel Osei",
-      role: "Canada & US Admissions Specialist",
-      email: "e.osei@dellics.com",
-      phone: "+233 24 412 3456"
-    },
-    history: [
-      {
-        timestamp: "2026-10-22T14:30:00Z",
-        actor: "Ama Serwaa Ofori",
-        action: "Submitted Consultation Request"
-      },
-      {
-        timestamp: "2026-10-23T09:00:00Z",
-        actor: "Admissions Admin",
-        action: "Assigned Consultant",
-        notes: "Assigned to Emmanuel Osei (Canada specialist)"
-      }
-    ],
-    createdAt: "2026-10-22T14:30:00Z",
-    updatedAt: "2026-10-23T09:00:00Z"
-  },
-  {
-    id: "req-03",
-    referenceId: "DEC-GH-610284",
-    studentName: "Kofi Owusu-Ansah",
-    studentEmail: "kofi.owusu@gmail.com",
-    studentPhone: "+233 20 445 6789",
-    currentEducation: "BSc Business Administration (UG Legon)",
-    desiredDegree: "Master's Degree",
-    desiredProgram: "MBA International Finance & FinTech",
-    preferredDestination: "United States",
-    targetIntake: "August 2026",
-    consultationMode: "Virtual (Zoom / Google Meet)",
-    preferredDate: "2026-10-24",
-    notes: "Requires GMAT waiver evaluation and F-1 visa proof-of-funds structuring guidance.",
-    status: "In Progress",
-    assignedConsultant: {
-      id: "cons-01",
-      name: "Dr. Sarah Mensah",
-      role: "Senior UK & Europe Advisor",
-      email: "s.mensah@dellics.com",
-      phone: "+233 55 205 4174"
-    },
-    history: [
-      {
-        timestamp: "2026-10-21T11:20:00Z",
-        actor: "Kofi Owusu-Ansah",
-        action: "Submitted Consultation Request"
-      },
-      {
-        timestamp: "2026-10-22T10:00:00Z",
-        actor: "Admissions Admin",
-        action: "Assigned Consultant",
-        notes: "Delegated to Dr. Sarah Mensah"
-      },
-      {
-        timestamp: "2026-10-23T07:45:00Z",
-        actor: "Dr. Sarah Mensah",
-        action: "Status Changed: In Progress",
-        notes: "Conducted initial dossier review; university shortlist dispatched to student email"
-      }
-    ],
-    createdAt: "2026-10-21T11:20:00Z",
-    updatedAt: "2026-10-23T07:45:00Z"
-  },
-  {
-    id: "req-04",
-    referenceId: "DEC-GH-592817",
-    studentName: "Nana Yaa Appiah",
-    studentEmail: "nana.appiah@stlouis.edu.gh",
-    studentPhone: "+233 50 678 1234",
-    currentEducation: "Currently in Senior High School (WASSCE 2025)",
-    desiredDegree: "Bachelor's Degree",
-    desiredProgram: "BSc Nursing & Healthcare Leadership",
-    preferredDestination: "Australia",
-    targetIntake: "February 2027",
-    consultationMode: "Phone / WhatsApp Call",
-    preferredDate: "2026-10-26",
-    notes: "Looking for Australian Nursing Council accredited courses in Sydney and Brisbane with regional visa points bonus.",
-    status: "Completed",
-    assignedConsultant: {
-      id: "cons-03",
-      name: "Grace Addo",
-      role: "Australia & Visa Compliance Lead",
-      email: "g.addo@dellics.com",
-      phone: "+233 20 987 6543"
-    },
-    history: [
-      {
-        timestamp: "2026-10-18T09:00:00Z",
-        actor: "Nana Yaa Appiah",
-        action: "Submitted Consultation Request"
-      },
-      {
-        timestamp: "2026-10-19T08:30:00Z",
-        actor: "Admissions Admin",
-        action: "Assigned Consultant",
-        notes: "Delegated to Grace Addo"
-      },
-      {
-        timestamp: "2026-10-21T15:00:00Z",
-        actor: "Grace Addo",
-        action: "Completed Consultation Session",
-        notes: "Admitted into QUT pathway; English proficiency waiver granted via WASSCE A1 in Core English"
-      }
-    ],
-    createdAt: "2026-10-18T09:00:00Z",
-    updatedAt: "2026-10-21T15:00:00Z"
-  }
-];
+// Real consultation requests are loaded from storage and submitted via the consult website
+const MOCK_REQUEST_IDS = new Set(["req-01", "req-02", "req-03", "req-04", "DEC-GH-821943", "DEC-GH-749102", "DEC-GH-610284", "DEC-GH-592817"]);
 
 const STORAGE_KEY = "dellics_consultation_requests";
 
@@ -275,18 +122,23 @@ export function ConsultationManager() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setRequests(parsed);
+          if (Array.isArray(parsed)) {
+            // Filter out old mock records so only real user submissions remain
+            const realOnly = parsed.filter(
+              (r) => !MOCK_REQUEST_IDS.has(r.id) && !MOCK_REQUEST_IDS.has(r.referenceId)
+            );
+            if (realOnly.length !== parsed.length) {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(realOnly));
+            }
+            setRequests(realOnly);
             setLoading(false);
             return;
           }
         }
-        // Fallback to seed requests
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_CONSULTATION_REQUESTS));
-        setRequests(DEFAULT_CONSULTATION_REQUESTS);
+        setRequests([]);
       }
     } catch {
-      setRequests(DEFAULT_CONSULTATION_REQUESTS);
+      setRequests([]);
     } finally {
       setLoading(false);
     }

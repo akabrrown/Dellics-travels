@@ -15,6 +15,19 @@ export const metadata: Metadata = {
   title: "Visa Assistance & Immigration Document Advisory",
   description:
     "Expert visa assistance and consultation in Ghana with Dellics Travels. Expert advisory for UK, USA, Canada, Schengen, Dubai, and South Africa visas.",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      "max-video-preview": -1,
+      "max-image-preview": "none",
+      "max-snippet": -1,
+    },
+  },
 };
 
 const COUNTRY_VISAS = [

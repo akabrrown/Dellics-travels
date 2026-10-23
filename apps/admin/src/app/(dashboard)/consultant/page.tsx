@@ -47,203 +47,6 @@ type Student = {
   updated_at: string;
 };
 
-const DEFAULT_STUDENTS: Student[] = [
-  {
-    id: "stu-001",
-    applicant_name: "Kwabena Frimpong",
-    applicant_email: "kwabena.frimpong@gmail.com",
-    applicant_phone: "+233 55 123 4567",
-    city: "Kumasi",
-    destination: "United Kingdom",
-    course: "MSc Advanced Computer Science & AI",
-    intake: "September 2026",
-    stage: "UNIVERSITY_SUBMISSION",
-    status: "Active",
-    visa_status: "Pending CAS",
-    documents: [
-      { id: "doc-101", name: "Undergraduate Transcript (KNUST)", file_url: "kwabena_transcript_knust.pdf", status: "APPROVED", updated_at: "2026-10-21" },
-      { id: "doc-102", name: "Statement of Purpose (SOP)", file_url: "kwabena_sop_uk.pdf", status: "APPROVED", updated_at: "2026-10-22" },
-      { id: "doc-103", name: "Academic Reference Letter 1", file_url: "ref_prof_mensah.pdf", status: "PENDING", updated_at: "2026-10-23" }
-    ],
-    tests: [
-      { id: "test-01", test_type: "IELTS Academic", status: "COMPLETED", score: "7.5 Overall", notes: "Listening 8.0, Reading 7.5, Writing 7.0, Speaking 7.5" }
-    ],
-    notes: [
-      { id: "n-1", author_name: "Dr. Sarah Mensah", text: "Targeting Manchester, Birmingham, and Southampton. Strong academic profile.", created_at: "2026-10-21T10:00:00Z" }
-    ],
-    updated_at: "2026-10-23T08:30:00Z"
-  },
-  {
-    id: "stu-002",
-    applicant_name: "Ama Serwaa Ofori",
-    applicant_email: "ama.serwaa@outlook.com",
-    applicant_phone: "+233 24 556 7890",
-    city: "Accra",
-    destination: "Canada",
-    course: "Post-Degree Diploma in Data Analytics",
-    intake: "September 2026",
-    stage: "DOCUMENT_COLLATION",
-    status: "Active",
-    visa_status: "Not Started",
-    documents: [
-      { id: "doc-201", name: "WASSCE Certificate", file_url: "ama_wassce_cert.pdf", status: "APPROVED", updated_at: "2026-10-20" },
-      { id: "doc-202", name: "Bank Proof of Funds (4 Months)", file_url: "ecobank_statement_oct2026.pdf", status: "PENDING", updated_at: "2026-10-22" }
-    ],
-    tests: [
-      { id: "test-02", test_type: "TOEFL iBT", status: "SCHEDULED", notes: "Test center registered for Accra British Council on Nov 14." }
-    ],
-    notes: [
-      { id: "n-2", author_name: "Emmanuel Osei", text: "Assigned to Canada intake. Shortlisted Langara College and Seneca Polytechnic.", created_at: "2026-10-22T14:30:00Z" }
-    ],
-    updated_at: "2026-10-22T16:00:00Z"
-  },
-  {
-    id: "stu-003",
-    applicant_name: "Kofi Owusu-Ansah",
-    applicant_email: "kofi.owusu@gmail.com",
-    applicant_phone: "+233 20 445 6789",
-    city: "Tema",
-    destination: "United States",
-    course: "MBA International Finance & FinTech",
-    intake: "January 2027",
-    stage: "OFFER_RECEIVED",
-    status: "Active",
-    visa_status: "I-20 Form Pending",
-    documents: [
-      { id: "doc-301", name: "Degree Certificate (UG Legon)", file_url: "ug_degree_kofi.pdf", status: "APPROVED", updated_at: "2026-10-18" },
-      { id: "doc-302", name: "WES Evaluation Report", file_url: "wes_credential_eval.pdf", status: "APPROVED", updated_at: "2026-10-19" },
-      { id: "doc-303", name: "Affidavit of Financial Sponsorship", file_url: "affidavit_sponsorship.pdf", status: "APPROVED", updated_at: "2026-10-21" }
-    ],
-    tests: [
-      { id: "test-03", test_type: "GMAT Focus", status: "COMPLETED", score: "665", notes: "Quant 85th percentile; qualified for $15,000 Dean's Merit Scholarship." }
-    ],
-    notes: [
-      { id: "n-3", author_name: "Emmanuel Osei", text: "Offer received from Arizona State University Carey School of Business. Preparing F-1 visa file.", created_at: "2026-10-23T09:15:00Z" }
-    ],
-    updated_at: "2026-10-23T09:15:00Z"
-  },
-  {
-    id: "stu-004",
-    applicant_name: "Nana Yaa Appiah",
-    applicant_email: "nana.appiah@stlouis.edu.gh",
-    applicant_phone: "+233 50 678 1234",
-    city: "Cape Coast",
-    destination: "Australia",
-    course: "BSc Nursing & Healthcare Leadership",
-    intake: "February 2027",
-    stage: "VISA_APPLICATION",
-    status: "Active",
-    visa_status: "PROCESSING",
-    documents: [
-      { id: "doc-401", name: "Confirmation of Enrolment (eCoE)", file_url: "qut_ecoe_nana.pdf", status: "APPROVED", updated_at: "2026-10-15" },
-      { id: "doc-402", name: "OSHC Health Insurance Certificate", file_url: "bupa_oshc_cert.pdf", status: "APPROVED", updated_at: "2026-10-16" },
-      { id: "doc-403", name: "Genuine Student (GS) Narrative", file_url: "gs_statement_final.pdf", status: "APPROVED", updated_at: "2026-10-18" }
-    ],
-    tests: [
-      { id: "test-04", test_type: "PTE Academic", status: "COMPLETED", score: "68 Overall", notes: "Meets Australian Nursing and Midwifery Board standard." }
-    ],
-    notes: [
-      { id: "n-4", author_name: "Grace Addo", text: "Subclass 500 visa lodged via Australian ImmiAccount on Oct 20. Biometrics completed at VFS Accra.", created_at: "2026-10-21T11:00:00Z" }
-    ],
-    updated_at: "2026-10-21T11:00:00Z"
-  },
-  {
-    id: "stu-005",
-    applicant_name: "David Kwaku Baah",
-    applicant_email: "david.baah@gmail.com",
-    applicant_phone: "+233 27 890 1234",
-    city: "Sunyani",
-    destination: "Europe",
-    course: "MSc Renewable Energy & Sustainable Systems",
-    intake: "October 2026",
-    stage: "DOCUMENT_COLLATION",
-    status: "Active",
-    visa_status: "Blocked Account Ready",
-    documents: [
-      { id: "doc-501", name: "BSc Electrical Engineering Certificate", file_url: "david_bsc_ee.pdf", status: "APPROVED", updated_at: "2026-10-19" },
-      { id: "doc-502", name: "German Language A1 Certificate (Goethe)", file_url: "goethe_a1_david.pdf", status: "PENDING", updated_at: "2026-10-22" }
-    ],
-    tests: [
-      { id: "test-05", test_type: "IELTS Academic", status: "COMPLETED", score: "7.0 Overall", notes: "Sufficient for English-taught Master's at RWTH Aachen." }
-    ],
-    notes: [
-      { id: "n-5", author_name: "Dr. Sarah Mensah", text: "Expatrio blocked account initiated (€11,904). Awaiting winter semester admission letter.", created_at: "2026-10-22T13:40:00Z" }
-    ],
-    updated_at: "2026-10-22T13:40:00Z"
-  },
-  {
-    id: "stu-006",
-    applicant_name: "Abena Mensah-Bonsu",
-    applicant_email: "abena.mbonsu@yahoo.com",
-    applicant_phone: "+233 24 333 4455",
-    city: "Accra",
-    destination: "United Kingdom",
-    course: "LLM International Commercial Law",
-    intake: "September 2026",
-    stage: "OFFER_RECEIVED",
-    status: "Active",
-    visa_status: "CAS Requested",
-    documents: [
-      { id: "doc-601", name: "LLB Certificate (GIMPA Law School)", file_url: "gimpa_llb_abena.pdf", status: "APPROVED", updated_at: "2026-10-14" },
-      { id: "doc-602", name: "Law Firm Internship Recommendation", file_url: "bentsi_enchill_rec.pdf", status: "APPROVED", updated_at: "2026-10-15" }
-    ],
-    tests: [
-      { id: "test-06", test_type: "IELTS Academic", status: "COMPLETED", score: "8.0 Overall", notes: "Exceptional language qualification." }
-    ],
-    notes: [
-      { id: "n-6", author_name: "Dr. Sarah Mensah", text: "Unconditional offer accepted at Queen Mary University of London. CAS deposit paid.", created_at: "2026-10-20T15:20:00Z" }
-    ],
-    updated_at: "2026-10-20T15:20:00Z"
-  },
-  {
-    id: "stu-007",
-    applicant_name: "Prince Osei Tutu",
-    applicant_email: "prince.osei@gmail.com",
-    applicant_phone: "+233 55 998 7766",
-    city: "Takoradi",
-    destination: "Canada",
-    course: "BEng Mechanical & Mechatronics Engineering",
-    intake: "January 2027",
-    stage: "UNIVERSITY_SUBMISSION",
-    status: "Active",
-    visa_status: "Not Started",
-    documents: [
-      { id: "doc-701", name: "High School Transcript (Mfantsipim)", file_url: "mfantsipim_transcript.pdf", status: "APPROVED", updated_at: "2026-10-12" },
-      { id: "doc-702", name: "Mathematics & Physics Olympiad Honors", file_url: "olympiad_cert.pdf", status: "APPROVED", updated_at: "2026-10-14" }
-    ],
-    tests: [
-      { id: "test-07", test_type: "Duolingo English Test (DET)", status: "COMPLETED", score: "135", notes: "Accepted by Memorial University and Carleton." }
-    ],
-    notes: [
-      { id: "n-7", author_name: "Emmanuel Osei", text: "Applications lodged with Ontario Universities Application Centre (OUAC).", created_at: "2026-10-19T10:00:00Z" }
-    ],
-    updated_at: "2026-10-19T10:00:00Z"
-  },
-  {
-    id: "stu-008",
-    applicant_name: "Jessica Esi Darko",
-    applicant_email: "jessica.darko@gmail.com",
-    applicant_phone: "+233 20 112 3344",
-    city: "Ho",
-    destination: "Australia",
-    course: "Master of Public Health & Epidemiology",
-    intake: "July 2026",
-    stage: "COMPLETED",
-    status: "Completed",
-    visa_status: "GRANTED",
-    documents: [
-      { id: "doc-801", name: "Visa Grant Notice (Subclass 500)", file_url: "immi_grant_notice_jessica.pdf", status: "APPROVED", updated_at: "2026-10-10" }
-    ],
-    tests: [
-      { id: "test-08", test_type: "IELTS Academic", status: "COMPLETED", score: "7.5 Overall", notes: "Visa granted for University of Sydney." }
-    ],
-    notes: [
-      { id: "n-8", author_name: "Grace Addo", text: "Pre-departure briefing conducted. Flight booked for Sydney via Emirates.", created_at: "2026-10-10T16:00:00Z" }
-    ],
-    updated_at: "2026-10-10T16:00:00Z"
-  }
-];
-
 export default function ConsultantPage() {
   const searchParams = useSearchParams();
   const initialTab = (searchParams?.get("tab") as TabType) || "crm";
@@ -311,12 +114,46 @@ export default function ConsultantPage() {
       const res = await adminApi.get<{ status: string; data: Student[] }>('/study/applications');
       if (res && Array.isArray(res.data) && res.data.length > 0) {
         setStudents(res.data);
-      } else {
-        setStudents(DEFAULT_STUDENTS);
+        return;
       }
     } catch {
-      setStudents(DEFAULT_STUDENTS);
+      // Local real student fallback
     }
+
+    // Read real registered students from localStorage (from student portal onboarding)
+    if (typeof window !== "undefined") {
+      try {
+        const registryStr = localStorage.getItem("dellics_registered_students_map");
+        if (registryStr) {
+          const registry = JSON.parse(registryStr);
+          const realLocal: Student[] = Object.values(registry).map((prof: any) => ({
+            id: prof.studentId || prof.id || `STU-${Date.now()}`,
+            applicant_name: `${prof.firstName || ''} ${prof.lastName || ''}`.trim() || prof.applicant_name || 'Applicant',
+            applicant_email: prof.email || prof.applicant_email || '',
+            applicant_phone: prof.phone || prof.applicant_phone || '',
+            city: prof.city || prof.residenceCountry || 'Accra',
+            destination: prof.preferredDestination || prof.targetCountry || 'Pending Selection',
+            course: prof.desiredProgram || prof.course || 'Undergraduate / Postgraduate',
+            intake: prof.targetIntake || '2026 / 2027',
+            stage: prof.stage || 'INITIAL_CONSULTATION',
+            status: prof.status || 'Active',
+            visa_status: prof.visa_status || 'Not Started',
+            documents: prof.documents || [],
+            tests: prof.tests || [],
+            notes: prof.notes || [],
+            updated_at: prof.updated_at || new Date().toISOString()
+          }));
+          if (realLocal.length > 0) {
+            setStudents(realLocal);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Error reading real local registered students", err);
+      }
+    }
+
+    setStudents([]);
   };
 
   const fetchMetrics = async () => {
@@ -413,24 +250,24 @@ export default function ConsultantPage() {
 
   // Compute live actual metrics from real student records and consultation requests
   const dynamicMetrics = useMemo(() => {
-    const totalCount = metrics?.total && metrics.total > 0 ? metrics.total : (students.length > 0 ? students.length : 38);
-    const activeCount = metrics?.active && metrics.active > 0 
+    const totalCount = metrics?.total !== undefined && metrics.total !== null ? metrics.total : students.length;
+    const activeCount = metrics?.active !== undefined && metrics.active !== null 
       ? metrics.active 
-      : (students.filter(s => s.status !== "Completed" && s.stage !== "COMPLETED").length || 24);
-    const pendingTestsCount = metrics?.testsPending && metrics.testsPending > 0
+      : students.filter(s => s.status === "Active" || s.stage !== "COMPLETED").length;
+    const pendingTestsCount = metrics?.testsPending !== undefined && metrics.testsPending !== null
       ? metrics.testsPending
-      : (students.flatMap(s => s.tests || []).filter(t => t.status === "PENDING" || t.status === "SCHEDULED").length || 7);
-    const uniSubmissionsCount = metrics?.submissions && metrics.submissions > 0
+      : students.flatMap(s => s.tests || []).filter(t => t.status === "PENDING" || t.status === "SCHEDULED").length;
+    const uniSubmissionsCount = metrics?.submissions !== undefined && metrics.submissions !== null
       ? metrics.submissions
-      : (students.filter(s => ["OFFER", "OFFER_RECEIVED", "UNIVERSITY_SUBMISSION", "VISA", "VISA_APPLICATION"].includes(s.stage)).length || 18);
-    const visaProcessingCount = metrics?.visa && metrics.visa > 0
+      : students.filter(s => ["OFFER", "OFFER_RECEIVED", "UNIVERSITY_SUBMISSION", "VISA", "VISA_APPLICATION"].includes(s.stage)).length;
+    const visaProcessingCount = metrics?.visa !== undefined && metrics.visa !== null
       ? metrics.visa
-      : (students.filter(s => s.visa_status === "PROCESSING" || s.stage === "VISA_APPLICATION" || s.stage === "VISA").length || 12);
+      : students.filter(s => s.visa_status === "PROCESSING" || s.stage === "VISA_APPLICATION" || s.stage === "VISA").length;
     
-    // Today's appointments
+    // Real today's appointments
     const today = new Date().toISOString().split("T")[0];
     const todayAppts = consultationRequests.filter(r => r.preferredDate === today).length;
-    const appointmentsCount = metrics?.appointments && metrics.appointments > 0 ? metrics.appointments : (todayAppts > 0 ? todayAppts : 5);
+    const appointmentsCount = metrics?.appointments !== undefined && metrics.appointments !== null ? metrics.appointments : todayAppts;
 
     return [
       { label: "Total Students", value: totalCount, color: "text-slate-900" },
@@ -682,7 +519,13 @@ export default function ConsultantPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {students.filter(s => s.tests.length > 0).map(s => (
+                      {students.filter(s => s.tests.length > 0).length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-12 text-center text-xs text-slate-500">
+                            No standardized test cases pending. Student test coordination requests (IELTS, TOEFL, SAT, GRE) will appear here.
+                          </td>
+                        </tr>
+                      ) : students.filter(s => s.tests.length > 0).map(s => (
                         s.tests.map(t => (
                           <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
                             <td className="px-4 py-4">
@@ -735,7 +578,13 @@ export default function ConsultantPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {students.flatMap(s => s.documents.map(d => ({ student: s, doc: d }))).map((item, idx) => (
+                      {students.flatMap(s => s.documents.map(d => ({ student: s, doc: d }))).length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-12 text-center text-xs text-slate-500">
+                            No student documents awaiting compliance verification. Uploaded transcripts, test certificates, and financial statements will appear here.
+                          </td>
+                        </tr>
+                      ) : students.flatMap(s => s.documents.map(d => ({ student: s, doc: d }))).map((item, idx) => (
                         <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                           <td className="px-4 py-4 font-semibold text-slate-900 text-sm">{item.student.applicant_name}</td>
                           <td className="px-4 py-4 text-xs text-slate-700 font-medium">{item.doc.name}</td>
@@ -798,7 +647,13 @@ export default function ConsultantPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {students.map((s) => (
+                      {students.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-12 text-center text-xs text-slate-500">
+                            No active visa cases. Students transitioning to the visa application stage will appear here for CAS and embassy guidance.
+                          </td>
+                        </tr>
+                      ) : students.map((s) => (
                         <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
                           <td className="px-4 py-4 font-semibold text-slate-900 text-sm">{s.applicant_name}</td>
                           <td className="px-4 py-4 text-xs text-slate-700 font-medium">{s.destination} Student Visa</td>

@@ -40,8 +40,8 @@ export default function NotFound() {
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10">
-            <Link href="/tours" className="inline-flex items-center gap-2">
-              <span>Explore Tours</span>
+            <Link href="/services" className="inline-flex items-center gap-2">
+              <span>Explore Services</span>
             </Link>
           </Button>
         </div>
