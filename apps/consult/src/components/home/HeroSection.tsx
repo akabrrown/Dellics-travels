@@ -376,7 +376,7 @@ export function HeroSection() {
                         <input 
                           type="text" 
                           placeholder="e.g. Data Science, Nursing, MBA, Law..."
-                          className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 backdrop-blur-md"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -522,7 +522,7 @@ export function HeroSection() {
                         <input 
                           type="text" 
                           placeholder="e.g. Oxford, Toronto, Manchester, Melbourne..."
-                          className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 backdrop-blur-md"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -733,7 +733,7 @@ export function HeroSection() {
                                 placeholder="Kwame Mensah"
                                 value={guideData.fullName}
                                 onChange={(e) => setGuideData({ ...guideData, fullName: e.target.value })}
-                                className="w-full px-3 py-3 bg-white/10 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 backdrop-blur-md"
+                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                               />
                             </div>
 
@@ -747,7 +747,7 @@ export function HeroSection() {
                                 placeholder="kwame@example.com"
                                 value={guideData.email}
                                 onChange={(e) => setGuideData({ ...guideData, email: e.target.value })}
-                                className="w-full px-3 py-3 bg-white/10 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 backdrop-blur-md"
+                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                               />
                             </div>
 
@@ -761,7 +761,7 @@ export function HeroSection() {
                                 placeholder="+233 55 205 4174"
                                 value={guideData.phone}
                                 onChange={(e) => setGuideData({ ...guideData, phone: e.target.value })}
-                                className="w-full px-3 py-3 bg-white/10 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 backdrop-blur-md"
+                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                               />
                             </div>
                           </div>
@@ -822,7 +822,6 @@ export function HeroSection() {
           <div className="bg-slate-900 text-white rounded-3xl max-w-3xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-white/15">
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
               <div>
-                <span className="text-xs font-bold text-brand-orange uppercase tracking-wider">Live System Directory</span>
                 <h3 className="text-xl font-bold text-white mt-0.5">{modalTitle}</h3>
               </div>
               <button 

@@ -145,6 +145,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       items: [
         { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
         { label: "Consultant CRM", href: "/consultant", icon: FileText, permission: "consultant.view" },
+        { label: "Consultations", href: "/consultant?tab=consultations", icon: Headphones, permission: "consultant.view" },
         { label: "Hero Search & Feeds", href: "/consultant?tab=catalog", icon: GraduationCap, permission: "consultant.view" },
         {
           label: "Bookings",

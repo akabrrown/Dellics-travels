@@ -55,6 +55,41 @@ export default function ConsultationPage() {
       if (formData.email) localStorage.setItem("dellics_user_email", formData.email);
       const fullName = (formData.firstName + " " + formData.lastName).trim();
       if (fullName) localStorage.setItem("dellics_user_name", fullName);
+
+      if (typeof window !== "undefined") {
+        const existingRaw = localStorage.getItem("dellics_consultation_requests");
+        const existing = existingRaw ? JSON.parse(existingRaw) : [];
+        const newRequest = {
+          id: "req-" + Date.now(),
+          referenceId: generatedRef,
+          studentName: fullName,
+          studentEmail: formData.email,
+          studentPhone: formData.phone,
+          currentEducation: formData.currentEducation,
+          desiredDegree: formData.desiredDegree,
+          desiredProgram: formData.desiredProgram,
+          preferredDestination: formData.preferredDestination,
+          targetIntake: formData.targetIntake,
+          consultationMode: formData.consultationMode,
+          preferredDate: formData.preferredDate,
+          notes: formData.notes,
+          status: "Pending",
+          assignedConsultant: null,
+          history: [
+            {
+              timestamp: new Date().toISOString(),
+              actor: fullName,
+              action: "Submitted Consultation Request",
+              notes: `Requested ${formData.consultationMode || "In-Person/Virtual"} session for ${formData.preferredDestination || "Study Abroad"}`
+            }
+          ],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        existing.unshift(newRequest);
+        localStorage.setItem("dellics_consultation_requests", JSON.stringify(existing));
+        window.dispatchEvent(new Event("dellics_consultation_updated"));
+      }
     } catch (err) {}
 
     setTimeout(() => {

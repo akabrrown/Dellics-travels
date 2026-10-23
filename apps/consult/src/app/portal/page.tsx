@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { 
   GraduationCap, 
   FileText, 
@@ -27,6 +28,9 @@ import {
   Award,
   Compass,
   ArrowUpRight,
+  Headphones,
+  Check,
+  MapPin,
   Sparkles as SparklesBan
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-context";
@@ -49,15 +53,60 @@ interface AppRecord {
 }
 
 export default function StudentPortalPage() {
-  const { user } = useAuth();
-  const firstName = user?.firstName || "Sam";
-  const userEmail = user?.email || "samgotnothingonme@gmail.com";
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+  const [authChecking, setAuthChecking] = useState(true);
+
+  // Authentication & Verification Gate
+  useEffect(() => {
+    if (!isLoading) {
+      if (!user || !user.isLoggedIn) {
+        router.push("/login");
+        return;
+      }
+      if (!user.profileCompleted || !user.profile?.isVerified) {
+        router.push("/portal/onboarding");
+        return;
+      }
+      setAuthChecking(false);
+    }
+  }, [user, isLoading, router]);
+
+  const firstName = user?.firstName || "Student";
+  const userEmail = user?.email || "";
 
   const [activeTab, setActiveTab] = useState<"ecosystem" | "applications" | "documents" | "travel_perks" | "counsellor">("ecosystem");
   const [collegeSearch, setCollegeSearch] = useState("");
   const [catalogSchools, setCatalogSchools] = useState<CatalogSchool[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [consultationRequest, setConsultationRequest] = useState<any>(null);
+
+  // Load student consultation request
+  useEffect(() => {
+    const loadConsultation = () => {
+      try {
+        const raw = localStorage.getItem("dellics_consultation_requests");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const found = parsed.find((r: any) => 
+              userEmail && r.studentEmail && r.studentEmail.toLowerCase() === userEmail.toLowerCase()
+            ) || parsed[0];
+            if (found) setConsultationRequest(found);
+          }
+        }
+      } catch (e) {}
+    };
+
+    loadConsultation();
+    window.addEventListener("dellics_consultation_updated", loadConsultation);
+    window.addEventListener("storage", loadConsultation);
+    return () => {
+      window.removeEventListener("dellics_consultation_updated", loadConsultation);
+      window.removeEventListener("storage", loadConsultation);
+    };
+  }, [userEmail]);
 
   useEffect(() => {
     let isMounted = true;
@@ -155,6 +204,20 @@ export default function StudentPortalPage() {
     setNewDocName("");
     setShowUploadModal(false);
   };
+
+  if (isLoading || authChecking || !user || !user.isLoggedIn || !user.profileCompleted || !user.profile?.isVerified) {
+    return (
+      <main className="min-h-screen bg-slate-900 flex items-center justify-center p-6 text-white">
+        <div className="bg-slate-950 p-8 rounded-3xl shadow-2xl border border-white/10 max-w-md w-full text-center space-y-4">
+          <div className="w-12 h-12 rounded-full border-3 border-white/20 border-t-brand-orange animate-spin mx-auto" />
+          <h2 className="text-xl font-bold font-display text-white">Verifying Student Credentials</h2>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Connecting to your verified Dellics Student Portal. Students must complete and verify their registration to access this portal.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -704,33 +767,137 @@ export default function StudentPortalPage() {
 
           {/* TAB: COUNSELLOR */}
           {activeTab === "counsellor" && (
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-navy text-white flex items-center justify-center font-bold text-xl">
-                  KA
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-base">Kofi Asare</h4>
-                  <div className="text-xs text-brand-orange font-semibold">Senior Education & Visa Advisor</div>
-                  <div className="text-xs text-slate-500">Dellics Education Consult · Tema / Accra</div>
-                </div>
-              </div>
+            <div className="space-y-6">
+              {consultationRequest ? (
+                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                  {/* Status Banner */}
+                  <div className="p-6 bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-brand-orange text-white">
+                          Ref: {consultationRequest.referenceId || "DEC-GH-CONSULT"}
+                        </span>
+                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                          consultationRequest.status === "Completed"
+                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                            : consultationRequest.status === "In Progress"
+                              ? "bg-teal-500/20 text-teal-300 border border-teal-500/30"
+                              : consultationRequest.status === "Assigned"
+                                ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                                : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                        }`}>
+                          {consultationRequest.status}
+                        </span>
+                      </div>
+                      <h4 className="text-xl font-bold font-display text-white mt-2">
+                        {consultationRequest.desiredProgram || "Study Abroad Academic Review"}
+                      </h4>
+                      <p className="text-xs text-slate-300 mt-0.5">
+                        Destination: <strong className="text-white">{consultationRequest.preferredDestination || "Global Destinations"}</strong> · Mode: {consultationRequest.consultationMode || "In-Person / Virtual"}
+                      </p>
+                    </div>
 
-              <div className="pt-2 flex flex-wrap gap-3">
-                <Link
-                  href="/contact"
-                  className="py-2.5 px-5 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-colors"
-                >
-                  Schedule 1-on-1 Consultation
-                </Link>
-                <a
-                  href="https://wa.me/233241234567"
-                  target="_blank"
-                  className="py-2.5 px-5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
-                >
-                  Chat on WhatsApp
-                </a>
-              </div>
+                    <div className="text-left sm:text-right">
+                      <div className="text-[11px] text-slate-400">Target Intake</div>
+                      <div className="text-sm font-bold text-brand-orange">{consultationRequest.targetIntake || "September 2026"}</div>
+                    </div>
+                  </div>
+
+                  {/* Consultation Progress Steps */}
+                  <div className="p-6 border-b border-slate-100 bg-slate-50">
+                    <div className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Consultation Lifecycle</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        { step: "Submitted", done: true },
+                        { step: "Advisor Assigned", done: consultationRequest.status !== "Pending" },
+                        { step: "Review In Progress", done: consultationRequest.status === "In Progress" || consultationRequest.status === "Completed" },
+                        { step: "Completed", done: consultationRequest.status === "Completed" },
+                      ].map((s, idx) => (
+                        <div key={idx} className="space-y-1.5">
+                          <div className={`h-2 rounded-full ${s.done ? "bg-emerald-500" : "bg-slate-200"}`} />
+                          <div className={`text-[11px] font-bold ${s.done ? "text-slate-900" : "text-slate-400"}`}>
+                            {idx + 1}. {s.step}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Assigned Advisor Section */}
+                  <div className="p-6 space-y-4">
+                    <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">Your Assigned Consultant</div>
+                    {consultationRequest.assignedConsultant ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200 gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-14 h-14 rounded-2xl bg-[#0A0060] text-white flex items-center justify-center font-bold text-xl">
+                            {consultationRequest.assignedConsultant.name?.charAt(0) || "D"}
+                          </div>
+                          <div>
+                            <h5 className="font-bold text-slate-900 text-base">{consultationRequest.assignedConsultant.name}</h5>
+                            <div className="text-xs text-brand-orange font-semibold">{consultationRequest.assignedConsultant.role || "Certified Education Consultant"}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">{consultationRequest.assignedConsultant.email} · {consultationRequest.assignedConsultant.phone}</div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <a
+                            href={`https://wa.me/${(consultationRequest.assignedConsultant.phone || "+233552054174").replace(/[^0-9]/g, "")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors flex items-center gap-1.5 shadow-xs"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" /> Chat on WhatsApp
+                          </a>
+                          <a
+                            href={`mailto:${consultationRequest.assignedConsultant.email || "admissions@dellics.com"}`}
+                            className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition-colors"
+                          >
+                            Email Advisor
+                          </a>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
+                        <strong className="font-bold">Advisor Assignment Pending:</strong> Your consultation request is currently being assigned by Dellics Admissions Desk. A certified consultant specializing in your preferred destination ({consultationRequest.preferredDestination || "Global"}) will be linked here shortly.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-navy text-white flex items-center justify-center font-bold text-xl">
+                      KA
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">Kofi Asare</h4>
+                      <div className="text-xs text-brand-orange font-semibold">Senior Education & Visa Advisor</div>
+                      <div className="text-xs text-slate-500">Dellics Education Consult · Tema / Accra</div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Have questions about university courses, scholarship essays, or visa requirements? Book an official 1-on-1 consultation session with our education team.
+                  </p>
+
+                  <div className="pt-2 flex flex-wrap gap-3">
+                    <Link
+                      href="/consultation"
+                      className="py-2.5 px-5 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-colors flex items-center gap-1.5 shadow-sm"
+                    >
+                      <Headphones className="w-3.5 h-3.5" /> Book 1-on-1 Consultation
+                    </Link>
+                    <a
+                      href="https://wa.me/233552054174"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-2.5 px-5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors flex items-center gap-1.5 shadow-sm"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" /> Chat on WhatsApp
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

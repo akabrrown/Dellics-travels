@@ -1,7 +1,7 @@
 export interface CatalogSchool {
   id: string;
   name: string;
-  level: "Undergraduate" | "Postgraduate" | "Undergraduate & Postgraduate";
+  level: "Undergraduate" | "Postgraduate" | "Undergraduate & Postgraduate" | "Master's" | "PhD / Doctorate";
   programmes: string[];
   location: string;
   city: string;

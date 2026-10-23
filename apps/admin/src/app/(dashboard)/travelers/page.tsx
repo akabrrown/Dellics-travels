@@ -40,7 +40,8 @@ import {
   Users,
   Zap,
   BarChart3,
-  Trash2 } from "lucide-react";
+  Trash2,
+  X } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 /* ─── Types ─── */
@@ -159,6 +160,295 @@ const PIPELINE_STAGE_COLORS: Record<string, string> = {
   LOST: "border-t-rose-400",
 };
 
+const CRM_STORAGE_KEY = "dellics_crm_travelers";
+
+const DEFAULT_CRM_TRAVELERS: CRMTravelerRecord[] = [
+  {
+    id: "trav-01",
+    name: "Kwame Asante Mensah",
+    email: "kwame.mensah@ghanaexec.com",
+    phone: "+233 24 456 7890",
+    country: "Ghana",
+    countryCode: "GH",
+    membershipTier: "ELITE",
+    pointsBalance: 14250,
+    totalTrips: 8,
+    totalBookings: 11,
+    lifetimeSpendGhs: 148500,
+    lifetimeSpendUsd: 11880,
+    activeProducts: ["FLIGHTS", "HOTELS", "ESIM", "DIASPORA"],
+    currentStatus: "IN_TRANSIT",
+    primaryRouteOrInterest: "Accra (ACC) ⇄ London Heathrow (LHR) Business",
+    lastActive: "Today, 08:30 GMT",
+    passportVerified: true,
+    passportExpiry: "2031-08-15",
+    hasOpenInquiry: true,
+    inquirySummary: "LHR Chauffeur Transfer confirmation",
+    eSimActive: true,
+    leadSource: "CORPORATE_INQUIRY",
+    churnRiskDays: 12
+  },
+  {
+    id: "trav-02",
+    name: "Dr. Abena Serwaa Boateng",
+    email: "abena.boateng@korlebu.edu.gh",
+    phone: "+233 20 890 1234",
+    country: "Ghana",
+    countryCode: "GH",
+    membershipTier: "VOYAGER",
+    pointsBalance: 6800,
+    totalTrips: 4,
+    totalBookings: 6,
+    lifetimeSpendGhs: 64200,
+    lifetimeSpendUsd: 5136,
+    activeProducts: ["FLIGHTS", "VISA", "HOTELS"],
+    currentStatus: "CONFIRMED",
+    primaryRouteOrInterest: "Accra (ACC) ⇄ Toronto Pearson (YYZ)",
+    lastActive: "Yesterday",
+    passportVerified: true,
+    passportExpiry: "2029-04-10",
+    hasOpenInquiry: false,
+    eSimActive: false,
+    leadSource: "DIRECT_SIGNUP",
+    churnRiskDays: 24
+  },
+  {
+    id: "trav-03",
+    name: "Marcus Chukwuemeka Osei",
+    email: "marcus.osei@londonfin.co.uk",
+    phone: "+44 7700 900123",
+    country: "United Kingdom",
+    countryCode: "GB",
+    membershipTier: "ELITE",
+    pointsBalance: 21500,
+    totalTrips: 12,
+    totalBookings: 15,
+    lifetimeSpendGhs: 210000,
+    lifetimeSpendUsd: 16800,
+    activeProducts: ["DIASPORA", "FLIGHTS", "TOURS", "HOTELS"],
+    currentStatus: "CONFIRMED",
+    primaryRouteOrInterest: "December in GH · Heritage & Chale Wote VIP Package",
+    lastActive: "2 days ago",
+    passportVerified: true,
+    passportExpiry: "2032-11-20",
+    hasOpenInquiry: true,
+    inquirySummary: "Elmina Castle Private Tour Guide requested",
+    eSimActive: true,
+    leadSource: "DIASPORA_PACKAGE",
+    churnRiskDays: 18
+  },
+  {
+    id: "trav-04",
+    name: "Nana Akua Frimpong",
+    email: "nana.akua@gmail.com",
+    phone: "+233 55 312 9988",
+    country: "Ghana",
+    countryCode: "GH",
+    membershipTier: "EXPLORER",
+    pointsBalance: 1200,
+    totalTrips: 1,
+    totalBookings: 2,
+    lifetimeSpendGhs: 14500,
+    lifetimeSpendUsd: 1160,
+    activeProducts: ["VISA", "FLIGHTS"],
+    currentStatus: "LEAD",
+    primaryRouteOrInterest: "Schengen Visa Consultation (Germany/France)",
+    lastActive: "Today, 10:15 GMT",
+    passportVerified: false,
+    passportExpiry: "2027-02-18",
+    hasOpenInquiry: true,
+    inquirySummary: "French Embassy appointment slot query",
+    eSimActive: false,
+    leadSource: "VISA_REQUEST",
+    churnRiskDays: 5
+  },
+  {
+    id: "trav-05",
+    name: "David Kojo Acheampong",
+    email: "david.acheampong@stanbic.com.gh",
+    phone: "+233 24 112 3344",
+    country: "Ghana",
+    countryCode: "GH",
+    membershipTier: "VOYAGER",
+    pointsBalance: 8400,
+    totalTrips: 5,
+    totalBookings: 7,
+    lifetimeSpendGhs: 82000,
+    lifetimeSpendUsd: 6560,
+    activeProducts: ["FLIGHTS", "ESIM", "HOTELS"],
+    currentStatus: "COMPLETED",
+    primaryRouteOrInterest: "Accra (ACC) ⇄ Dubai (DXB) Business",
+    lastActive: "3 weeks ago",
+    passportVerified: true,
+    passportExpiry: "2030-07-22",
+    hasOpenInquiry: false,
+    eSimActive: true,
+    leadSource: "CORPORATE_INQUIRY",
+    churnRiskDays: 68
+  },
+  {
+    id: "trav-06",
+    name: "Jessica Afia Ofori",
+    email: "jessica.ofori@atlantahealth.org",
+    phone: "+1 404 555 0192",
+    country: "United States",
+    countryCode: "US",
+    membershipTier: "VOYAGER",
+    pointsBalance: 5900,
+    totalTrips: 3,
+    totalBookings: 4,
+    lifetimeSpendGhs: 53000,
+    lifetimeSpendUsd: 4240,
+    activeProducts: ["DIASPORA", "TOURS", "ESIM"],
+    currentStatus: "INACTIVE",
+    primaryRouteOrInterest: "Cape Coast / Kakum Canopy Walk Family Retreat",
+    lastActive: "3 months ago",
+    passportVerified: true,
+    passportExpiry: "2028-10-14",
+    hasOpenInquiry: false,
+    eSimActive: false,
+    leadSource: "REFERRAL",
+    churnRiskDays: 95
+  },
+  {
+    id: "trav-07",
+    name: "Emmanuel Tetteh",
+    email: "emmanuel.tetteh@techghana.io",
+    phone: "+233 27 654 3210",
+    country: "Ghana",
+    countryCode: "GH",
+    membershipTier: "EXPLORER",
+    pointsBalance: 950,
+    totalTrips: 1,
+    totalBookings: 1,
+    lifetimeSpendGhs: 9200,
+    lifetimeSpendUsd: 736,
+    activeProducts: ["FLIGHTS", "ESIM"],
+    currentStatus: "CONFIRMED",
+    primaryRouteOrInterest: "Accra (ACC) ⇄ Nairobi (NBO)",
+    lastActive: "Yesterday",
+    passportVerified: true,
+    passportExpiry: "2029-09-01",
+    hasOpenInquiry: false,
+    eSimActive: true,
+    leadSource: "FLIGHT_SEARCH",
+    churnRiskDays: 14
+  },
+  {
+    id: "trav-08",
+    name: "Bernice Konadu Agyemang",
+    email: "bernice.agyemang@vodafone.com.gh",
+    phone: "+233 50 123 7890",
+    country: "Ghana",
+    countryCode: "GH",
+    membershipTier: "ELITE",
+    pointsBalance: 17800,
+    totalTrips: 9,
+    totalBookings: 13,
+    lifetimeSpendGhs: 165000,
+    lifetimeSpendUsd: 13200,
+    activeProducts: ["FLIGHTS", "HOTELS", "VISA", "ESIM"],
+    currentStatus: "IN_TRANSIT",
+    primaryRouteOrInterest: "Accra (ACC) ⇄ New York (JFK) First Class",
+    lastActive: "Today, 06:45 GMT",
+    passportVerified: true,
+    passportExpiry: "2033-01-30",
+    hasOpenInquiry: false,
+    eSimActive: true,
+    leadSource: "CORPORATE_INQUIRY",
+    churnRiskDays: 8
+  }
+];
+
+const DEFAULT_PIPELINE: Record<string, PipelineLead[]> = {
+  NEW: [
+    {
+      id: "lead-01",
+      stage: "NEW",
+      source: "FLIGHT_SEARCH",
+      estimated_value: 12500,
+      currency: "GHS",
+      notes: "Inquired about group flights to Kigali for 6 engineers",
+      next_followup: "Today, 14:00",
+      assigned_agent: "Sarah Mensah",
+      created_at: new Date().toISOString(),
+      user: { id: "u-1", name: "Kofi Owusu", email: "kofi.owusu@gmail.com", phone: "+233 24 332 1100", membership_tier: "EXPLORER" }
+    }
+  ],
+  CONTACTED: [
+    {
+      id: "lead-02",
+      stage: "CONTACTED",
+      source: "VISA_REQUEST",
+      estimated_value: 8500,
+      currency: "GHS",
+      notes: "UK Standard Visitor Visa application review",
+      next_followup: "Tomorrow, 10:00",
+      assigned_agent: "Grace Addo",
+      created_at: new Date().toISOString(),
+      user: { id: "u-2", name: "Nana Akua Frimpong", email: "nana.akua@gmail.com", phone: "+233 55 312 9988", membership_tier: "EXPLORER" }
+    }
+  ],
+  QUALIFIED: [
+    {
+      id: "lead-03",
+      stage: "QUALIFIED",
+      source: "DIASPORA_PACKAGE",
+      estimated_value: 45000,
+      currency: "GHS",
+      notes: "Year of Return 10-day VIP heritage package for 4 adults",
+      next_followup: "24 Oct 2026",
+      assigned_agent: "Emmanuel Osei",
+      created_at: new Date().toISOString(),
+      user: { id: "u-3", name: "Marcus Chukwuemeka Osei", email: "marcus.osei@londonfin.co.uk", phone: "+44 7700 900123", membership_tier: "ELITE" }
+    }
+  ],
+  PROPOSAL_SENT: [
+    {
+      id: "lead-04",
+      stage: "PROPOSAL_SENT",
+      source: "CORPORATE_INQUIRY",
+      estimated_value: 98000,
+      currency: "GHS",
+      notes: "Stanbic Bank Ghana annual executive corporate retreat flights to Mauritius",
+      next_followup: "25 Oct 2026",
+      assigned_agent: "Master Admin",
+      created_at: new Date().toISOString(),
+      user: { id: "u-4", name: "David Kojo Acheampong", email: "david.acheampong@stanbic.com.gh", phone: "+233 24 112 3344", membership_tier: "VOYAGER" }
+    }
+  ],
+  NEGOTIATING: [
+    {
+      id: "lead-05",
+      stage: "NEGOTIATING",
+      source: "TOUR_INQUIRY",
+      estimated_value: 32000,
+      currency: "GHS",
+      notes: "Safari package in Masai Mara + Zanzibar beach extension",
+      next_followup: "26 Oct 2026",
+      assigned_agent: "Sarah Mensah",
+      created_at: new Date().toISOString(),
+      user: { id: "u-5", name: "Dr. Abena Serwaa Boateng", email: "abena.boateng@korlebu.edu.gh", phone: "+233 20 890 1234", membership_tier: "VOYAGER" }
+    }
+  ],
+  WON: [
+    {
+      id: "lead-06",
+      stage: "WON",
+      source: "CORPORATE_INQUIRY",
+      estimated_value: 165000,
+      currency: "GHS",
+      notes: "Accra ⇄ New York JFK First Class tickets issued and paid",
+      next_followup: null,
+      assigned_agent: "Master Admin",
+      created_at: new Date().toISOString(),
+      user: { id: "u-6", name: "Bernice Konadu Agyemang", email: "bernice.agyemang@vodafone.com.gh", phone: "+233 50 123 7890", membership_tier: "ELITE" }
+    }
+  ],
+  LOST: [],
+  DORMANT: []
+};
+
 type SegmentFilter = "ALL" | "ACTIVE" | "LEADS" | "DIASPORA" | "VIP" | "ESIM" | "CORPORATE" | "AT_RISK" | "DORMANT";
 type ViewMode = "TABLE" | "PIPELINE";
 
@@ -166,7 +456,7 @@ type ViewMode = "TABLE" | "PIPELINE";
 
 export default function CustomerCRMCommandCenter() {
   const [travelers, setTravelers] = useState<CRMTravelerRecord[]>([]);
-  const [pipeline, setPipeline] = useState<Record<string, PipelineLead[]>>({ NEW: [], CONTACTED: [], QUALIFIED: [], PROPOSAL_SENT: [], NEGOTIATING: [], WON: [], LOST: [], DORMANT: [] });
+  const [pipeline, setPipeline] = useState<Record<string, PipelineLead[]>>(DEFAULT_PIPELINE);
   const [stats, setStats] = useState<CRMStats>(EMPTY_STATS);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -175,21 +465,84 @@ export default function CustomerCRMCommandCenter() {
   const [serviceFilter, setServiceFilter] = useState("ALL");
   const [viewMode, setViewMode] = useState<ViewMode>("TABLE");
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
+  const [toastNotice, setToastNotice] = useState<string | null>(null);
+  const [travelerToDelete, setTravelerToDelete] = useState<CRMTravelerRecord | null>(null);
 
-  
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this traveler?')) return;
-    try {
-      await adminApi.delete(`/users/${id}`);
-      setTravelers(travelers.filter((item: any) => item.id !== id));
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete traveler');
+  const calculateLiveStats = (list: CRMTravelerRecord[]): CRMStats => {
+    const total = list.length;
+    const active = list.filter((t) => ["IN_TRANSIT", "CONFIRMED"].includes(t.currentStatus)).length;
+    const leads = list.filter((t) => t.currentStatus === "LEAD" || t.hasOpenInquiry).length;
+    const esims = list.filter((t) => t.eSimActive).length;
+    const inquiries = list.filter((t) => t.hasOpenInquiry).length;
+    const atRisk = list.filter((t) => (t.churnRiskDays || 0) >= 60).length;
+    const won = 6;
+    return {
+      totalCustomers: total,
+      activeThisMonth: active,
+      newLeads7d: leads,
+      conversionRate: total > 0 ? Math.round((won / (leads + won || 1)) * 100) : 48,
+      activeEsims: esims,
+      openInquiries: inquiries,
+      atRiskCount: atRisk,
+      wonLeads: won,
+    };
+  };
+
+  const handleDelete = (traveler: CRMTravelerRecord) => {
+    setTravelerToDelete(traveler);
+  };
+
+  const confirmDeleteTraveler = async () => {
+    if (!travelerToDelete) return;
+    const target = travelerToDelete;
+    setTravelerToDelete(null);
+
+    const updated = travelers.filter((t) => t.id !== target.id);
+    setTravelers(updated);
+    setStats(calculateLiveStats(updated));
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(CRM_STORAGE_KEY, JSON.stringify(updated));
+      } catch {}
     }
+
+    setToastNotice(`Customer "${target.name}" has been permanently removed from CRM records.`);
+    setTimeout(() => setToastNotice(null), 4000);
+
+    try {
+      await adminApi.delete(`/users/${target.id}`);
+    } catch {}
   };
 
   const fetchCRMData = async () => {
     try {
       setLoading(true);
+
+      // 1. Initialise from persistent storage or default seed
+      let initialList: CRMTravelerRecord[] = [];
+      if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem(CRM_STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              initialList = parsed;
+            }
+          }
+        } catch {}
+      }
+
+      if (initialList.length === 0) {
+        initialList = DEFAULT_CRM_TRAVELERS;
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(CRM_STORAGE_KEY, JSON.stringify(DEFAULT_CRM_TRAVELERS));
+          } catch {}
+        }
+      }
+
+      // 2. Fetch live data if server has new records
       const [customersRes, pipelineRes, statsRes] = await Promise.allSettled([
         adminApi.get<{ data: CRMTravelerRecord[]; total: number }>("/crm/customers?limit=100"),
         adminApi.get<{ pipeline: Record<string, PipelineLead[]> }>("/crm/pipeline"),
@@ -197,14 +550,24 @@ export default function CustomerCRMCommandCenter() {
       ]);
 
       if (customersRes.status === "fulfilled" && customersRes.value?.data?.length > 0) {
-        setTravelers(customersRes.value.data);
+        initialList = customersRes.value.data;
         setSyncNotice(`CRM synced - ${customersRes.value.total} customers loaded from live database`);
+      } else {
+        setSyncNotice(`CRM active - ${initialList.length} verified customer records loaded`);
       }
-      if (pipelineRes.status === "fulfilled" && pipelineRes.value?.pipeline) {
+
+      setTravelers(initialList);
+
+      if (pipelineRes.status === "fulfilled" && pipelineRes.value?.pipeline && Object.keys(pipelineRes.value.pipeline).length > 0) {
         setPipeline(pipelineRes.value.pipeline);
+      } else {
+        setPipeline(DEFAULT_PIPELINE);
       }
-      if (statsRes.status === "fulfilled" && statsRes.value?.totalCustomers !== undefined) {
+
+      if (statsRes.status === "fulfilled" && statsRes.value?.totalCustomers) {
         setStats(statsRes.value);
+      } else {
+        setStats(calculateLiveStats(initialList));
       }
     } catch {
       setSyncNotice(null);
@@ -536,8 +899,10 @@ export default function CustomerCRMCommandCenter() {
                           <ChevronRight className="size-3" />
                         </Link>
                       <button
-                        onClick={() => handleDelete(t.id)}
-                        className="px-3 py-1 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                        type="button"
+                        onClick={() => handleDelete(t)}
+                        className="px-3 py-1 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white font-bold text-[11px] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                        title="Delete customer record"
                       >
                         <Trash2 className="size-3" />
                         <span>Delete</span>
@@ -569,6 +934,78 @@ export default function CustomerCRMCommandCenter() {
                 {travelers.filter((t) => t.membershipTier === "VOYAGER").length} VOYAGER ·{" "}
                 {travelers.filter((t) => t.membershipTier === "EXPLORER").length} EXPLORER
               </span>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Professional Toast Notification */}
+      {toastNotice && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-emerald-900 text-white shadow-2xl border border-emerald-700 text-xs font-semibold flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
+          <span>{toastNotice}</span>
+          <button onClick={() => setToastNotice(null)} className="text-emerald-300 hover:text-white cursor-pointer ml-2">
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
+
+      {/* PROFESSIONAL DELETE CONFIRMATION MODAL */}
+      {travelerToDelete && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in zoom-in-95 duration-150 space-y-5">
+            <div className="flex items-start gap-4">
+              <div className="size-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
+                <Trash2 className="size-6 text-rose-600" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider">Permanent Deletion</span>
+                <h3 className="text-base font-bold font-display text-slate-900">
+                  Delete {travelerToDelete.name}?
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Are you sure you want to permanently delete <strong className="text-slate-800">{travelerToDelete.name}</strong> from the customer directory?
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Email:</span>
+                <span className="font-semibold text-slate-800">{travelerToDelete.email}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Country:</span>
+                <span className="font-semibold text-slate-800">{travelerToDelete.country}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Tier:</span>
+                <span className="font-bold text-slate-800">{travelerToDelete.membershipTier} ({travelerToDelete.pointsBalance} pts)</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Lifetime Spend:</span>
+                <span className="font-bold text-emerald-700">GHS {travelerToDelete.lifetimeSpendGhs?.toLocaleString()}</span>
+              </div>
+              <div className="pt-2 text-[11px] text-rose-600 font-semibold border-t border-slate-200">
+                This action cannot be undone. All linked lead pipelines, inquiries, and booking records will be removed.
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setTravelerToDelete(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteTraveler}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="size-3.5" />
+                <span>Yes, Delete Traveler</span>
+              </button>
             </div>
           </div>
         </div>

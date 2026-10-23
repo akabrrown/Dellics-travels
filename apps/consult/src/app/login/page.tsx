@@ -72,7 +72,7 @@ export default function LoginPage() {
           </p>
         </div>
         <p className="text-xs text-slate-500">
-          ? {new Date().getFullYear()} Dellics Education Consult
+          &copy; {new Date().getFullYear()} Dellics Education Consult. All Rights Reserved.
         </p>
       </div>
 

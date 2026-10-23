@@ -19,7 +19,9 @@ import {
   CheckCircle2, 
   Edit3, 
   KeyRound,
-  AlertCircle
+  AlertCircle,
+  Send,
+  Loader2
 } from "lucide-react";
 import { useAuth, StudentProfile } from "../auth/auth-context";
 import { GHANA_HIGH_SCHOOLS, HighSchoolRecord } from "@/lib/schools-data";
@@ -46,9 +48,12 @@ export function StudentRegistrationForm() {
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [codeSentNotice, setCodeSentNotice] = useState(false);
-  const [expectedCode, setExpectedCode] = useState<string>("729148");
+  const [expectedCode, setExpectedCode] = useState<string>("");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [codeSent, setCodeSent] = useState(false);
+  const [residenceChoice, setResidenceChoice] = useState<string>("Ghana");
+  const [otherCountry, setOtherCountry] = useState<string>("");
 
   // Form State
   const [formData, setFormData] = useState<StudentProfile>({
@@ -100,11 +105,11 @@ export function StudentRegistrationForm() {
 
     referralSource: "School / Educational Institution",
     additionalComments: "Interested in undergraduate merit scholarships and SAT preparation support.",
-    consentAccurate: true,
-    consentPrivacy: true,
+    consentAccurate: false,
+    consentPrivacy: false,
     consentContact: true,
-    isVerified: true,
-    isCompleted: true,
+    isVerified: false,
+    isCompleted: false,
     studentId: "DEC-2026-8812",
     classYear: "Class of 2028"
   });
@@ -202,11 +207,14 @@ export function StudentRegistrationForm() {
           name: formData.firstName || user?.firstName || "Applicant"
         })
       });
+      setCodeSent(true);
       setCodeSentNotice(true);
       setResendCooldown(30);
     } catch (err) {
       console.error("Failed to send verification code", err);
+      setCodeSent(true);
       setCodeSentNotice(true);
+      setResendCooldown(30);
     } finally {
       setIsSendingCode(false);
     }
@@ -219,19 +227,13 @@ export function StudentRegistrationForm() {
     }
   }, [resendCooldown]);
 
-  useEffect(() => {
-    if (currentStep === 6 && !isCodeVerified) {
-      sendVerificationCode();
-    }
-  }, [currentStep]);
-
   const handleVerifyCode = () => {
     const fullCode = verificationCode.join("");
     if (fullCode.length !== 6) {
       setVerificationError("Please enter all 6 digits of your verification code.");
       return;
     }
-    if (fullCode === expectedCode || fullCode === "729148" || verifyEmailCode(fullCode)) {
+    if ((expectedCode && fullCode === expectedCode) || verifyEmailCode(fullCode)) {
       setIsCodeVerified(true);
       setVerificationError("");
     } else {
@@ -252,6 +254,10 @@ export function StudentRegistrationForm() {
       e.preventDefault();
     }
     if (currentStep < 6) return;
+    if (!isCodeVerified) {
+      setVerificationError("Please click 'Send Code' and verify the 6-digit code sent to your email before submitting.");
+      return;
+    }
     if (!formData.consentAccurate || !formData.consentPrivacy || !formData.consentContact) {
       alert("Please accept all consent checkboxes before submitting.");
       return;
@@ -719,28 +725,62 @@ export function StudentRegistrationForm() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Country of Residence *</label>
-                  <div className="flex gap-4">
-                    {["Ghana", "Nigeria", "Other"].map(c => (
-                      <label
-                        key={c}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border cursor-pointer text-xs font-bold transition-all ${
-                          formData.countryOfResidence === c
-                            ? "border-navy bg-navy/5 text-navy"
-                            : "border-slate-200 text-slate-600 hover:bg-slate-50"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="countryOfResidence"
-                          value={c}
-                          checked={formData.countryOfResidence === c}
-                          onChange={() => handleFieldChange("countryOfResidence", c)}
-                          className="text-navy focus:ring-navy"
-                        />
-                        {c}
-                      </label>
-                    ))}
+                  <div className="flex flex-wrap gap-3">
+                    {["Ghana", "Nigeria", "United Kingdom", "United States", "Canada", "Other"].map(c => {
+                      const isSelected = c === "Other" 
+                        ? residenceChoice === "Other" || (formData.countryOfResidence !== "Ghana" && formData.countryOfResidence !== "Nigeria" && formData.countryOfResidence !== "United Kingdom" && formData.countryOfResidence !== "United States" && formData.countryOfResidence !== "Canada")
+                        : residenceChoice === c && formData.countryOfResidence === c;
+                      return (
+                        <label
+                          key={c}
+                          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border cursor-pointer text-xs font-bold transition-all ${
+                            isSelected
+                              ? "border-navy bg-navy/5 text-navy shadow-xs"
+                              : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="countryOfResidence"
+                            value={c}
+                            checked={isSelected}
+                            onChange={() => {
+                              setResidenceChoice(c);
+                              if (c !== "Other") {
+                                handleFieldChange("countryOfResidence", c);
+                                handleFieldChange("country", c);
+                              } else {
+                                handleFieldChange("countryOfResidence", otherCountry || "");
+                              }
+                            }}
+                            className="text-navy focus:ring-navy"
+                          />
+                          {c}
+                        </label>
+                      );
+                    })}
                   </div>
+
+                  {(residenceChoice === "Other" || (formData.countryOfResidence && !["Ghana", "Nigeria", "United Kingdom", "United States", "Canada"].includes(formData.countryOfResidence))) && (
+                    <div className="mt-3.5 animate-in fade-in duration-200">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Please Specify Your Country of Residence *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={otherCountry || (formData.countryOfResidence !== "Other" ? formData.countryOfResidence : "")}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setOtherCountry(val);
+                          handleFieldChange("countryOfResidence", val);
+                          handleFieldChange("country", val);
+                        }}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-navy"
+                        placeholder="e.g. Kenya, South Africa, Germany, Netherlands, Ivory Coast, Australia..."
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -1209,83 +1249,109 @@ export function StudentRegistrationForm() {
                     </div>
                   </div>
 
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Email Address:</div>
-                    <div className="text-sm font-bold text-slate-900">{formData.email}</div>
-                  </div>
-
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    We just sent an email with a one-time verification code for you to enter here.
-                  </p>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      Type in the 6 digits verification code from your email:
-                    </label>
-                    <div className="flex gap-2 sm:gap-3 max-w-xs">
-                      {verificationCode.map((digit, idx) => (
-                        <input
-                          key={idx}
-                          id={`verify-digit-${idx}`}
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={1}
-                          value={digit}
-                          onChange={e => handleCodeChange(idx, e.target.value)}
-                          onKeyDown={e => handleCodeKeyDown(idx, e)}
-                          className="w-10 sm:w-12 h-12 text-center text-lg font-bold rounded-xl border border-slate-300 focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/20"
-                        />
-                      ))}
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Email Address:</div>
+                      <div className="text-sm font-bold text-slate-900 mt-0.5">{formData.email}</div>
                     </div>
-                    {verificationError && (
-                      <div className="text-xs text-rose-600 font-semibold mt-2">{verificationError}</div>
-                    )}
-                    {isCodeVerified && (
-                      <div className="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1.5">
-                        <Check className="w-4 h-4" /> Code Verified!
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
                     <button
                       type="button"
-                      onClick={handleResendCode}
-                      disabled={resendCooldown > 0 || isSendingCode}
-                      className="text-brand-orange font-bold hover:underline text-left cursor-pointer disabled:text-slate-400 disabled:no-underline"
+                      onClick={() => setCurrentStep(1)}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-xs font-bold text-brand-orange flex items-center gap-1.5 transition-colors self-start sm:self-center cursor-pointer shadow-xs"
+                      title="Go back to Step 1 to change your email address"
                     >
-                      {isSendingCode 
-                        ? "Sending verification code..." 
-                        : resendCooldown > 0 
-                          ? `Didn't get the email? Resend code in ${resendCooldown}s` 
-                          : "Didn't get the email? Click here to resend code"}
+                      <ArrowLeft className="w-3.5 h-3.5" /> Back / Change Email
                     </button>
-                    {!isCodeVerified && (
-                      <button
-                        type="button"
-                        onClick={handleVerifyCode}
-                        className="px-4 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-all shadow-sm"
-                      >
-                        Verify Code
-                      </button>
-                    )}
                   </div>
 
-                  {codeSentNotice && (
-                    <div className="p-3 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 flex items-center justify-between">
-                      <span>
-                        We sent a 6-digit verification code to <strong>{formData.email}</strong>. Please check your inbox or spam folder.
-                      </span>
-                      <button 
-                        type="button" 
-                        onClick={() => {
-                          setVerificationCode(expectedCode.split(""));
-                        }}
-                        className="text-[11px] underline font-semibold text-emerald-700 hover:text-emerald-900 ml-2 whitespace-nowrap cursor-pointer"
-                        title="Auto-fill code for quick testing"
+                  {!codeSent ? (
+                    <div className="p-4 rounded-xl bg-orange-50/70 border border-brand-orange/20 space-y-3">
+                      <p className="text-xs text-slate-700 leading-relaxed">
+                        To verify that <strong>{formData.email}</strong> is valid and reachable, click <strong>Send Code</strong> below. We will send a secure 6-digit one-time verification code to your email.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => sendVerificationCode()}
+                        disabled={isSendingCode}
+                        className="px-5 py-2.5 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50"
                       >
-                        Quick Fill
+                        {isSendingCode ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Sending Code...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            Send Code
+                          </>
+                        )}
                       </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        We just sent an email with a 6-digit verification code to <strong>{formData.email}</strong>. Please check your inbox or spam folder.
+                      </p>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                          Type in the 6 digits verification code from your email:
+                        </label>
+                        <div className="flex gap-2 sm:gap-3 max-w-xs">
+                          {verificationCode.map((digit, idx) => (
+                            <input
+                              key={idx}
+                              id={`verify-digit-${idx}`}
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={1}
+                              value={digit}
+                              onChange={e => handleCodeChange(idx, e.target.value)}
+                              onKeyDown={e => handleCodeKeyDown(idx, e)}
+                              className="w-10 sm:w-12 h-12 text-center text-lg font-bold rounded-xl border border-slate-300 focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/20"
+                            />
+                          ))}
+                        </div>
+                        {verificationError && (
+                          <div className="text-xs text-rose-600 font-semibold mt-2">{verificationError}</div>
+                        )}
+                        {isCodeVerified && (
+                          <div className="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1.5">
+                            <Check className="w-4 h-4" /> Code Verified!
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
+                        <button
+                          type="button"
+                          onClick={handleResendCode}
+                          disabled={resendCooldown > 0 || isSendingCode}
+                          className="text-brand-orange font-bold hover:underline text-left cursor-pointer disabled:text-slate-400 disabled:no-underline"
+                        >
+                          {isSendingCode 
+                            ? "Sending verification code..." 
+                            : resendCooldown > 0 
+                              ? `Didn't get the email? Resend code in ${resendCooldown}s` 
+                              : "Didn't get the email? Click here to resend code"}
+                        </button>
+                        {!isCodeVerified && (
+                          <button
+                            type="button"
+                            onClick={handleVerifyCode}
+                            className="px-5 py-2.5 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-all shadow-sm cursor-pointer"
+                          >
+                            Verify Code
+                          </button>
+                        )}
+                      </div>
+
+                      {codeSentNotice && (
+                        <div className="p-3 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200">
+                          A 6-digit verification code has been dispatched to <strong>{formData.email}</strong>.
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1372,7 +1438,9 @@ export function StudentRegistrationForm() {
                   key="step-btn-submit"
                   type="button"
                   onClick={handleFinalSubmit}
-                  className="px-8 py-3 rounded-xl bg-brand-orange text-white text-sm font-bold hover:bg-brand-orange-light shadow-lg shadow-brand-orange/20 transition-all flex items-center gap-2"
+                  disabled={!isCodeVerified || !formData.consentAccurate || !formData.consentPrivacy}
+                  className="px-8 py-3 rounded-xl bg-brand-orange text-white text-sm font-bold hover:bg-brand-orange-light shadow-lg shadow-brand-orange/20 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  title={!isCodeVerified ? "Verify your email code first" : !formData.consentAccurate || !formData.consentPrivacy ? "Please agree to consent and privacy terms" : "Submit your registration"}
                 >
                   <span>Submit Registration</span>
                   <Check className="w-4 h-4" />

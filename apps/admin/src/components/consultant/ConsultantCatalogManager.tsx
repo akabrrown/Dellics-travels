@@ -19,7 +19,8 @@ import {
   Award,
   Globe2,
   Banknote,
-  FileCheck
+  FileCheck,
+  AlertTriangle
 } from "lucide-react";
 import {
   CatalogSchool,
@@ -43,11 +44,12 @@ export function ConsultantCatalogManager() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchoolId, setEditingSchoolId] = useState<string | null>(null);
+  const [schoolToDelete, setSchoolToDelete] = useState<CatalogSchool | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
     name: "",
-    level: "Undergraduate & Postgraduate" as "Undergraduate" | "Postgraduate" | "Undergraduate & Postgraduate",
+    level: "Undergraduate & Postgraduate" as "Undergraduate" | "Postgraduate" | "Undergraduate & Postgraduate" | "Master's" | "PhD / Doctorate",
     programmes: "",
     location: "",
     city: "",
@@ -205,15 +207,19 @@ export function ConsultantCatalogManager() {
   };
 
   // Delete School
-  const handleDelete = async (school: CatalogSchool) => {
-    if (!confirm(`Are you sure you want to remove ${school.name} from the Consult search catalog?`)) {
-      return;
-    }
-    const updated = schools.filter((s) => s.id !== school.id);
-    await persistSchools(updated, `"${school.name}" removed from Consult search feed.`);
+  const handleDelete = (school: CatalogSchool) => {
+    setSchoolToDelete(school);
+  };
+
+  const confirmDeleteSchool = async () => {
+    if (!schoolToDelete) return;
+    const target = schoolToDelete;
+    setSchoolToDelete(null);
+    const updated = schools.filter((s) => s.id !== target.id);
+    await persistSchools(updated, `"${target.name}" removed from Consult search feed.`);
 
     try {
-      await fetch(`${CONSULT_API_BASE}/api/catalog?id=${encodeURIComponent(school.id)}`, {
+      await fetch(`${CONSULT_API_BASE}/api/catalog?id=${encodeURIComponent(target.id)}`, {
         method: "DELETE",
       });
     } catch {}
@@ -316,7 +322,8 @@ export function ConsultantCatalogManager() {
         const matchesLevel =
           levelFilter === "all" ||
           (levelFilter === "undergraduate" && school.level.toLowerCase().includes("undergraduate")) ||
-          (levelFilter === "postgraduate" && school.level.toLowerCase().includes("postgraduate"));
+          (levelFilter === "postgraduate" && school.level.toLowerCase().includes("postgraduate")) ||
+          (levelFilter === "masters" && (school.level.toLowerCase().includes("master") || school.level.toLowerCase().includes("postgraduate") || school.programmes.some((p) => p.toLowerCase().includes("msc") || p.toLowerCase().includes("mba") || p.toLowerCase().includes("master"))));
 
         const matchesBadge =
           badgeFilter === "all" ||
@@ -413,6 +420,7 @@ export function ConsultantCatalogManager() {
           >
             <option value="all">All Study Levels</option>
             <option value="undergraduate">Undergraduate</option>
+            <option value="masters">Master's</option>
             <option value="postgraduate">Postgraduate</option>
           </select>
 
@@ -649,7 +657,7 @@ export function ConsultantCatalogManager() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Study Level (Undergrad / Post / Both) *
+                    Study Level (Undergrad / Master's / Post / Both) *
                   </label>
                   <select
                     value={formData.level}
@@ -657,8 +665,10 @@ export function ConsultantCatalogManager() {
                     className="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#0A0060] bg-white text-slate-800"
                   >
                     <option value="Undergraduate">Undergraduate (Bachelor's)</option>
+                    <option value="Master's">Master's Degree (Postgraduate Taught / MSc / MA / MBA)</option>
                     <option value="Postgraduate">Postgraduate (Master's / PhD)</option>
                     <option value="Undergraduate & Postgraduate">Undergraduate & Postgraduate Programmes</option>
+                    <option value="PhD / Doctorate">PhD / Doctorate</option>
                   </select>
                 </div>
 
@@ -915,6 +925,53 @@ export function ConsultantCatalogManager() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* PROFESSIONAL DELETE CONFIRMATION MODAL */}
+      {schoolToDelete && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in zoom-in-95 duration-150 space-y-5">
+            <div className="flex items-start gap-4">
+              <div className="size-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
+                <Trash2 className="size-6 text-rose-600" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider">Confirm Catalog Removal</span>
+                <h3 className="text-base font-bold font-display text-slate-900">
+                  Remove {schoolToDelete.name}?
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Are you sure you want to remove <strong className="text-slate-700">{schoolToDelete.name}</strong> ({schoolToDelete.city}, {schoolToDelete.location}) from the Consult search catalog?
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11px] text-slate-600 space-y-1">
+              <div><strong className="text-slate-700">Tuition:</strong> {schoolToDelete.tuition}</div>
+              <div><strong className="text-slate-700">Level:</strong> {schoolToDelete.level}</div>
+              <div className="text-rose-600 font-semibold pt-1">
+                This will immediately remove the institution from live hero search feeds and student portal college search.
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setSchoolToDelete(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteSchool}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="size-3.5" />
+                <span>Yes, Remove Institution</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

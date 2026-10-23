@@ -18,6 +18,9 @@ export default function SignupPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.terms) {
+      return;
+    }
     if (formData.password !== formData.confirmPassword) return;
     setIsLoading(true);
     try {
@@ -52,7 +55,7 @@ export default function SignupPage() {
           </p>
         </div>
         <p className="text-xs text-slate-500">
-          ? {new Date().getFullYear()} Dellics Education Consult
+          &copy; {new Date().getFullYear()} Dellics Education Consult. All Rights Reserved.
         </p>
       </div>
 
@@ -132,7 +135,7 @@ export default function SignupPage() {
               <label className="flex items-start gap-3 cursor-pointer py-2">
                 <input type="checkbox" checked={formData.terms} onChange={(e) => update("terms", e.target.checked)} className="mt-1 w-4 h-4 rounded border-slate-300 text-navy focus:ring-navy/20" required />
                 <span className="text-xs text-slate-600 leading-relaxed">
-                  I agree to the <Link href="/about" className="font-medium text-navy hover:text-brand-orange transition-colors">Terms of Service</Link> and <Link href="/about" className="font-medium text-navy hover:text-brand-orange transition-colors">Privacy Policy</Link>
+                  I agree to the <Link href="/terms" target="_blank" className="font-medium text-navy hover:text-brand-orange underline transition-colors">Terms of Service</Link> and <Link href="/privacy" target="_blank" className="font-medium text-navy hover:text-brand-orange underline transition-colors">Privacy Policy</Link>
                 </span>
               </label>
 
@@ -148,23 +151,20 @@ export default function SignupPage() {
           ) : (
             <div className="text-center space-y-6 py-4">
               <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mx-auto">
-                <CheckCircle className="w-8 h-8 text-navy" />
+                <CheckCircle className="w-8 h-8 text-emerald-600" />
               </div>
               <div className="inline-block px-4 py-2 rounded-md bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700">
                 {formData.email || "student@example.com"}
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Please verify your email to continue. Click the link we sent to confirm and proceed to complete your student profile.
+                Your student account has been created. Proceed to fill your student registration profile where you will verify your email with a 6-digit code.
               </p>
               <button
                 type="button"
                 onClick={() => router.push("/portal/onboarding")}
-                className="w-full py-2.5 rounded-lg bg-navy text-white font-medium text-sm hover:bg-navy-light transition-colors"
+                className="w-full py-3 rounded-lg bg-navy text-white font-medium text-sm hover:bg-navy-light transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                Continue to Profile &rarr;
-              </button>
-              <button type="button" className="text-xs font-medium text-slate-500 hover:text-navy transition-colors">
-                Resend verification email
+                Proceed to Complete Profile <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           )}
