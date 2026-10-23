@@ -158,10 +158,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (email: string, customName?: string) => {
     try {
-      localStorage.setItem("dellics_user_email", email);
-      const name = customName || (email.split("@")[0] || "Sam").replace(/[._-]/g, " ");
+      const cleanEmail = email.trim();
+      localStorage.setItem("dellics_user_email", cleanEmail);
+      const name = customName || (cleanEmail.split("@")[0] || "Sam").replace(/[._-]/g, " ");
       const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
       localStorage.setItem("dellics_user_name", formattedName);
+
+      // Check if student profile was previously filled and completed
+      const registryStr = localStorage.getItem("dellics_registered_students_map");
+      if (registryStr) {
+        try {
+          const registry = JSON.parse(registryStr);
+          const savedProfile = registry[cleanEmail.toLowerCase()];
+          if (savedProfile && savedProfile.isCompleted) {
+            localStorage.setItem("dellics_student_profile", JSON.stringify(savedProfile));
+            if (savedProfile.firstName) {
+              const fullName = `${savedProfile.firstName} ${savedProfile.lastName || ""}`.trim();
+              localStorage.setItem("dellics_user_name", fullName);
+            }
+          }
+        } catch (e) {}
+      }
+
       syncUserFromStorage();
       notifyChange();
     } catch (e) {}
@@ -169,7 +187,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = (data: { firstName: string; lastName: string; email: string; phone?: string }) => {
     try {
-      localStorage.setItem("dellics_user_email", data.email);
+      const cleanEmail = data.email.trim();
+      localStorage.setItem("dellics_user_email", cleanEmail);
       const fullName = `${data.firstName} ${data.lastName}`.trim() || data.firstName || "Sam";
       localStorage.setItem("dellics_user_name", fullName);
       if (data.phone) {
@@ -186,6 +205,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem("dellics_user_name");
       localStorage.removeItem("dellics_student_profile");
       localStorage.removeItem("dellics_user_phone");
+      // Note: dellics_registered_students_map is preserved so registered students can sign in again without losing their completed form!
       setUser(null);
       notifyChange();
     } catch (e) {}
@@ -203,6 +223,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         classYear: existing.classYear || "Class of 2028",
       };
       localStorage.setItem("dellics_student_profile", JSON.stringify(updated));
+
+      // Persist in cross-session registry keyed by lowercase email
+      if (updated.email) {
+        try {
+          const registryStr = localStorage.getItem("dellics_registered_students_map") || "{}";
+          const registry = JSON.parse(registryStr);
+          registry[updated.email.toLowerCase().trim()] = updated;
+          localStorage.setItem("dellics_registered_students_map", JSON.stringify(registry));
+        } catch (e) {}
+      }
+
       if (updated.firstName) {
         const fullName = `${updated.firstName} ${updated.lastName || ""}`.trim();
         localStorage.setItem("dellics_user_name", fullName);

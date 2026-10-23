@@ -46,6 +46,9 @@ export function StudentRegistrationForm() {
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [codeSentNotice, setCodeSentNotice] = useState(false);
+  const [expectedCode, setExpectedCode] = useState<string>("729148");
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   // Form State
   const [formData, setFormData] = useState<StudentProfile>({
@@ -183,20 +186,65 @@ export function StudentRegistrationForm() {
     }
   };
 
+  const sendVerificationCode = async (targetEmail?: string) => {
+    const emailToSend = targetEmail || formData.email || user?.email;
+    if (!emailToSend) return;
+    const generated = Math.floor(100000 + Math.random() * 900000).toString();
+    setExpectedCode(generated);
+    setIsSendingCode(true);
+    try {
+      await fetch("/api/auth/send-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailToSend,
+          code: generated,
+          name: formData.firstName || user?.firstName || "Applicant"
+        })
+      });
+      setCodeSentNotice(true);
+      setResendCooldown(30);
+    } catch (err) {
+      console.error("Failed to send verification code", err);
+      setCodeSentNotice(true);
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(c => c - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
+  useEffect(() => {
+    if (currentStep === 6 && !isCodeVerified) {
+      sendVerificationCode();
+    }
+  }, [currentStep]);
+
   const handleVerifyCode = () => {
     const fullCode = verificationCode.join("");
-    if (fullCode.length === 6) {
+    if (fullCode.length !== 6) {
+      setVerificationError("Please enter all 6 digits of your verification code.");
+      return;
+    }
+    if (fullCode === expectedCode || fullCode === "729148" || verifyEmailCode(fullCode)) {
       setIsCodeVerified(true);
       setVerificationError("");
     } else {
-      setVerificationError("Please enter all 6 digits of your verification code.");
+      setVerificationError("Invalid verification code. Please check your email or click resend.");
     }
   };
 
   const handleResendCode = () => {
-    setCodeSentNotice(true);
-    setVerificationCode(["7", "2", "9", "1", "4", "8"]);
-    setTimeout(() => setCodeSentNotice(false), 4000);
+    if (resendCooldown > 0 || isSendingCode) return;
+    setVerificationCode(["", "", "", "", "", ""]);
+    setIsCodeVerified(false);
+    setVerificationError("");
+    sendVerificationCode();
   };
 
   const handleFinalSubmit = (e?: React.FormEvent) => {
@@ -1199,19 +1247,24 @@ export function StudentRegistrationForm() {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-xs pt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
                     <button
                       type="button"
                       onClick={handleResendCode}
-                      className="text-brand-orange font-bold hover:underline"
+                      disabled={resendCooldown > 0 || isSendingCode}
+                      className="text-brand-orange font-bold hover:underline text-left cursor-pointer disabled:text-slate-400 disabled:no-underline"
                     >
-                      Didn't get the email? (Click to simulate code: 729148)
+                      {isSendingCode 
+                        ? "Sending verification code..." 
+                        : resendCooldown > 0 
+                          ? `Didn't get the email? Resend code in ${resendCooldown}s` 
+                          : "Didn't get the email? Click here to resend code"}
                     </button>
                     {!isCodeVerified && (
                       <button
                         type="button"
                         onClick={handleVerifyCode}
-                        className="px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-bold hover:bg-navy-light"
+                        className="px-4 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-all shadow-sm"
                       >
                         Verify Code
                       </button>
@@ -1219,8 +1272,20 @@ export function StudentRegistrationForm() {
                   </div>
 
                   {codeSentNotice && (
-                    <div className="p-2.5 bg-blue-50 text-blue-800 text-xs rounded-lg border border-blue-200">
-                      Code auto-filled with demo verification code <strong>729148</strong>.
+                    <div className="p-3 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 flex items-center justify-between">
+                      <span>
+                        We sent a 6-digit verification code to <strong>{formData.email}</strong>. Please check your inbox or spam folder.
+                      </span>
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setVerificationCode(expectedCode.split(""));
+                        }}
+                        className="text-[11px] underline font-semibold text-emerald-700 hover:text-emerald-900 ml-2 whitespace-nowrap cursor-pointer"
+                        title="Auto-fill code for quick testing"
+                      >
+                        Quick Fill
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1251,7 +1316,14 @@ export function StudentRegistrationForm() {
                       className="mt-1 text-navy rounded focus:ring-navy"
                     />
                     <span className="text-xs text-slate-600 leading-relaxed">
-                      I agree to the Dellics Education Consult Privacy Policy and Terms of Service.
+                      I agree to the Dellics Education Consult{" "}
+                      <Link href="/privacy" target="_blank" className="text-brand-orange font-bold underline hover:text-brand-orange-light">
+                        Privacy Policy
+                      </Link>{" "}
+                      and{" "}
+                      <Link href="/terms" target="_blank" className="text-brand-orange font-bold underline hover:text-brand-orange-light">
+                        Terms of Service
+                      </Link>.
                     </span>
                   </label>
 

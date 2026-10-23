@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -30,6 +30,12 @@ import {
   Sparkles as SparklesBan
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-context";
+import { 
+  CatalogSchool, 
+  DEFAULT_CATALOG_SCHOOLS, 
+  getLocalCatalogSchools, 
+  CATALOG_EVENT_KEY 
+} from "@/lib/consult-catalog";
 
 interface AppRecord {
   id: string;
@@ -49,6 +55,58 @@ export default function StudentPortalPage() {
 
   const [activeTab, setActiveTab] = useState<"ecosystem" | "applications" | "documents" | "travel_perks" | "counsellor">("ecosystem");
   const [collegeSearch, setCollegeSearch] = useState("");
+  const [catalogSchools, setCatalogSchools] = useState<CatalogSchool[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCatalog = async () => {
+      try {
+        const res = await fetch("/api/catalog");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            if (isMounted) {
+              setCatalogSchools(json.data);
+              setCatalogLoading(false);
+              return;
+            }
+          }
+        }
+      } catch {}
+
+      if (isMounted) {
+        setCatalogSchools(getLocalCatalogSchools());
+        setCatalogLoading(false);
+      }
+    };
+
+    fetchCatalog();
+
+    const handleUpdate = () => {
+      setCatalogSchools(getLocalCatalogSchools());
+    };
+    window.addEventListener(CATALOG_EVENT_KEY, handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener(CATALOG_EVENT_KEY, handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
+
+  const filteredColleges = useMemo(() => {
+    if (!collegeSearch.trim()) return catalogSchools;
+    const q = collegeSearch.toLowerCase().trim();
+    return catalogSchools.filter(school => {
+      const matchName = school.name.toLowerCase().includes(q);
+      const matchCity = school.city.toLowerCase().includes(q);
+      const matchLocation = school.location.toLowerCase().includes(q);
+      const matchProg = school.programmes.some(p => p.toLowerCase().includes(q));
+      return matchName || matchCity || matchLocation || matchProg;
+    });
+  }, [catalogSchools, collegeSearch]);
   const [uploadedDocs, setUploadedDocs] = useState([
     { name: "WASSCE Official Results Slip / Certificate", status: "Verified", date: "12 Sep 2026", size: "1.2 MB" },
     { name: "High School Academic Transcript", status: "Verified", date: "14 Sep 2026", size: "2.4 MB" },
@@ -292,24 +350,36 @@ export default function StudentPortalPage() {
             </p>
 
             {/* Search Bar on the Image/Banner */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                setShowSearchResults(true);
+              }}
+              className="flex flex-col sm:flex-row gap-3 pt-2"
+            >
               <div className="relative flex-1">
                 <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search by college name, major, or country..."
                   value={collegeSearch}
-                  onChange={e => setCollegeSearch(e.target.value)}
+                  onChange={e => {
+                    setCollegeSearch(e.target.value);
+                    if (!showSearchResults && e.target.value.trim().length > 0) {
+                      setShowSearchResults(true);
+                    }
+                  }}
                   className="w-full pl-11 pr-4 py-3 rounded-xl bg-white text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange"
                 />
               </div>
-              <Link
-                href="/portal/bigfuture"
-                className="py-3 px-6 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light shadow-md transition-colors text-center"
+              <button
+                type="submit"
+                onClick={() => setShowSearchResults(true)}
+                className="py-3 px-6 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light shadow-md transition-colors text-center cursor-pointer"
               >
                 Find Colleges
-              </Link>
-            </div>
+              </button>
+            </form>
           </div>
 
           <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-15 pointer-events-none hidden lg:block">
@@ -317,6 +387,121 @@ export default function StudentPortalPage() {
               <GraduationCap className="w-64 h-64 text-white" />
             </div>
           </div>
+
+          {/* Real-time Dynamic Schools Feed from Admin */}
+          {(showSearchResults || collegeSearch.trim().length > 0) && (
+            <div className="mt-8 pt-6 border-t border-slate-700/60 relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>Verified Universities & Programmes</span>
+                  <span className="text-xs font-normal text-slate-300">
+                    ({filteredColleges.length} Available)
+                  </span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowSearchResults(false)}
+                  className="text-xs text-slate-400 hover:text-white"
+                >
+                  Dismiss &times;
+                </button>
+              </div>
+
+              {catalogLoading || catalogSchools.length === 0 ? (
+                <div className="p-8 text-center bg-white/5 rounded-2xl border border-white/10 text-slate-300 text-xs font-medium">
+                  <div className="size-6 rounded-full border-2 border-brand-orange border-t-transparent animate-spin mx-auto mb-2" />
+                  <span>a moment loading school search</span>
+                </div>
+              ) : filteredColleges.length === 0 ? (
+                <div className="p-8 text-center bg-white/5 rounded-2xl border border-white/10 text-slate-300 text-xs font-medium">
+                  <span>a moment loading school search</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[420px] overflow-y-auto pr-1">
+                  {filteredColleges.map((school) => (
+                    <div
+                      key={school.id}
+                      className="p-5 rounded-2xl bg-slate-800/90 border border-slate-700 hover:border-brand-orange/40 transition-all flex flex-col justify-between text-left space-y-3"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange">
+                            {school.level}
+                          </span>
+                          <span className="text-xs text-slate-300 font-medium">
+                            {school.city}, {school.location}
+                          </span>
+                        </div>
+
+                        <h4 className="text-base font-bold text-white mt-2">
+                          {school.name}
+                        </h4>
+
+                        <div className="text-xs text-slate-300 mt-1">
+                          <strong className="text-slate-200">Programmes:</strong>{" "}
+                          {school.programmes.length > 0 ? school.programmes.join(" · ") : "General Admissions"}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 pt-1">
+                          <span>Tuition: <strong className="text-emerald-400">{school.tuition}</strong></span>
+                          <span>App Fee: <strong className="text-white">{school.applicationFee}</strong></span>
+                        </div>
+
+                        {/* Exact 7 Badges */}
+                        <div className="flex flex-wrap items-center gap-1 pt-2">
+                          {school.badges?.highJobDemand && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                              ✓ High Job Demand
+                            </span>
+                          )}
+                          {school.badges?.noVisaCap && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold">
+                              ✓ No Visa Cap
+                            </span>
+                          )}
+                          {school.badges?.loans && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
+                              ✓ Loans
+                            </span>
+                          )}
+                          {school.badges?.prime && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                              ★ Prime
+                            </span>
+                          )}
+                          {school.badges?.top && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                              ★ Top
+                            </span>
+                          )}
+                          {school.badges?.popular && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-semibold">
+                              ♥ Popular
+                            </span>
+                          )}
+                          {school.badges?.fastAcceptance && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30 font-semibold">
+                              ⚡ Fast Acceptance
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between">
+                        <span className="text-xs text-slate-400">Intake: {school.intake || "Sep 2026"}</span>
+                        <Link
+                          href="/consultation"
+                          className="px-3.5 py-1.5 rounded-lg bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light transition-colors"
+                        >
+                          Express Interest &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

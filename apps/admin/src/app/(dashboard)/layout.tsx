@@ -25,6 +25,7 @@ import {
   LogOut,
   Target,
   Lock,
+  GraduationCap,
 } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { useRole, AdminRole } from "@/lib/roles";
@@ -144,6 +145,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       items: [
         { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
         { label: "Consultant CRM", href: "/consultant", icon: FileText, permission: "consultant.view" },
+        { label: "Hero Search & Feeds", href: "/consultant?tab=catalog", icon: GraduationCap, permission: "consultant.view" },
         {
           label: "Bookings",
           href: "/bookings",

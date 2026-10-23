@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { 
   Search, 
@@ -16,6 +16,12 @@ import {
   Clock,
   Sparkles
 } from "lucide-react";
+import {
+  CatalogSchool,
+  DEFAULT_CATALOG_SCHOOLS,
+  getLocalCatalogSchools,
+  CATALOG_EVENT_KEY
+} from "@/lib/consult-catalog";
 
 interface UniversityItem {
   name: string;
@@ -25,6 +31,7 @@ interface UniversityItem {
   popularCourses: string[];
   intake: string;
   fees: string;
+  badges?: CatalogSchool["badges"];
 }
 
 interface ScholarshipItem {
@@ -34,6 +41,7 @@ interface ScholarshipItem {
   coverage: string;
   deadline: string;
   level: string;
+  badges?: CatalogSchool["badges"];
 }
 
 interface EventItem {
@@ -103,6 +111,136 @@ export function HeroSection() {
     email: ""
   });
   const [guideSubmitted, setGuideSubmitted] = useState(false);
+
+  // Dynamic School Feed from Admin
+  const [catalogSchools, setCatalogSchools] = useState<CatalogSchool[]>([]);
+
+  useEffect(() => {
+    const loadFeed = () => {
+      setCatalogSchools(getLocalCatalogSchools());
+    };
+    loadFeed();
+
+    if (typeof window !== "undefined") {
+      window.addEventListener(CATALOG_EVENT_KEY, loadFeed);
+      window.addEventListener("storage", loadFeed);
+      return () => {
+        window.removeEventListener(CATALOG_EVENT_KEY, loadFeed);
+        window.removeEventListener("storage", loadFeed);
+      };
+    }
+  }, []);
+
+  const activeSchools = useMemo(() => {
+    return catalogSchools.length > 0 ? catalogSchools : DEFAULT_CATALOG_SCHOOLS;
+  }, [catalogSchools]);
+
+  // Destination matcher helper
+  const matchesDestination = (country: string, code: string) => {
+    if (!code || code === "all") return true;
+    const c = country.toLowerCase();
+    if (code === "UK") return c.includes("united kingdom") || c.includes("uk") || c.includes("england") || c.includes("scotland");
+    if (code === "CA") return c.includes("canada") || c.includes("ontario") || c.includes("toronto");
+    if (code === "US") return c.includes("united states") || c.includes("usa") || c.includes("us") || c.includes("america");
+    if (code === "AU") return c.includes("australia") || c.includes("melbourne") || c.includes("sydney");
+    if (code === "GH") return c.includes("ghana") || c.includes("accra") || c.includes("berekuso");
+    if (code === "EU") return c.includes("europe") || c.includes("germany") || c.includes("france") || c.includes("netherlands") || c.includes("ireland");
+    return c.includes(code.toLowerCase());
+  };
+
+  // Level matcher helper
+  const matchesStudyLevel = (schoolLevel: string, levelCode: string) => {
+    if (!levelCode || levelCode === "all") return true;
+    const s = schoolLevel.toLowerCase();
+    const l = levelCode.toLowerCase();
+    if (l === "undergraduate") return s.includes("undergraduate");
+    if (l === "postgraduate") return s.includes("postgraduate");
+    if (l === "phd") return s.includes("postgraduate") || s.includes("phd") || s.includes("doctorate");
+    if (l === "foundation") return s.includes("foundation") || s.includes("undergraduate");
+    return true;
+  };
+
+  // Matched dynamic courses
+  const matchedCourses = useMemo(() => {
+    const list: any[] = [];
+    activeSchools.forEach(school => {
+      if (!matchesDestination(school.location, destination)) return;
+      if (!matchesStudyLevel(school.level, studyLevel)) return;
+
+      school.programmes.forEach(prog => {
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matchProg = prog.toLowerCase().includes(q);
+          const matchUni = school.name.toLowerCase().includes(q);
+          const matchCity = school.city.toLowerCase().includes(q);
+          if (!matchProg && !matchUni && !matchCity) return;
+        }
+
+        list.push({
+          title: prog,
+          uni: school.name,
+          country: school.location,
+          city: school.city,
+          duration: school.level.toLowerCase().includes("undergraduate") && !school.level.toLowerCase().includes("postgraduate") ? "3 - 4 Years" : "1 - 2 Years",
+          fees: school.tuition,
+          intake: school.intake || "Sep 2026",
+          badges: school.badges
+        });
+      });
+    });
+    return list.length > 0 ? list : SAMPLE_COURSES;
+  }, [activeSchools, destination, studyLevel, searchQuery]);
+
+  // Matched dynamic scholarships
+  const matchedScholarships = useMemo(() => {
+    const list: any[] = [];
+    activeSchools.forEach(school => {
+      if (!matchesDestination(school.location, destination)) return;
+      if (!matchesStudyLevel(school.level, studyLevel)) return;
+
+      if (school.scholarshipCoverage) {
+        list.push({
+          title: `${school.name} Merit & International Award`,
+          university: school.name,
+          country: school.location,
+          coverage: school.scholarshipCoverage,
+          deadline: "Rolling / 30 Jun 2026",
+          level: school.level,
+          badges: school.badges
+        });
+      }
+    });
+    return list.length > 0 ? list : SAMPLE_SCHOLARSHIPS;
+  }, [activeSchools, destination, studyLevel]);
+
+  // Matched dynamic universities
+  const matchedUniversities = useMemo(() => {
+    const res = activeSchools
+      .filter(school => {
+        if (!matchesDestination(school.location, destination)) return false;
+        if (!matchesStudyLevel(school.level, studyLevel)) return false;
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matchName = school.name.toLowerCase().includes(q);
+          const matchCity = school.city.toLowerCase().includes(q);
+          const matchProg = school.programmes.some(p => p.toLowerCase().includes(q));
+          if (!matchName && !matchCity && !matchProg) return false;
+        }
+        return true;
+      })
+      .map(s => ({
+        id: s.id,
+        name: s.name,
+        country: s.location,
+        location: `${s.city}, ${s.location}`,
+        ranking: s.ranking || (s.badges?.top ? "Top Tier Institution" : "Verified Partner"),
+        popularCourses: s.programmes.slice(0, 3),
+        intake: s.intake || "Sep 2026",
+        fees: s.tuition,
+        badges: s.badges
+      }));
+    return res.length > 0 ? res : SAMPLE_UNIVERSITIES;
+  }, [activeSchools, destination, studyLevel, searchQuery]);
 
   // Results Modal State
   const [showResultsModal, setShowResultsModal] = useState(false);
@@ -698,91 +836,160 @@ export function HeroSection() {
             {/* List based on active tab */}
             {activeTab === "courses" && (
               <div className="space-y-4">
-                {SAMPLE_COURSES.map((course, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-orange/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-brand-orange uppercase">
-                        <span>{course.country}</span>
-                        <span>·</span>
-                        <span>{course.duration}</span>
-                        <span>·</span>
-                        <span className="text-emerald-400">{course.intake}</span>
-                      </div>
-                      <h4 className="text-base font-bold text-white mt-1">{course.title}</h4>
-                      <div className="text-xs text-slate-300 mt-0.5">{course.uni} · <span className="font-semibold text-white">{course.fees}</span></div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link 
-                        href="/signup"
-                        className="px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light transition-colors whitespace-nowrap shadow-sm"
-                      >
-                        Apply Now
-                      </Link>
-                      <Link 
-                        href="/consultation"
-                        className="px-4 py-2 rounded-xl border border-white/20 text-white text-xs font-semibold hover:bg-white/10 transition-colors whitespace-nowrap"
-                      >
-                        Enquire
-                      </Link>
-                    </div>
+                {matchedCourses.length === 0 ? (
+                  <div className="p-8 text-center bg-white/5 rounded-2xl border border-white/10 text-slate-300 text-xs">
+                    No courses matched your specific filters. Try searching by subject or choosing "All Destinations".
                   </div>
-                ))}
+                ) : (
+                  matchedCourses.map((course, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-orange/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-brand-orange uppercase">
+                          <span>{course.country}</span>
+                          <span>·</span>
+                          <span>{course.duration}</span>
+                          <span>·</span>
+                          <span className="text-emerald-400">{course.intake}</span>
+                          {course.badges?.fastAcceptance && (
+                            <span className="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] normal-case">
+                              ⚡ Fast Acceptance
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="text-base font-bold text-white mt-1">{course.title}</h4>
+                        <div className="text-xs text-slate-300 mt-0.5">{course.uni} · <span className="font-semibold text-white">{course.fees}</span></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Link 
+                          href="/signup"
+                          className="px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light transition-colors whitespace-nowrap shadow-sm"
+                        >
+                          Apply Now
+                        </Link>
+                        <Link 
+                          href="/consultation"
+                          className="px-4 py-2 rounded-xl border border-white/20 text-white text-xs font-semibold hover:bg-white/10 transition-colors whitespace-nowrap"
+                        >
+                          Enquire
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
 
             {activeTab === "scholarships" && (
               <div className="space-y-4">
-                {SAMPLE_SCHOLARSHIPS.map((sch, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-orange/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-brand-orange uppercase">
-                        <Award className="w-3.5 h-3.5" />
-                        <span>{sch.coverage}</span>
-                        <span>·</span>
-                        <span>{sch.country}</span>
-                      </div>
-                      <h4 className="text-base font-bold text-white mt-1">{sch.title}</h4>
-                      <div className="text-xs text-slate-300 mt-0.5">
-                        {sch.university} · Deadline: <span className="font-semibold text-rose-400">{sch.deadline}</span>
-                      </div>
-                    </div>
-                    <Link 
-                      href="/consultation"
-                      className="px-4 py-2.5 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light transition-colors whitespace-nowrap text-center"
-                    >
-                      Check Eligibility
-                    </Link>
+                {matchedScholarships.length === 0 ? (
+                  <div className="p-8 text-center bg-white/5 rounded-2xl border border-white/10 text-slate-300 text-xs">
+                    No verified scholarship schemes found for this destination. Contact our counsellors for tailored funding opportunities.
                   </div>
-                ))}
+                ) : (
+                  matchedScholarships.map((sch, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-orange/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-brand-orange uppercase">
+                          <Award className="w-3.5 h-3.5" />
+                          <span>{sch.coverage}</span>
+                          <span>·</span>
+                          <span>{sch.country}</span>
+                          {sch.badges?.noVisaCap && (
+                            <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] normal-case">
+                              No Visa Cap
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="text-base font-bold text-white mt-1">{sch.title}</h4>
+                        <div className="text-xs text-slate-300 mt-0.5">
+                          {sch.university} · Deadline: <span className="font-semibold text-rose-400">{sch.deadline}</span>
+                        </div>
+                      </div>
+                      <Link 
+                        href="/consultation"
+                        className="px-4 py-2.5 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-light transition-colors whitespace-nowrap text-center"
+                      >
+                        Check Eligibility
+                      </Link>
+                    </div>
+                  ))
+                )}
               </div>
             )}
 
             {activeTab === "universities" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {SAMPLE_UNIVERSITIES.map((uni, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-brand-orange uppercase">{uni.country}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">{uni.ranking}</span>
-                      </div>
-                      <h4 className="text-base font-bold text-white mt-2">{uni.name}</h4>
-                      <p className="text-xs text-slate-300">{uni.location}</p>
-                      <div className="mt-2 text-xs text-slate-400">
-                        <strong className="text-slate-200">Key faculties:</strong> {uni.popularCourses.join(", ")}
-                      </div>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                      <span className="text-xs font-bold text-brand-orange">{uni.fees}</span>
-                      <Link 
-                        href="/consultation"
-                        className="text-xs font-bold text-white hover:text-brand-orange transition-colors"
-                      >
-                        Book Placement &rarr;
-                      </Link>
-                    </div>
+                {matchedUniversities.length === 0 ? (
+                  <div className="col-span-2 p-8 text-center bg-white/5 rounded-2xl border border-white/10 text-slate-300 text-xs">
+                    No partner universities matched your query. Contact us to enquire about additional global partnerships.
                   </div>
-                ))}
+                ) : (
+                  matchedUniversities.map((uni, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold text-brand-orange uppercase">{uni.country}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">{uni.ranking}</span>
+                        </div>
+                        <h4 className="text-base font-bold text-white mt-2">{uni.name}</h4>
+                        <p className="text-xs text-slate-300">{uni.location}</p>
+                        <div className="mt-2 text-xs text-slate-400">
+                          <strong className="text-slate-200">Key faculties:</strong> {uni.popularCourses.join(", ")}
+                        </div>
+
+                        {/* Badges */}
+                        {uni.badges && (
+                          <div className="flex flex-wrap items-center gap-1 pt-2">
+                            {uni.badges.highJobDemand && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                                High Job Demand
+                              </span>
+                            )}
+                            {uni.badges.noVisaCap && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold">
+                                No Visa Cap
+                              </span>
+                            )}
+                            {uni.badges.loans && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
+                                Loans
+                              </span>
+                            )}
+                            {uni.badges.prime && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                                Prime
+                              </span>
+                            )}
+                            {uni.badges.top && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                                Top Tier
+                              </span>
+                            )}
+                            {uni.badges.popular && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-semibold">
+                                Popular
+                              </span>
+                            )}
+                            {uni.badges.fastAcceptance && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30 font-semibold">
+                                Fast Acceptance
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                        <span className="text-xs font-bold text-brand-orange">{uni.fees}</span>
+                        <Link 
+                          href="/consultation"
+                          className="text-xs font-bold text-white hover:text-brand-orange transition-colors"
+                        >
+                          Book Placement &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
 

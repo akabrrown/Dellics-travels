@@ -24,15 +24,36 @@ export default function LoginPage() {
     setTimeout(() => {
       setIsLoading(false);
       if (!showForgot) {
-        const storedProfile = localStorage.getItem("dellics_student_profile");
-        const isComplete = storedProfile ? JSON.parse(storedProfile).isCompleted : false;
+        const cleanEmail = email.trim().toLowerCase();
+        let isComplete = false;
+
+        const storedProfileStr = localStorage.getItem("dellics_student_profile");
+        if (storedProfileStr) {
+          try {
+            const parsed = JSON.parse(storedProfileStr);
+            if (parsed.isCompleted) isComplete = true;
+          } catch (e) {}
+        }
+
         if (!isComplete) {
-          router.push("/portal/onboarding");
-        } else {
+          const registryStr = localStorage.getItem("dellics_registered_students_map");
+          if (registryStr) {
+            try {
+              const registry = JSON.parse(registryStr);
+              if (registry[cleanEmail]?.isCompleted) {
+                isComplete = true;
+              }
+            } catch (e) {}
+          }
+        }
+
+        if (isComplete) {
           router.push("/portal");
+        } else {
+          router.push("/portal/onboarding");
         }
       }
-    }, 700);
+    }, 600);
   };
 
   return (

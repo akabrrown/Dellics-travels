@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { RoleGuard } from "@/components/role-guard";
 import { adminApi } from "@/lib/api";
 import {  
@@ -12,9 +13,12 @@ import {
   X,
   ArrowRight,
   Send,
-  Trash2 } from "lucide-react";
+  Trash2,
+  GraduationCap,
+  Sparkles } from "lucide-react";
+import { ConsultantCatalogManager } from "@/components/consultant/ConsultantCatalogManager";
 
-type TabType = "crm" | "tests" | "docs" | "visa";
+type TabType = "crm" | "tests" | "docs" | "visa" | "catalog";
 
 // Schema Types
 type StudyDocument = { id: string; name: string; file_url: string; status: "PENDING" | "APPROVED" | "REJECTED"; updated_at: string };
@@ -40,12 +44,21 @@ type Student = {
 };
 
 export default function ConsultantPage() {
-  const [activeTab, setActiveTab] = useState<TabType>("crm");
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams?.get("tab") as TabType) || "crm";
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [students, setStudents] = useState<Student[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const tabParam = searchParams?.get("tab") as TabType;
+    if (tabParam && ["crm", "tests", "docs", "visa", "catalog"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   
   const handleDeleteStudent = async (id: string) => {
@@ -137,7 +150,14 @@ export default function ConsultantPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={refreshData} className="px-4 py-2 text-xs font-bold text-[#0A0060] bg-white border border-[#0A0060]/20 rounded-lg shadow-sm hover:bg-slate-50">
+            <button
+              onClick={() => setActiveTab("catalog")}
+              className="px-4 py-2 text-xs font-bold text-white bg-[#EA580C] hover:bg-[#F4740D] rounded-lg shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <GraduationCap className="size-4" />
+              <span>Feed Consult Search</span>
+            </button>
+            <button onClick={refreshData} className="px-4 py-2 text-xs font-bold text-[#0A0060] bg-white border border-[#0A0060]/20 rounded-lg shadow-sm hover:bg-slate-50 cursor-pointer">
               Refresh Data
             </button>
           </div>
@@ -184,6 +204,13 @@ export default function ConsultantPage() {
             >
               <Plane className="size-4" />
               Visa Pipeline
+            </button>
+            <button 
+              onClick={() => setActiveTab("catalog")}
+              className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === "catalog" ? "border-[#0A0060] text-[#0A0060]" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+            >
+              <GraduationCap className="size-4" />
+              Hero Search & School Catalog
             </button>
           </div>
 
@@ -442,6 +469,13 @@ export default function ConsultantPage() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+
+            {/* TAB: HERO SEARCH & SCHOOL CATALOG */}
+            {activeTab === "catalog" && (
+              <div className="animate-in fade-in duration-300">
+                <ConsultantCatalogManager />
               </div>
             )}
 
