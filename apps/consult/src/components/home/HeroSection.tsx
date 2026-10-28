@@ -267,7 +267,7 @@ export function HeroSection() {
   return (
     <section 
       aria-label="Dellics Education Consult Hero"
-      className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28 border-b border-slate-800 bg-slate-950 min-h-[760px] flex items-center"
+      className="relative overflow-hidden pt-16 sm:pt-24 pb-0 border-b border-slate-800 bg-slate-950 flex flex-col justify-between min-h-[580px] lg:min-h-[640px]"
     >
       {/* 1. BACKGROUND VIDEO - Main_herosection.mp4 */}
       <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
@@ -281,32 +281,32 @@ export function HeroSection() {
           <source src="/Main_herosection.mp4" type="video/mp4" />
         </video>
 
-        {/* Multi-stage calibrated overlay for maximum readability & premium contrast */}
-        <div className="absolute inset-0 z-10 bg-slate-950/65 backdrop-blur-[1px]" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-950/95 via-slate-950/75 to-slate-950/40" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-slate-950/85 via-transparent to-slate-950/90" />
+        {/* Clear, bright overlay so the background video is crisp, colorful and clearly seen */}
+        <div className="absolute inset-0 z-10 bg-black/20" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/75 via-transparent to-black/20" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-20 w-full space-y-8 sm:space-y-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-20 w-full flex-1 flex flex-col justify-between">
         
         {/* Top Typography & Call To Actions */}
-        <div className="max-w-4xl text-left space-y-5">
-          <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-brand-orange/40 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" /> Ghana’s Trusted Partner for International Education
+        <div className="max-w-4xl text-left space-y-5 pt-2 pb-6 sm:pb-8">
+          <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 shadow-sm drop-shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-brand-orange" /> Ghana’s Trusted Partner for International Education
           </span>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] tracking-tight">
-            Dellics <span className="text-brand-orange">Education Consult</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+            Dellics <span className="text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] underline decoration-brand-orange decoration-4 underline-offset-8">Education Consult</span>
           </h1>
 
-          <p className="text-brand-orange-light text-base sm:text-lg lg:text-xl font-medium italic max-w-2xl">
+          <p className="text-white text-base sm:text-lg lg:text-xl font-medium italic max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             &ldquo;Guiding Futures. Building Global Success.&rdquo;
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href="/consultation"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white font-bold text-xs sm:text-sm shadow-xl shadow-brand-orange/30 transition-all flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white font-bold text-xs sm:text-sm shadow-xl shadow-brand-orange/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
               <span>Book Free Consultation</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -321,16 +321,16 @@ export function HeroSection() {
 
             <Link
               href="/contact"
-              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900/80 text-slate-300 hover:text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/10 transition-all text-center"
+              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-900/70 hover:bg-slate-900/90 text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all text-center"
             >
               <span>Contact Us</span>
             </Link>
           </div>
         </div>
 
-        {/* Central Search & Filter Container (TRANSPARENT FROSTED GLASS WIDGET BOX) */}
-        <div className="w-full max-w-5xl shrink-0 mx-auto">
-          <div className="bg-slate-950/40 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20 text-left">
+        {/* Central Search & Filter Container (DOCKS ON BASE OF HERO SECTION) */}
+        <div className="w-full max-w-5xl shrink-0 mx-auto mt-auto">
+          <div className="bg-slate-950/75 backdrop-blur-md rounded-t-2xl sm:rounded-t-3xl rounded-b-none shadow-2xl overflow-hidden border-t border-x border-b-0 border-white/20 text-left">
               
             {/* Category Tabs (Courses, Scholarships, Universities, Events, Guide Me) */}
             <div className="overflow-x-auto scrollbar-none flex sm:grid sm:grid-cols-5 bg-white/5 border-b border-white/15">
@@ -346,11 +346,11 @@ export function HeroSection() {
                     }}
                     className={`flex-1 min-w-[76px] sm:min-w-0 flex flex-col items-center justify-center gap-1.5 py-3 sm:py-4 px-2 text-[11px] sm:text-xs md:text-sm font-semibold transition-all relative ${
                       isActive 
-                        ? "text-brand-orange bg-white/10 shadow-sm font-bold backdrop-blur-md" 
-                        : "text-slate-300 hover:text-white hover:bg-white/5"
+                        ? "text-white bg-white/15 shadow-sm font-bold backdrop-blur-md" 
+                        : "text-white/80 hover:text-white hover:bg-white/10"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? "text-brand-orange" : "text-slate-300"}`} />
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? "text-brand-orange" : "text-white/80"}`} />
                     <span className="truncate">{tab.label}</span>
                     {isActive && (
                       <span className="absolute bottom-0 left-0 right-0 h-1 bg-brand-orange rounded-t-full shadow-lg shadow-brand-orange/50"></span>
@@ -368,15 +368,15 @@ export function HeroSection() {
                 <form onSubmit={handleSearchSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                     <div className="md:col-span-6">
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Course or Subject
                       </label>
                       <div className="relative">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                         <input 
                           type="text" 
                           placeholder="e.g. Data Science, Nursing, MBA, Law..."
-                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -384,13 +384,13 @@ export function HeroSection() {
                     </div>
 
                     <div className="md:col-span-3">
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Study Level
                       </label>
                       <select 
                         value={studyLevel}
                         onChange={(e) => setStudyLevel(e.target.value)}
-                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                       >
                         <option value="" className="bg-slate-900 text-white">All Levels</option>
                         <option value="undergraduate" className="bg-slate-900 text-white">Undergraduate (Bachelor's)</option>
@@ -401,15 +401,15 @@ export function HeroSection() {
                     </div>
 
                     <div className="md:col-span-3">
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Destination
                       </label>
                       <div className="relative">
-                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none" />
+                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
                         <select 
                           value={destination}
                           onChange={(e) => setDestination(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                         >
                           <option value="" className="bg-slate-900 text-white">Any Country</option>
                           <option value="UK" className="bg-slate-900 text-white">United Kingdom</option>
@@ -424,7 +424,7 @@ export function HeroSection() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center justify-between pt-2 gap-4">
-                    <div className="text-xs text-slate-300 flex items-center gap-1.5">
+                    <div className="text-xs text-white/90 flex items-center gap-1.5 font-medium">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                       Accredited programs with Post-Study Work rights included
                     </div>
@@ -444,13 +444,13 @@ export function HeroSection() {
                 <form onSubmit={handleSearchSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Target Country
                       </label>
                       <select 
                         value={destination}
                         onChange={(e) => setDestination(e.target.value)}
-                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                       >
                         <option value="" className="bg-slate-900 text-white">All Destinations</option>
                         <option value="UK" className="bg-slate-900 text-white">United Kingdom (Chevening, Commonwealth)</option>
@@ -462,13 +462,13 @@ export function HeroSection() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Degree Level
                       </label>
                       <select 
                         value={studyLevel}
                         onChange={(e) => setStudyLevel(e.target.value)}
-                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                       >
                         <option value="" className="bg-slate-900 text-white">Undergraduate & Postgraduate</option>
                         <option value="undergraduate" className="bg-slate-900 text-white">Undergraduate</option>
@@ -478,13 +478,13 @@ export function HeroSection() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Funding Coverage
                       </label>
                       <select 
                         value={fundingType}
                         onChange={(e) => setFundingType(e.target.value)}
-                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                       >
                         <option value="" className="bg-slate-900 text-white">Any Coverage</option>
                         <option value="full" className="bg-slate-900 text-white">100% Full Tuition + Living Stipend</option>
@@ -495,7 +495,7 @@ export function HeroSection() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center justify-between pt-2 gap-4">
-                    <div className="text-xs text-slate-300">
+                    <div className="text-xs text-white/90 font-medium">
                       Over 250+ university scholarship schemes verified for Ghanaian students
                     </div>
                     <button 
@@ -514,15 +514,15 @@ export function HeroSection() {
                 <form onSubmit={handleSearchSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Search by University Name or City
                       </label>
                       <div className="relative">
-                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                         <input 
                           type="text" 
                           placeholder="e.g. Oxford, Toronto, Manchester, Melbourne..."
-                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -530,13 +530,13 @@ export function HeroSection() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Country
                       </label>
                       <select 
                         value={destination}
                         onChange={(e) => setDestination(e.target.value)}
-                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                        className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                       >
                         <option value="" className="bg-slate-900 text-white">Worldwide</option>
                         <option value="UK" className="bg-slate-900 text-white">United Kingdom</option>
@@ -550,7 +550,7 @@ export function HeroSection() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center justify-between pt-2 gap-4">
-                    <div className="text-xs text-slate-300">
+                    <div className="text-xs text-white/90 font-medium">
                       Official partnership status with top Russell Group & U15 institutions
                     </div>
                     <button 
@@ -571,14 +571,14 @@ export function HeroSection() {
                     {SAMPLE_EVENTS.map((evt, idx) => (
                       <div key={idx} className="bg-white/10 p-4 rounded-2xl border border-white/15 flex flex-col justify-between backdrop-blur-md">
                         <div>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-brand-orange/20 text-brand-orange border border-brand-orange/30">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-brand-orange/20 text-white border border-brand-orange/30">
                             {evt.format}
                           </span>
                           <h4 className="font-bold text-white text-sm mt-2 mb-1 line-clamp-2">{evt.title}</h4>
-                          <p className="text-xs text-slate-300 flex items-center gap-1 mb-2">
+                          <p className="text-xs text-white/90 flex items-center gap-1 mb-2 font-medium">
                             <Clock className="w-3.5 h-3.5 text-brand-orange" /> {evt.date} · {evt.time}
                           </p>
-                          <p className="text-xs text-slate-300 line-clamp-2">{evt.description}</p>
+                          <p className="text-xs text-white/80 line-clamp-2">{evt.description}</p>
                         </div>
                         <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
                           <span className="text-[11px] text-emerald-400 font-semibold">{evt.spotsLeft} seats left</span>
@@ -587,7 +587,7 @@ export function HeroSection() {
                               setModalTitle(`Register: ${evt.title}`);
                               setShowResultsModal(true);
                             }}
-                            className="text-xs font-bold text-brand-orange hover:text-brand-orange-light transition-colors flex items-center gap-1 cursor-pointer"
+                            className="text-xs font-bold text-white hover:text-brand-orange transition-colors flex items-center gap-1 cursor-pointer"
                           >
                             Free Pass &rarr;
                           </button>
@@ -601,7 +601,7 @@ export function HeroSection() {
                         setModalTitle("All Upcoming Education Events");
                         setShowResultsModal(true);
                       }}
-                      className="text-xs font-bold text-brand-orange hover:underline cursor-pointer"
+                      className="text-xs font-bold text-white hover:text-brand-orange underline cursor-pointer"
                     >
                       View Full 2026/2027 Event Calendar &rarr;
                     </button>
@@ -618,18 +618,18 @@ export function HeroSection() {
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
                             <h3 className="text-sm font-bold text-white">Step 1 of 2: Your Academic Profile</h3>
-                            <span className="text-xs text-slate-300 font-medium">Quick 2-minute matching</span>
+                            <span className="text-xs text-white/80 font-medium">Quick 2-minute matching</span>
                           </div>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 Current Education Level
                               </label>
                               <select 
                                 value={guideData.currentLevel}
                                 onChange={(e) => setGuideData({ ...guideData, currentLevel: e.target.value })}
-                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                               >
                                 <option value="" className="bg-slate-900 text-white">Select Current Education</option>
                                 <option value="WASSCE / High School" className="bg-slate-900 text-white">WASSCE / High School Graduate</option>
@@ -641,13 +641,13 @@ export function HeroSection() {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 Desired Field of Study
                               </label>
                               <select 
                                 value={guideData.desiredField}
                                 onChange={(e) => setGuideData({ ...guideData, desiredField: e.target.value })}
-                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                               >
                                 <option value="" className="bg-slate-900 text-white">Select Desired Field</option>
                                 <option value="Computer Science & IT" className="bg-slate-900 text-white">Computer Science & IT / AI</option>
@@ -662,13 +662,13 @@ export function HeroSection() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 Preferred Country
                               </label>
                               <select 
                                 value={guideData.targetCountry}
                                 onChange={(e) => setGuideData({ ...guideData, targetCountry: e.target.value })}
-                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                               >
                                 <option value="" className="bg-slate-900 text-white">Select Preferred Country</option>
                                 <option value="United Kingdom" className="bg-slate-900 text-white">United Kingdom</option>
@@ -680,13 +680,13 @@ export function HeroSection() {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 Estimated Annual Budget
                               </label>
                               <select 
                                 value={guideData.budget}
                                 onChange={(e) => setGuideData({ ...guideData, budget: e.target.value })}
-                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white backdrop-blur-md"
+                                className="w-full px-3 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white backdrop-blur-md font-medium"
                               >
                                 <option value="" className="bg-slate-900 text-white">Select Budget</option>
                                 <option value="Under $15,000 / year" className="bg-slate-900 text-white">Under $15,000 / year (Seeking Affordable/Grants)</option>
@@ -716,7 +716,7 @@ export function HeroSection() {
                             <button 
                               type="button" 
                               onClick={() => setGuideStep(1)} 
-                              className="text-xs text-brand-orange hover:underline font-semibold cursor-pointer"
+                              className="text-xs text-brand-orange hover:text-white underline font-semibold cursor-pointer"
                             >
                               &larr; Back to Step 1
                             </button>
@@ -724,7 +724,7 @@ export function HeroSection() {
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 Full Name
                               </label>
                               <input 
@@ -733,12 +733,12 @@ export function HeroSection() {
                                 placeholder="Kwame Mensah"
                                 value={guideData.fullName}
                                 onChange={(e) => setGuideData({ ...guideData, fullName: e.target.value })}
-                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                               />
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 Email Address
                               </label>
                               <input 
@@ -747,12 +747,12 @@ export function HeroSection() {
                                 placeholder="kwame@example.com"
                                 value={guideData.email}
                                 onChange={(e) => setGuideData({ ...guideData, email: e.target.value })}
-                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                               />
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1.5">
+                              <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                                 WhatsApp / Phone
                               </label>
                               <input 
@@ -761,13 +761,13 @@ export function HeroSection() {
                                 placeholder="+233 55 205 4174"
                                 value={guideData.phone}
                                 onChange={(e) => setGuideData({ ...guideData, phone: e.target.value })}
-                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange text-white placeholder-slate-400 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                                className="w-full px-3.5 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
                               />
                             </div>
                           </div>
 
                           <div className="flex flex-col sm:flex-row items-center justify-between pt-2 gap-4">
-                            <div className="text-xs text-slate-300">
+                            <div className="text-xs text-white/90 font-medium">
                               Matched with {guideData.targetCountry || "global"} options in {guideData.desiredField || "your chosen field"}
                             </div>
                             <button 
@@ -787,7 +787,7 @@ export function HeroSection() {
                         <CheckCircle2 className="w-8 h-8" />
                       </div>
                       <h3 className="text-xl font-bold text-white">Your Tailored University Shortlist is Ready!</h3>
-                      <p className="text-sm text-slate-200 max-w-md mx-auto">
+                      <p className="text-sm text-white/90 max-w-md mx-auto">
                         Based on your background ({guideData.currentLevel || "High School/Degree"}), interest in <strong>{guideData.desiredField || "Higher Education"}</strong> in <strong>{guideData.targetCountry || "Abroad"}</strong>, our counsellors have generated recommended programs.
                       </p>
                       <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
