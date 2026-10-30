@@ -14,8 +14,8 @@ export function DashboardShowcase() {
         <div className="max-w-5xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden flex flex-col md:flex-row relative">
           <div className="absolute top-0 left-0 w-full h-1 bg-brand-orange"></div>
           
-          <div className="w-full md:w-64 bg-slate-50 p-6 border-r border-slate-200 flex flex-col gap-2">
-            <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-200">
+          <div className="w-full md:w-64 bg-slate-50 p-5 sm:p-6 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col gap-2">
+            <div className="flex items-center gap-3 mb-6 md:mb-8 pb-5 md:pb-6 border-b border-slate-200">
               <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500"><UserCircle2 /></div>
               <div>
                 <div className="text-sm font-bold text-slate-900">John Mensah</div>
@@ -30,7 +30,7 @@ export function DashboardShowcase() {
             <div className="px-3 py-2.5 rounded-lg text-slate-600 font-medium text-sm flex items-center gap-3"><Plane className="w-4 h-4 opacity-70" /> Visa & Travel</div>
           </div>
           
-          <div className="flex-1 p-8 space-y-8 bg-white">
+          <div className="flex-1 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 bg-white">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold text-slate-900 mb-1">Application Milestone Tracker</h3>

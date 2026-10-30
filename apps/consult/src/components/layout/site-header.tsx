@@ -269,7 +269,7 @@ export function SiteHeader() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden bg-white border-t border-slate-100 shadow-xl absolute w-full left-0 z-50">
+        <div className="lg:hidden bg-white border-t border-slate-100 shadow-xl absolute w-full left-0 z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain pb-10">
           <nav className="mx-auto max-w-7xl px-4 py-4 space-y-1">
             {user && (
               <div className="p-3 mb-3 bg-slate-50 rounded-xl border border-slate-200">

@@ -79,3 +79,9 @@ yarn.lock
 AGENTS.md
 CLAUDE.md
 
+# Scratch test runs & screenshots
+scratch/*.png
+scratch/test_*.js
+scratch/verify_*.js
+scratch/capture_*.js
+

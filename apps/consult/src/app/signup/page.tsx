@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ArrowLeft, Home, Loader2, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-context";
 
@@ -42,10 +42,19 @@ export default function SignupPage() {
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col md:flex-row">
       {/* Left side - Branding */}
-      <div className="hidden md:flex flex-1 bg-navy p-12 flex-col justify-between">
-        <Link href="/" className="inline-block">
-          <Image src="/logo.jpg" alt="Dellics Education Consult" width={100} height={100} className="rounded-xl object-contain bg-white p-1" unoptimized />
-        </Link>
+      <div className="hidden md:flex flex-1 bg-navy p-12 flex-col justify-between relative">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="inline-block group">
+            <Image src="/logo.jpg" alt="Dellics Education Consult" width={100} height={100} className="rounded-xl object-contain bg-white p-1 transition-transform group-hover:scale-105" unoptimized />
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors py-2 px-3.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
         <div className="max-w-md">
           <h2 className="text-3xl font-display font-semibold text-white mb-4">
             Start your study-abroad journey.
@@ -60,9 +69,38 @@ export default function SignupPage() {
       </div>
 
       {/* Right side - Auth Form */}
-      <div className="flex-1 flex items-center justify-center bg-white p-6 sm:p-12">
+      <div className="flex-1 flex items-center justify-center bg-white p-6 sm:p-12 relative">
         <div className="w-full max-w-md">
-          <div className="md:hidden text-center mb-8">
+          {/* Top Back to Home Button for Students */}
+          <div className="mb-6 flex items-center justify-between">
+            <Link 
+              href="/" 
+              onClick={(e) => {
+                e.preventDefault();
+                router.push('/');
+              }}
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-navy transition-all py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200/80 shadow-sm group"
+              id="back-to-home-btn"
+            >
+              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 text-slate-600 group-hover:text-navy" />
+              <span>Back to Home</span>
+            </Link>
+            
+            <Link 
+              href="/" 
+              onClick={(e) => {
+                e.preventDefault();
+                router.push('/');
+              }}
+              className="text-xs font-semibold text-brand-orange hover:text-brand-orange-light transition-colors inline-flex items-center gap-1"
+              title="Return to Home Page"
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span>Home</span>
+            </Link>
+          </div>
+
+          <div className="md:hidden text-center mb-6">
             <Link href="/" className="inline-block">
               <Image src="/logo.jpg" alt="Dellics Education Consult" width={80} height={80} className="rounded-xl object-contain bg-slate-50 p-1 mx-auto" unoptimized />
             </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { 
   Search, 
@@ -93,6 +93,15 @@ const SAMPLE_EVENTS: EventItem[] = [
 export function HeroSection() {
   const [activeTab, setActiveTab] = useState("courses");
   
+  // Video playback ref (silent background autoplay)
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Search autocomplete & dropdown state
+  const [isCourseFocused, setIsCourseFocused] = useState(false);
+  const [isUniFocused, setIsUniFocused] = useState(false);
+  const courseSearchRef = useRef<HTMLDivElement>(null);
+  const uniSearchRef = useRef<HTMLDivElement>(null);
+
   // Search inputs
   const [searchQuery, setSearchQuery] = useState("");
   const [destination, setDestination] = useState("");
@@ -134,6 +143,74 @@ export function HeroSection() {
   const activeSchools = useMemo(() => {
     return catalogSchools.length > 0 ? catalogSchools : DEFAULT_CATALOG_SCHOOLS;
   }, [catalogSchools]);
+
+  // Robust HTML5 Video Autoplay & User Interaction Handler
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Direct DOM property enforcement (bypasses React attribute sync limitations)
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    const playVideo = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay deferred by device policy until first interaction
+        });
+      }
+    };
+
+    playVideo();
+
+    // Fallback: resume playback on the first touch, click, or scroll anywhere
+    const onUserInteraction = () => {
+      if (video && video.paused) {
+        video.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener("touchstart", onUserInteraction, { once: true, passive: true });
+    window.addEventListener("click", onUserInteraction, { once: true });
+    window.addEventListener("scroll", onUserInteraction, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", onUserInteraction);
+      window.removeEventListener("click", onUserInteraction);
+      window.removeEventListener("scroll", onUserInteraction);
+    };
+  }, []);
+
+  // Click outside to dismiss autocomplete dropdowns & Escape key listener
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (courseSearchRef.current && !courseSearchRef.current.contains(e.target as Node)) {
+        setIsCourseFocused(false);
+      }
+      if (uniSearchRef.current && !uniSearchRef.current.contains(e.target as Node)) {
+        setIsUniFocused(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsCourseFocused(false);
+        setIsUniFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   // Destination matcher helper
   const matchesDestination = (country: string, code: string) => {
@@ -188,6 +265,10 @@ export function HeroSection() {
         });
       });
     });
+    // If a search query is active, return exact matches (even if empty, to trigger professional feedback)
+    if (searchQuery.trim()) {
+      return list;
+    }
     return list.length > 0 ? list : SAMPLE_COURSES;
   }, [activeSchools, destination, studyLevel, searchQuery]);
 
@@ -239,6 +320,10 @@ export function HeroSection() {
         fees: s.tuition,
         badges: s.badges
       }));
+    // If a search query is active, return exact matches
+    if (searchQuery.trim()) {
+      return res;
+    }
     return res.length > 0 ? res : SAMPLE_UNIVERSITIES;
   }, [activeSchools, destination, studyLevel, searchQuery]);
 
@@ -267,46 +352,51 @@ export function HeroSection() {
   return (
     <section 
       aria-label="Dellics Education Consult Hero"
-      className="relative overflow-hidden pt-16 sm:pt-24 pb-0 border-b border-slate-800 bg-slate-950 flex flex-col justify-between min-h-[580px] lg:min-h-[640px]"
+      className="relative z-30 overflow-visible pt-6 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 border-b border-slate-800 bg-slate-950 flex flex-col justify-between"
     >
       {/* 1. BACKGROUND VIDEO - Main_herosection.mp4 */}
       <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
+          poster="/hero-video-poster.jpg"
+          src="/Main_herosection.mp4"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/Main_herosection.mp4" type="video/mp4" />
         </video>
 
         {/* Clear, bright overlay so the background video is crisp, colorful and clearly seen */}
-        <div className="absolute inset-0 z-10 bg-black/20" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/75 via-transparent to-black/20" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-black/25" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-20 w-full flex-1 flex flex-col justify-between">
         
         {/* Top Typography & Call To Actions */}
-        <div className="max-w-4xl text-left space-y-5 pt-2 pb-6 sm:pb-8">
-          <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 shadow-sm drop-shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-brand-orange" /> Ghana’s Trusted Partner for International Education
+        <div className="max-w-4xl text-left space-y-2.5 sm:space-y-3.5 pt-1 pb-3 sm:pb-4">
+          <span className="inline-flex items-center gap-1.5 sm:gap-2 py-1 px-3 rounded-full bg-white/10 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 shadow-sm drop-shadow-sm max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-brand-orange shrink-0" />
+            <span className="truncate">Ghana’s Trusted Partner for International Education</span>
           </span>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-extrabold text-white leading-[1.15] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] break-words">
             Dellics <span className="text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] underline decoration-brand-orange decoration-4 underline-offset-8">Education Consult</span>
           </h1>
 
-          <p className="text-white text-base sm:text-lg lg:text-xl font-medium italic max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <p className="text-white/95 text-xs sm:text-sm lg:text-base font-medium italic max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             &ldquo;Guiding Futures. Building Global Success.&rdquo;
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-2.5 pt-1">
             <Link
               href="/consultation"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white font-bold text-xs sm:text-sm shadow-xl shadow-brand-orange/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white font-bold text-xs sm:text-sm shadow-xl shadow-brand-orange/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
               <span>Book Free Consultation</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -314,26 +404,26 @@ export function HeroSection() {
 
             <Link
               href="/destinations"
-              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all text-center"
+              className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all text-center flex items-center justify-center"
             >
               <span>Explore Destinations</span>
             </Link>
 
             <Link
               href="/contact"
-              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-900/70 hover:bg-slate-900/90 text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all text-center"
+              className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-slate-900/70 hover:bg-slate-900/90 text-white font-semibold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all text-center flex items-center justify-center"
             >
               <span>Contact Us</span>
             </Link>
           </div>
         </div>
 
-        {/* Central Search & Filter Container (DOCKS ON BASE OF HERO SECTION) */}
-        <div className="w-full max-w-5xl shrink-0 mx-auto mt-auto">
-          <div className="bg-slate-950/75 backdrop-blur-md rounded-t-2xl sm:rounded-t-3xl rounded-b-none shadow-2xl overflow-hidden border-t border-x border-b-0 border-white/20 text-left">
+        {/* Central Search & Filter Container (FLOATS ELEVATED INSIDE HERO WITH BREATHING ROOM) */}
+        <div className="w-full max-w-5xl shrink-0 mx-auto mt-2 sm:mt-3 px-0 relative z-30">
+          <div className="bg-slate-950/95 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl overflow-visible border border-white/20 text-left">
               
             {/* Category Tabs (Courses, Scholarships, Universities, Events, Guide Me) */}
-            <div className="overflow-x-auto scrollbar-none flex sm:grid sm:grid-cols-5 bg-white/5 border-b border-white/15">
+            <div className="overflow-x-auto scrollbar-none flex sm:grid sm:grid-cols-5 bg-white/5 border-b border-white/15 rounded-t-2xl sm:rounded-t-3xl">
               {TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -343,14 +433,16 @@ export function HeroSection() {
                     onClick={() => {
                       setActiveTab(tab.id);
                       setGuideSubmitted(false);
+                      setIsCourseFocused(false);
+                      setIsUniFocused(false);
                     }}
-                    className={`flex-1 min-w-[76px] sm:min-w-0 flex flex-col items-center justify-center gap-1.5 py-3 sm:py-4 px-2 text-[11px] sm:text-xs md:text-sm font-semibold transition-all relative ${
+                    className={`flex-1 min-w-[64px] sm:min-w-0 flex flex-col items-center justify-center gap-1 sm:gap-1.5 py-2.5 sm:py-4 px-1.5 sm:px-2 text-[10px] sm:text-xs md:text-sm font-semibold transition-all relative ${
                       isActive 
                         ? "text-white bg-white/15 shadow-sm font-bold backdrop-blur-md" 
-                        : "text-white/80 hover:text-white hover:bg-white/10"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? "text-brand-orange" : "text-white/80"}`} />
+                    <Icon className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${isActive ? "text-brand-orange" : "text-white/80"}`} />
                     <span className="truncate">{tab.label}</span>
                     {isActive && (
                       <span className="absolute bottom-0 left-0 right-0 h-1 bg-brand-orange rounded-t-full shadow-lg shadow-brand-orange/50"></span>
@@ -361,26 +453,153 @@ export function HeroSection() {
             </div>
 
             {/* Form Content Area */}
-            <div className="p-6 md:p-8">
+            <div className="p-4 sm:p-6 md:p-8 relative overflow-visible">
               
               {/* 1. COURSES TAB */}
               {activeTab === "courses" && (
                 <form onSubmit={handleSearchSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                    <div className="md:col-span-6">
+                    <div className="md:col-span-6 relative z-40" ref={courseSearchRef}>
                       <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Course or Subject
                       </label>
                       <div className="relative">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
                         <input 
                           type="text" 
                           placeholder="e.g. Data Science, Nursing, MBA, Law..."
-                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                          className="w-full pl-10 pr-10 py-3 bg-slate-900 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange font-medium"
                           value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onFocus={() => {
+                            setIsCourseFocused(true);
+                            if (courseSearchRef.current) {
+                              courseSearchRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                            }
+                          }}
+                          onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setIsCourseFocused(true);
+                          }}
                         />
+                        {searchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSearchQuery("");
+                              setIsCourseFocused(false);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/60 hover:text-white transition-colors cursor-pointer"
+                            aria-label="Clear course search"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
+
+                      {/* Real-time Autocomplete / Related Course Suggestions Dropdown */}
+                      {isCourseFocused && searchQuery.trim().length > 0 && (
+                        <div className="absolute left-0 right-0 top-full mt-2.5 z-[100] bg-slate-900 border-2 border-brand-orange/60 rounded-2xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                          {matchedCourses.length > 0 ? (
+                            <>
+                              <div className="px-4 py-2.5 bg-slate-800 border-b border-slate-700/80 flex items-center justify-between text-xs text-slate-200">
+                                <span>Verified Programs matching <strong className="text-white font-semibold">&ldquo;{searchQuery}&rdquo;</strong></span>
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30">
+                                  {matchedCourses.length} Found
+                                </span>
+                              </div>
+                              <div className="max-h-[55vh] sm:max-h-72 overflow-y-auto divide-y divide-slate-800 overscroll-contain touch-pan-y bg-slate-900">
+                                {matchedCourses.slice(0, 6).map((course, idx) => (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => {
+                                      setSearchQuery(course.title);
+                                      setIsCourseFocused(false);
+                                      setModalTitle("Course: " + course.title);
+                                      setShowResultsModal(true);
+                                    }}
+                                    className="w-full text-left p-3.5 hover:bg-slate-800 transition-colors flex items-start gap-3 group/item cursor-pointer"
+                                  >
+                                    <div className="w-8 h-8 rounded-lg bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-110 transition-transform">
+                                      <GraduationCap className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-xs sm:text-sm font-bold text-white group-hover/item:text-brand-orange transition-colors truncate">
+                                        {course.title}
+                                      </div>
+                                      <div className="text-[11px] text-slate-300 truncate mt-0.5">
+                                        {course.uni} · <span className="text-slate-400">{course.country}</span>
+                                      </div>
+                                      <div className="flex flex-wrap items-center gap-2 mt-1 text-[10px] text-slate-400">
+                                        <span className="text-white font-medium">{course.fees}</span>
+                                        <span>·</span>
+                                        <span className="text-emerald-400">{course.intake}</span>
+                                        {course.badges?.fastAcceptance && (
+                                          <span className="px-1.5 py-0.2 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                                            ⚡ Fast Acceptance
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <ArrowRight className="w-4 h-4 text-slate-500 group-hover/item:text-brand-orange group-hover/item:translate-x-1 transition-all shrink-0 mt-2" />
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="p-2.5 bg-slate-800/95 border-t border-slate-700/80 flex items-center justify-between text-[11px] text-slate-300 px-4">
+                                <span>Click any program to review eligibility & intake</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setIsCourseFocused(false);
+                                    setModalTitle("Matched University Courses");
+                                    setShowResultsModal(true);
+                                  }}
+                                  className="text-brand-orange hover:text-white font-bold inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  View all ({matchedCourses.length}) &rarr;
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="p-5 text-center space-y-3 bg-slate-900">
+                              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto text-brand-orange border border-white/15">
+                                <Compass className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-bold text-white">
+                                  No Verified Programs Matching &ldquo;{searchQuery}&rdquo;
+                                </div>
+                                <p className="text-xs text-slate-300 max-w-sm mx-auto mt-1 leading-relaxed">
+                                  We couldn&rsquo;t find an exact program match under your current criteria{destination ? ` in ${destination}` : ''}{studyLevel ? ` (${studyLevel})` : ''}.
+                                  Our certified advisors work directly with over 150+ accredited global institutions and can identify customized entry pathways or alternative programs for you.
+                                </p>
+                              </div>
+                              <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
+                                <Link
+                                  href="/consultation"
+                                  className="px-4 py-2 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white text-xs font-bold transition-all shadow-md inline-flex items-center gap-1.5"
+                                  onClick={() => setIsCourseFocused(false)}
+                                >
+                                  <span>Speak with an Admissions Advisor</span>
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSearchQuery("");
+                                    setDestination("");
+                                    setStudyLevel("");
+                                    setIsCourseFocused(false);
+                                  }}
+                                  className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-xs font-semibold transition-all cursor-pointer"
+                                >
+                                  Clear Filters
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="md:col-span-3">
@@ -513,20 +732,146 @@ export function HeroSection() {
               {activeTab === "universities" && (
                 <form onSubmit={handleSearchSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-2">
+                    <div className="md:col-span-2 relative z-40" ref={uniSearchRef}>
                       <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 drop-shadow-sm">
                         Search by University Name or City
                       </label>
                       <div className="relative">
-                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
+                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
                         <input 
                           type="text" 
                           placeholder="e.g. Oxford, Toronto, Manchester, Melbourne..."
-                          className="w-full pl-10 pr-4 py-3 bg-slate-900/90 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange backdrop-blur-md font-medium"
+                          className="w-full pl-10 pr-10 py-3 bg-slate-900 border border-white/20 rounded-xl text-sm focus:outline-none focus:border-brand-orange !text-white placeholder:text-white/60 caret-white selection:bg-brand-orange font-medium"
                           value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onFocus={() => {
+                            setIsUniFocused(true);
+                            if (uniSearchRef.current) {
+                              uniSearchRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                            }
+                          }}
+                          onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setIsUniFocused(true);
+                          }}
                         />
+                        {searchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSearchQuery("");
+                              setIsUniFocused(false);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/60 hover:text-white transition-colors cursor-pointer"
+                            aria-label="Clear university search"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
+
+                      {/* Real-time Autocomplete / Related Suggestions Dropdown for Universities */}
+                      {isUniFocused && searchQuery.trim().length > 0 && (
+                        <div className="absolute left-0 right-0 top-full mt-2.5 z-[100] bg-slate-900 border-2 border-brand-orange/60 rounded-2xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                          {matchedUniversities.length > 0 ? (
+                            <>
+                              <div className="px-4 py-2.5 bg-slate-800 border-b border-slate-700/80 flex items-center justify-between text-xs text-slate-200">
+                                <span>Institutions matching <strong className="text-white font-semibold">&ldquo;{searchQuery}&rdquo;</strong></span>
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30">
+                                  {matchedUniversities.length} Found
+                                </span>
+                              </div>
+                              <div className="max-h-[55vh] sm:max-h-72 overflow-y-auto divide-y divide-slate-800 overscroll-contain touch-pan-y bg-slate-900">
+                                {matchedUniversities.slice(0, 6).map((uni, idx) => (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => {
+                                      setSearchQuery(uni.name);
+                                      setIsUniFocused(false);
+                                      setModalTitle("University Profile: " + uni.name);
+                                      setShowResultsModal(true);
+                                    }}
+                                    className="w-full text-left p-3.5 hover:bg-slate-800 transition-colors flex items-start gap-3 group/item cursor-pointer"
+                                  >
+                                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-110 transition-transform">
+                                      <Building2 className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-xs sm:text-sm font-bold text-white group-hover/item:text-brand-orange transition-colors truncate">
+                                          {uni.name}
+                                        </span>
+                                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 shrink-0">
+                                          {uni.ranking}
+                                        </span>
+                                      </div>
+                                      <div className="text-[11px] text-slate-300 truncate mt-0.5">
+                                        {uni.location}
+                                      </div>
+                                      <div className="flex flex-wrap items-center gap-2 mt-1 text-[10px] text-slate-400">
+                                        <span className="text-slate-300">Popular: {uni.popularCourses.slice(0, 2).join(", ")}</span>
+                                        <span>·</span>
+                                        <span className="text-white font-medium">{uni.fees}</span>
+                                      </div>
+                                    </div>
+                                    <ArrowRight className="w-4 h-4 text-slate-500 group-hover/item:text-brand-orange group-hover/item:translate-x-1 transition-all shrink-0 mt-2" />
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="p-2.5 bg-slate-800/95 border-t border-slate-700/80 flex items-center justify-between text-[11px] text-slate-300 px-4">
+                                <span>Click to view admissions criteria & tuition details</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setIsUniFocused(false);
+                                    setModalTitle("Matched Partner Universities");
+                                    setShowResultsModal(true);
+                                  }}
+                                  className="text-brand-orange hover:text-white font-bold inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  View all ({matchedUniversities.length}) &rarr;
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="p-5 text-center space-y-3 bg-slate-900">
+                              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto text-brand-orange border border-white/15">
+                                <Building2 className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-bold text-white">
+                                  No Partner Universities Matching &ldquo;{searchQuery}&rdquo;
+                                </div>
+                                <p className="text-xs text-slate-300 max-w-sm mx-auto mt-1 leading-relaxed">
+                                  We couldn&rsquo;t find an institution matching this name or city{destination ? ` in ${destination}` : ''}.
+                                  Our admissions network connects directly with hundreds of universities globally. Contact our advisors for institutional placement support.
+                                </p>
+                              </div>
+                              <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
+                                <Link
+                                  href="/consultation"
+                                  className="px-4 py-2 rounded-xl bg-brand-orange hover:bg-brand-orange-light text-white text-xs font-bold transition-all shadow-md inline-flex items-center gap-1.5"
+                                  onClick={() => setIsUniFocused(false)}
+                                >
+                                  <span>Request University Evaluation</span>
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSearchQuery("");
+                                    setDestination("");
+                                    setIsUniFocused(false);
+                                  }}
+                                  className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-xs font-semibold transition-all cursor-pointer"
+                                >
+                                  Clear Filters
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -818,8 +1163,8 @@ export function HeroSection() {
       {/* LIVE SEARCH & FILTER RESULTS MODAL */}
       {/* ========================================================================= */}
       {showResultsModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 text-white rounded-3xl max-w-3xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-white/15">
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-slate-900 text-white rounded-2xl sm:rounded-3xl max-w-3xl w-full max-h-[90dvh] overflow-y-auto p-4 sm:p-6 md:p-8 shadow-2xl border border-white/15">
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
               <div>
                 <h3 className="text-xl font-bold text-white mt-0.5">{modalTitle}</h3>
