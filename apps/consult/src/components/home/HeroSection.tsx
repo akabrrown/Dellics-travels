@@ -144,7 +144,7 @@ export function HeroSection() {
     return catalogSchools.length > 0 ? catalogSchools : DEFAULT_CATALOG_SCHOOLS;
   }, [catalogSchools]);
 
-  // Robust HTML5 Video Autoplay & User Interaction Handler
+  // Robust HTML5 Video Autoplay & Continuous Looping Playback
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -153,33 +153,69 @@ export function HeroSection() {
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
+    video.loop = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
 
-    const playVideo = () => {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay deferred by device policy until first interaction
-        });
+    const attemptPlay = () => {
+      if (video.paused) {
+        const p = video.play();
+        if (p !== undefined) {
+          p.catch(() => {});
+        }
       }
     };
 
-    playVideo();
+    // Wait for enough data to actually start playback
+    const onCanPlay = () => attemptPlay();
+    video.addEventListener("canplay", onCanPlay);
 
-    // Fallback: resume playback on the first touch, click, or scroll anywhere
+    // Safety net: if the video stalls, restart when data arrives
+    const onStalled = () => {
+      video.load();
+    };
+    video.addEventListener("stalled", onStalled);
+
+    // Belt-and-suspenders loop: if loop attribute is ignored, restart manually
+    const onEnded = () => {
+      video.currentTime = 0;
+      attemptPlay();
+    };
+    video.addEventListener("ended", onEnded);
+
+    // If the video is already buffered (cached), play immediately
+    if (video.readyState >= 3) {
+      attemptPlay();
+    } else {
+      // Trigger load in case the browser hasn't started fetching yet
+      video.load();
+    }
+
+    // Fallback: resume playback on the first user interaction (mobile autoplay policies)
     const onUserInteraction = () => {
-      if (video && video.paused) {
-        video.play().catch(() => {});
-      }
+      attemptPlay();
     };
 
     window.addEventListener("touchstart", onUserInteraction, { once: true, passive: true });
     window.addEventListener("click", onUserInteraction, { once: true });
     window.addEventListener("scroll", onUserInteraction, { once: true, passive: true });
 
+    // Visibility change: restart video when tab becomes visible again
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        attemptPlay();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     return () => {
+      video.removeEventListener("canplay", onCanPlay);
+      video.removeEventListener("stalled", onStalled);
+      video.removeEventListener("ended", onEnded);
       window.removeEventListener("touchstart", onUserInteraction);
       window.removeEventListener("click", onUserInteraction);
       window.removeEventListener("scroll", onUserInteraction);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 
@@ -362,12 +398,12 @@ export function HeroSection() {
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/hero-video-poster.jpg"
-          src="/Main_herosection.mp4"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/Main_herosection.mp4" type="video/mp4" />
+          Your browser does not support HTML5 video.
         </video>
 
         {/* Clear, bright overlay so the background video is crisp, colorful and clearly seen */}
