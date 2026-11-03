@@ -149,58 +149,84 @@ export function HeroSection() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Direct DOM property enforcement (bypasses React attribute sync limitations)
+    // Direct DOM property & attribute enforcement for strict browser autoplay policies
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
+    video.autoplay = true;
     video.loop = true;
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("loop", "");
+
+    let isDestroyed = false;
 
     const attemptPlay = () => {
+      if (isDestroyed || !video) return;
       if (video.paused) {
-        const p = video.play();
-        if (p !== undefined) {
-          p.catch(() => {});
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Deferred by device/power-saver policy until first user interaction
+          });
         }
       }
     };
 
-    // Wait for enough data to actually start playback
+    // 1. Kick off playback immediately on mount
+    attemptPlay();
+
+    // 2. Playback lifecycle triggers as media streams in
+    const onLoadedMetadata = () => attemptPlay();
+    const onLoadedData = () => attemptPlay();
     const onCanPlay = () => attemptPlay();
+    const onCanPlayThrough = () => attemptPlay();
+
+    video.addEventListener("loadedmetadata", onLoadedMetadata);
+    video.addEventListener("loadeddata", onLoadedData);
     video.addEventListener("canplay", onCanPlay);
+    video.addEventListener("canplaythrough", onCanPlayThrough);
 
-    // Safety net: if the video stalls, restart when data arrives
-    const onStalled = () => {
-      video.load();
-    };
-    video.addEventListener("stalled", onStalled);
-
-    // Belt-and-suspenders loop: if loop attribute is ignored, restart manually
+    // 3. Continuous non-stop loop safeguards
     const onEnded = () => {
+      if (isDestroyed || !video) return;
       video.currentTime = 0;
       attemptPlay();
     };
     video.addEventListener("ended", onEnded);
 
-    // If the video is already buffered (cached), play immediately
-    if (video.readyState >= 3) {
-      attemptPlay();
-    } else {
-      // Trigger load in case the browser hasn't started fetching yet
-      video.load();
-    }
+    // Guard against browsers pausing background video when throttled
+    const onPause = () => {
+      if (isDestroyed || !video) return;
+      if (document.visibilityState === "visible") {
+        attemptPlay();
+      }
+    };
+    video.addEventListener("pause", onPause);
 
-    // Fallback: resume playback on the first user interaction (mobile autoplay policies)
+    // 4. Seamless loop restart before hard EOF stutter
+    const onTimeUpdate = () => {
+      if (isDestroyed || !video || !video.duration) return;
+      if (video.duration > 0 && video.currentTime >= video.duration - 0.15) {
+        video.currentTime = 0;
+        attemptPlay();
+      }
+    };
+    video.addEventListener("timeupdate", onTimeUpdate);
+
+    // 5. Fallback: resume playback on first interaction (mobile iOS/Android strict policies)
     const onUserInteraction = () => {
       attemptPlay();
     };
 
-    window.addEventListener("touchstart", onUserInteraction, { once: true, passive: true });
-    window.addEventListener("click", onUserInteraction, { once: true });
-    window.addEventListener("scroll", onUserInteraction, { once: true, passive: true });
+    window.addEventListener("touchstart", onUserInteraction, { passive: true });
+    window.addEventListener("touchend", onUserInteraction, { passive: true });
+    window.addEventListener("click", onUserInteraction);
+    window.addEventListener("scroll", onUserInteraction, { passive: true });
+    window.addEventListener("mousemove", onUserInteraction, { once: true, passive: true });
 
-    // Visibility change: restart video when tab becomes visible again
+    // 6. Resume when switching back to this tab
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         attemptPlay();
@@ -209,12 +235,19 @@ export function HeroSection() {
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
+      isDestroyed = true;
+      video.removeEventListener("loadedmetadata", onLoadedMetadata);
+      video.removeEventListener("loadeddata", onLoadedData);
       video.removeEventListener("canplay", onCanPlay);
-      video.removeEventListener("stalled", onStalled);
+      video.removeEventListener("canplaythrough", onCanPlayThrough);
       video.removeEventListener("ended", onEnded);
+      video.removeEventListener("pause", onPause);
+      video.removeEventListener("timeupdate", onTimeUpdate);
       window.removeEventListener("touchstart", onUserInteraction);
+      window.removeEventListener("touchend", onUserInteraction);
       window.removeEventListener("click", onUserInteraction);
       window.removeEventListener("scroll", onUserInteraction);
+      window.removeEventListener("mousemove", onUserInteraction);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
@@ -398,8 +431,9 @@ export function HeroSection() {
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           poster="/hero-video-poster.jpg"
+          crossOrigin="anonymous"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/Main_herosection.mp4" type="video/mp4" />
