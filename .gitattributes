@@ -1,1 +1,2 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+apps/consult/public/Main_herosection.mp4 !filter !diff !merge -text
