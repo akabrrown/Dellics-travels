@@ -22,6 +22,8 @@ import { ZohoModule } from './zoho/zoho.module';
 import { CrmModule } from './crm/crm.module';
 import { StudyModule } from './study/study.module';
 import { HotelDumpModule } from './hotel-dump/hotel-dump.module';
+import { ConsultationsModule } from './consultations/consultations.module';
+import { CatalogModule } from './catalog/catalog.module';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { HotelDumpModule } from './hotel-dump/hotel-dump.module';
     CrmModule,
     StudyModule,
     HotelDumpModule,
+    ConsultationsModule,
+    CatalogModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

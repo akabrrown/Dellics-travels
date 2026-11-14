@@ -10,9 +10,10 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    const dbUrl =
-      process.env.DATABASE_URL ||
-      'postgresql://postgres.gfypumkjomlvvpiiwdfq:X2tCgmfP5yGSP0d0@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true';
+    let dbUrl = process.env.DATABASE_URL || '';
+    if (dbUrl && !dbUrl.includes('connect_timeout')) {
+      dbUrl += (dbUrl.includes('?') ? '&' : '?') + 'connect_timeout=30';
+    }
 
     super({
       datasources: {
@@ -26,13 +27,21 @@ export class PrismaService
   }
 
   async onModuleInit() {
-    try {
-      await this.$connect();
-    } catch (err) {
-      console.warn(
-        '[PrismaService] Deferred database connection warning during onModuleInit:',
-        err instanceof Error ? err.message : err,
-      );
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await this.$connect();
+        console.log('[PrismaService] Connected to Supabase PostgreSQL successfully.');
+        return;
+      } catch (err) {
+        if (attempt === 3) {
+          console.warn(
+            '[PrismaService] Deferred database connection warning after 3 attempts:',
+            err instanceof Error ? err.message : err,
+          );
+        } else {
+          await new Promise((r) => setTimeout(r, 1000 * attempt));
+        }
+      }
     }
   }
 

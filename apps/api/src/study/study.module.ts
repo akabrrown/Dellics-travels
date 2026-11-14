@@ -3,9 +3,10 @@ import { StudyController } from './study.controller';
 import { StudyService } from './study.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CacheModule } from '../cache/cache.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, CacheModule],
+  imports: [PrismaModule, CacheModule, AuthModule],
   controllers: [StudyController],
   providers: [StudyService],
   exports: [StudyService],

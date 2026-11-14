@@ -194,20 +194,20 @@ export function SiteHeader() {
                         Account Settings & Profile
                       </Link>
                       <Link
-                        href="/portal/sat"
+                        href="/portal/tests"
                         className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-orange transition-colors"
                         onClick={() => setProfileOpen(false)}
                       >
                         <GraduationCap className="w-4 h-4 text-slate-400" />
-                        My SAT Hub
+                        My Tests
                       </Link>
                       <Link
-                        href="/portal/bigfuture"
+                        href="/portal/past-questions"
                         className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-orange transition-colors"
                         onClick={() => setProfileOpen(false)}
                       >
                         <BookOpen className="w-4 h-4 text-slate-400" />
-                        BigFuture Dashboard
+                        Past Questions Library
                       </Link>
                       <Link
                         href="/portal/onboarding"

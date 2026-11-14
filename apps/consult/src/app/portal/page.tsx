@@ -31,6 +31,7 @@ import {
   Headphones,
   Check,
   MapPin,
+  Info,
   Sparkles as SparklesBan
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-context";
@@ -75,7 +76,7 @@ export default function StudentPortalPage() {
   const firstName = user?.firstName || "Student";
   const userEmail = user?.email || "";
 
-  const [activeTab, setActiveTab] = useState<"ecosystem" | "applications" | "documents" | "travel_perks" | "counsellor">("ecosystem");
+  const [activeTab, setActiveTab] = useState<"ecosystem" | "applications" | "tests" | "past_questions" | "documents" | "travel_perks" | "counsellor">("ecosystem");
   const [collegeSearch, setCollegeSearch] = useState("");
   const [catalogSchools, setCatalogSchools] = useState<CatalogSchool[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
@@ -156,53 +157,109 @@ export default function StudentPortalPage() {
       return matchName || matchCity || matchLocation || matchProg;
     });
   }, [catalogSchools, collegeSearch]);
-  const [uploadedDocs, setUploadedDocs] = useState([
-    { name: "WASSCE Official Results Slip / Certificate", status: "Verified", date: "12 Sep 2026", size: "1.2 MB" },
-    { name: "High School Academic Transcript", status: "Verified", date: "14 Sep 2026", size: "2.4 MB" },
-    { name: "Ghana International Passport Bio-Data", status: "Verified", date: "15 Sep 2026", size: "900 KB" },
-    { name: "Personal Statement of Purpose (SOP)", status: "Approved", date: "18 Sep 2026", size: "350 KB" },
-    { name: "Proof of Financial Funds (Bank Statement)", status: "Action Required", date: "Pending 28-day rule", size: "--" }
-  ]);
+  const [uploadedDocs, setUploadedDocs] = useState<any[]>([]);
+  const [dbApplications, setDbApplications] = useState<any[]>([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState("");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [newDocName, setNewDocName] = useState("");
 
-  const applications: AppRecord[] = [
-    {
-      id: "APP-UK-2026-081",
-      university: "University of Manchester",
-      program: "BSc Computer Science with Artificial Intelligence",
-      intake: "September 2026",
-      country: "United Kingdom",
-      status: "Offer Letter Issued",
-      stageStep: 5,
-      trackingNo: "UoM-INTL-99214"
-    },
-    {
-      id: "APP-US-2026-104",
-      university: "Northeastern University",
-      program: "BSc Software Engineering & Co-op",
-      intake: "January 2027",
-      country: "United States",
-      status: "Under Review",
-      stageStep: 4,
-      trackingNo: "NEU-UG-44102"
-    }
-  ];
-
-  const handleSimulateUpload = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newDocName) return;
-    setUploadedDocs(prev => [
-      ...prev,
-      {
-        name: newDocName,
-        status: "Under Review",
-        date: "Just now",
-        size: "1.8 MB"
+  const loadPortalData = async () => {
+    if (!userEmail) return;
+    try {
+      const res = await fetch(`http://localhost:3000/study/portal/me?email=${encodeURIComponent(userEmail)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          if (Array.isArray(json.applications) && json.applications.length > 0) {
+            setDbApplications(json.applications);
+            const allDocs = json.applications.flatMap((a: any) =>
+              (a.documents || []).map((d: any) => ({
+                ...d,
+                applicationId: a.id,
+              }))
+            );
+            setUploadedDocs(allDocs);
+          }
+        }
       }
-    ]);
-    setNewDocName("");
-    setShowUploadModal(false);
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    loadPortalData();
+  }, [userEmail]);
+
+  const handleRealUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile || !newDocName) {
+      setUploadError("Please provide a document title and select a file.");
+      return;
+    }
+
+    const currentApp = dbApplications[0];
+    if (!currentApp) {
+      setUploadError("No active study application found. Please complete registration first.");
+      return;
+    }
+
+    setUploadingDoc(true);
+    setUploadError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("name", newDocName);
+
+      const res = await fetch(`http://localhost:3000/study/applications/${currentApp.id}/documents/upload?email=${encodeURIComponent(userEmail)}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        setUploadError(json.message || "Failed to upload document.");
+      } else {
+        await loadPortalData();
+        setShowUploadModal(false);
+        setNewDocName("");
+        setSelectedFile(null);
+      }
+    } catch (err: any) {
+      setUploadError(err.message || "Network error uploading file.");
+    } finally {
+      setUploadingDoc(false);
+    }
+  };
+
+  const handleDeleteDoc = async (docId: string) => {
+    if (!confirm("Are you sure you want to delete this document?")) return;
+    try {
+      const res = await fetch(`http://localhost:3000/study/documents/${docId}?email=${encodeURIComponent(userEmail)}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        await loadPortalData();
+      }
+    } catch (e) {}
+  };
+
+  const handleDownloadDoc = async (docId: string) => {
+    try {
+      const res = await fetch(`http://localhost:3000/study/documents/${docId}/download-url?email=${encodeURIComponent(userEmail)}`);
+      const json = await res.json();
+      if (json.success && json.url) {
+        const link = document.createElement("a");
+        link.href = json.url;
+        link.download = json.name || "document";
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (e) {}
   };
 
   if (isLoading || authChecking || !user || !user.isLoggedIn || !user.profileCompleted || !user.profile?.isVerified) {
@@ -221,7 +278,8 @@ export default function StudentPortalPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* 1. DYNAMIC COLLEGE BOARD HERO SECTION */}
+
+      {/* 1. DELLICS STUDENT HUB HERO SECTION */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0A2540] via-[#0D3866] to-[#0A2540] text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
         {/* Dynamic Background Ambient Canvas */}
         <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -234,86 +292,62 @@ export default function StudentPortalPage() {
           {/* Header Typography */}
           <div className="max-w-3xl space-y-3">
             <span className="inline-flex items-center gap-2 py-1 px-3.5 rounded-full bg-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider border border-brand-orange/30">
-              <GraduationCap className="w-4 h-4" /> Dellics Consult & College Board Student Hub
+              <GraduationCap className="w-4 h-4" /> Dellics Education Consult Student Hub
             </span>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
               Hi, {firstName}
             </h1>
             <p className="text-slate-200 text-lg sm:text-xl font-light leading-relaxed">
-              We’re here to guide you on the road to college and beyond.
+              We’re here to guide you on the road to your dream international university and beyond.
             </p>
           </div>
 
-          {/* Core College Board / BigFuture Action Buttons */}
+          {/* Core Portal Action Buttons */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 pt-2">
             <Link
-              href="/portal/sat"
+              href="/portal/tests"
               className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-brand-orange">Testing</span>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
               </div>
-              <div className="text-sm font-bold text-white mt-2 leading-snug">My SAT</div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">My Tests & Scores</div>
             </Link>
 
             <Link
-              href="/portal/sat/question-of-the-day"
+              href="/portal/past-questions"
               className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-400">Daily Practice</span>
-                <Flame className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                <span className="text-xs font-bold text-amber-400">Exam Prep</span>
+                <BookOpen className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
               </div>
-              <div className="text-sm font-bold text-white mt-2 leading-snug">SAT Question of the Day</div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">Past Questions Library</div>
             </Link>
 
             <Link
-              href="/portal/scores"
+              href="/catalog"
               className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400">Reports</span>
+                <span className="text-xs font-bold text-emerald-400">Institutions</span>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
               </div>
               <div className="text-xs sm:text-sm font-bold text-white mt-2 leading-snug">
-                PSAT/NMSQT, PSAT 10, & PSAT 8/9 Scores
+                University Catalog
               </div>
             </Link>
 
             <Link
-              href="/portal/ap-classroom"
+              href="/consultation"
               className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-blue-400">Coursework</span>
+                <span className="text-xs font-bold text-blue-400">Advising</span>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
               </div>
-              <div className="text-sm font-bold text-white mt-2 leading-snug">My AP Classroom</div>
-            </Link>
-
-            <Link
-              href="/portal/bigfuture"
-              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-brand-orange">College & Career</span>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </div>
-              <div className="text-xs sm:text-sm font-bold text-white mt-2 leading-snug">
-                BigFuture Dashboard: College and Career Planning
-              </div>
-            </Link>
-
-            <Link
-              href="/portal/student-search"
-              className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/25 backdrop-blur-md transition-all group flex flex-col justify-between min-h-[96px]"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400">Outreach</span>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </div>
-              <div className="text-sm font-bold text-white mt-2 leading-snug">Student Search Service</div>
+              <div className="text-sm font-bold text-white mt-2 leading-snug">Book Consultation</div>
             </Link>
 
             <Link
@@ -343,70 +377,80 @@ export default function StudentPortalPage() {
         </div>
       </section>
 
+      {/* Affiliation Disclaimer */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-amber-900 text-xs flex items-center gap-2.5">
+          <Info className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>
+            <strong>Affiliation Note:</strong> Dellics is an independent education consultancy and is not affiliated with College Board, ETS, IELTS, or other exam bodies.
+          </span>
+        </div>
+      </div>
+
       {/* 2. THREE ANNOUNCEMENT CARDS BELOW HERO */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Card 1: Register for November SAT */}
+          {/* Card 1: Standardized Tests */}
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
               <Calendar className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <div className="text-[11px] font-bold text-brand-orange uppercase tracking-wider">Test Deadline</div>
+              <div className="text-[11px] font-bold text-brand-orange uppercase tracking-wider">Exam Strategy</div>
               <h3 className="font-bold text-slate-900 text-sm leading-snug">
-                Register by 10/23 for the November SAT
+                Plan your test dates & self-report your scores
               </h3>
-              <Link href="/portal/sat" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
-                <span>View Registration Dates</span> &rarr;
+              <Link href="/portal/tests" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
+                <span>Manage My Tests</span> &rarr;
               </Link>
             </div>
           </div>
 
-          {/* Card 2: AP Cybersecurity */}
+          {/* Card 2: Official Practice & Past Questions */}
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <div className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Industry Pathway</div>
-              <h3 className="font-bold text-slate-900 text-sm leading-snug">
-                The AP shaped by leading companies. Meet AP Cybersecurity.
-              </h3>
-              <Link href="/portal/ap-classroom" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
-                <span>Explore AP Framework</span> &rarr;
-              </Link>
-            </div>
-          </div>
-
-          {/* Card 3: Free SAT Study Plan */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
               <BookOpen className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <div className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Free Preparation</div>
+              <div className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Official Practice</div>
               <h3 className="font-bold text-slate-900 text-sm leading-snug">
-                Your Free SAT Study Plan is Ready to Download
+                Free official practice exams & Dellics library
               </h3>
-              <Link href="/portal/sat/question-of-the-day" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
-                <span>Download Study Guide</span> &rarr;
+              <Link href="/portal/past-questions" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
+                <span>Explore Past Questions</span> &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 3: Free Consultation Guidance */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Admissions Guidance</div>
+              <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                1-on-1 certified counseling for university admissions
+              </h3>
+              <Link href="/consultation" className="text-xs font-semibold text-navy hover:underline inline-flex items-center gap-1 pt-0.5">
+                <span>Book a Consultation</span> &rarr;
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. BIGFUTURE COLLEGE SEARCH BANNER */}
+      {/* 3. UNIVERSITY DEGREE & SCHOLARSHIP SEARCH BANNER */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="rounded-3xl bg-gradient-to-r from-[#002D62] via-navy to-slate-900 text-white p-8 sm:p-10 border border-slate-700 shadow-xl relative overflow-hidden">
           <div className="max-w-2xl relative z-10 space-y-4">
             <div className="flex items-center gap-2">
               <span className="text-xs font-extrabold uppercase tracking-widest text-brand-orange bg-brand-orange/20 px-3 py-1 rounded-full">
-                BIGFUTURE™ SEARCH
+                GLOBAL DEGREE SEARCH
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-              Find your dream college for you.
+              Find your dream university degree and scholarship.
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm font-light leading-relaxed">
               Explore university degrees, admission requirements, living costs, and merit scholarships across the United States, United Kingdom, Canada, and Australia.
@@ -575,10 +619,12 @@ export default function StudentPortalPage() {
           <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
             {[
               { id: "ecosystem", label: "Overview & Quick Tools" },
-              { id: "applications", label: "My Applications (2)" },
+              { id: "applications", label: `My Applications (${dbApplications.length})` },
+              { id: "tests", label: "My Tests" },
+              { id: "past_questions", label: "Past Questions" },
               { id: "documents", label: "Document Locker" },
               { id: "travel_perks", label: "Dellics Travels Perks" },
-              { id: "counsellor", label: "My Advisor" }
+              { id: "counsellor", label: "My Advisor" },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -626,21 +672,23 @@ export default function StudentPortalPage() {
                 {/* Test Prep Status Card */}
                 <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase">SAT & Test Preparation</span>
+                    <span className="text-xs font-bold text-slate-500 uppercase">Standardized Tests & Practice</span>
                     <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
-                      Active Prep
+                      Study Tests
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-lg">Daily Question & Diagnostics</h3>
-                    <p className="text-xs text-slate-600 mt-0.5">Diagnostic Score: 1340 / 1520 · Targeted Sitting: November 2026</p>
+                    <h3 className="font-bold text-slate-900 text-lg">My Tests & Exam Schedule</h3>
+                    <p className="text-xs text-slate-600 mt-0.5">
+                      Track planned exam sittings, test dates, and self-reported scores for your university admissions profile.
+                    </p>
                   </div>
                   <div className="pt-2 flex items-center justify-between text-xs">
-                    <Link href="/portal/sat/question-of-the-day" className="font-bold text-brand-orange hover:underline">
-                      Answer Today's Question &rarr;
+                    <Link href="/portal/tests" className="font-bold text-brand-orange hover:underline">
+                      Manage My Tests &rarr;
                     </Link>
-                    <Link href="/portal/sat" className="font-bold text-navy hover:underline">
-                      My SAT Hub &rarr;
+                    <Link href="/portal/past-questions" className="font-bold text-navy hover:underline">
+                      Past Questions Library &rarr;
                     </Link>
                   </div>
                 </div>
@@ -651,48 +699,157 @@ export default function StudentPortalPage() {
           {/* TAB: APPLICATIONS */}
           {activeTab === "applications" && (
             <div className="space-y-6">
-              {applications.map(app => (
-                <div key={app.id} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <div>
-                      <span className="text-[11px] font-mono text-slate-400">{app.trackingNo}</span>
-                      <h4 className="text-lg font-bold text-slate-900">{app.university}</h4>
-                      <div className="text-xs text-slate-500">{app.program} · {app.intake}</div>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold self-start sm:self-auto ${
-                      app.status === "Offer Letter Issued"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-blue-100 text-blue-800"
-                    }`}>
-                      {app.status}
-                    </span>
-                  </div>
-
-                  {/* 7-Step Milestones */}
-                  <div className="grid grid-cols-7 gap-1 text-center pt-2">
-                    {[
-                      "Advisory", "Shortlist", "Docs", "Apply", "Offer", "Visa", "Arrival"
-                    ].map((step, idx) => {
-                      const stepNum = idx + 1;
-                      const isComplete = stepNum <= app.stageStep;
-                      const isCurrent = stepNum === app.stageStep;
-
-                      return (
-                        <div key={step} className="space-y-1">
-                          <div className={`h-2 rounded-full ${
-                            isComplete ? "bg-emerald-500" : isCurrent ? "bg-brand-orange" : "bg-slate-200"
-                          }`}></div>
-                          <span className={`text-[10px] block ${
-                            isComplete ? "text-slate-800 font-bold" : "text-slate-400"
-                          }`}>
-                            {step}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {dbApplications.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-white border border-slate-200 text-center space-y-3">
+                  <GraduationCap className="w-10 h-10 text-slate-300 mx-auto" />
+                  <h4 className="text-base font-bold text-slate-700">No applications on file yet</h4>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                    Complete your onboarding profile or book a consultation to begin your study abroad application.
+                  </p>
+                  <Link
+                    href="/portal/onboarding"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-colors"
+                  >
+                    Complete Onboarding
+                  </Link>
                 </div>
-              ))}
+              ) : (
+                dbApplications.map(app => {
+                  const stageMap: Record<string, number> = {
+                    INITIAL_CONSULTATION: 1,
+                    UNIVERSITY_SHORTLIST: 2,
+                    DOCUMENT_COLLECTION: 3,
+                    UNIVERSITY_SUBMISSION: 4,
+                    CONDITIONAL_OFFER: 5,
+                    UNCONDITIONAL_OFFER: 5,
+                    VISA_APPLICATION: 6,
+                    VISA_APPROVED: 6,
+                    ENROLLED: 7,
+                  };
+                  const stageStep = stageMap[app.stage] || 1;
+
+                  return (
+                    <div key={app.id} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                          <span className="text-[11px] font-mono text-slate-400">DEC-APP-{app.id.slice(0, 8).toUpperCase()}</span>
+                          <h4 className="text-lg font-bold text-slate-900">{app.destination}</h4>
+                          <div className="text-xs text-slate-500">{app.course || "General Admissions"} · {app.intake}</div>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold self-start sm:self-auto ${
+                          app.stage.includes("OFFER") || app.stage.includes("APPROVED") || app.stage === "ENROLLED"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}>
+                          {app.stage.replace(/_/g, " ")}
+                        </span>
+                      </div>
+
+                      {/* 7-Step Milestones */}
+                      <div className="grid grid-cols-7 gap-1 text-center pt-2">
+                        {[
+                          "Advisory", "Shortlist", "Docs", "Apply", "Offer", "Visa", "Arrival"
+                        ].map((step, idx) => {
+                          const stepNum = idx + 1;
+                          const isComplete = stepNum <= stageStep;
+                          const isCurrent = stepNum === stageStep;
+
+                          return (
+                            <div key={step} className="space-y-1">
+                              <div className={`h-2 rounded-full ${
+                                isComplete ? "bg-emerald-500" : isCurrent ? "bg-brand-orange" : "bg-slate-200"
+                              }`}></div>
+                              <span className={`text-[10px] block ${
+                                isComplete ? "text-slate-800 font-bold" : "text-slate-400"
+                              }`}>
+                                {step}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+
+          {/* TAB: TESTS */}
+          {activeTab === "tests" && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Standardized Tests & Exam Schedule</h3>
+                  <p className="text-xs text-slate-500">Track and manage your test dates, target scores, and official test readiness.</p>
+                </div>
+                <Link
+                  href="/portal/tests"
+                  className="py-2.5 px-4 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light inline-flex items-center gap-1.5 transition-colors self-start sm:self-auto"
+                >
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>Open Full My Tests Manager &rarr;</span>
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {["SAT", "IELTS Academic", "WASSCE"].map((examName) => (
+                  <div key={examName} className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Standardized Test</span>
+                    <h4 className="text-base font-bold text-slate-900">{examName}</h4>
+                    <p className="text-xs text-slate-600">Track preparation, schedule exam sittings, and log your official score results.</p>
+                    <div className="pt-2">
+                      <Link href="/portal/tests" className="text-xs font-bold text-brand-orange hover:underline">
+                        View / Edit in My Tests &rarr;
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: PAST QUESTIONS */}
+          {activeTab === "past_questions" && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Past Questions & Practice Exams</h3>
+                  <p className="text-xs text-slate-500">Official practice portals and Dellics study library organized by exam.</p>
+                </div>
+                <Link
+                  href="/portal/past-questions"
+                  className="py-2.5 px-4 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light inline-flex items-center gap-1.5 transition-colors self-start sm:self-auto"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Open Full Past Questions Library &rarr;</span>
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { name: "SAT", count: "Official Bluebook + Khan" },
+                  { name: "IELTS", count: "British Council + Sample" },
+                  { name: "TOEFL", count: "ETS TestReady" },
+                  { name: "GRE", count: "ETS POWERPREP" },
+                  { name: "GMAT", count: "mba.com Starter Kit" },
+                  { name: "WASSCE", count: "WAEC E-Learning" },
+                  { name: "Duolingo", count: "Official Readiness" },
+                  { name: "AP", count: "AP Central Past FRQs" },
+                ].map((item) => (
+                  <Link
+                    key={item.name}
+                    href="/portal/past-questions"
+                    className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all group flex flex-col justify-between"
+                  >
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-orange">Official Exam</span>
+                      <h4 className="text-sm font-bold text-slate-900 group-hover:text-navy transition-colors">{item.name}</h4>
+                    </div>
+                    <span className="text-[11px] text-slate-500 mt-2 block">{item.count}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
 
@@ -702,7 +859,7 @@ export default function StudentPortalPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-slate-900">Document Locker</h3>
-                  <p className="text-xs text-slate-500">Secure cloud storage for official academic transcripts, WAEC slips, and visa records.</p>
+                  <p className="text-xs text-slate-500">Secure private cloud storage for official academic transcripts, WAEC slips, and passport records.</p>
                 </div>
                 <button
                   type="button"
@@ -714,26 +871,66 @@ export default function StudentPortalPage() {
                 </button>
               </div>
 
-              <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
-                {uploadedDocs.map((doc, idx) => (
-                  <div key={idx} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-brand-orange" />
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">{doc.name}</div>
-                        <div className="text-[11px] text-slate-400">Added {doc.date} · {doc.size}</div>
+              {uploadedDocs.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-white border border-slate-200 text-center space-y-3">
+                  <FileText className="w-10 h-10 text-slate-300 mx-auto" />
+                  <h4 className="text-sm font-bold text-slate-700">No documents uploaded yet</h4>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                    Upload your high school transcripts, passport bio-data, or test score certificates (PDF, JPG, PNG up to 10MB).
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowUploadModal(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light transition-colors"
+                  >
+                    Upload Document
+                  </button>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden bg-white">
+                  {uploadedDocs.map((doc, idx) => {
+                    const formattedDate = doc.created_at ? new Date(doc.created_at).toLocaleDateString("en-GB") : "Recently";
+                    const sizeLabel = doc.size_bytes ? `${(doc.size_bytes / (1024 * 1024)).toFixed(1)} MB` : "File";
+
+                    return (
+                      <div key={doc.id || idx} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-5 h-5 text-brand-orange" />
+                          <div>
+                            <div className="text-xs font-bold text-slate-900">{doc.name}</div>
+                            <div className="text-[11px] text-slate-400">Added {formattedDate} · {sizeLabel}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            doc.status === "VERIFIED" || doc.status === "APPROVED"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-amber-100 text-amber-800"
+                          }`}>
+                            {doc.status}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadDoc(doc.id)}
+                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-navy transition-colors"
+                            title="Download document via secure expiring link"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteDoc(doc.id)}
+                            className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
+                            title="Delete document"
+                          >
+                            <span className="text-xs font-bold">&times;</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                      doc.status === "Verified" || doc.status === "Approved"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-amber-100 text-amber-800"
-                    }`}>
-                      {doc.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
@@ -908,9 +1105,19 @@ export default function StudentPortalPage() {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-4 shadow-2xl">
             <h3 className="font-bold text-slate-900 text-lg">Upload Student Document</h3>
-            <form onSubmit={handleSimulateUpload} className="space-y-4">
+            <p className="text-xs text-slate-500">
+              Upload your academic transcript, passport bio-data, or test result certificates. Supported formats: PDF, JPG, PNG up to 10MB.
+            </p>
+
+            {uploadError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-medium">
+                {uploadError}
+              </div>
+            )}
+
+            <form onSubmit={handleRealUpload} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Document Name</label>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Document Title</label>
                 <input
                   type="text"
                   required
@@ -920,9 +1127,34 @@ export default function StudentPortalPage() {
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-navy"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">File Attachment (Max 10MB)</label>
+                <input
+                  type="file"
+                  required
+                  accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
+                  onChange={e => {
+                    if (e.target.files && e.target.files[0]) {
+                      const f = e.target.files[0];
+                      if (f.size > 10 * 1024 * 1024) {
+                        setUploadError("Selected file exceeds maximum limit of 10MB.");
+                        setSelectedFile(null);
+                      } else {
+                        setUploadError("");
+                        setSelectedFile(f);
+                        if (!newDocName) setNewDocName(f.name.replace(/\.[^/.]+$/, ""));
+                      }
+                    }
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-600 focus:outline-none focus:border-navy file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                />
+              </div>
+
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
+                  disabled={uploadingDoc}
                   onClick={() => setShowUploadModal(false)}
                   className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
                 >
@@ -930,9 +1162,17 @@ export default function StudentPortalPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light"
+                  disabled={uploadingDoc}
+                  className="px-5 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy-light disabled:opacity-50 flex items-center gap-2"
                 >
-                  Upload & Verify
+                  {uploadingDoc ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Encrypting & Uploading...</span>
+                    </>
+                  ) : (
+                    <span>Upload & Save</span>
+                  )}
                 </button>
               </div>
             </form>

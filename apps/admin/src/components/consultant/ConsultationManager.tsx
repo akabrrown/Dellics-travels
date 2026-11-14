@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { adminApi } from "@/lib/api";
 import {
   Users,
   Search,
@@ -58,56 +59,83 @@ export interface StudentConsultationRequest {
   updatedAt: string;
 }
 
-export const CONSULTANT_ROSTER = [
-  {
-    id: "cons-01",
-    name: "Dr. Sarah Mensah",
-    role: "Senior UK & Europe Advisor",
-    email: "s.mensah@dellics.com",
-    phone: "+233 55 205 4174",
-    specialty: "Russell Group, Chevening & DAAD Scholarships"
-  },
-  {
-    id: "cons-02",
-    name: "Emmanuel Osei",
-    role: "Canada & US Admissions Specialist",
-    email: "e.osei@dellics.com",
-    phone: "+233 24 412 3456",
-    specialty: "U15 Canada, Ivy League & Merit Grants"
-  },
-  {
-    id: "cons-03",
-    name: "Grace Addo",
-    role: "Australia & Visa Compliance Lead",
-    email: "g.addo@dellics.com",
-    phone: "+233 20 987 6543",
-    specialty: "Post-Study Work Visas & Group of Eight"
-  },
-  {
-    id: "cons-04",
-    name: "Kofi Boateng",
-    role: "Undergraduate Admissions Head",
-    email: "k.boateng@dellics.com",
-    phone: "+233 50 112 2334",
-    specialty: "WASSCE Direct Entry & SAT Prep Pathways"
+export interface ConsultantOption {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  specialty?: string;
+  role?: string;
+  is_active: boolean;
+}
+
+// Real consultation requests are loaded from the database via adminApi
+function mapDbToUi(item: any): StudentConsultationRequest {
+  const statusMap: Record<string, "Pending" | "Assigned" | "In Progress" | "Completed"> = {
+    PENDING: "Pending",
+    ASSIGNED: "Assigned",
+    IN_PROGRESS: "In Progress",
+    COMPLETED: "Completed",
+    CANCELLED: "Completed",
+  };
+
+  const formattedStatus = statusMap[item.status] || "Pending";
+  const fullName = `${item.first_name || ""} ${item.last_name || ""}`.trim() || item.applicant_name || "Applicant";
+
+  let assigned = item.assigned_consultant;
+  if (!assigned && item.consultant) {
+    assigned = {
+      id: item.consultant.id,
+      name: item.consultant.full_name,
+      role: item.consultant.specialty || "Certified Advisor",
+      email: item.consultant.email,
+      phone: item.consultant.phone,
+    };
   }
-];
 
-// Real consultation requests are loaded from storage and submitted via the consult website
-const MOCK_REQUEST_IDS = new Set(["req-01", "req-02", "req-03", "req-04", "DEC-GH-821943", "DEC-GH-749102", "DEC-GH-610284", "DEC-GH-592817"]);
+  return {
+    id: item.id,
+    referenceId: item.reference || item.referenceId || "N/A",
+    studentName: fullName,
+    studentEmail: item.email || "",
+    studentPhone: item.phone || "",
+    currentEducation: item.current_education || undefined,
+    desiredDegree: item.desired_degree || undefined,
+    desiredProgram: item.desired_program || "Undergraduate / Postgraduate",
+    preferredDestination: item.preferred_destination || "Study Abroad",
+    targetIntake: item.target_intake || undefined,
+    consultationMode: item.consultation_mode || "In-Person",
+    preferredDate: item.preferred_date || undefined,
+    notes: item.notes || item.internal_notes || undefined,
+    status: formattedStatus,
+    assignedConsultant: assigned || null,
+    history: [
+      {
+        timestamp: item.created_at || new Date().toISOString(),
+        actor: fullName,
+        action: "Submitted Consultation Request",
+        notes: `Mode: ${item.consultation_mode || "General"} | Destination: ${item.preferred_destination || "General"}`
+      }
+    ],
+    createdAt: item.created_at || new Date().toISOString(),
+    updatedAt: item.updated_at || new Date().toISOString()
+  };
+}
 
-const STORAGE_KEY = "dellics_consultation_requests";
-
-export function ConsultationManager() {
+export function ConsultationManager({ onNavigateToConsultants }: { onNavigateToConsultants?: () => void }) {
   const [requests, setRequests] = useState<StudentConsultationRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("all");
 
+  // Real consultants loaded from API
+  const [consultants, setConsultants] = useState<ConsultantOption[]>([]);
+  const [loadingConsultants, setLoadingConsultants] = useState(false);
+
   // Assignment Modal
   const [assigningRequest, setAssigningRequest] = useState<StudentConsultationRequest | null>(null);
-  const [selectedConsultantId, setSelectedConsultantId] = useState(CONSULTANT_ROSTER[0].id);
+  const [selectedConsultantId, setSelectedConsultantId] = useState<string>("");
   const [assignmentNote, setAssignmentNote] = useState("");
 
   // Dossier Modal
@@ -116,126 +144,177 @@ export function ConsultationManager() {
   // Toast
   const [toast, setToast] = useState<string | null>(null);
 
-  const loadRequests = () => {
+  const loadConsultants = useCallback(async () => {
     try {
-      if (typeof window !== "undefined") {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            // Filter out old mock records so only real user submissions remain
-            const realOnly = parsed.filter(
-              (r) => !MOCK_REQUEST_IDS.has(r.id) && !MOCK_REQUEST_IDS.has(r.referenceId)
-            );
-            if (realOnly.length !== parsed.length) {
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(realOnly));
-            }
-            setRequests(realOnly);
-            setLoading(false);
-            return;
-          }
-        }
-        setRequests([]);
+      setLoadingConsultants(true);
+      const res = await adminApi.get<{ status: string; data: any[] }>("/consultants?activeOnly=true");
+      if (res && Array.isArray(res.data)) {
+        const mapped = res.data.map((c: any) => ({
+          id: c.id,
+          name: c.full_name || c.name,
+          email: c.email,
+          phone: c.phone,
+          specialty: c.specialty || "Certified Advisor",
+          role: c.specialty || "Certified Advisor",
+          is_active: c.is_active,
+        }));
+        setConsultants(mapped);
+      } else {
+        setConsultants([]);
       }
     } catch {
+      setConsultants([]);
+    } finally {
+      setLoadingConsultants(false);
+    }
+  }, []);
+
+  const loadRequests = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await adminApi.get<{ status: string; data: any[] }>("/consultations");
+      if (res && Array.isArray(res.data)) {
+        setRequests(res.data.map(mapDbToUi));
+      } else {
+        setRequests([]);
+      }
+    } catch (err) {
+      console.error("Failed to load consultations from API", err);
       setRequests([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadRequests();
+    loadConsultants();
 
-    const handleSync = () => loadRequests();
-    window.addEventListener("dellics_consultation_updated", handleSync);
-    window.addEventListener("storage", handleSync);
-    return () => {
-      window.removeEventListener("dellics_consultation_updated", handleSync);
-      window.removeEventListener("storage", handleSync);
+    const handleRefresh = () => {
+      loadRequests();
+      loadConsultants();
     };
-  }, []);
+    window.addEventListener("dellics_consultation_refresh_requested", handleRefresh);
+    window.addEventListener("dellics_consultants_updated", handleRefresh);
 
-  const persistRequests = (updated: StudentConsultationRequest[], msg?: string) => {
-    setRequests(updated);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        window.dispatchEvent(new Event("dellics_consultation_updated"));
-      } catch {}
-    }
-    if (msg) {
-      setToast(msg);
-      setTimeout(() => setToast(null), 3500);
-    }
+    return () => {
+      window.removeEventListener("dellics_consultation_refresh_requested", handleRefresh);
+      window.removeEventListener("dellics_consultants_updated", handleRefresh);
+    };
+  }, [loadRequests, loadConsultants]);
+
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3500);
   };
 
   // Assign Consultant handler
-  const handleConfirmAssignment = (e: React.FormEvent) => {
+  const handleConfirmAssignment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!assigningRequest) return;
 
-    const consultant = CONSULTANT_ROSTER.find((c) => c.id === selectedConsultantId) || CONSULTANT_ROSTER[0];
+    const consultant = consultants.find((c) => c.id === selectedConsultantId);
+    if (!consultant) {
+      showToast("Please select a certified consultant to assign.");
+      return;
+    }
+
     const timestamp = new Date().toISOString();
 
-    const updated = requests.map((req) => {
-      if (req.id === assigningRequest.id) {
-        return {
-          ...req,
-          status: "Assigned" as const,
-          assignedConsultant: {
-            id: consultant.id,
-            name: consultant.name,
-            role: consultant.role,
-            email: consultant.email,
-            phone: consultant.phone
-          },
-          history: [
-            ...(req.history || []),
-            {
-              timestamp,
-              actor: "Admissions Admin",
-              action: `Delegated to ${consultant.name}`,
-              notes: assignmentNote || `Assigned to ${consultant.name} (${consultant.role})`
-            }
-          ],
-          updatedAt: timestamp
-        };
-      }
-      return req;
-    });
+    const assignedConsultantData = {
+      id: consultant.id,
+      name: consultant.name,
+      role: consultant.role || consultant.specialty || "Certified Advisor",
+      email: consultant.email,
+      phone: consultant.phone
+    };
 
-    persistRequests(updated, `Student "${assigningRequest.studentName}" assigned to ${consultant.name}.`);
-    setAssigningRequest(null);
-    setAssignmentNote("");
+    try {
+      await adminApi.patch(`/consultations/${assigningRequest.id}`, {
+        status: "ASSIGNED",
+        consultantId: consultant.id,
+        assignedConsultant: assignedConsultantData,
+        internalNotes: assignmentNote || `Assigned to ${consultant.name} (${assignedConsultantData.role})`
+      });
+
+      setRequests((prev) =>
+        prev.map((req) => {
+          if (req.id === assigningRequest.id) {
+            return {
+              ...req,
+              status: "Assigned" as const,
+              assignedConsultant: assignedConsultantData,
+              history: [
+                ...(req.history || []),
+                {
+                  timestamp,
+                  actor: "Admissions Admin",
+                  action: `Delegated to ${consultant.name}`,
+                  notes: assignmentNote || `Assigned to ${consultant.name} (${assignedConsultantData.role})`
+                }
+              ],
+              updatedAt: timestamp
+            };
+          }
+          return req;
+        })
+      );
+
+      showToast(`Student "${assigningRequest.studentName}" assigned to ${consultant.name}.`);
+    } catch (err: any) {
+      showToast(err?.message || "Failed to assign consultant via API.");
+    } finally {
+      setAssigningRequest(null);
+      setAssignmentNote("");
+    }
   };
 
-  // Status Change handler
-  const handleQuickStatusChange = (requestId: string, newStatus: StudentConsultationRequest["status"]) => {
-    const timestamp = new Date().toISOString();
-    const updated = requests.map((req) => {
-      if (req.id === requestId) {
-        return {
-          ...req,
-          status: newStatus,
-          history: [
-            ...(req.history || []),
-            {
-              timestamp,
-              actor: "Admissions Admin",
-              action: `Status Updated: ${newStatus}`,
-              notes: `Consultation stage marked as ${newStatus}`
-            }
-          ],
-          updatedAt: timestamp
-        };
-      }
-      return req;
-    });
 
-    persistRequests(updated, `Consultation status updated to ${newStatus}.`);
-    if (viewingRequest && viewingRequest.id === requestId) {
-      setViewingRequest(updated.find((r) => r.id === requestId) || null);
+  // Status Change handler
+  const handleQuickStatusChange = async (requestId: string, newStatus: StudentConsultationRequest["status"]) => {
+    const timestamp = new Date().toISOString();
+    const dbStatusMap: Record<StudentConsultationRequest["status"], string> = {
+      Pending: "PENDING",
+      Assigned: "ASSIGNED",
+      "In Progress": "IN_PROGRESS",
+      Completed: "COMPLETED",
+    };
+
+    try {
+      await adminApi.patch(`/consultations/${requestId}`, {
+        status: dbStatusMap[newStatus] || "PENDING",
+      });
+
+      setRequests((prev) =>
+        prev.map((req) => {
+          if (req.id === requestId) {
+            const updated = {
+              ...req,
+              status: newStatus,
+              history: [
+                ...(req.history || []),
+                {
+                  timestamp,
+                  actor: "Admissions Admin",
+                  action: `Status Updated: ${newStatus}`,
+                  notes: `Consultation stage marked as ${newStatus}`
+                }
+              ],
+              updatedAt: timestamp
+            };
+            if (viewingRequest && viewingRequest.id === requestId) {
+              setViewingRequest(updated);
+            }
+            return updated;
+          }
+          return req;
+        })
+      );
+
+      showToast(`Consultation status updated to ${newStatus}.`);
+    } catch (err: any) {
+      showToast(err?.message || "Failed to update consultation status via API.");
     }
   };
 
@@ -512,7 +591,7 @@ export function ConsultationManager() {
                           type="button"
                           onClick={() => {
                             setAssigningRequest(req);
-                            setSelectedConsultantId(CONSULTANT_ROSTER[0].id);
+                            setSelectedConsultantId(consultants[0]?.id || "");
                           }}
                           className="px-2.5 py-1 rounded-lg border border-dashed border-amber-400 bg-amber-50 text-amber-800 hover:bg-amber-100 text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1"
                         >
@@ -529,13 +608,14 @@ export function ConsultationManager() {
                           type="button"
                           onClick={() => {
                             setAssigningRequest(req);
-                            setSelectedConsultantId(req.assignedConsultant?.id || CONSULTANT_ROSTER[0].id);
+                            setSelectedConsultantId(req.assignedConsultant?.id || consultants[0]?.id || "");
                           }}
                           className="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700 hover:text-[#0A0060] hover:border-[#0A0060] text-[11px] font-bold transition-colors cursor-pointer"
                           title="Delegate or change assigned consultant"
                         >
                           {req.assignedConsultant ? "Reassign" : "Assign"}
                         </button>
+
 
                         <button
                           type="button"
@@ -556,244 +636,297 @@ export function ConsultationManager() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. ASSIGN CONSULTANT MODAL */}
+      {/* 1. ASSIGN CONSULTANT MODAL (Fully Responsive bottom sheet / centered) */}
       {/* ========================================================================= */}
       {assigningRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in zoom-in-95 duration-150 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 shrink-0">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-brand-orange">
                   Advisory Delegation Desk
                 </span>
-                <h3 className="text-lg font-bold font-display text-slate-900 mt-0.5">
+                <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 mt-0.5 truncate">
                   Assign Consultant to {assigningRequest.studentName}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setAssigningRequest(null)}
-                className="size-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
+                className="size-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer shrink-0"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
-              <div><strong className="text-slate-800">Desired Program:</strong> {assigningRequest.desiredProgram}</div>
-              <div><strong className="text-slate-800">Target Country:</strong> {assigningRequest.preferredDestination}</div>
-              <div><strong className="text-slate-800">Session Format:</strong> {assigningRequest.consultationMode}</div>
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+                <div><strong className="text-slate-800">Desired Program:</strong> {assigningRequest.desiredProgram}</div>
+                <div><strong className="text-slate-800">Target Country:</strong> {assigningRequest.preferredDestination}</div>
+                <div><strong className="text-slate-800">Session Format:</strong> {assigningRequest.consultationMode}</div>
+              </div>
+
+              <form id="assign-consultant-form" onSubmit={handleConfirmAssignment} className="space-y-4 text-left">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Select Certified Consultant *
+                    </label>
+                    {onNavigateToConsultants && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAssigningRequest(null);
+                          onNavigateToConsultants();
+                        }}
+                        className="text-[11px] font-bold text-[#0A0060] hover:underline cursor-pointer"
+                      >
+                        Manage Roster &rarr;
+                      </button>
+                    )}
+                  </div>
+
+                  {loadingConsultants ? (
+                    <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="size-5 rounded-full border-2 border-[#0A0060] border-t-transparent animate-spin mx-auto mb-2" />
+                      <p className="text-xs text-slate-500 font-semibold">Loading active consultants...</p>
+                    </div>
+                  ) : consultants.length === 0 ? (
+                    <div className="p-5 text-center bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
+                      <p className="text-xs font-semibold text-amber-900">No active consultants available yet.</p>
+                      <p className="text-[11px] text-amber-700">Add verified advisors to the directory before assigning student bookings.</p>
+                      {onNavigateToConsultants ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAssigningRequest(null);
+                            onNavigateToConsultants();
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#0A0060] text-white text-xs font-bold hover:bg-[#120088] cursor-pointer inline-flex items-center gap-1 mt-1"
+                        >
+                          <Users className="size-3.5" />
+                          <span>Go to Consultants Tab</span>
+                        </button>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {consultants.map((c) => {
+                        const isSelected = selectedConsultantId === c.id;
+                        return (
+                          <label
+                            key={c.id}
+                            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                              isSelected ? "border-[#0A0060] bg-[#0A0060]/5 ring-1 ring-[#0A0060]" : "border-slate-200 hover:bg-slate-50"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="consultantSelection"
+                              value={c.id}
+                              checked={isSelected}
+                              onChange={() => setSelectedConsultantId(c.id)}
+                              className="mt-0.5 text-[#0A0060] focus:ring-[#0A0060]"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-slate-900 text-xs truncate">{c.name}</div>
+                              <div className="text-[11px] text-brand-orange font-semibold truncate">{c.role}</div>
+                              <div className="text-[10px] text-slate-500 mt-0.5 truncate">{c.email} &bull; {c.phone}</div>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Delegation Instructions / Internal Notes (Optional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={assignmentNote}
+                    onChange={(e) => setAssignmentNote(e.target.value)}
+                    placeholder="e.g. Student has WASSCE A1 in Elective Maths; prioritize Russell Group computing courses."
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-[#0A0060]"
+                  />
+                </div>
+              </form>
             </div>
 
-            <form onSubmit={handleConfirmAssignment} className="space-y-4 text-left">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Select Certified Consultant *
-                </label>
-                <div className="space-y-2">
-                  {CONSULTANT_ROSTER.map((c) => {
-                    const isSelected = selectedConsultantId === c.id;
-                    return (
-                      <label
-                        key={c.id}
-                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                          isSelected ? "border-[#0A0060] bg-[#0A0060]/5 ring-1 ring-[#0A0060]" : "border-slate-200 hover:bg-slate-50"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="consultantSelection"
-                          value={c.id}
-                          checked={isSelected}
-                          onChange={() => setSelectedConsultantId(c.id)}
-                          className="mt-0.5 text-[#0A0060] focus:ring-[#0A0060]"
-                        />
-                        <div className="flex-1">
-                          <div className="font-bold text-slate-900 text-xs">{c.name}</div>
-                          <div className="text-[11px] text-brand-orange font-semibold">{c.role}</div>
-                          <div className="text-[10px] text-slate-500 mt-0.5">Focus: {c.specialty}</div>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Delegation Instructions / Internal Notes (Optional)
-                </label>
-                <textarea
-                  rows={2}
-                  value={assignmentNote}
-                  onChange={(e) => setAssignmentNote(e.target.value)}
-                  placeholder="e.g. Student has WASSCE A1 in Elective Maths; prioritize Russell Group computing courses."
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-[#0A0060]"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setAssigningRequest(null)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[#0A0060] hover:bg-[#120088] text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  <UserCheck className="size-3.5" />
-                  <span>Confirm Assignment</span>
-                </button>
-              </div>
-            </form>
+            {/* Fixed Action Footer */}
+            <div className="flex items-center justify-end gap-3 p-4 sm:p-5 border-t border-slate-100 shrink-0 bg-slate-50/50 rounded-b-3xl">
+              <button
+                type="button"
+                onClick={() => setAssigningRequest(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="assign-consultant-form"
+                disabled={consultants.length === 0}
+                className="px-5 py-2.5 rounded-xl bg-[#0A0060] hover:bg-[#120088] text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <UserCheck className="size-3.5" />
+                <span>Confirm Assignment</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
 
+
       {/* ========================================================================= */}
-      {/* 2. STUDENT DOSSIER & CONSULTATION HISTORY MODAL */}
+      {/* 2. STUDENT DOSSIER & CONSULTATION HISTORY MODAL (Fully Responsive) */}
       {/* ========================================================================= */}
       {viewingRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in zoom-in-95 duration-150 space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div>
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 shrink-0">
+              <div className="min-w-0 pr-2">
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-brand-orange">
                   Ref: {viewingRequest.referenceId}
                 </span>
-                <h3 className="text-xl font-bold font-display text-slate-900 mt-0.5">
+                <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 mt-0.5 truncate">
                   {viewingRequest.studentName} — Consultation Dossier
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setViewingRequest(null)}
-                className="size-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
+                className="size-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer shrink-0"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            {/* Quick Status Bar */}
-            <div className="flex flex-wrap items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200 gap-3">
-              <div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Current Stage:</div>
-                <div className="font-bold text-sm text-slate-900 mt-0.5">{viewingRequest.status}</div>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                {(["Pending", "Assigned", "In Progress", "Completed"] as const).map((st) => (
-                  <button
-                    key={st}
-                    type="button"
-                    onClick={() => handleQuickStatusChange(viewingRequest.id, st)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      viewingRequest.status === st
-                        ? "bg-[#0A0060] text-white shadow-xs"
-                        : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Student & Academic Information */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-                <div className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">Contact Information</div>
-                <div><span className="text-slate-500">Email:</span> <strong className="text-slate-800">{viewingRequest.studentEmail}</strong></div>
-                <div><span className="text-slate-500">Phone:</span> <strong className="text-slate-800">{viewingRequest.studentPhone}</strong></div>
-                <div><span className="text-slate-500">Preferred Mode:</span> <strong className="text-slate-800">{viewingRequest.consultationMode}</strong></div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-                <div className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">Academic Intent</div>
-                <div><span className="text-slate-500">Program:</span> <strong className="text-slate-800">{viewingRequest.desiredProgram}</strong></div>
-                <div><span className="text-slate-500">Destination:</span> <strong className="text-brand-orange">{viewingRequest.preferredDestination}</strong></div>
-                <div><span className="text-slate-500">Target Intake:</span> <strong className="text-slate-800">{viewingRequest.targetIntake || "September 2026"}</strong></div>
-              </div>
-            </div>
-
-            {/* Student Inquiry Notes */}
-            {viewingRequest.notes && (
-              <div className="p-4 rounded-xl bg-orange-50/60 border border-brand-orange/20 text-xs">
-                <div className="font-bold text-slate-800 uppercase tracking-wider text-[10px] mb-1">Student Notes & Requirements:</div>
-                <p className="text-slate-700 leading-relaxed italic">"{viewingRequest.notes}"</p>
-              </div>
-            )}
-
-            {/* Assigned Consultant Details */}
-            <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200 text-xs">
-              <div className="font-bold text-blue-900 uppercase tracking-wider text-[10px] mb-2">Responsible Advisor:</div>
-              {viewingRequest.assignedConsultant ? (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-bold text-slate-900 text-sm">{viewingRequest.assignedConsultant.name}</div>
-                    <div className="text-slate-600 text-[11px]">{viewingRequest.assignedConsultant.role}</div>
-                    <div className="text-slate-500 text-[10px]">{viewingRequest.assignedConsultant.email} · {viewingRequest.assignedConsultant.phone}</div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAssigningRequest(viewingRequest);
-                      setSelectedConsultantId(viewingRequest.assignedConsultant?.id || CONSULTANT_ROSTER[0].id);
-                    }}
-                    className="px-3 py-1.5 rounded-lg bg-white border border-blue-300 text-blue-900 text-xs font-bold hover:bg-blue-100 cursor-pointer"
-                  >
-                    Change Consultant
-                  </button>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+              {/* Quick Status Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200 gap-3">
+                <div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Current Stage:</div>
+                  <div className="font-bold text-sm text-slate-900 mt-0.5">{viewingRequest.status}</div>
                 </div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500 italic">No consultant currently assigned</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAssigningRequest(viewingRequest);
-                      setSelectedConsultantId(CONSULTANT_ROSTER[0].id);
-                    }}
-                    className="px-3 py-1.5 rounded-lg bg-[#0A0060] text-white text-xs font-bold hover:bg-[#120088] cursor-pointer"
-                  >
-                    Assign Now
-                  </button>
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {(["Pending", "Assigned", "In Progress", "Completed"] as const).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => handleQuickStatusChange(viewingRequest.id, st)}
+                      className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        viewingRequest.status === st
+                          ? "bg-[#0A0060] text-white shadow-xs"
+                          : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Student & Academic Information */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+                  <div className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">Contact Information</div>
+                  <div className="truncate"><span className="text-slate-500">Email:</span> <strong className="text-slate-800">{viewingRequest.studentEmail}</strong></div>
+                  <div className="truncate"><span className="text-slate-500">Phone:</span> <strong className="text-slate-800">{viewingRequest.studentPhone}</strong></div>
+                  <div className="truncate"><span className="text-slate-500">Mode:</span> <strong className="text-slate-800">{viewingRequest.consultationMode}</strong></div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+                  <div className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">Academic Intent</div>
+                  <div className="truncate"><span className="text-slate-500">Program:</span> <strong className="text-slate-800">{viewingRequest.desiredProgram}</strong></div>
+                  <div className="truncate"><span className="text-slate-500">Destination:</span> <strong className="text-brand-orange">{viewingRequest.preferredDestination}</strong></div>
+                  <div className="truncate"><span className="text-slate-500">Intake:</span> <strong className="text-slate-800">{viewingRequest.targetIntake || "September 2026"}</strong></div>
+                </div>
+              </div>
+
+              {/* Student Inquiry Notes */}
+              {viewingRequest.notes && (
+                <div className="p-4 rounded-xl bg-orange-50/60 border border-brand-orange/20 text-xs">
+                  <div className="font-bold text-slate-800 uppercase tracking-wider text-[10px] mb-1">Student Notes & Requirements:</div>
+                  <p className="text-slate-700 leading-relaxed italic break-words">"{viewingRequest.notes}"</p>
                 </div>
               )}
-            </div>
 
-            {/* Consultation History Timeline */}
-            <div>
-              <div className="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-3">Audit Trail & Consultation Timeline</div>
-              <div className="space-y-3">
-                {(viewingRequest.history || []).map((h, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                    <div className="size-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 font-bold text-[10px] mt-0.5">
-                      ✓
+              {/* Assigned Consultant Details */}
+              <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200 text-xs">
+                <div className="font-bold text-blue-900 uppercase tracking-wider text-[10px] mb-2">Responsible Advisor:</div>
+                {viewingRequest.assignedConsultant ? (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-bold text-slate-900 text-sm truncate">{viewingRequest.assignedConsultant.name}</div>
+                      <div className="text-slate-600 text-[11px] truncate">{viewingRequest.assignedConsultant.role}</div>
+                      <div className="text-slate-500 text-[10px] truncate">{viewingRequest.assignedConsultant.email} &bull; {viewingRequest.assignedConsultant.phone}</div>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900">{h.action}</span>
-                        <span className="text-[10px] text-slate-400">
-                          {new Date(h.timestamp).toLocaleDateString()} {new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 mt-0.5">By: {h.actor}</div>
-                      {h.notes && (
-                        <div className="text-[11px] text-slate-700 bg-white p-2 rounded-lg border border-slate-100 mt-1.5">
-                          {h.notes}
-                        </div>
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAssigningRequest(viewingRequest);
+                        setSelectedConsultantId(viewingRequest.assignedConsultant?.id || consultants[0]?.id || "");
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-white border border-blue-300 text-blue-900 text-xs font-bold hover:bg-blue-100 cursor-pointer self-start sm:self-auto shrink-0"
+                    >
+                      Change Consultant
+                    </button>
                   </div>
-                ))}
+                ) : (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-slate-500 italic">No consultant currently assigned</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAssigningRequest(viewingRequest);
+                        setSelectedConsultantId(consultants[0]?.id || "");
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-[#0A0060] text-white text-xs font-bold hover:bg-[#120088] cursor-pointer shrink-0"
+                    >
+                      Assign Now
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Consultation History Timeline */}
+              <div>
+                <div className="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-3">Audit Trail & Consultation Timeline</div>
+                <div className="space-y-3">
+                  {(viewingRequest.history || []).map((h, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                      <div className="size-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 font-bold text-[10px] mt-0.5">
+                        ✓
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-900 truncate">{h.action}</span>
+                          <span className="text-[10px] text-slate-400 shrink-0">
+                            {new Date(h.timestamp).toLocaleDateString()} {new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">By: {h.actor}</div>
+                        {h.notes && (
+                          <div className="text-[11px] text-slate-700 bg-white p-2 rounded-lg border border-slate-100 mt-1.5 break-words">
+                            {h.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            {/* Fixed Footer */}
+            <div className="flex items-center justify-end p-4 sm:p-5 border-t border-slate-100 shrink-0 bg-slate-50/50 rounded-b-3xl">
               <button
                 type="button"
                 onClick={() => setViewingRequest(null)}
@@ -805,6 +938,7 @@ export function ConsultationManager() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

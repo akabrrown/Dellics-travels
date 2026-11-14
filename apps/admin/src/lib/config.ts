@@ -26,3 +26,4 @@ export const ADMIN_CONFIG = {
   iataStatus: "IATA Accredited",
   defaultRefundLimitGHS: 500,
 };
+

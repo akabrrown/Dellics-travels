@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export interface PermissionDefinition {
   key: string;
   label: string;
-  category: "Core" | "Content & Commerce" | "Operations & Support" | "Finance & System" | "Administration";
+  category: "Core" | "Content & Commerce" | "Operations & Support" | "Finance & System" | "Administration" | "Consult";
   description: string;
 }
 
@@ -55,6 +55,15 @@ export const PERMISSION_CATALOG: PermissionDefinition[] = [
   { key: "team.custom_roles", label: "Manage Custom Roles", category: "Administration", description: "Create, edit, and delete custom role definitions." },
   { key: "audit.view", label: "View Audit Log", category: "Administration", description: "Read immutable timeline of sensitive admin actions." },
   { key: "settings.manage", label: "Manage Security Settings", category: "Administration", description: "Configure 2FA policy, API keys, and company profile." },
+
+  // Consult
+  { key: "consult.consultations.view", label: "View Consultations", category: "Consult", description: "Access student consultation booking requests." },
+  { key: "consult.consultations.assign", label: "Assign Consultants", category: "Consult", description: "Assign certified consultants to student bookings." },
+  { key: "consult.consultants.manage", label: "Manage Consultants", category: "Consult", description: "Add, edit, or deactivate consultants on the roster." },
+  { key: "consult.students.view", label: "View Students & Documents", category: "Consult", description: "Access student onboarding files and dossiers." },
+  { key: "consult.applications.update", label: "Update Application Status", category: "Consult", description: "Advance application pipeline stage and status." },
+  { key: "consult.catalog.manage", label: "Manage University Catalog", category: "Consult", description: "Add, update, or remove partner universities in the catalog." },
+  { key: "consult.past_questions.manage", label: "Manage Past Questions", category: "Consult", description: "Upload past question PDFs, manage official practice links, and administer the Dellics Library." },
 ];
 
 export const DEFAULT_ROLES: AdminRole[] = [
@@ -92,8 +101,12 @@ export const DEFAULT_ROLES: AdminRole[] = [
       "team.custom_roles": false,
       "audit.view": false,
       "settings.manage": false,
-      "consultant.view": true,
-      "consultant.manage": true,
+      "consult.consultations.view": true,
+      "consult.consultations.assign": false,
+      "consult.consultants.manage": false,
+      "consult.students.view": true,
+      "consult.applications.update": true,
+      "consult.catalog.manage": false,
     },
   },
 

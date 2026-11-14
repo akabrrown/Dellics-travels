@@ -258,46 +258,34 @@ export default function StudentProfilePage() {
               </div>
             </div>
 
-            {/* 6. My Content College Board Ecosystem Links */}
+            {/* 6. Quick Access */}
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
-                My Content
+                Quick Access
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                {/* SAT */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                {/* My Tests */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="font-bold text-navy text-sm">SAT</div>
-                  <Link href="/portal/sat" className="block text-slate-600 hover:text-brand-orange">
-                    SAT, PSAT/NMSQT, PSAT 10, and PSAT 8/9 Scores
+                  <div className="font-bold text-navy text-sm">Standardized Tests</div>
+                  <Link href="/portal/tests" className="block text-slate-600 hover:text-brand-orange">
+                    My Tests & Exam Schedule &rarr;
                   </Link>
                 </div>
 
-                {/* AP */}
+                {/* Past Questions */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="font-bold text-navy text-sm">AP</div>
-                  <Link href="/portal/ap-classroom" className="block text-slate-600 hover:text-brand-orange">
-                    AP Portfolio & My AP Classroom
+                  <div className="font-bold text-navy text-sm">Past Questions</div>
+                  <Link href="/portal/past-questions" className="block text-slate-600 hover:text-brand-orange">
+                    Practice Papers & Official Links &rarr;
                   </Link>
                 </div>
 
-                {/* My Colleges */}
+                {/* University Catalog */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="font-bold text-navy text-sm">My Colleges</div>
-                  <div className="space-y-1 text-slate-600 text-[11px]">
-                    <div>CSS Profile</div>
-                    <div>Disability Accommodations</div>
-                    <div>IDOC Documents</div>
-                    <div>BigFuture Scholarships</div>
-                    <div>CLEP & ACCUPLACER</div>
-                  </div>
-                </div>
-
-                {/* BigFuture */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="font-bold text-navy text-sm">BigFuture</div>
-                  <Link href="/portal/bigfuture" className="block text-slate-600 hover:text-brand-orange">
-                    College Search & Career Quiz
+                  <div className="font-bold text-navy text-sm">University Catalog</div>
+                  <Link href="/catalog" className="block text-slate-600 hover:text-brand-orange">
+                    Explore Partner Universities &rarr;
                   </Link>
                 </div>
               </div>
@@ -315,11 +303,7 @@ export default function StudentProfilePage() {
               </label>
               <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-200">
                 <input type="checkbox" defaultChecked className="rounded text-navy focus:ring-navy" />
-                <span className="font-semibold text-slate-800">College Board SAT Question of the Day & Registration Reminders</span>
-              </label>
-              <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-200">
-                <input type="checkbox" defaultChecked className="rounded text-navy focus:ring-navy" />
-                <span className="font-semibold text-slate-800">Student Search Service University Connections</span>
+                <span className="font-semibold text-slate-800">Exam Test Dates & Registration Reminders</span>
               </label>
             </div>
           </div>
@@ -327,18 +311,16 @@ export default function StudentProfilePage() {
 
         {activeTab === "privacy" && (
           <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">Privacy & Data Sharing Settings</h2>
+            <h2 className="text-lg font-bold text-slate-900">Privacy & Data Settings</h2>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Control which participating non-profit institutions and universities can contact you through Dellics Consult and Student Search Service™.
+              Your profile information and documents are securely encrypted and only shared with verified partner university admission officers and certified education consultants.
             </p>
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
               <div>
-                <div className="font-bold text-slate-900">Student Search Service™ Participation</div>
-                <div className="text-slate-500">Allow verified universities to send you admission opportunities.</div>
+                <div className="font-bold text-slate-900">Partner University Admissions Outreach</div>
+                <div className="text-slate-500">Allow verified universities to send you direct admission and scholarship invitations.</div>
               </div>
-              <Link href="/portal/student-search" className="text-brand-orange font-bold hover:underline">
-                Manage Preferences &rarr;
-              </Link>
+              <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded">Enabled</span>
             </div>
           </div>
         )}

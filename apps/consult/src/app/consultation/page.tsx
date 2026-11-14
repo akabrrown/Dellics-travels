@@ -21,6 +21,7 @@ export default function ConsultationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [referenceId, setReferenceId] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // All inputs and dropdowns start EMPTY as strictly requested (no auto-fill)
   const [formData, setFormData] = useState({
@@ -44,58 +45,60 @@ export default function ConsultationPage() {
     setFormData((prev) => ({ ...prev, [field]: val }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    const generatedRef = "DEC-GH-" + Math.floor(100000 + Math.random() * 900000);
-    setReferenceId(generatedRef);
+    setErrorMessage(null);
 
     try {
-      if (formData.email) localStorage.setItem("dellics_user_email", formData.email);
-      const fullName = (formData.firstName + " " + formData.lastName).trim();
-      if (fullName) localStorage.setItem("dellics_user_name", fullName);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+      const cleanApiUrl = apiUrl.replace(/\/$/, "");
 
-      if (typeof window !== "undefined") {
-        const existingRaw = localStorage.getItem("dellics_consultation_requests");
-        const existing = existingRaw ? JSON.parse(existingRaw) : [];
-        const newRequest = {
-          id: "req-" + Date.now(),
-          referenceId: generatedRef,
-          studentName: fullName,
-          studentEmail: formData.email,
-          studentPhone: formData.phone,
-          currentEducation: formData.currentEducation,
-          desiredDegree: formData.desiredDegree,
-          desiredProgram: formData.desiredProgram,
-          preferredDestination: formData.preferredDestination,
-          targetIntake: formData.targetIntake,
-          consultationMode: formData.consultationMode,
-          preferredDate: formData.preferredDate,
-          notes: formData.notes,
-          status: "Pending",
-          assignedConsultant: null,
-          history: [
-            {
-              timestamp: new Date().toISOString(),
-              actor: fullName,
-              action: "Submitted Consultation Request",
-              notes: `Requested ${formData.consultationMode || "In-Person/Virtual"} session for ${formData.preferredDestination || "Study Abroad"}`
-            }
-          ],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        existing.unshift(newRequest);
-        localStorage.setItem("dellics_consultation_requests", JSON.stringify(existing));
-        window.dispatchEvent(new Event("dellics_consultation_updated"));
+      const payload = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        currentEducation: formData.currentEducation || undefined,
+        desiredDegree: formData.desiredDegree || undefined,
+        desiredProgram: formData.desiredProgram.trim() || formData.desiredDegree || "Undergraduate / Postgraduate",
+        preferredDestination: formData.preferredDestination,
+        targetIntake: formData.targetIntake || undefined,
+        testStatus: formData.testStatus || undefined,
+        budgetRange: formData.budgetRange || undefined,
+        consultationMode: formData.consultationMode,
+        preferredDate: formData.preferredDate || undefined,
+        notes: formData.notes?.trim() || undefined,
+      };
+
+      const res = await fetch(`${cleanApiUrl}/consultations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const errorMsg =
+          data?.message && typeof data.message === "string"
+            ? data.message
+            : Array.isArray(data?.message)
+              ? data.message.join("; ")
+              : "Failed to submit consultation request. Please try again.";
+        throw new Error(errorMsg);
       }
-    } catch (err) {}
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+      const returnedRef = data?.reference || data?.data?.reference;
+      setReferenceId(returnedRef || "DEC-GH-" + Math.floor(100000 + Math.random() * 900000));
       setIsSubmitted(true);
-    }, 1000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "An unexpected network error occurred. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -126,6 +129,12 @@ export default function ConsultationPage() {
           
           {/* Left Column: Form */}
           <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-100">
+            {errorMessage && (
+              <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-3">
+                <span className="font-bold shrink-0">Error:</span>
+                <span>{errorMessage}</span>
+              </div>
+            )}
             {!isSubmitted ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 

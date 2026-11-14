@@ -57,54 +57,54 @@ export function StudentRegistrationForm() {
 
   // Form State
   const [formData, setFormData] = useState<StudentProfile>({
-    firstName: user?.firstName || "Sam",
+    firstName: user?.firstName || "",
     preferredName: "",
     middleName: "",
-    lastName: user?.lastName || "Nothing",
-    gender: "Male",
-    dobDay: "14",
-    dobMonth: "August",
-    dobYear: "2006",
-    email: user?.email || "samgotnothingonme@gmail.com",
-    confirmEmail: user?.email || "samgotnothingonme@gmail.com",
-    phone: "+233 24 123 4567",
+    lastName: user?.lastName || "",
+    gender: "",
+    dobDay: "",
+    dobMonth: "",
+    dobYear: "",
+    email: user?.email || "",
+    confirmEmail: user?.email || "",
+    phone: "",
 
-    educationalStatus: "Currently in Senior High School",
-    highSchoolName: "Achimota School",
-    highSchoolAddress: "Achimota Forest Rd, Achimota, Accra",
+    educationalStatus: "",
+    highSchoolName: "",
+    highSchoolAddress: "",
     schoolCountry: "Ghana",
-    gradMonth: "June",
-    gradYear: "2024",
+    gradMonth: "",
+    gradYear: "",
     currentInstitution: "",
     currentProgramme: "",
-    highestQualification: "WASSCE (or prospective)",
+    highestQualification: "",
 
     countryOfResidence: "Ghana",
-    addressLine1: "Plot 14, Independence Avenue, Airport Residential",
+    addressLine1: "",
     addressLine2: "",
-    city: "Accra",
-    region: "Greater Accra Region",
-    postalCode: "GA-102-4821",
+    city: "",
+    region: "",
+    postalCode: "",
     country: "Ghana",
 
-    preferredDestination: "United States",
-    preferredLevelOfStudy: "Bachelor's Degree",
-    preferredFieldOfStudy: "Computer Science & Artificial Intelligence",
-    intendedIntake: "September / Fall",
-    hasPreferredUniversity: "I would like guidance choosing one",
-    standardisedTests: ["SAT"],
+    preferredDestination: "",
+    preferredLevelOfStudy: "",
+    preferredFieldOfStudy: "",
+    intendedIntake: "",
+    hasPreferredUniversity: "",
+    standardisedTests: [],
 
     receiveUpdates: true,
-    parentFirstName: "Kofi",
-    parentLastName: "Mensah",
-    parentRelationship: "Father",
-    parentEmail: "kofi.mensah@gmail.com",
-    parentConfirmEmail: "kofi.mensah@gmail.com",
-    parentPhone: "+233 20 987 6543",
+    parentFirstName: "",
+    parentLastName: "",
+    parentRelationship: "",
+    parentEmail: "",
+    parentConfirmEmail: "",
+    parentPhone: "",
     copyParentOnUpdates: true,
 
-    referralSource: "School / Educational Institution",
-    additionalComments: "Interested in undergraduate merit scholarships and SAT preparation support.",
+    referralSource: "",
+    additionalComments: "",
     consentAccurate: false,
     consentPrivacy: false,
     consentContact: true,
@@ -194,27 +194,27 @@ export function StudentRegistrationForm() {
   const sendVerificationCode = async (targetEmail?: string) => {
     const emailToSend = targetEmail || formData.email || user?.email;
     if (!emailToSend) return;
-    const generated = Math.floor(100000 + Math.random() * 900000).toString();
-    setExpectedCode(generated);
     setIsSendingCode(true);
+    setVerificationError("");
     try {
-      await fetch("/api/auth/send-verification", {
+      const res = await fetch("/api/auth/send-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: emailToSend,
-          code: generated,
           name: formData.firstName || user?.firstName || "Applicant"
         })
       });
-      setCodeSent(true);
-      setCodeSentNotice(true);
-      setResendCooldown(30);
-    } catch (err) {
-      console.error("Failed to send verification code", err);
-      setCodeSent(true);
-      setCodeSentNotice(true);
-      setResendCooldown(30);
+      const data = await res.json();
+      if (res.ok) {
+        setCodeSent(true);
+        setCodeSentNotice(true);
+        setResendCooldown(30);
+      } else {
+        setVerificationError(data.error || "Failed to dispatch verification code.");
+      }
+    } catch (err: any) {
+      setVerificationError(err.message || "Failed to dispatch verification code.");
     } finally {
       setIsSendingCode(false);
     }
@@ -227,17 +227,18 @@ export function StudentRegistrationForm() {
     }
   }, [resendCooldown]);
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
     const fullCode = verificationCode.join("");
     if (fullCode.length !== 6) {
       setVerificationError("Please enter all 6 digits of your verification code.");
       return;
     }
-    if ((expectedCode && fullCode === expectedCode) || verifyEmailCode(fullCode)) {
+    const verified = await verifyEmailCode(fullCode);
+    if (verified) {
       setIsCodeVerified(true);
       setVerificationError("");
     } else {
-      setVerificationError("Invalid verification code. Please check your email or click resend.");
+      setVerificationError("Invalid or expired verification code. Please check your email or click resend.");
     }
   };
 
@@ -249,7 +250,7 @@ export function StudentRegistrationForm() {
     sendVerificationCode();
   };
 
-  const handleFinalSubmit = (e?: React.FormEvent) => {
+  const handleFinalSubmit = async (e?: React.FormEvent) => {
     if (e && typeof e.preventDefault === "function") {
       e.preventDefault();
     }
@@ -263,13 +264,17 @@ export function StudentRegistrationForm() {
       return;
     }
 
-    saveProfile({
+    const res = await saveProfile({
       ...formData,
       isVerified: true,
       isCompleted: true
     });
 
-    setIsSubmitted(true);
+    if (res.success) {
+      setIsSubmitted(true);
+    } else {
+      alert(res.error || "Failed to save student profile. Please try again.");
+    }
   };
 
   return (

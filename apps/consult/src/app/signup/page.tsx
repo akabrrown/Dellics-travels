@@ -16,25 +16,34 @@ export default function SignupPage() {
     firstName: "", lastName: "", email: "", phone: "", password: "", confirmPassword: "", terms: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [signupError, setSignupError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError("");
     if (!formData.terms) {
+      setSignupError("Please agree to the Terms of Service & Privacy Policy.");
       return;
     }
-    if (formData.password !== formData.confirmPassword) return;
+    if (formData.password !== formData.confirmPassword) {
+      setSignupError("Passwords do not match.");
+      return;
+    }
     setIsLoading(true);
-    try {
-      signup({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone
-      });
-    } catch (e) {}
-    setTimeout(() => {
-      setIsLoading(false);
+
+    const res = await signup({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone
+    });
+    setIsLoading(false);
+
+    if (res.success) {
       setIsSuccess(true);
-    }, 700);
+    } else {
+      setSignupError(res.error || "Signup failed. Please try again.");
+    }
   };
 
   const update = (field: string, value: any) => setFormData((prev) => ({ ...prev, [field]: value }));
@@ -176,6 +185,12 @@ export default function SignupPage() {
                   I agree to the <Link href="/terms" target="_blank" className="font-medium text-navy hover:text-brand-orange underline transition-colors">Terms of Service</Link> and <Link href="/privacy" target="_blank" className="font-medium text-navy hover:text-brand-orange underline transition-colors">Privacy Policy</Link>
                 </span>
               </label>
+
+              {signupError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs font-medium">
+                  {signupError}
+                </div>
+              )}
 
               <button type="submit" disabled={isLoading} className="w-full py-2.5 mt-2 rounded-lg bg-navy text-white font-medium text-sm hover:bg-navy-light disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Create Account <ArrowRight className="w-4 h-4" /></>}

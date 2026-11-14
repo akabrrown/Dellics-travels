@@ -144,111 +144,39 @@ export function HeroSection() {
     return catalogSchools.length > 0 ? catalogSchools : DEFAULT_CATALOG_SCHOOLS;
   }, [catalogSchools]);
 
-  // Robust HTML5 Video Autoplay & Continuous Looping Playback
+  // Video Autoplay & Looping Playback
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Direct DOM property & attribute enforcement for strict browser autoplay policies
     video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.setAttribute("muted", "");
-    video.setAttribute("playsinline", "");
-    video.setAttribute("autoplay", "");
-    video.setAttribute("loop", "");
+    video.play().catch(() => {});
 
-    let isDestroyed = false;
-
-    const attemptPlay = () => {
-      if (isDestroyed || !video) return;
-      if (video.paused) {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Deferred by device/power-saver policy until first user interaction
-          });
-        }
-      }
-    };
-
-    // 1. Kick off playback immediately on mount
-    attemptPlay();
-
-    // 2. Playback lifecycle triggers as media streams in
-    const onLoadedMetadata = () => attemptPlay();
-    const onLoadedData = () => attemptPlay();
-    const onCanPlay = () => attemptPlay();
-    const onCanPlayThrough = () => attemptPlay();
-
-    video.addEventListener("loadedmetadata", onLoadedMetadata);
-    video.addEventListener("loadeddata", onLoadedData);
-    video.addEventListener("canplay", onCanPlay);
-    video.addEventListener("canplaythrough", onCanPlayThrough);
-
-    // 3. Continuous non-stop loop safeguards
     const onEnded = () => {
-      if (isDestroyed || !video) return;
       video.currentTime = 0;
-      attemptPlay();
-    };
-    video.addEventListener("ended", onEnded);
-
-    // Guard against browsers pausing background video when throttled
-    const onPause = () => {
-      if (isDestroyed || !video) return;
-      if (document.visibilityState === "visible") {
-        attemptPlay();
-      }
-    };
-    video.addEventListener("pause", onPause);
-
-    // 4. Seamless loop restart before hard EOF stutter
-    const onTimeUpdate = () => {
-      if (isDestroyed || !video || !video.duration) return;
-      if (video.duration > 0 && video.currentTime >= video.duration - 0.15) {
-        video.currentTime = 0;
-        attemptPlay();
-      }
-    };
-    video.addEventListener("timeupdate", onTimeUpdate);
-
-    // 5. Fallback: resume playback on first interaction (mobile iOS/Android strict policies)
-    const onUserInteraction = () => {
-      attemptPlay();
+      video.play().catch(() => {});
     };
 
-    window.addEventListener("touchstart", onUserInteraction, { passive: true });
-    window.addEventListener("touchend", onUserInteraction, { passive: true });
-    window.addEventListener("click", onUserInteraction);
-    window.addEventListener("scroll", onUserInteraction, { passive: true });
-    window.addEventListener("mousemove", onUserInteraction, { once: true, passive: true });
-
-    // 6. Resume when switching back to this tab
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        attemptPlay();
+        video.play().catch(() => {});
       }
     };
+
+    const onUserInteraction = () => {
+      video.play().catch(() => {});
+    };
+
+    video.addEventListener("ended", onEnded);
     document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("touchstart", onUserInteraction, { once: true, passive: true });
+    window.addEventListener("click", onUserInteraction, { once: true });
 
     return () => {
-      isDestroyed = true;
-      video.removeEventListener("loadedmetadata", onLoadedMetadata);
-      video.removeEventListener("loadeddata", onLoadedData);
-      video.removeEventListener("canplay", onCanPlay);
-      video.removeEventListener("canplaythrough", onCanPlayThrough);
       video.removeEventListener("ended", onEnded);
-      video.removeEventListener("pause", onPause);
-      video.removeEventListener("timeupdate", onTimeUpdate);
-      window.removeEventListener("touchstart", onUserInteraction);
-      window.removeEventListener("touchend", onUserInteraction);
-      window.removeEventListener("click", onUserInteraction);
-      window.removeEventListener("scroll", onUserInteraction);
-      window.removeEventListener("mousemove", onUserInteraction);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("touchstart", onUserInteraction);
+      window.removeEventListener("click", onUserInteraction);
     };
   }, []);
 
@@ -423,7 +351,7 @@ export function HeroSection() {
       aria-label="Dellics Education Consult Hero"
       className="relative z-30 overflow-visible pt-6 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 border-b border-slate-800 bg-slate-950 flex flex-col justify-between"
     >
-      {/* 1. BACKGROUND VIDEO - Main_herosection.mp4 */}
+      {/* 1. BACKGROUND VIDEO - hero-loop.mp4 */}
       <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
         <video
           ref={videoRef}
@@ -433,10 +361,9 @@ export function HeroSection() {
           playsInline
           preload="auto"
           poster="/hero-video-poster.jpg"
-          crossOrigin="anonymous"
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/Main_herosection.mp4" type="video/mp4" />
+          <source src="/hero-loop.mp4" type="video/mp4" />
           Your browser does not support HTML5 video.
         </video>
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, Users, ShieldCheck, FileKey, GraduationCap, Plane, Globe, Award } from "lucide-react";
+import { CheckCircle, Users, ShieldCheck, FileKey, GraduationCap, Plane, Globe } from "lucide-react";
 
 export function WhyChooseUsSection() {
   const feats = [

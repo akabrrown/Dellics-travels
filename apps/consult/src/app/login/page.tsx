@@ -12,48 +12,23 @@ export default function LoginPage() {
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
   const router = useRouter();
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      login(email);
-    } catch (err) {}
-    setTimeout(() => {
-      setIsLoading(false);
-      if (!showForgot) {
-        const cleanEmail = email.trim().toLowerCase();
-        let isComplete = false;
+    setLoginError("");
 
-        const storedProfileStr = localStorage.getItem("dellics_student_profile");
-        if (storedProfileStr) {
-          try {
-            const parsed = JSON.parse(storedProfileStr);
-            if (parsed.isCompleted) isComplete = true;
-          } catch (e) {}
-        }
+    const res = await login(email);
+    setIsLoading(false);
 
-        if (!isComplete) {
-          const registryStr = localStorage.getItem("dellics_registered_students_map");
-          if (registryStr) {
-            try {
-              const registry = JSON.parse(registryStr);
-              if (registry[cleanEmail]?.isCompleted) {
-                isComplete = true;
-              }
-            } catch (e) {}
-          }
-        }
-
-        if (isComplete) {
-          router.push("/portal");
-        } else {
-          router.push("/portal/onboarding");
-        }
-      }
-    }, 600);
+    if (res.success) {
+      router.push("/portal");
+    } else {
+      setLoginError(res.error || "Login failed. Please check your credentials or register.");
+    }
   };
 
   return (
@@ -187,6 +162,12 @@ export default function LoginPage() {
                     </button>
                   </div>
                 </div>
+
+                {loginError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs font-medium">
+                    {loginError}
+                  </div>
+                )}
 
                 <button
                   type="submit"

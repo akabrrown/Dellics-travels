@@ -18,6 +18,9 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { loginAdminAccount, loginAdminAccountInit, forgotAdminPasswordInit, resetAdminPassword } from "@/lib/auth";
+import { ADMIN_CONFIG } from "@/lib/config";
+import { Sparkles } from "lucide-react";
+
 
 type ViewMode = "login" | "forgot_password_init" | "forgot_password_reset";
 

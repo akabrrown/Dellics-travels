@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+
 import { useSearchParams } from "next/navigation";
 import { RoleGuard } from "@/components/role-guard";
 import { adminApi } from "@/lib/api";
@@ -17,16 +18,19 @@ import {
   GraduationCap,
   Sparkles,
   Headphones,
-  AlertTriangle
+  AlertTriangle,
+  BookOpen
 } from "lucide-react";
 import { ConsultantCatalogManager } from "@/components/consultant/ConsultantCatalogManager";
 import { ConsultationManager, StudentConsultationRequest } from "@/components/consultant/ConsultationManager";
+import { ConsultantRosterManager } from "@/components/consultant/ConsultantRosterManager";
+import { PastQuestionsManager } from "@/components/consultant/PastQuestionsManager";
 
-type TabType = "crm" | "tests" | "docs" | "visa" | "catalog" | "consultations";
+type TabType = "crm" | "tests" | "docs" | "visa" | "catalog" | "consultations" | "roster" | "past_questions";
 
 // Schema Types
 type StudyDocument = { id: string; name: string; file_url: string; status: "PENDING" | "APPROVED" | "REJECTED"; updated_at: string };
-type StudyTest = { id: string; test_type: string; status: string; score?: string; notes?: string };
+type StudyTest = { id: string; test_type: string; status: string; score?: string; notes?: string; test_date?: string };
 type StudyNote = { id: string; author_name: string; text: string; created_at: string };
 
 type Student = {
@@ -62,41 +66,48 @@ export default function ConsultantPage() {
   // Sync tab from URL searchParams
   useEffect(() => {
     const tabParam = searchParams?.get("tab") as TabType;
-    if (tabParam && ["crm", "tests", "docs", "visa", "catalog", "consultations"].includes(tabParam)) {
+    if (tabParam && ["crm", "tests", "docs", "visa", "catalog", "consultations", "roster", "past_questions"].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
 
-  // Load consultations from localStorage and listen to updates
-  useEffect(() => {
-    const loadConsultations = () => {
-      try {
-        if (typeof window !== "undefined") {
-          const raw = localStorage.getItem("dellics_consultation_requests");
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) {
-              setConsultationRequests(parsed);
-              return;
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Error reading dellics_consultation_requests", err);
+  // Load consultations from API
+  const loadConsultations = useCallback(async () => {
+    try {
+      const res = await adminApi.get<{ status: string; data: any[] }>("/consultations");
+      if (res && Array.isArray(res.data)) {
+        setConsultationRequests(
+          res.data.map((item: any) => ({
+            id: item.id,
+            referenceId: item.reference || "N/A",
+            studentName: `${item.first_name || ""} ${item.last_name || ""}`.trim() || "Applicant",
+            studentEmail: item.email || "",
+            studentPhone: item.phone || "",
+            desiredProgram: item.desired_program || "General",
+            preferredDestination: item.preferred_destination || "General",
+            consultationMode: item.consultation_mode || "In-Person",
+            preferredDate: item.preferred_date || undefined,
+            status: item.status === "PENDING" ? "Pending" : item.status === "ASSIGNED" ? "Assigned" : item.status === "IN_PROGRESS" ? "In Progress" : "Completed",
+            assignedConsultant: item.assigned_consultant || null,
+            history: [],
+            createdAt: item.created_at || new Date().toISOString(),
+            updatedAt: item.updated_at || new Date().toISOString(),
+          }))
+        );
       }
-    };
-
-    loadConsultations();
-
-    const handleConsultationEvent = () => loadConsultations();
-    window.addEventListener("dellics_consultation_updated", handleConsultationEvent);
-    window.addEventListener("storage", handleConsultationEvent);
-
-    return () => {
-      window.removeEventListener("dellics_consultation_updated", handleConsultationEvent);
-      window.removeEventListener("storage", handleConsultationEvent);
-    };
+    } catch {
+      setConsultationRequests([]);
+    }
   }, []);
+
+  useEffect(() => {
+    loadConsultations();
+    const handleSync = () => loadConsultations();
+    window.addEventListener("dellics_consultation_updated", handleSync);
+    return () => {
+      window.removeEventListener("dellics_consultation_updated", handleSync);
+    };
+  }, [loadConsultations]);
 
   const confirmDeleteStudent = async () => {
     if (!studentToDelete) return;
@@ -172,13 +183,15 @@ export default function ConsultantPage() {
   }, []);
 
   const refreshData = async () => {
-    await fetchStudents();
-    await fetchMetrics();
+    setLoading(true);
+    await Promise.all([fetchStudents(), fetchMetrics(), loadConsultations()]).finally(() => setLoading(false));
+    window.dispatchEvent(new Event("dellics_consultation_refresh_requested"));
     if (selectedStudent) {
       const updated = students.find(s => s.id === selectedStudent.id);
       if (updated) setSelectedStudent(updated);
     }
   };
+
 
   const handleAdvanceStage = async (id: string, newStage: string) => {
     try {
@@ -211,6 +224,32 @@ export default function ConsultantPage() {
         return {
           ...prev,
           documents: prev.documents.map(d => d.id === docId ? { ...d, status } : d)
+        };
+      });
+    }
+  };
+
+  const handleUpdateTest = async (
+    appId: string,
+    testId: string,
+    updates: { status?: string; score?: string; notes?: string; test_date?: string }
+  ) => {
+    try {
+      await adminApi.patch(`/study/applications/${appId}/tests/${testId}`, updates);
+    } catch {}
+    setStudents(prev => prev.map(s => {
+      if (s.id !== appId) return s;
+      return {
+        ...s,
+        tests: s.tests.map(t => t.id === testId ? { ...t, ...updates } : t)
+      };
+    }));
+    if (selectedStudent && selectedStudent.id === appId) {
+      setSelectedStudent(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          tests: prev.tests.map(t => t.id === testId ? { ...t, ...updates } : t)
         };
       });
     }
@@ -299,6 +338,17 @@ export default function ConsultantPage() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setActiveTab("roster")}
+              className={`px-4 py-2 text-xs font-bold rounded-lg shadow-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === "roster"
+                  ? "bg-[#0A0060] text-white"
+                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              <Users className="size-4" />
+              <span>Consultants</span>
+            </button>
+            <button
               onClick={() => setActiveTab("consultations")}
               className="px-4 py-2 text-xs font-bold text-[#0A0060] bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-lg shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
@@ -360,6 +410,13 @@ export default function ConsultantPage() {
               )}
             </button>
             <button 
+              onClick={() => setActiveTab("roster")}
+              className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === "roster" ? "border-[#0A0060] text-[#0A0060]" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+            >
+              <Users className="size-4" />
+              <span>Consultants</span>
+            </button>
+            <button 
               onClick={() => setActiveTab("tests")}
               className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === "tests" ? "border-[#0A0060] text-[#0A0060]" : "border-transparent text-slate-500 hover:text-slate-700"}`}
             >
@@ -386,6 +443,13 @@ export default function ConsultantPage() {
             >
               <GraduationCap className="size-4" />
               <span>Hero Search & School Catalog</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab("past_questions")}
+              className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === "past_questions" ? "border-[#0A0060] text-[#0A0060]" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+            >
+              <BookOpen className="size-4 text-[#EA580C]" />
+              <span>Past Questions Manager</span>
             </button>
           </div>
 
@@ -493,9 +557,10 @@ export default function ConsultantPage() {
             {/* TAB: CONSULTATIONS & DELEGATIONS */}
             {activeTab === "consultations" && (
               <div className="animate-in fade-in duration-300">
-                <ConsultationManager />
+                <ConsultationManager onNavigateToConsultants={() => setActiveTab("roster")} />
               </div>
             )}
+
 
             {/* TAB: TESTS */}
             {activeTab === "tests" && (
@@ -681,6 +746,20 @@ export default function ConsultantPage() {
               </div>
             )}
 
+            {/* TAB: ROSTER / CERTIFIED CONSULTANTS */}
+            {activeTab === "roster" && (
+              <div className="animate-in fade-in duration-300">
+                <ConsultantRosterManager />
+              </div>
+            )}
+
+            {/* TAB: PAST QUESTIONS MANAGER */}
+            {activeTab === "past_questions" && (
+              <div className="animate-in fade-in duration-300">
+                <PastQuestionsManager />
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -695,6 +774,7 @@ export default function ConsultantPage() {
             onAdvanceStage={(s: string) => handleAdvanceStage(selectedStudent.id, s)}
             onUpdateDoc={(dId: string, s: "PENDING" | "APPROVED" | "REJECTED") => handleUpdateDocument(selectedStudent.id, dId, s)}
             onAddNote={(t: string) => handleAddNote(selectedStudent.id, t)}
+            onUpdateTest={(testId: string, updates: any) => handleUpdateTest(selectedStudent.id, testId, updates)}
           />
         )}
 
@@ -756,7 +836,7 @@ export default function ConsultantPage() {
   );
 }
 
-function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNote }: any) {
+function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNote, onUpdateTest }: any) {
   const [noteText, setNoteText] = useState("");
   const [selectedStage, setSelectedStage] = useState(student.stage);
 
@@ -842,7 +922,30 @@ function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNot
                 <div key={d.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex items-center justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <p className="font-bold text-slate-900 text-sm truncate">{d.name}</p>
-                    <p className="text-xs text-slate-500 font-mono truncate mt-0.5">{d.file_url}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <button
+                        onClick={async () => {
+                          try {
+                            const res = await adminApi.get<{ success: boolean; url: string; name: string }>(`/study/documents/${d.id}/download-url?admin=true`);
+                            if (res && res.url) {
+                              const link = document.createElement("a");
+                              link.href = res.url;
+                              link.download = res.name || d.name || "document";
+                              link.target = "_blank";
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }
+                          } catch {
+                            alert("Failed to generate secure download link.");
+                          }
+                        }}
+                        className="text-xs font-semibold text-[#0A0060] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>View / Download File (1h secure link)</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {d.status === 'PENDING' ? (
@@ -876,14 +979,53 @@ function StudentDrawer({ student, onClose, onAdvanceStage, onUpdateDoc, onAddNot
               </div>
             )}
             {student.tests.map((t: any) => (
-              <div key={t.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs mb-3">
-                <div className="flex items-center justify-between mb-2">
+              <div key={t.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs mb-3 space-y-3">
+                <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-900 text-sm">{t.test_type}</span>
-                  <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
-                    {t.status.replace(/_/g, ' ')}
-                  </span>
+                  <select
+                    value={t.status}
+                    onChange={(e) => onUpdateTest && onUpdateTest(t.id, { status: e.target.value })}
+                    className="px-2.5 py-1 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50 focus:outline-none"
+                  >
+                    <option value="PREP_ARRANGED">In Preparation</option>
+                    <option value="TEST_SCHEDULED">Date Scheduled</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="NOT_REQUIRED">Waived / Not Required</option>
+                  </select>
                 </div>
-                <p className="text-xs text-slate-500 mb-4">{t.notes}</p>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <label className="text-slate-400 block font-medium">Exam Date</label>
+                    <input
+                      type="date"
+                      defaultValue={t.test_date ? t.test_date.split("T")[0] : ""}
+                      onBlur={(e) => onUpdateTest && onUpdateTest(t.id, { test_date: e.target.value || null })}
+                      className="w-full mt-0.5 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-800 text-xs focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 block font-medium">Verified / Reported Score</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1450, 7.5"
+                      defaultValue={t.score || ""}
+                      onBlur={(e) => onUpdateTest && onUpdateTest(t.id, { score: e.target.value })}
+                      className="w-full mt-0.5 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-800 text-xs focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-400 block font-medium text-xs">Advisor Notes</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Target sitting confirmed"
+                    defaultValue={t.notes || ""}
+                    onBlur={(e) => onUpdateTest && onUpdateTest(t.id, { notes: e.target.value })}
+                    className="w-full mt-0.5 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-800 text-xs focus:outline-none"
+                  />
+                </div>
               </div>
             ))}
           </section>

@@ -42,17 +42,26 @@ async function createNestServer(): Promise<{
     }),
   );
 
+  const allowedOrigins: (string | RegExp)[] = [
+    /^http:\/\/(localhost|127\.0\.0\.1):[0-9]+$/,
+    /^http:\/\/192\.168\.[0-9]+\.[0-9]+:[0-9]+$/,
+    /^http:\/\/10\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$/,
+    /^https:\/\/dellics.*\.vercel\.app$/,
+    'https://dellicstravels.com',
+    'https://www.dellicstravels.com',
+    'https://consult.dellicstravels.com',
+    'https://admin.dellicstravels.com',
+  ];
+
+  if (process.env.CONSULT_FRONTEND_URL) {
+    allowedOrigins.push(process.env.CONSULT_FRONTEND_URL.trim().replace(/\/$/, ''));
+  }
+  if (process.env.CONSULT_URL) {
+    allowedOrigins.push(process.env.CONSULT_URL.trim().replace(/\/$/, ''));
+  }
+
   app.enableCors({
-    origin: [
-      /^http:\/\/(localhost|127\.0\.0\.1):[0-9]+$/,
-      /^http:\/\/192\.168\.[0-9]+\.[0-9]+:[0-9]+$/,
-      /^http:\/\/10\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$/,
-      /^https:\/\/dellics.*\.vercel\.app$/,
-      'https://dellicstravels.com',
-      'https://www.dellicstravels.com',
-      'https://consult.dellicstravels.com',
-      'https://admin.dellicstravels.com',
-    ],
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [

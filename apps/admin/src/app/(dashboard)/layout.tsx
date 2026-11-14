@@ -31,6 +31,9 @@ import { adminApi } from "@/lib/api";
 import { useRole, AdminRole } from "@/lib/roles";
 import { isAuthenticated, getAdminSession, clearAdminSession, AdminUserSession } from "@/lib/auth";
 import { BackendStatusBanner } from "@/components/backend-status-banner";
+import { ADMIN_CONFIG } from "@/lib/config";
+import { Sparkles } from "lucide-react";
+
 
 interface SidebarCounts {
   heldBookings: number;
@@ -141,12 +144,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navGroups = [
     {
+      group: "Dellics Consult",
+      items: [
+        { label: "Consultant CRM", href: "/consultant", icon: FileText, permission: "consult.students.view" },
+        { label: "Consultations", href: "/consultant?tab=consultations", icon: Headphones, permission: "consult.consultations.view" },
+        { label: "Consultants Roster", href: "/consultant?tab=roster", icon: Users, permission: "consult.consultants.manage" },
+        { label: "University Catalog", href: "/consultant?tab=catalog", icon: GraduationCap, permission: "consult.catalog.manage" },
+      ],
+    },
+    {
       group: "Core",
       items: [
         { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
-        { label: "Consultant CRM", href: "/consultant", icon: FileText, permission: "consultant.view" },
-        { label: "Consultations", href: "/consultant?tab=consultations", icon: Headphones, permission: "consultant.view" },
-        { label: "Hero Search & Feeds", href: "/consultant?tab=catalog", icon: GraduationCap, permission: "consultant.view" },
         {
           label: "Bookings",
           href: "/bookings",

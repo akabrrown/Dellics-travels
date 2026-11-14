@@ -1,3 +1,6 @@
+
+
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,6 +15,7 @@ enum Role {
   USER
   ADMIN
   CONSULTANT
+  STUDENT
 }
 
 enum MembershipTier {
@@ -116,6 +120,7 @@ model User {
   admin_otp_expires_at DateTime?
   admin_role_id        String?
   admin_role           AdminRole? @relation("UserAdminRole", fields: [admin_role_id], references: [id])
+  student_profile      Json?
 
   trips                 Trip[]
   memberships           Membership[]
@@ -495,6 +500,8 @@ model StudyDocument {
   name                 String
   file_url             String
   status               StudyDocumentStatus @default(PENDING)
+  size_bytes           Int?
+  mime_type            String?
   
   created_at           DateTime         @default(now())
   updated_at           DateTime         @updatedAt
@@ -508,6 +515,7 @@ model StudyTest {
   status               StudyTestStatus  @default(PREP_ARRANGED)
   score                String?
   notes                String?
+  test_date            DateTime?
   
   created_at           DateTime         @default(now())
   updated_at           DateTime         @updatedAt
@@ -740,3 +748,106 @@ model HotelStaticCache {
   @@index([country_code])
   @@map("hotel_static_cache")
 }
+
+enum ConsultationStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model ConsultationRequest {
+  id                   String             @id @default(uuid())
+  reference            String             @unique
+  first_name           String
+  last_name            String
+  email                String
+  phone                String
+  current_education    String?
+  desired_degree       String?
+  desired_program      String
+  preferred_destination String
+  target_intake        String?
+  test_status          String?
+  budget_range         String?
+  consultation_mode    String
+  preferred_date       String?
+  notes                String?
+  status               ConsultationStatus @default(PENDING)
+  assigned_consultant  Json?
+  consultant_id        String?
+  consultant           Consultant?        @relation(fields: [consultant_id], references: [id], onDelete: SetNull)
+  internal_notes       String?
+  created_at           DateTime           @default(now())
+  updated_at           DateTime           @updatedAt
+
+  @@index([reference])
+  @@index([status])
+  @@index([email])
+  @@index([consultant_id])
+  @@map("consultation_requests")
+}
+
+model Consultant {
+  id                   String                @id @default(uuid())
+  full_name            String
+  email                String                @unique
+  phone                String
+  specialty            String?
+  photo_url            String?
+  is_active            Boolean               @default(true)
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+  consultation_requests ConsultationRequest[]
+
+  @@map("consultants")
+}
+
+model StudentVerification {
+  id                   String                @id @default(uuid())
+  email                String
+  code_hash            String
+  attempts             Int                   @default(0)
+  expires_at           DateTime
+  verified_at          DateTime?
+  created_at           DateTime              @default(now())
+
+  @@index([email])
+  @@index([expires_at])
+  @@map("student_verifications")
+}
+
+model CatalogSchool {
+  id                   String                @id @default(uuid())
+  name                 String
+  country              String
+  flag                 String
+  programs_count       Int                   @default(0)
+  tuition              String
+  popular_programs     String[]              @default([])
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+
+  @@index([country])
+  @@map("catalog_schools")
+}
+
+model PastQuestion {
+  id                   String                @id @default(uuid())
+  exam                 String
+  title                String
+  year                 Int?
+  file_url             String
+  resource_type        String                @default("PDF")
+  is_active            Boolean               @default(true)
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+
+  @@index([exam, is_active])
+  @@map("past_questions")
+}
+
+
+
+

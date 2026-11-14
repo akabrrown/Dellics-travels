@@ -67,68 +67,91 @@ export interface StudentProfile {
 }
 
 export interface StudentUser {
+  id?: string;
   name: string;
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
   isLoggedIn: boolean;
   profileCompleted: boolean;
   profile?: StudentProfile;
+  applications?: any[];
 }
 
 interface AuthContextType {
   user: StudentUser | null;
   isLoggedIn: boolean;
   isLoading: boolean;
-  login: (email: string, name?: string) => void;
-  signup: (data: { firstName: string; lastName: string; email: string; phone?: string }) => void;
+  login: (email: string, name?: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (data: { firstName: string; lastName: string; email: string; phone?: string; code?: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  saveProfile: (profile: Partial<StudentProfile>) => void;
-  verifyEmailCode: (code: string) => boolean;
+  saveProfile: (profile: Partial<StudentProfile>) => Promise<{ success: boolean; error?: string }>;
+  verifyEmailCode: (code: string) => Promise<boolean>;
+  sendCode: (email: string, name?: string) => Promise<{ success: boolean; message?: string }>;
+  refreshPortalData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_CHANGE_EVENT = "dellics_auth_change";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<StudentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const syncUserFromStorage = useCallback(() => {
+  // Sync user from backend API session or localStorage fallback
+  const syncUser = useCallback(async () => {
     try {
-      const email = localStorage.getItem("dellics_user_email");
-      const name = localStorage.getItem("dellics_user_name");
-      const profileStr = localStorage.getItem("dellics_student_profile");
-
-      if (email) {
-        let profile: StudentProfile | undefined;
-        let profileCompleted = false;
-
-        if (profileStr) {
-          try {
-            profile = JSON.parse(profileStr);
-            profileCompleted = !!profile?.isCompleted;
-          } catch (e) {}
-        }
-
-        const nameParts = (name || email.split("@")[0] || "Sam").split(" ");
-        const firstName = nameParts[0] || "Sam";
-        const lastName = nameParts.slice(1).join(" ") || "Nothing";
-
-        setUser({
-          name: name || `${firstName} ${lastName}`.trim(),
-          firstName,
-          lastName,
-          email,
-          isLoggedIn: true,
-          profileCompleted,
-          profile,
-        });
-      } else {
+      const email = typeof window !== "undefined" ? localStorage.getItem("dellics_user_email") : null;
+      if (!email) {
         setUser(null);
+        return;
       }
-    } catch (e) {
+
+      // Fetch student data from backend API
+      const res = await fetch(`${API_BASE}/study/portal/me?email=${encodeURIComponent(email)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          const profile = json.profile;
+          const u = json.user;
+          const nameParts = (u.name || email.split("@")[0] || "Student").split(" ");
+          const firstName = profile?.firstName || nameParts[0] || "Student";
+          const lastName = profile?.lastName || nameParts.slice(1).join(" ") || "";
+
+          setUser({
+            id: u.id,
+            name: u.name || `${firstName} ${lastName}`.trim(),
+            firstName,
+            lastName,
+            email: u.email,
+            phone: u.phone,
+            isLoggedIn: true,
+            profileCompleted: u.onboardingCompleted || !!profile,
+            profile: profile || undefined,
+            applications: json.applications || [],
+          });
+          return;
+        }
+      }
+
+      // Local fallback if offline or backend cold start
+      const storedName = (typeof window !== "undefined" ? localStorage.getItem("dellics_user_name") : null) || email.split("@")[0] || "Student";
+      const storedProfile = typeof window !== "undefined" ? localStorage.getItem("dellics_student_profile") : null;
+      const parsedProfile = storedProfile ? JSON.parse(storedProfile) : undefined;
+      const parts = storedName.split(" ");
+
+      setUser({
+        name: storedName,
+        firstName: parts[0] || "Student",
+        lastName: parts.slice(1).join(" ") || "",
+        email,
+        isLoggedIn: true,
+        profileCompleted: !!parsedProfile?.isCompleted,
+        profile: parsedProfile,
+      });
+    } catch {
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -136,120 +159,151 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    syncUserFromStorage();
+    syncUser();
+  }, [syncUser]);
 
-    const handleStorage = () => syncUserFromStorage();
-    const handleCustom = () => syncUserFromStorage();
-
-    window.addEventListener("storage", handleStorage);
-    window.addEventListener(AUTH_CHANGE_EVENT, handleCustom);
-
-    return () => {
-      window.removeEventListener("storage", handleStorage);
-      window.removeEventListener(AUTH_CHANGE_EVENT, handleCustom);
-    };
-  }, [syncUserFromStorage]);
-
-  const notifyChange = () => {
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+  const sendCode = async (email: string, name?: string): Promise<{ success: boolean; message?: string }> => {
+    try {
+      const res = await fetch(`${API_BASE}/study/auth/send-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), name }),
+      });
+      const data = await res.json();
+      return { success: res.ok, message: data.message };
+    } catch (err: any) {
+      return { success: false, message: err.message || "Failed to send code." };
     }
   };
 
-  const login = (email: string, customName?: string) => {
+  const verifyEmailCode = async (code: string): Promise<boolean> => {
     try {
-      const cleanEmail = email.trim();
-      localStorage.setItem("dellics_user_email", cleanEmail);
-      const name = customName || (cleanEmail.split("@")[0] || "Sam").replace(/[._-]/g, " ");
-      const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
-      localStorage.setItem("dellics_user_name", formattedName);
+      const email = user?.email || (typeof window !== "undefined" ? localStorage.getItem("dellics_user_email") : null);
+      if (!email) return false;
 
-      // Check if student profile was previously filled and completed
-      const registryStr = localStorage.getItem("dellics_registered_students_map");
-      if (registryStr) {
-        try {
-          const registry = JSON.parse(registryStr);
-          const savedProfile = registry[cleanEmail.toLowerCase()];
-          if (savedProfile && savedProfile.isCompleted) {
-            localStorage.setItem("dellics_student_profile", JSON.stringify(savedProfile));
-            if (savedProfile.firstName) {
-              const fullName = `${savedProfile.firstName} ${savedProfile.lastName || ""}`.trim();
-              localStorage.setItem("dellics_user_name", fullName);
-            }
-          }
-        } catch (e) {}
-      }
-
-      syncUserFromStorage();
-      notifyChange();
-    } catch (e) {}
+      const res = await fetch(`${API_BASE}/study/auth/verify-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), code: code.trim() }),
+      });
+      const data = await res.json();
+      return !!data.success;
+    } catch {
+      return false;
+    }
   };
 
-  const signup = (data: { firstName: string; lastName: string; email: string; phone?: string }) => {
+  const login = async (email: string, customName?: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const cleanEmail = data.email.trim();
-      localStorage.setItem("dellics_user_email", cleanEmail);
-      const fullName = `${data.firstName} ${data.lastName}`.trim() || data.firstName || "Sam";
-      localStorage.setItem("dellics_user_name", fullName);
-      if (data.phone) {
-        localStorage.setItem("dellics_user_phone", data.phone);
+      const cleanEmail = email.trim().toLowerCase();
+      const res = await fetch(`${API_BASE}/study/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.message || "Login failed. Please check credentials." };
       }
-      syncUserFromStorage();
-      notifyChange();
-    } catch (e) {}
+
+      localStorage.setItem("dellics_user_email", cleanEmail);
+      if (data.user?.name) {
+        localStorage.setItem("dellics_user_name", data.user.name);
+      }
+
+      await syncUser();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Network error during login." };
+    }
+  };
+
+  const signup = async (data: { firstName: string; lastName: string; email: string; phone?: string; code?: string }): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const cleanEmail = data.email.trim().toLowerCase();
+      const res = await fetch(`${API_BASE}/study/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: cleanEmail,
+          phone: data.phone,
+          code: data.code,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        return { success: false, error: json.message || "Signup failed." };
+      }
+
+      localStorage.setItem("dellics_user_email", cleanEmail);
+      localStorage.setItem("dellics_user_name", `${data.firstName} ${data.lastName}`.trim());
+
+      await syncUser();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Network error during signup." };
+    }
+  };
+
+  const saveProfile = async (newProfileData: Partial<StudentProfile>): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetEmail = (newProfileData.email || user?.email || localStorage.getItem("dellics_user_email") || "").trim().toLowerCase();
+      if (!targetEmail) {
+        return { success: false, error: "Email address is missing." };
+      }
+
+      const existingProfile = user?.profile || {};
+      const updatedProfile: StudentProfile = {
+        ...existingProfile,
+        ...newProfileData,
+        email: targetEmail,
+        isCompleted: true,
+        isVerified: true,
+      } as StudentProfile;
+
+      // Save to backend database API
+      const res = await fetch(`${API_BASE}/study/onboarding`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: targetEmail,
+          profile: updatedProfile,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json();
+        return { success: false, error: errJson.message || "Failed to save profile." };
+      }
+
+      // Update local storage cache
+      localStorage.setItem("dellics_user_email", targetEmail);
+      localStorage.setItem("dellics_student_profile", JSON.stringify(updatedProfile));
+      if (updatedProfile.firstName) {
+        localStorage.setItem("dellics_user_name", `${updatedProfile.firstName} ${updatedProfile.lastName || ""}`.trim());
+      }
+
+      await syncUser();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Network error saving profile." };
+    }
   };
 
   const logout = () => {
-    try {
-      localStorage.removeItem("dellics_user_email");
-      localStorage.removeItem("dellics_user_name");
-      localStorage.removeItem("dellics_student_profile");
-      localStorage.removeItem("dellics_user_phone");
-      // Note: dellics_registered_students_map is preserved so registered students can sign in again without losing their completed form!
-      setUser(null);
-      notifyChange();
-    } catch (e) {}
+    localStorage.removeItem("dellics_user_email");
+    localStorage.removeItem("dellics_user_name");
+    localStorage.removeItem("dellics_student_profile");
+    localStorage.removeItem("dellics_user_phone");
+    setUser(null);
   };
 
-  const saveProfile = (newProfileData: Partial<StudentProfile>) => {
-    try {
-      const existingStr = localStorage.getItem("dellics_student_profile");
-      const existing = existingStr ? JSON.parse(existingStr) : {};
-      const updated: StudentProfile = {
-        ...existing,
-        ...newProfileData,
-        isCompleted: true,
-        studentId: existing.studentId || `DEC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-        classYear: existing.classYear || "Class of 2028",
-      };
-      localStorage.setItem("dellics_student_profile", JSON.stringify(updated));
-
-      // Persist in cross-session registry keyed by lowercase email
-      if (updated.email) {
-        try {
-          const registryStr = localStorage.getItem("dellics_registered_students_map") || "{}";
-          const registry = JSON.parse(registryStr);
-          registry[updated.email.toLowerCase().trim()] = updated;
-          localStorage.setItem("dellics_registered_students_map", JSON.stringify(registry));
-        } catch (e) {}
-      }
-
-      if (updated.firstName) {
-        const fullName = `${updated.firstName} ${updated.lastName || ""}`.trim();
-        localStorage.setItem("dellics_user_name", fullName);
-      }
-      if (updated.email) {
-        localStorage.setItem("dellics_user_email", updated.email);
-      }
-      syncUserFromStorage();
-      notifyChange();
-    } catch (e) {}
-  };
-
-  const verifyEmailCode = (code: string) => {
-    // Accepts standard 6-digit mock code (e.g. 729148, 123456, or any 6 digits for testing)
-    const clean = code.trim();
-    return clean.length === 6 && /^\d{6}$/.test(clean);
+  const refreshPortalData = async () => {
+    await syncUser();
   };
 
   return (
@@ -263,6 +317,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         saveProfile,
         verifyEmailCode,
+        sendCode,
+        refreshPortalData,
       }}
     >
       {children}
