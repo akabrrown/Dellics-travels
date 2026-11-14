@@ -50,6 +50,13 @@ const SUPPORT_LINKS = [
   { label: "Help Centre & Contact", href: "/contact" },
 ];
 
+const CONSULT_URL =
+  process.env.NEXT_PUBLIC_CONSULT_URL || "https://www.dellicseductionconsult.com";
+
+const STUDY_ABROAD_LINKS = [
+  { label: "Dellics Education Consult", href: CONSULT_URL },
+];
+
 const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
@@ -98,8 +105,8 @@ export function SiteFooter() {
                   Africa’s trusted Online Travel Company.
                 </p>
                 <p>
-                  We provide Flights, Hotels, Tour &amp; Holiday Packages, eSIM, and
-                  Diaspora Tourism services worldwide.
+                  We provide Flights, Hotels, Tour &amp; Holiday Packages, eSIM, Diaspora
+                  Tourism, and Study Abroad services worldwide.
                 </p>
               </div>
 
@@ -121,8 +128,8 @@ export function SiteFooter() {
               </div>
             </div>
 
-            {/* Columns 2-6: Structured OTA Navigation */}
-            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
+            {/* Columns 2-7: Structured OTA Navigation */}
+            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-8">
               {/* 1. BOOK */}
               <div className="space-y-4">
                 <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
@@ -224,6 +231,25 @@ export function SiteFooter() {
                           {link.label}
                         </Link>
                       )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* 6. STUDY ABROAD */}
+              <div className="space-y-4">
+                <h4 className="font-display text-xs font-bold uppercase tracking-wider text-brand-orange">
+                  Study Abroad
+                </h4>
+                <ul className="space-y-2.5 text-sm text-white/70">
+                  {STUDY_ABROAD_LINKS.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="hover:text-white hover:underline transition-colors"
+                      >
+                        {link.label}
+                      </a>
                     </li>
                   ))}
                 </ul>
